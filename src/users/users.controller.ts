@@ -1,34 +1,83 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 
-@Controller('users')
+import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
+
+import { UsersService } from './users.service';
+import { CreateUserDto, UpdateUserDto, UserParamsDto } from './dto/api.dto';
+import {
+  CreateUserResponseDto,
+  FindAllUserResponseDto,
+  FindOneUserResponseDto,
+  GetMeUserResponseDto,
+  UpdateUserResponseDto,
+} from './dto/api-responses.dto';
+
+@Controller({ version: '1', path: 'users' })
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<CreateUserResponseDto> {
+    return new CreateUserResponseDto(
+      await this.usersService.create(createUserDto),
+    );
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(
+    @Query() paginationParams: PaginationParamsDto,
+  ): Promise<FindAllUserResponseDto> {
+    return new FindAllUserResponseDto(
+      await this.usersService.findAll(paginationParams),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getMe(
+    @Request() { user }: { user: JWTPayload },
+  ): Promise<GetMeUserResponseDto> {
+    return new GetMeUserResponseDto(
+      await this.usersService.findOne(user.userId),
+    );
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(
+    @Param() params: UserParamsDto,
+  ): Promise<FindOneUserResponseDto> {
+    return new FindOneUserResponseDto(
+      await this.usersService.findOne(params.id),
+    );
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  async update(
+    @Param() @Param() params: UserParamsDto,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UpdateUserResponseDto> {
+    return new UpdateUserResponseDto(
+      await this.usersService.update(params.id, updateUserDto),
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  remove(@Param() params: UserParamsDto) {
+    return this.usersService.remove(params.id);
   }
 }
