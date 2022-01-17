@@ -1,6 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
-export class ValidationException extends HttpException {
+import { GenericException } from './generic.exception';
+
+export class ValidationException extends GenericException {
   constructor(message: any) {
     super(
       {

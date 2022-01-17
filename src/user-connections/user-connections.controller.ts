@@ -64,14 +64,16 @@ export class UserConnectionsController {
   async findMyConnections(
     @Request() { user }: { user: JWTPayload },
     @Query() paginationParams: PaginationParamsDto,
-    @Query() { connectionType }: FindMyUserConnectionsQueryParamsDto,
+    @Query()
+    { connectionType, platformId }: FindMyUserConnectionsQueryParamsDto,
   ): Promise<FindAllUserConnectionResponseDto> {
     return new FindAllUserConnectionResponseDto(
-      await this.userConnectionsService.findMyUserConnections(
-        user.userId,
+      await this.userConnectionsService.findMyUserConnections({
+        userId: user.userId,
         connectionType,
         paginationParams,
-      ),
+        platformId,
+      }),
     );
   }
 
@@ -100,7 +102,6 @@ export class UserConnectionsController {
     @Param() { id }: UserConnectionParamsDto,
     @Body() { platformId }: PostPlatformDto,
   ): Promise<AddNewPlatformToUserConnectionResponseDto> {
-    // TODO: Should we just make this a patch endpoint
     return new AddNewPlatformToUserConnectionResponseDto(
       await this.userConnectionsService.addNewPlatformToUserConnection(
         id,

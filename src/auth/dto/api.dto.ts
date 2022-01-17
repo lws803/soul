@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsInt } from 'class-validator';
 
 export class PlatformIdQueryDto {
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
+  @IsInt()
   platformId?: number;
 }
 

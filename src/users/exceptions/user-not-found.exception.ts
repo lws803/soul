@@ -1,6 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
-export class UserNotFoundException extends HttpException {
+import { GenericException } from 'src/common/exceptions/generic.exception';
+
+export class UserNotFoundException extends GenericException {
   constructor({ id, email }: { id?: number; email?: string }) {
     super(
       {

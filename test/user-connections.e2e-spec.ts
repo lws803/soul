@@ -472,7 +472,7 @@ describe('UserConnectionsController (e2e)', () => {
       await platformRepository.save(factories.onePlatform.build());
       await platformUserRepository.save(factories.onePlatformUser.build());
 
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/user_connections/1/platforms')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
@@ -595,7 +595,7 @@ describe('UserConnectionsController (e2e)', () => {
         }),
         toUser: factories.oneUser.build(),
       });
-      await userConnectionRepository.save([secondUserConnection]);
+      await userConnectionRepository.save(secondUserConnection);
 
       return request(app.getHttpServer())
         .get('/user_connections/my_connections?connectionType=follower')
@@ -629,7 +629,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('fetches my follow connections', async () => {
       const firstUserConnection = factories.oneUserConnection.build();
-      await userConnectionRepository.save([firstUserConnection]);
+      await userConnectionRepository.save(firstUserConnection);
 
       return request(app.getHttpServer())
         .get('/user_connections/my_connections?connectionType=follow')
@@ -654,6 +654,70 @@ describe('UserConnectionsController (e2e)', () => {
                   id: 2,
                   userHandle: 'TEST_USER_2#2',
                   username: 'TEST_USER_2',
+                },
+              },
+            ],
+          }),
+        );
+    });
+
+    it('fetches my follow connections for a platform', async () => {
+      const thirdUser = factories.oneUser.build({
+        id: 3,
+        username: 'TEST_USER_3',
+        userHandle: 'TEST_USER_3#3',
+        email: 'TEST_USER_3@EMAIL.COM',
+      });
+      const onePlatform = factories.onePlatform.build();
+      await userRepository.save(thirdUser);
+      await platformRepository.save(onePlatform);
+      const firstUserConnection = factories.oneUserConnection.build({
+        platforms: [],
+      });
+      const secondUserConnection = factories.oneUserConnection.build({
+        id: 2,
+        toUser: thirdUser,
+        platforms: [factories.onePlatform.build()],
+      });
+      await userConnectionRepository.save([
+        firstUserConnection,
+        secondUserConnection,
+      ]);
+
+      return request(app.getHttpServer())
+        .get(
+          '/user_connections/my_connections?connectionType=follow&platformId=1',
+        )
+        .set('Authorization', `Bearer ${firstUserAccessToken}`)
+        .set('Host', 'localhost:3000')
+        .expect(200)
+        .expect((res) =>
+          expect(res.body).toStrictEqual({
+            totalCount: 1,
+            userConnections: [
+              {
+                id: expect.any(Number),
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+                fromUser: {
+                  id: 1,
+                  userHandle: 'TEST_USER#1',
+                  username: 'TEST_USER',
+                },
+                platforms: [
+                  {
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    hostUrl: 'TEST_HOST_URL',
+                    id: 1,
+                    name: 'TEST_PLATFORM',
+                    nameHandle: 'TEST_PLATFORM#1',
+                  },
+                ],
+                toUser: {
+                  id: 3,
+                  userHandle: 'TEST_USER_3#3',
+                  username: 'TEST_USER_3',
                 },
               },
             ],

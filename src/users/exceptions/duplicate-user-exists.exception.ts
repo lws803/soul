@@ -1,6 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
-export class DuplicateUserExistException extends HttpException {
+import { GenericException } from 'src/common/exceptions/generic.exception';
+
+export class DuplicateUserExistException extends GenericException {
   constructor(email: string) {
     super(
       {

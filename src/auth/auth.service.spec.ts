@@ -34,7 +34,7 @@ describe('AuthService', () => {
         {
           provide: PlatformsService,
           useValue: {
-            findOne: jest.fn(),
+            findOne: jest.fn().mockResolvedValue(factories.onePlatform.build()),
             findOnePlatformUser: jest
               .fn()
               .mockResolvedValue(factories.onePlatformUser.build()),
@@ -45,6 +45,7 @@ describe('AuthService', () => {
           useValue: {
             get: jest.fn().mockImplementation((arg) => {
               if (arg === 'JWT_REFRESH_TOKEN_TTL') return 3600;
+              if (arg === 'HOST_URL') return 'localhost:3000';
               return arg;
             }),
           },
@@ -153,7 +154,9 @@ describe('AuthService', () => {
       expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
         1,
-        factories.jwtPayloadWithPlatform.build(),
+        factories.jwtPayloadWithPlatform.build({
+          audienceUrl: 'TEST_HOST_URL',
+        }),
         { secret: 'JWT_SECRET_KEY' },
       );
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(

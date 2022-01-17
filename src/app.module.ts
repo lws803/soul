@@ -15,7 +15,7 @@ import { Platform } from './platforms/entities/platform.entity';
 import { PlatformUser } from './platforms/entities/platform-user.entity';
 import { UserConnectionsModule } from './user-connections/user-connections.module';
 import { UserConnection } from './user-connections/entities/user-connection.entity';
-import { GenericExceptionFilter } from './filters/generic-exception.filter';
+import { AllExceptionFilter } from './filters/all-exception.filter';
 
 import config from '../config';
 
@@ -45,7 +45,7 @@ import config from '../config';
     AppService,
     {
       provide: APP_FILTER,
-      useClass: GenericExceptionFilter,
+      useClass: AllExceptionFilter,
     },
   ],
 })

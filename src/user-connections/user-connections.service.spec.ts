@@ -374,9 +374,13 @@ describe('ConnectionsService', () => {
 
     it('should return a list of user connections (my follows) with total count', async () => {
       expect(
-        await service.findMyUserConnections(1, ConnectionType.FOLLOW, {
-          numItemsPerPage: 10,
-          page: 1,
+        await service.findMyUserConnections({
+          userId: 1,
+          connectionType: ConnectionType.FOLLOW,
+          paginationParams: {
+            numItemsPerPage: 10,
+            page: 1,
+          },
         }),
       ).toEqual({
         totalCount: 2,
@@ -394,9 +398,13 @@ describe('ConnectionsService', () => {
 
     it('should return a list of user connections (my followers) with total count', async () => {
       expect(
-        await service.findMyUserConnections(1, ConnectionType.FOLLOWER, {
-          numItemsPerPage: 10,
-          page: 1,
+        await service.findMyUserConnections({
+          userId: 1,
+          connectionType: ConnectionType.FOLLOWER,
+          paginationParams: {
+            numItemsPerPage: 10,
+            page: 1,
+          },
         }),
       ).toEqual({
         totalCount: 2,
@@ -414,9 +422,13 @@ describe('ConnectionsService', () => {
 
     it('should return a list of user connections (mutual friends) with total count', async () => {
       expect(
-        await service.findMyUserConnections(1, ConnectionType.MUTUAL, {
-          numItemsPerPage: 10,
-          page: 1,
+        await service.findMyUserConnections({
+          userId: 1,
+          connectionType: ConnectionType.MUTUAL,
+          paginationParams: {
+            numItemsPerPage: 10,
+            page: 1,
+          },
         }),
       ).toEqual({
         totalCount: 2,

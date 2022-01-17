@@ -1,6 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
-export class BadHealthcheckException extends HttpException {
+import { GenericException } from './generic.exception';
+
+export class BadHealthcheckException extends GenericException {
   constructor() {
     super(
       {

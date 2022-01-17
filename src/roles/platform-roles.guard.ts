@@ -8,7 +8,7 @@ import { UserRole } from './role.enum';
 import { ROLES_KEY } from './roles.decorator';
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class PlatformRolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -19,11 +19,11 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
-    const { user } = context.switchToHttp().getRequest();
-    const request = context.switchToHttp().getRequest();
-    const { platformId } = request.params;
+    const { user, params } = context.switchToHttp().getRequest();
+    const { platformId } = params;
     const userJwt = new JWTPayload(user);
 
+    // Ensures that the user has the required role within the platform
     const canAccess =
       requiredRoles.some((role) => userJwt.roles?.includes(role)) &&
       userJwt.platformId === parseInt(platformId, 10);

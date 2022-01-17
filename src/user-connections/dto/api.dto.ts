@@ -1,22 +1,22 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsNumber, IsOptional } from 'class-validator';
+import { IsEnum, IsInt, IsOptional } from 'class-validator';
 
 import { ConnectionType } from '../enums/connection-type.enum';
 
 export class PostPlatformDto {
-  @IsNumber()
+  @IsInt()
   platformId: number;
 }
 
 export class CreateUserConnectionDto {
-  @IsNumber()
+  @IsInt()
   fromUserId: number;
 
-  @IsNumber()
+  @IsInt()
   toUserId: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   platformId?: number;
 }
 
@@ -45,4 +45,9 @@ export class PlatformIdParamDto {
 export class FindMyUserConnectionsQueryParamsDto {
   @IsEnum(ConnectionType)
   connectionType: ConnectionType;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  platformId?: number;
 }

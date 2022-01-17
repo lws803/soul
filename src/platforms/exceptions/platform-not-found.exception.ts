@@ -1,6 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
-export class PlatformNotFoundException extends HttpException {
+import { GenericException } from 'src/common/exceptions/generic.exception';
+
+export class PlatformNotFoundException extends GenericException {
   constructor({ id }: { id: number }) {
     super(
       {

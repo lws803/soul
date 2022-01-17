@@ -4,7 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
+
+import { UserConnection } from '../../user-connections/entities/user-connection.entity';
 @Entity({ name: 'platforms' })
 export class Platform {
   @PrimaryGeneratedColumn()
@@ -18,6 +22,22 @@ export class Platform {
 
   @Column({ name: 'host_url' })
   hostUrl: string;
+
+  @ManyToMany(
+    () => UserConnection,
+    (userConnection) => userConnection.platforms,
+  )
+  @JoinTable({
+    joinColumn: {
+      name: 'user_connection_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'platform_id',
+      referencedColumnName: 'id',
+    },
+  })
+  userConnections: UserConnection[];
 
   @CreateDateColumn({
     name: 'created_at',

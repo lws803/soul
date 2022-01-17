@@ -6,6 +6,7 @@ import {
   QueryFailedError,
   Repository,
   OrderByCondition,
+  In,
 } from 'typeorm';
 
 import { UsersService } from 'src/users/users.service';
@@ -146,9 +147,10 @@ export class UserConnectionsService {
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
     }
-    // TODO: Prevent duplicates here
     const platform = await this.platformService.findOne(platformId);
-    userConnection.platforms.push(platform);
+    userConnection.platforms = Array.from(
+      new Set([...userConnection.platforms, platform]),
+    );
     return await this.userConnectionRepository.save(userConnection);
   }
 
@@ -171,12 +173,17 @@ export class UserConnectionsService {
     await this.userConnectionRepository.save(userConnection);
   }
 
-  async findMyUserConnections(
-    userId: number,
-    connectionType: ConnectionType,
-    paginationParams: PaginationParamsDto,
-  ) {
-    // TODO: Allow filtering by platformId as well
+  async findMyUserConnections({
+    userId,
+    connectionType,
+    paginationParams,
+    platformId,
+  }: {
+    userId: number;
+    connectionType: ConnectionType;
+    paginationParams: PaginationParamsDto;
+    platformId?: number;
+  }) {
     const fromUser = await this.usersService.findOne(userId);
     const order: OrderByCondition = { id: 'ASC' };
     const defaultArgs = {
@@ -186,6 +193,14 @@ export class UserConnectionsService {
       relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'],
     };
     let where: any = { mutualConnection: IsNull(), fromUser };
+
+    if (platformId) {
+      const platform = await this.platformService.findOne(platformId);
+      const userConnectionIds = platform.userConnections.map(
+        (userConnection) => userConnection.id,
+      );
+      where['id'] = In(userConnectionIds);
+    }
 
     if (connectionType === ConnectionType.MUTUAL) {
       where = { mutualConnection: Not(IsNull()), fromUser };

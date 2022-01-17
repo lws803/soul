@@ -16,7 +16,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
-import { RolesGuard } from 'src/roles/roles.guard';
+import { PlatformRolesGuard } from 'src/roles/platform-roles.guard';
 import { UserRole } from 'src/roles/role.enum';
 
 import { PlatformsService } from './platforms.service';
@@ -71,7 +71,7 @@ export class PlatformsController {
   }
 
   @Roles(UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Patch(':platformId')
   async update(
     @Param() { platformId }: PlatformIdParamDto,
@@ -83,14 +83,14 @@ export class PlatformsController {
   }
 
   @Roles(UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId')
   remove(@Param() { platformId }: PlatformIdParamDto) {
     return this.platformsService.remove(platformId);
   }
 
   @Roles(UserRole.MEMBER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Get(':platformId/users')
   async findAllPlatformUsers(
     @Param() { platformId }: PlatformIdParamDto,
@@ -105,7 +105,7 @@ export class PlatformsController {
   }
 
   @Roles(UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Put(':platformId/users/:userId')
   async setPlatformUserRole(
     @Param() { platformId, userId }: SetUserPlatformRoleParamsDto,
@@ -117,7 +117,7 @@ export class PlatformsController {
   }
 
   @Roles(UserRole.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId/users/:userId')
   removePlatformUser(
     @Param() { platformId, userId }: RemovePLatformUserParamsDto,
@@ -126,7 +126,7 @@ export class PlatformsController {
   }
 
   @Roles(UserRole.MEMBER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId/quit')
   removeMyself(
     @Request() { user }: { user: JWTPayload },

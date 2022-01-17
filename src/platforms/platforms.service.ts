@@ -140,7 +140,9 @@ export class PlatformsService {
   }
 
   private async findPlatformOrThrow({ id }: { id: number }): Promise<Platform> {
-    const platform = await this.platformRepository.findOne(id);
+    const platform = await this.platformRepository.findOne(id, {
+      relations: ['userConnections'],
+    });
     if (!platform) throw new PlatformNotFoundException({ id });
     return platform;
   }

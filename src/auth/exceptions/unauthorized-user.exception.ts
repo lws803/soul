@@ -1,6 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
-export class UnauthorizedUserException extends HttpException {
+import { GenericException } from 'src/common/exceptions/generic.exception';
+
+export class UnauthorizedUserException extends GenericException {
   constructor(msg?: string) {
     super(
       {

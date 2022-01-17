@@ -16,6 +16,7 @@ export const onePlatform = Factory.define<Platform>(() => ({
   hostUrl: 'TEST_HOST_URL',
   createdAt: new Date('1995-12-17T03:24:00'),
   updatedAt: new Date('1995-12-18T03:24:00'),
+  userConnections: [],
 }));
 
 export const platformArray = Factory.define<Platform[]>(() => [

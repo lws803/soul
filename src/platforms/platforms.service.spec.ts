@@ -44,6 +44,13 @@ describe('PlatformsService', () => {
             save: jest.fn(),
             update: jest.fn(),
             delete: jest.fn(),
+            createQueryBuilder: jest.fn().mockReturnValue({
+              where: jest.fn().mockReturnValue({
+                getOne: jest
+                  .fn()
+                  .mockResolvedValue(factories.onePlatformUser.build()),
+              }),
+            }),
           },
         },
         {
@@ -141,7 +148,9 @@ describe('PlatformsService', () => {
 
       expect(await service.findOne(platform.id)).toEqual(platform);
 
-      expect(platformRepository.findOne).toHaveBeenCalledWith(platform.id);
+      expect(platformRepository.findOne).toHaveBeenCalledWith(platform.id, {
+        relations: ['userConnections'],
+      });
     });
 
     it('should throw not found error', async () => {
@@ -252,7 +261,9 @@ describe('PlatformsService', () => {
         user.id,
       );
 
-      expect(platformUserRepository.delete).toHaveBeenCalledWith(platformUser);
+      expect(platformUserRepository.delete).toHaveBeenCalledWith({
+        id: platformUser.id,
+      });
     });
   });
 

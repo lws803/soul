@@ -129,14 +129,12 @@ describe('ConnectionsController', () => {
         userConnections: factories.userConnectionArray.build(),
       });
 
-      expect(service.findMyUserConnections).toHaveBeenCalledWith(
-        1,
-        ConnectionType.MUTUAL,
-        {
-          numItemsPerPage: 10,
-          page: 1,
-        },
-      );
+      expect(service.findMyUserConnections).toHaveBeenCalledWith({
+        connectionType: ConnectionType.MUTUAL,
+        paginationParams: { numItemsPerPage: 10, page: 1 },
+        platformId: undefined,
+        userId: 1,
+      });
     });
 
     it('should find my follower connections', async () => {
@@ -151,14 +149,12 @@ describe('ConnectionsController', () => {
         userConnections: factories.userConnectionArray.build(),
       });
 
-      expect(service.findMyUserConnections).toHaveBeenCalledWith(
-        1,
-        ConnectionType.FOLLOWER,
-        {
-          numItemsPerPage: 10,
-          page: 1,
-        },
-      );
+      expect(service.findMyUserConnections).toHaveBeenCalledWith({
+        connectionType: ConnectionType.FOLLOWER,
+        paginationParams: { numItemsPerPage: 10, page: 1 },
+        platformId: undefined,
+        userId: 1,
+      });
     });
 
     it('should find my follow connections', async () => {
@@ -173,14 +169,12 @@ describe('ConnectionsController', () => {
         userConnections: factories.userConnectionArray.build(),
       });
 
-      expect(service.findMyUserConnections).toHaveBeenCalledWith(
-        1,
-        ConnectionType.FOLLOW,
-        {
-          numItemsPerPage: 10,
-          page: 1,
-        },
-      );
+      expect(service.findMyUserConnections).toHaveBeenCalledWith({
+        connectionType: ConnectionType.FOLLOW,
+        paginationParams: { numItemsPerPage: 10, page: 1 },
+        platformId: undefined,
+        userId: 1,
+      });
     });
   });
 

@@ -167,7 +167,7 @@ describe('PlatformsController (e2e)', () => {
     });
   });
 
-  describe('/platforms/:id (GET)', () => {
+  describe('/platforms/:platformId (GET)', () => {
     beforeAll(async () => {
       await platformRepository.save(factories.onePlatform.build());
     });
@@ -206,7 +206,7 @@ describe('PlatformsController (e2e)', () => {
     });
   });
 
-  describe('/platforms/:id (PATCH)', () => {
+  describe('/platforms/:platformId (PATCH)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
         factories.onePlatform.build(),
@@ -231,7 +231,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .patch('/platforms/1')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .send({ name: 'TEST_PLATFORM_2' })
         .expect(200)
         .expect((res) =>
@@ -263,7 +263,7 @@ describe('PlatformsController (e2e)', () => {
     });
   });
 
-  describe('/platforms/:id (DELETE)', () => {
+  describe('/platforms/:platformId (DELETE)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
         factories.onePlatform.build(),
@@ -284,7 +284,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -305,7 +305,7 @@ describe('PlatformsController (e2e)', () => {
     });
   });
 
-  describe('/platforms/:id/users (GET)', () => {
+  describe('/platforms/:platformId/users (GET)', () => {
     beforeAll(async () => {
       const platform = await platformRepository.save(
         factories.onePlatform.build(),
@@ -328,7 +328,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .get('/platforms/1/users')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -348,23 +348,22 @@ describe('PlatformsController (e2e)', () => {
         );
     });
 
-    it('throws due to insufficient permissions', async () => {
+    it('throws due to insufficient permissions and invalid audience', async () => {
       await request(app.getHttpServer())
         .get('/platforms/1/users')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'localhost:3000')
-        .expect(403)
+        .set('Host', 'TEST_HOST_URL')
+        .expect(401)
         .expect((res) =>
           expect(res.body).toEqual({
-            error: 'PERMISSION_DENIED',
-            message:
-              'You lack the permissions necessary to perform this action.',
+            error: 'UNAUTHORIZED_USER',
+            message: 'Invalid audience.',
           }),
         );
     });
   });
 
-  describe('/platforms/:id/users/:userId (PUT)', () => {
+  describe('/platforms/:platformId/users/:userId (PUT)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
         factories.onePlatform.build(),
@@ -393,7 +392,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=admin,member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -424,7 +423,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -443,7 +442,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=admin,member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -455,7 +454,7 @@ describe('PlatformsController (e2e)', () => {
     });
   });
 
-  describe('/platforms/:id/users/:userId (DELETE)', () => {
+  describe('/platforms/:platformId/users/:userId (DELETE)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
         factories.onePlatform.build(),
@@ -484,7 +483,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -497,7 +496,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/users/1')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -547,7 +546,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -560,7 +559,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -573,7 +572,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('Host', 'TEST_HOST_URL')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({

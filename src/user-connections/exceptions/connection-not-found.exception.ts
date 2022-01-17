@@ -1,6 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
-export class UserConnectionNotFoundException extends HttpException {
+import { GenericException } from 'src/common/exceptions/generic.exception';
+
+export class UserConnectionNotFoundException extends GenericException {
   constructor({ id }: { id?: number }) {
     super(
       {

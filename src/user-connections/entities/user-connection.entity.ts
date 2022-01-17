@@ -34,14 +34,14 @@ export class UserConnection {
   @JoinColumn([{ name: 'to_user_id', referencedColumnName: 'id' }])
   toUser: User;
 
-  @ManyToMany(() => Platform)
+  @ManyToMany(() => Platform, (platform) => platform.userConnections)
   @JoinTable({
     joinColumn: {
-      name: 'platforms',
+      name: 'platform_id',
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: 'user_connections',
+      name: 'user_connection_id',
       referencedColumnName: 'id',
     },
   })

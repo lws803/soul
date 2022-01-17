@@ -18,8 +18,6 @@ import { InvalidTokenException } from './exceptions/invalid-token.exception';
 import { TokenType } from './enums/token-type.enum';
 import { UserRole } from 'src/roles/role.enum';
 
-const AUDIENCE_URL = 'localhost:3000'; // TODO: Store this in platforms in the future
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -57,6 +55,7 @@ export class AuthService {
       platformId,
       user.id,
     );
+    const platform = await this.platformService.findOne(platformId);
 
     await this.refreshTokenRepository.delete({ user, platformUser });
     return {
@@ -64,6 +63,7 @@ export class AuthService {
         user,
         platformId,
         platformUser.roles,
+        platform.hostUrl,
       ),
       refreshToken: await this.generateRefreshToken(
         user,
@@ -109,11 +109,12 @@ export class AuthService {
     user: User,
     platformId?: number,
     roles?: UserRole[],
+    hostUrl?: string,
   ) {
     const payload = new JWTPayload({
       username: user.username,
       userId: user.id,
-      audienceUrl: AUDIENCE_URL,
+      audienceUrl: hostUrl || this.configService.get('HOST_URL'),
       platformId,
       roles,
     });
