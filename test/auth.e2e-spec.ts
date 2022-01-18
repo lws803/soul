@@ -68,7 +68,7 @@ describe('AuthController (e2e)', () => {
     it('logs in successfully', async () => {
       await request(app.getHttpServer())
         .post('/auth/login')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' })
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' })
         .expect(201)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -87,7 +87,7 @@ describe('AuthController (e2e)', () => {
     it('logs in successfully with a platform', async () => {
       await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' })
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' })
         .expect(201)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -156,7 +156,7 @@ describe('AuthController (e2e)', () => {
     it('refreshes token for platform without specifying successfully', async () => {
       const resp = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const { refreshToken } = resp.body;
 
       await request(app.getHttpServer())
@@ -175,7 +175,7 @@ describe('AuthController (e2e)', () => {
     it('refreshes token for platform without specifying platform id', async () => {
       const resp = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const { refreshToken } = resp.body;
 
       await request(app.getHttpServer())

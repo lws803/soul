@@ -226,7 +226,7 @@ describe('PlatformsController (e2e)', () => {
     it('updates existing platform', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .patch('/platforms/1')
@@ -279,7 +279,7 @@ describe('PlatformsController (e2e)', () => {
     it('deletes existing platform', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .delete('/platforms/1')
@@ -323,7 +323,7 @@ describe('PlatformsController (e2e)', () => {
     it('fetches all users within a platform', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .get('/platforms/1/users')
@@ -387,7 +387,7 @@ describe('PlatformsController (e2e)', () => {
     it('sets user role', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=admin,member')
@@ -418,7 +418,7 @@ describe('PlatformsController (e2e)', () => {
     it('throws an error when trying to set only remaining admin to member', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=member')
@@ -437,7 +437,7 @@ describe('PlatformsController (e2e)', () => {
     it('throws with insufficient permissions', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER_2@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=admin,member')
@@ -478,7 +478,7 @@ describe('PlatformsController (e2e)', () => {
     it('deletes a platform user', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/users/2')
@@ -491,7 +491,7 @@ describe('PlatformsController (e2e)', () => {
     it('throws due to insufficient permissions', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER_2@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/users/1')
@@ -541,7 +541,7 @@ describe('PlatformsController (e2e)', () => {
       );
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
@@ -554,7 +554,7 @@ describe('PlatformsController (e2e)', () => {
     it('quits existing platform (MEMBER)', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER_2@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
@@ -567,7 +567,7 @@ describe('PlatformsController (e2e)', () => {
     it('only remaining admin cant quit', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')

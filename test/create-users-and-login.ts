@@ -12,7 +12,7 @@ export async function createUsersAndLogin(app: INestApplication) {
 
   await request(app.getHttpServer())
     .post('/users')
-    .send(factories.createUserDto.build())
+    .send(factories.createUserDto.build({ password: '1oNc0iY3oml5d&%9' }))
     .expect(201);
 
   await request(app.getHttpServer())
@@ -21,17 +21,18 @@ export async function createUsersAndLogin(app: INestApplication) {
       factories.createUserDto.build({
         email: 'TEST_USER_2@EMAIL.COM',
         username: 'TEST_USER_2',
+        password: '1oNc0iY3oml5d&%9',
       }),
     )
     .expect(201);
 
   const firstUserLoginResponse = await request(app.getHttpServer())
     .post('/auth/login')
-    .send({ email: 'TEST_USER@EMAIL.COM', password: 'TEST_PASSWORD' });
+    .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
   const secondUserLoginResponse = await request(app.getHttpServer())
     .post('/auth/login')
-    .send({ email: 'TEST_USER_2@EMAIL.COM', password: 'TEST_PASSWORD' });
+    .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
   return {
     firstUser: {

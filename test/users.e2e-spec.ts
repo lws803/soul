@@ -35,7 +35,11 @@ describe('UsersController (e2e)', () => {
     it('creates a new user successfully', () => {
       return request(app.getHttpServer())
         .post('/users')
-        .send(factories.createUserDto.build())
+        .send(
+          factories.createUserDto.build({
+            password: '3Yarw#Nm%cpY9QV&',
+          }),
+        )
         .expect(201)
         .expect((res) => {
           expect(res.body).toStrictEqual({
@@ -54,7 +58,7 @@ describe('UsersController (e2e)', () => {
       await userRepository.save(factories.oneUser.build());
       return request(app.getHttpServer())
         .post('/users')
-        .send(factories.createUserDto.build())
+        .send(factories.createUserDto.build({ password: '3Yarw#Nm%cpY9QV&' }))
         .expect(409)
         .expect((res) => {
           expect(res.body).toStrictEqual({
@@ -174,7 +178,7 @@ describe('UsersController (e2e)', () => {
     it('should update a user', async () => {
       return request(app.getHttpServer())
         .patch('/users/1')
-        .send(factories.updateUserDto.build())
+        .send(factories.updateUserDto.build({ password: '3Yarw#Nm%cpY9QV&' }))
         .expect(200)
         .expect((res) => {
           expect(res.body).toStrictEqual({
@@ -192,7 +196,7 @@ describe('UsersController (e2e)', () => {
     it('should return user not found', async () => {
       return request(app.getHttpServer())
         .patch('/users/999')
-        .send(factories.updateUserDto.build())
+        .send(factories.updateUserDto.build({ password: '3Yarw#Nm%cpY9QV&' }))
         .expect(404)
         .expect((res) => {
           expect(res.body).toStrictEqual({
