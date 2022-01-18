@@ -21,8 +21,8 @@ jobs:
           MYSQL_DATABASE: soul_db_test
           MYSQL_HOST: 127.0.0.1
           MYSQL_USER: root
-          MYSQL_PASSWORD: ''
-          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_PASSWORD: password
+          MYSQL_ROOT_PASSWORD: password
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=20s --health-timeout=10s --health-retries=5
