@@ -20,7 +20,7 @@ jobs:
         env:
           MYSQL_DATABASE: soul_db_test
           MYSQL_HOST: 127.0.0.1
-          MYSQL_USER: root
+          MYSQL_USER: soul_db_user
           MYSQL_PASSWORD: password
           MYSQL_ROOT_PASSWORD: password
         ports:
