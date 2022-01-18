@@ -1,8 +1,7 @@
 # TODO list
 
-- turn platforms into a fixture so its easier to use everywhere without having to declare one from scratch
-- expand on the readme to include some troubleshooting tips, setup tips, etc
 - add dockerfile to run and test soul
+- expand on the readme to include some troubleshooting tips, setup tips, etc
 - draft docs in docusaurus maybe
 - add logging on each request
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
@@ -10,4 +9,5 @@
 - create a tiny user storage for metadata or achievement purposes within the user table
 - remove some api definitions from user connections
 - Add test to ensure that user can only perform actions within the specific platform and not other platforms
+- allow folks to download their connections and data in one big json blob
 - Deal with some TODOs leftover
