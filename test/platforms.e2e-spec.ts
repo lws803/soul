@@ -415,6 +415,37 @@ describe('PlatformsController (e2e)', () => {
         );
     });
 
+    it('bans a user', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/login?platformId=1')
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+
+      await request(app.getHttpServer())
+        .put('/platforms/1/users/2?roles=banned')
+        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Host', 'TEST_HOST_URL')
+        .expect(200)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            id: 2,
+            platform: {
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+              hostUrl: 'TEST_HOST_URL',
+              id: 1,
+              name: 'TEST_PLATFORM',
+              nameHandle: 'TEST_PLATFORM#1',
+            },
+            roles: [UserRole.BANNED],
+            user: {
+              id: 2,
+              userHandle: 'TEST_USER_2#2',
+              username: 'TEST_USER_2',
+            },
+          }),
+        );
+    });
+
     it('throws an error when trying to set only remaining admin to member', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
