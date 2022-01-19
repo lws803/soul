@@ -3,12 +3,11 @@ import * as request from 'supertest';
 import { Repository, Connection } from 'typeorm';
 
 import { UserRole } from 'src/roles/role.enum';
-import { User } from 'src/users/entities/user.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 
 import createAppFixture from './create-app-fixture';
-import { createUsersAndLogin } from './create-users-and-login';
+import { createUsersAndLogin, UserAccount } from './create-users-and-login';
 
 import * as factories from '../factories';
 
@@ -17,17 +16,9 @@ describe('PlatformsController (e2e)', () => {
   let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
 
-  let userAccount: {
-    accessToken: string;
-    refreshToken: string;
-    user: User;
-  };
-
-  let secondUserAccount: {
-    accessToken: string;
-    refreshToken: string;
-    user: User;
-  };
+  let userAccount: UserAccount;
+  let secondUserAccount: UserAccount;
+  let thirdUserAccount: UserAccount;
 
   beforeAll(async () => {
     app = await createAppFixture({});
@@ -39,9 +30,10 @@ describe('PlatformsController (e2e)', () => {
     platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
 
-    const { firstUser, secondUser } = await createUsersAndLogin(app);
+    const { firstUser, secondUser, thirdUser } = await createUsersAndLogin(app);
     userAccount = firstUser;
     secondUserAccount = secondUser;
+    thirdUserAccount = thirdUser;
   });
 
   afterAll((done) => {
@@ -415,6 +407,37 @@ describe('PlatformsController (e2e)', () => {
         );
     });
 
+    it('bans a user', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/login?platformId=1')
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+
+      await request(app.getHttpServer())
+        .put('/platforms/1/users/2?roles=banned')
+        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Host', 'TEST_HOST_URL')
+        .expect(200)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            id: 2,
+            platform: {
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+              hostUrl: 'TEST_HOST_URL',
+              id: 1,
+              name: 'TEST_PLATFORM',
+              nameHandle: 'TEST_PLATFORM#1',
+            },
+            roles: [UserRole.BANNED],
+            user: {
+              id: 2,
+              userHandle: 'TEST_USER_2#2',
+              username: 'TEST_USER_2',
+            },
+          }),
+        );
+    });
+
     it('throws an error when trying to set only remaining admin to member', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login?platformId=1')
@@ -522,6 +545,12 @@ describe('PlatformsController (e2e)', () => {
           platform,
           roles: [UserRole.MEMBER],
         }),
+        factories.onePlatformUser.build({
+          id: 3,
+          user: thirdUserAccount.user,
+          platform,
+          roles: [UserRole.BANNED],
+        }),
       ]);
     });
 
@@ -562,6 +591,26 @@ describe('PlatformsController (e2e)', () => {
         .set('Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) => expect(res.body).toEqual({}));
+    });
+
+    // Banned users cannot quit a platform to prevent them from joining again
+    it('quits existing platform (BANNED)', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/login?platformId=1')
+        .send({ email: 'TEST_USER_3@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+
+      await request(app.getHttpServer())
+        .delete('/platforms/1/quit')
+        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Host', 'TEST_HOST_URL')
+        .expect(403)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            error: 'PERMISSION_DENIED',
+            message:
+              'You lack the permissions necessary to perform this action.',
+          }),
+        );
     });
 
     it('only remaining admin cant quit', async () => {

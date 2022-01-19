@@ -26,6 +26,17 @@ export async function createUsersAndLogin(app: INestApplication) {
     )
     .expect(201);
 
+  await request(app.getHttpServer())
+    .post('/users')
+    .send(
+      factories.createUserDto.build({
+        email: 'TEST_USER_3@EMAIL.COM',
+        username: 'TEST_USER_3',
+        password: '1oNc0iY3oml5d&%9',
+      }),
+    )
+    .expect(201);
+
   const firstUserLoginResponse = await request(app.getHttpServer())
     .post('/auth/login')
     .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
@@ -33,6 +44,10 @@ export async function createUsersAndLogin(app: INestApplication) {
   const secondUserLoginResponse = await request(app.getHttpServer())
     .post('/auth/login')
     .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+
+  const thirdUserLoginResponse = await request(app.getHttpServer())
+    .post('/auth/login')
+    .send({ email: 'TEST_USER_3@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
   return {
     firstUser: {
@@ -45,5 +60,16 @@ export async function createUsersAndLogin(app: INestApplication) {
       refreshToken: secondUserLoginResponse.body.refreshToken,
       user: await userRepository.findOne({ email: 'TEST_USER_2@EMAIL.COM' }),
     },
+    thirdUser: {
+      accessToken: thirdUserLoginResponse.body.accessToken,
+      refreshToken: thirdUserLoginResponse.body.refreshToken,
+      user: await userRepository.findOne({ email: 'TEST_USER_3@EMAIL.COM' }),
+    },
   };
 }
+
+export type UserAccount = {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+};
