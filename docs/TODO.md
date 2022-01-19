@@ -1,7 +1,5 @@
 # TODO list
 
-- add banning features to ban a user from a platform
-  - add tests
 - add email verification for new sign ups
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - add logging on each request
