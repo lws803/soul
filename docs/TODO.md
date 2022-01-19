@@ -1,7 +1,5 @@
 # TODO list
 
-- add dockerfile to run and test soul
-- expand on the readme to include some troubleshooting tips, setup tips, etc
 - draft docs in docusaurus maybe
 - add logging on each request
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**

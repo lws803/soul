@@ -48,3 +48,16 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## Overriding env variables
+
+Soul defaults to `.env.development` while running the app and `.env.test`
+while running tests by default. To override these, please specify your overrides in
+new `.env.development.local` and `.env.test.local` files.
+
+## Troubleshooting
+
+### Module can't be found despite being specified correctly
+
+This can sometimes happen when the `dist` file is built incorrectly. To resolve this, simply delete
+the `dist` file located in the root directory and run `npm run start` again.
