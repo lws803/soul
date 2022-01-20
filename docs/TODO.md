@@ -1,7 +1,6 @@
 # TODO list
 
-- add email verification for new sign ups
-  - integrate with redis https://firxworx.com/blog/coding/nodejs/email-module-for-nestjs-with-bull-queue-and-the-nest-mailer/
+- add email verification for new sign ups https://firxworx.com/blog/coding/nodejs/email-module-for-nestjs-with-bull-queue-and-the-nest-mailer/
   - create new (`/verify`) endpoint to accept that
   - do not allow users to login if they're not active yet, but allow them to sign up again
   - create password reset endpoint
