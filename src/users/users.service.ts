@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { MailService } from 'src/mail/mail.service';
 
 import { UpdateUserDto, CreateUserDto } from './dto/api.dto';
 import { User } from './entities/user.entity';
@@ -17,6 +18,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private configService: ConfigService,
+    private mailService: MailService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -39,6 +41,9 @@ export class UsersService {
           userHandle: `${createUserDto.username}#${savedUser.id}`,
         },
       );
+
+      this.mailService.sendConfirmationEmail(savedUser, 'TEST_CODE');
+
       return this.usersRepository.findOne(savedUser.id);
     } catch (exception) {
       if (exception instanceof QueryFailedError) {

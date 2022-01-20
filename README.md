@@ -21,6 +21,11 @@ $ npm install
 # Run migrations (on soul_db_dev database)
 $ npm run migration:run
 
+# Run Mailhog
+$ docker run -d -p 1025:1025 -p 8025:8025 --name mailhog mailhog/mailhog
+
+# Run Redis
+$ docker run -d -p 6379:6379 --name redis redis
 ```
 
 ## Running the app

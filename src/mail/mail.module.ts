@@ -14,11 +14,12 @@ import { MailProcessor } from './mail.processor';
         transport: {
           host: configService.get('MAIL_HOST'),
           port: configService.get('MAIL_PORT'),
-          secure: configService.get<boolean>('MAIL_SECURE'),
+          secure: false, // Add a config service env for this only when env is production
           // tls: { ciphers: 'SSLv3', }, // gmail
           auth: {
-            user: configService.get('MAIL_USERNAME'),
-            pass: configService.get('MAIL_PASSWORD'),
+            // TODO: Add auth only when env is in production
+            // user: configService.get('MAIL_USERNAME'),
+            // pass: configService.get('MAIL_PASSWORD'),
           },
         },
         defaults: {
@@ -32,6 +33,7 @@ import { MailProcessor } from './mail.processor';
           },
         },
       }),
+      inject: [ConfigService],
     }),
     BullModule.registerQueueAsync({
       name: 'mail_queue',
@@ -41,6 +43,7 @@ import { MailProcessor } from './mail.processor';
           port: configService.get('REDIS_DB_PORT'),
         },
       }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [],

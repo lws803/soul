@@ -48,11 +48,6 @@ export class MailProcessor {
   @Process('confirmation')
   async sendWelcomeEmail(job: Job<{ user: User; code: string }>): Promise<any> {
     // this.logger.log(`Sending confirmation email to '${job.data.user.email}'`);
-
-    // if (this.configService.get<boolean>('mail.live')) {
-    //   return 'SENT MOCK CONFIRMATION EMAIL';
-    // }
-
     try {
       const result = await this.mailerService.sendMail({
         template: 'confirmation',
