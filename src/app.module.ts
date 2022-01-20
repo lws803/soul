@@ -16,6 +16,7 @@ import { PlatformUser } from './platforms/entities/platform-user.entity';
 import { UserConnectionsModule } from './user-connections/user-connections.module';
 import { UserConnection } from './user-connections/entities/user-connection.entity';
 import { AllExceptionFilter } from './filters/all-exception.filter';
+import { MailModule } from './mail/mail.module';
 
 import config from '../config';
 
@@ -39,6 +40,7 @@ import config from '../config';
     AuthModule,
     PlatformsModule,
     UserConnectionsModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [

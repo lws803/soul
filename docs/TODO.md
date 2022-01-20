@@ -1,5 +1,6 @@
 # TODO list
 
+- setup logging
 - add email verification for new sign ups
   - integrate with redis https://firxworx.com/blog/coding/nodejs/email-module-for-nestjs-with-bull-queue-and-the-nest-mailer/
   - create a new background job to send that email
