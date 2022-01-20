@@ -41,6 +41,7 @@ import { MailProcessor } from './mail.processor';
         redis: {
           host: configService.get('REDIS_DB_HOST'),
           port: configService.get('REDIS_DB_PORT'),
+          db: parseInt(configService.get('REDIS_DB_INDEX'), 10),
         },
       }),
       inject: [ConfigService],

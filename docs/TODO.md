@@ -1,14 +1,12 @@
 # TODO list
 
-- setup logging
 - add email verification for new sign ups
   - integrate with redis https://firxworx.com/blog/coding/nodejs/email-module-for-nestjs-with-bull-queue-and-the-nest-mailer/
-  - create a new background job to send that email
-  - encode userid and expiry in one string
   - create new (`/verify`) endpoint to accept that
-  - set user to active
   - do not allow users to login if they're not active yet, but allow them to sign up again
   - create password reset endpoint
+  - encode userid and expiry in one string to create the url
+  - set user to active
 - implement helmet for security
 - add expires in field in access token and refresh token payload
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**

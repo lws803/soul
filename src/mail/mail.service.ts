@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 
@@ -6,12 +6,14 @@ import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class MailService {
+  private readonly logger = new Logger(MailService.name);
+
   constructor(
     @InjectQueue('mail_queue')
     private mailQueue: Queue,
   ) {}
 
-  async sendConfirmationEmail(user: User, code: string): Promise<boolean> {
+  async sendConfirmationEmail(user: User, code: string) {
     try {
       await this.mailQueue.add('confirmation', {
         user,
@@ -19,7 +21,9 @@ export class MailService {
       });
       return true;
     } catch (error) {
-      // this.logger.error(`Error queueing confirmation email to user ${user.email}`)
+      this.logger.error(
+        `Error queueing confirmation email to user ${user.email}`,
+      );
       return false;
     }
   }
