@@ -6,7 +6,6 @@
   - create password reset endpoint
   - encode userid and expiry in one string to create the url
   - set user to active
-- implement helmet for security
 - add expires in field in access token and refresh token payload
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - add logging on each request
