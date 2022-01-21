@@ -92,9 +92,7 @@ export class UsersController {
   }
 
   @Post('resend_email_confirmation')
-  async resendEmailConfirmation(
-    @Query() { email }: ResendEmailConfirmationDto,
-  ) {
+  resendEmailConfirmation(@Query() { email }: ResendEmailConfirmationDto) {
     return this.usersService.resendEmailConfirmation(email);
   }
 }

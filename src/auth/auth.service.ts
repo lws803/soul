@@ -10,13 +10,13 @@ import { TokenExpiredError } from 'jsonwebtoken';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
+import { UserRole } from 'src/roles/role.enum';
 
 import { JWTPayload } from './entities/jwt-payload.entity';
 import { JWTRefreshPayload } from './entities/jwt-refresh-payload.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
-import { InvalidTokenException } from './exceptions/invalid-token.exception';
 import { TokenType } from './enums/token-type.enum';
-import { UserRole } from 'src/roles/role.enum';
+import { InvalidTokenException, UserNotVerifiedException } from './exceptions';
 
 @Injectable()
 export class AuthService {
@@ -40,7 +40,9 @@ export class AuthService {
 
   async login(user: User) {
     await this.refreshTokenRepository.delete({ user, platformUser: null });
-    // TODO: Don't allow users to login if they are not active
+    if (!user.isActive) {
+      throw new UserNotVerifiedException();
+    }
 
     return {
       accessToken: await this.generateAccessToken(user),
@@ -57,6 +59,10 @@ export class AuthService {
       user.id,
     );
     const platform = await this.platformService.findOne(platformId);
+
+    if (!user.isActive) {
+      throw new UserNotVerifiedException();
+    }
 
     await this.refreshTokenRepository.delete({ user, platformUser });
     return {
