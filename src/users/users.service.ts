@@ -55,7 +55,7 @@ export class UsersService {
         },
       );
 
-      this.generateCodeAndSendEmail(savedUser);
+      this.generateCodeAndSendEmail(savedUser, 'confirmation');
 
       return this.usersRepository.findOne(savedUser.id);
     } catch (exception) {
@@ -113,12 +113,16 @@ export class UsersService {
     await this.usersRepository.delete({ id: user.id });
   }
 
-  async verifyUser(token: string) {
+  async verifyConfirmationToken(token: string) {
     try {
-      const { id } = verify(
+      const { id, tokenType } = verify(
         token,
         this.configService.get('MAIL_TOKEN_SECRET'),
-      ) as VerificationToken;
+      ) as EmailPayload;
+      if (tokenType !== 'confirmation') {
+        throw new InvalidTokenException();
+      }
+
       const user = await this.findOne(id);
       user.isActive = true;
       await this.usersRepository.save(user);
@@ -133,12 +137,12 @@ export class UsersService {
     }
   }
 
-  async resendEmailConfirmation(email: string) {
+  async resendConfirmationToken(email: string) {
     const user = await this.findOneByEmail(email);
     if (user.isActive) {
       throw new UserAlreadyActiveException();
     }
-    this.generateCodeAndSendEmail(user);
+    this.generateCodeAndSendEmail(user, 'confirmation');
   }
 
   private async findUserOrThrow({
@@ -160,16 +164,23 @@ export class UsersService {
     return user;
   }
 
-  private async generateCodeAndSendEmail(user: User) {
+  private async generateCodeAndSendEmail(user: User, tokenType: TokenType) {
     const token = sign(
-      { id: user.id },
+      { id: user.id, tokenType } as EmailPayload,
       this.configService.get('MAIL_TOKEN_SECRET'),
       { expiresIn: this.configService.get('MAIL_TOKEN_EXPIRATION_TIME') },
     );
-    this.mailService.sendConfirmationEmail(user, token);
+    if (tokenType === 'confirmation') {
+      this.mailService.sendConfirmationEmail(user, token);
+    } else {
+      this.mailService.sendPasswordResetEmail(user, token);
+    }
   }
 }
 
-type VerificationToken = {
+type TokenType = 'confirmation' | 'passwordReset';
+
+type EmailPayload = {
   id: number;
+  tokenType: TokenType;
 };

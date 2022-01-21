@@ -27,4 +27,19 @@ export class MailService {
       return false;
     }
   }
+
+  async sendPasswordResetEmail(user: User, code: string) {
+    try {
+      await this.mailQueue.add('password_reset', {
+        user,
+        code,
+      });
+      return true;
+    } catch (error) {
+      this.logger.error(
+        `Error queueing password reset email to user ${user.email}`,
+      );
+      return false;
+    }
+  }
 }

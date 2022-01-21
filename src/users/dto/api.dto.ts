@@ -10,6 +10,8 @@ import {
   MinLength,
 } from 'class-validator';
 
+const PASSWORD_REGEX = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+
 export class CreateUserDto {
   @MaxLength(32)
   username: string;
@@ -20,7 +22,7 @@ export class CreateUserDto {
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+  @Matches(PASSWORD_REGEX, {
     message: 'password too weak',
   })
   password: string;
@@ -39,7 +41,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+  @Matches(PASSWORD_REGEX, {
     message: 'password too weak',
   })
   password?: string;
@@ -55,4 +57,25 @@ export class ResendEmailConfirmationDto {
   @IsString()
   @IsEmail()
   email: string;
+}
+
+export class PasswordResetRequestDto {
+  @IsOptional()
+  @IsString()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  username?: string;
+}
+
+export class PasswordResetDto {
+  @IsString()
+  @MinLength(4)
+  @MaxLength(20)
+  @Matches(PASSWORD_REGEX, {
+    message: 'password too weak',
+  })
+  password: string;
 }

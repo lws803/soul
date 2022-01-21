@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   Request,
+  NotImplementedException,
 } from '@nestjs/common';
 
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
@@ -18,7 +19,9 @@ import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { UsersService } from './users.service';
 import {
   CreateUserDto,
-  ResendEmailConfirmationDto,
+  PasswordResetDto,
+  PasswordResetRequestDto,
+  ResendEmailConfirmationDto as ResendConfirmationTokenDto,
   UpdateUserDto,
   UserParamsDto,
 } from './dto/api.dto';
@@ -86,13 +89,29 @@ export class UsersController {
     return this.usersService.remove(params.id);
   }
 
-  @Post('verify')
-  async verify(@Query('token') token: string): Promise<GetMeUserResponseDto> {
-    return new GetMeUserResponseDto(await this.usersService.verifyUser(token));
+  @Post('verify_confirmation_token')
+  async verifyConfirmationToken(
+    @Query('token') token: string,
+  ): Promise<GetMeUserResponseDto> {
+    return new GetMeUserResponseDto(
+      await this.usersService.verifyConfirmationToken(token),
+    );
   }
 
-  @Post('resend_email_confirmation')
-  resendEmailConfirmation(@Query() { email }: ResendEmailConfirmationDto) {
-    return this.usersService.resendEmailConfirmation(email);
+  @Post('resend_confirmation_token')
+  resendConfirmationToken(@Query() { email }: ResendConfirmationTokenDto) {
+    return this.usersService.resendConfirmationToken(email);
+  }
+
+  @Post('request_password_reset_token')
+  requestPasswordResetToken(
+    @Query() { email, username }: PasswordResetRequestDto,
+  ) {
+    throw new NotImplementedException();
+  }
+
+  @Post('password_reset')
+  passwordReset(@Body() { password }: PasswordResetDto) {
+    throw new NotImplementedException();
   }
 }
