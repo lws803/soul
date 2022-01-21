@@ -50,3 +50,9 @@ export class UserParamsDto {
   @IsInt()
   id: number;
 }
+
+export class ResendEmailConfirmationDto {
+  @IsString()
+  @IsEmail()
+  email: string;
+}

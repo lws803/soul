@@ -40,6 +40,7 @@ export class AuthService {
 
   async login(user: User) {
     await this.refreshTokenRepository.delete({ user, platformUser: null });
+    // TODO: Don't allow users to login if they are not active
 
     return {
       accessToken: await this.generateAccessToken(user),

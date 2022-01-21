@@ -16,7 +16,12 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto, UserParamsDto } from './dto/api.dto';
+import {
+  CreateUserDto,
+  ResendEmailConfirmationDto,
+  UpdateUserDto,
+  UserParamsDto,
+} from './dto/api.dto';
 import {
   CreateUserResponseDto,
   FindAllUserResponseDto,
@@ -79,5 +84,17 @@ export class UsersController {
   @Delete(':id')
   remove(@Param() params: UserParamsDto) {
     return this.usersService.remove(params.id);
+  }
+
+  @Post('verify')
+  async verify(@Query('token') token: string): Promise<GetMeUserResponseDto> {
+    return new GetMeUserResponseDto(await this.usersService.verifyUser(token));
+  }
+
+  @Post('resend_email_confirmation')
+  async resendEmailConfirmation(
+    @Query() { email }: ResendEmailConfirmationDto,
+  ) {
+    return this.usersService.resendEmailConfirmation(email);
   }
 }

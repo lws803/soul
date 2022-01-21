@@ -1,19 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import {
+  verify,
+  sign,
+  TokenExpiredError,
+  JsonWebTokenError,
+} from 'jsonwebtoken';
 
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { MailService } from 'src/mail/mail.service';
 
 import { UpdateUserDto, CreateUserDto } from './dto/api.dto';
 import { User } from './entities/user.entity';
-import { DuplicateUserExistException } from './exceptions/duplicate-user-exists.exception';
-import { UserNotFoundException } from './exceptions/user-not-found.exception';
+import {
+  DuplicateUserExistException,
+  UserNotFoundException,
+  UserAlreadyActiveException,
+  InvalidTokenException,
+} from './exceptions';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -32,6 +44,7 @@ export class UsersService {
     user.hashedPassword = hashedPassword;
     user.email = createUserDto.email;
     user.username = createUserDto.username;
+    user.isActive = false;
 
     try {
       const savedUser = await this.usersRepository.save(user);
@@ -42,7 +55,7 @@ export class UsersService {
         },
       );
 
-      this.mailService.sendConfirmationEmail(savedUser, 'TEST_CODE');
+      this.generateCodeAndSendEmail(savedUser);
 
       return this.usersRepository.findOne(savedUser.id);
     } catch (exception) {
@@ -100,6 +113,34 @@ export class UsersService {
     await this.usersRepository.delete({ id: user.id });
   }
 
+  async verifyUser(token: string) {
+    try {
+      const { id } = verify(
+        token,
+        this.configService.get('MAIL_TOKEN_SECRET'),
+      ) as VerificationToken;
+      const user = await this.findOne(id);
+      user.isActive = true;
+      await this.usersRepository.save(user);
+      return user;
+    } catch (exception) {
+      if (
+        exception instanceof TokenExpiredError ||
+        exception instanceof JsonWebTokenError
+      ) {
+        throw new InvalidTokenException();
+      }
+    }
+  }
+
+  async resendEmailConfirmation(email: string) {
+    const user = await this.findOneByEmail(email);
+    if (user.isActive) {
+      throw new UserAlreadyActiveException();
+    }
+    this.generateCodeAndSendEmail(user);
+  }
+
   private async findUserOrThrow({
     id,
     email,
@@ -118,4 +159,17 @@ export class UsersService {
 
     return user;
   }
+
+  private async generateCodeAndSendEmail(user: User) {
+    const token = sign(
+      { id: user.id },
+      this.configService.get('MAIL_TOKEN_SECRET'),
+      { expiresIn: this.configService.get('MAIL_TOKEN_EXPIRATION_TIME') },
+    );
+    this.mailService.sendConfirmationEmail(user, token);
+  }
 }
+
+type VerificationToken = {
+  id: number;
+};

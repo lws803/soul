@@ -5,7 +5,6 @@ import {
   UseGuards,
   Query,
   Body,
-  NotImplementedException,
 } from '@nestjs/common';
 
 import { User } from 'src/users/entities/user.entity';
@@ -39,15 +38,5 @@ export class AuthController {
       return this.authService.refreshWithPlatform(refreshToken, platformId);
     }
     return this.authService.refresh(refreshToken);
-  }
-
-  @Post('verify')
-  async verify() {
-    throw new NotImplementedException();
-  }
-
-  @Post('resend_email')
-  async resendEmail() {
-    throw new NotImplementedException();
   }
 }
