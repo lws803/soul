@@ -64,6 +64,23 @@ export class UsersController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  async updateMe(
+    @Request() { user }: { user: JWTPayload },
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UpdateUserResponseDto> {
+    return new UpdateUserResponseDto(
+      await this.usersService.update(user.userId, updateUserDto),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('me')
+  removeMe(@Request() { user }: { user: JWTPayload }) {
+    return this.usersService.remove(user.userId);
+  }
+
   @Get(':id')
   async findOne(
     @Param() params: UserParamsDto,
@@ -71,23 +88,6 @@ export class UsersController {
     return new FindOneUserResponseDto(
       await this.usersService.findOne(params.id),
     );
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  async update(
-    @Param() params: UserParamsDto,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<UpdateUserResponseDto> {
-    return new UpdateUserResponseDto(
-      await this.usersService.update(params.id, updateUserDto),
-    );
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  remove(@Param() params: UserParamsDto) {
-    return this.usersService.remove(params.id);
   }
 
   @Post('verify_confirmation_token')

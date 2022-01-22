@@ -131,7 +131,7 @@ describe('UsersController', () => {
       const user = factories.oneUser.build();
       const updateUserDto = factories.updateUserDto.build();
 
-      expect(await controller.update({ id: user.id }, updateUserDto)).toEqual(
+      expect(await controller.updateMe({ id: user.id }, updateUserDto)).toEqual(
         factories.oneUser.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'UPDATED_USER',
@@ -149,7 +149,7 @@ describe('UsersController', () => {
         .mockRejectedValue(new UserNotFoundException({ id: user.id }));
 
       await expect(
-        async () => await controller.update({ id: user.id }, {}),
+        async () => await controller.updateMe({ id: user.id }, {}),
       ).rejects.toThrow(new UserNotFoundException({ id: user.id }));
     });
   });
@@ -158,7 +158,7 @@ describe('UsersController', () => {
     it('should remove a user', async () => {
       const user = factories.oneUser.build();
 
-      await controller.remove({ id: user.id });
+      await controller.removeMe({ id: user.id });
 
       expect(usersService.remove).toHaveBeenCalledWith(user.id);
     });
@@ -170,7 +170,7 @@ describe('UsersController', () => {
         .mockRejectedValue(new UserNotFoundException({ id: user.id }));
 
       await expect(
-        async () => await controller.remove({ id: user.id }),
+        async () => await controller.removeMe({ id: user.id }),
       ).rejects.toThrow(new UserNotFoundException({ id: user.id }));
     });
   });

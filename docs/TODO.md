@@ -1,6 +1,6 @@
 # TODO list
 
-- only allow updating current user and deleting current user, disable the rest of the endpoints
+- fix tests
 - add tests for new email confirmation system
   - maybe skip the validation process for e2e tests
 - add expires in field in access token and refresh token payload

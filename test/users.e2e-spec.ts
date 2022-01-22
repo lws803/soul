@@ -178,9 +178,9 @@ describe('UsersController (e2e)', () => {
       await userRepository.delete({});
     });
 
-    it('should update a user', async () => {
+    it('should update myself', async () => {
       return request(app.getHttpServer())
-        .patch(`/users/${userAccount.user.id}`)
+        .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .set('Host', 'localhost:3000')
         .send(factories.updateUserDto.build())
@@ -194,22 +194,6 @@ describe('UsersController (e2e)', () => {
             isActive: true,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
-          });
-        });
-    });
-
-    it('should return user not found', async () => {
-      return request(app.getHttpServer())
-        .patch('/users/999')
-        .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'localhost:3000')
-        .send(factories.updateUserDto.build())
-        .expect(404)
-        .expect((res) => {
-          expect(res.body).toStrictEqual({
-            error: 'USER_NOT_FOUND',
-            message:
-              'A user with the id: 999 could not be found, please try again.',
           });
         });
     });
@@ -227,29 +211,14 @@ describe('UsersController (e2e)', () => {
       await userRepository.delete({});
     });
 
-    it('should delete a user', async () => {
+    it('should delete myself', async () => {
       return request(app.getHttpServer())
-        .delete(`/users/${userAccount.user.id}`)
+        .delete('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .set('Host', 'localhost:3000')
         .expect(200)
         .expect((res) => {
           expect(res.body).toStrictEqual({});
-        });
-    });
-
-    it('should return user not found', async () => {
-      return request(app.getHttpServer())
-        .delete('/users/999')
-        .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'localhost:3000')
-        .expect(404)
-        .expect((res) => {
-          expect(res.body).toStrictEqual({
-            error: 'USER_NOT_FOUND',
-            message:
-              'A user with the id: 999 could not be found, please try again.',
-          });
         });
     });
   });
