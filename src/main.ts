@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-// import * as helmet from 'helmet';
+import * as helmet from 'helmet';
 
 import { AppModule } from './app.module';
 import { ValidationException } from './common/exceptions/validation.exception';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   app.enableVersioning({ type: VersioningType.URI });
   app.useGlobalPipes(
@@ -37,7 +37,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  // app.use(helmet());
+  app.use(helmet());
 
   await app.listen(3000);
 }
