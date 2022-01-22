@@ -36,15 +36,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsEmail()
   email?: string;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(4)
-  @MaxLength(20)
-  @Matches(PASSWORD_REGEX, {
-    message: 'password too weak',
-  })
-  password?: string;
 }
 
 export class UserParamsDto {

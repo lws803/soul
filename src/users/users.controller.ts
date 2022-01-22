@@ -9,7 +9,6 @@ import {
   Query,
   UseGuards,
   Request,
-  NotImplementedException,
 } from '@nestjs/common';
 
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
@@ -104,14 +103,17 @@ export class UsersController {
   }
 
   @Post('request_password_reset_token')
-  requestPasswordResetToken(
-    @Query() { email, username }: PasswordResetRequestDto,
-  ) {
-    throw new NotImplementedException();
+  requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
+    this.usersService.requestPasswordReset(email);
   }
 
   @Post('password_reset')
-  passwordReset(@Body() { password }: PasswordResetDto) {
-    throw new NotImplementedException();
+  async passwordReset(
+    @Query('token') token: string,
+    @Body() { password }: PasswordResetDto,
+  ) {
+    return new GetMeUserResponseDto(
+      await this.usersService.passwordReset(token, password),
+    );
   }
 }

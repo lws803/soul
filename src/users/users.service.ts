@@ -92,14 +92,6 @@ export class UsersService {
     if (updateUserDto.username) {
       updatedUser.userHandle = `${updateUserDto.username}#${user.id}`;
     }
-    if (updateUserDto.password) {
-      const hashedPassword = await bcrypt.hash(
-        updateUserDto.password,
-        await bcrypt.genSalt(),
-      );
-      updatedUser.hashedPassword = hashedPassword;
-      delete updateUserDto.password;
-    }
     await this.usersRepository.update(
       { id: user.id },
       { ...updatedUser, ...updateUserDto },
@@ -145,6 +137,38 @@ export class UsersService {
     this.generateCodeAndSendEmail(user, 'confirmation');
   }
 
+  async requestPasswordReset(email: string) {
+    const user = await this.findOneByEmail(email);
+    this.generateCodeAndSendEmail(user, 'passwordReset');
+  }
+
+  async passwordReset(token: string, newPassword: string) {
+    try {
+      const { id, tokenType } = verify(
+        token,
+        this.configService.get('MAIL_TOKEN_SECRET'),
+      ) as EmailPayload;
+      if (tokenType !== 'passwordReset') {
+        throw new InvalidTokenException();
+      }
+
+      const user = await this.findOne(id);
+      user.hashedPassword = await bcrypt.hash(
+        newPassword,
+        await bcrypt.genSalt(),
+      );
+      await this.usersRepository.save(user);
+      return user;
+    } catch (exception) {
+      if (
+        exception instanceof TokenExpiredError ||
+        exception instanceof JsonWebTokenError
+      ) {
+        throw new InvalidTokenException();
+      }
+    }
+  }
+
   private async findUserOrThrow({
     id,
     email,
@@ -164,13 +188,13 @@ export class UsersService {
     return user;
   }
 
-  private async generateCodeAndSendEmail(user: User, tokenType: TokenType) {
+  private async generateCodeAndSendEmail(user: User, payloadType: PayloadType) {
     const token = sign(
-      { id: user.id, tokenType } as EmailPayload,
+      { id: user.id, tokenType: payloadType } as EmailPayload,
       this.configService.get('MAIL_TOKEN_SECRET'),
       { expiresIn: this.configService.get('MAIL_TOKEN_EXPIRATION_TIME') },
     );
-    if (tokenType === 'confirmation') {
+    if (payloadType === 'confirmation') {
       this.mailService.sendConfirmationEmail(user, token);
     } else {
       this.mailService.sendPasswordResetEmail(user, token);
@@ -178,9 +202,9 @@ export class UsersService {
   }
 }
 
-type TokenType = 'confirmation' | 'passwordReset';
+type PayloadType = 'confirmation' | 'passwordReset';
 
 type EmailPayload = {
   id: number;
-  tokenType: TokenType;
+  tokenType: PayloadType;
 };
