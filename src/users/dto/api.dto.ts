@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
   IsEmail,
@@ -28,7 +27,7 @@ export class CreateUserDto {
   password: string;
 }
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {
+export class UpdateUserDto {
   @IsOptional()
   @MaxLength(32)
   username?: string;

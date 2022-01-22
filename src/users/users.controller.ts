@@ -73,9 +73,10 @@ export class UsersController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
-    @Param() @Param() params: UserParamsDto,
+    @Param() params: UserParamsDto,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateUserResponseDto> {
     return new UpdateUserResponseDto(
@@ -83,6 +84,7 @@ export class UsersController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param() params: UserParamsDto) {
     return this.usersService.remove(params.id);

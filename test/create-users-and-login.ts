@@ -37,6 +37,13 @@ export async function createUsersAndLogin(app: INestApplication) {
     )
     .expect(201);
 
+  // Sets all users to active
+  await userRepository
+    .createQueryBuilder('user')
+    .update(User)
+    .set({ isActive: true })
+    .execute();
+
   const firstUserLoginResponse = await request(app.getHttpServer())
     .post('/auth/login')
     .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });

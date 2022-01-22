@@ -12,7 +12,7 @@ describe('AppController (e2e)', () => {
   });
 
   afterAll((done) => {
-    Promise.all([app.close()]).then(() => done());
+    app.close().then(done);
   });
 
   it('/healthcheck (GET)', () => {

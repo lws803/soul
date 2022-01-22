@@ -5,7 +5,7 @@ import * as request from 'supertest';
 import { User } from 'src/users/entities/user.entity';
 
 import createAppFixture from './create-app-fixture';
-import { createUsersAndLogin } from './create-users-and-login';
+import { createUsersAndLogin, UserAccount } from './create-users-and-login';
 
 import * as factories from '../factories';
 
@@ -47,7 +47,7 @@ describe('UsersController (e2e)', () => {
             email: 'TEST_USER@EMAIL.COM',
             username: 'TEST_USER',
             userHandle: 'TEST_USER#1',
-            isActive: true,
+            isActive: false,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
           });
@@ -167,8 +167,11 @@ describe('UsersController (e2e)', () => {
   });
 
   describe('/users/:id (PATCH)', () => {
+    let userAccount: UserAccount;
+
     beforeEach(async () => {
-      await userRepository.save(factories.oneUser.build());
+      const { firstUser } = await createUsersAndLogin(app);
+      userAccount = firstUser;
     });
 
     afterEach(async () => {
@@ -177,13 +180,15 @@ describe('UsersController (e2e)', () => {
 
     it('should update a user', async () => {
       return request(app.getHttpServer())
-        .patch('/users/1')
-        .send(factories.updateUserDto.build({ password: '3Yarw#Nm%cpY9QV&' }))
+        .patch(`/users/${userAccount.user.id}`)
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .set('Host', 'localhost:3000')
+        .send(factories.updateUserDto.build())
         .expect(200)
         .expect((res) => {
           expect(res.body).toStrictEqual({
-            id: 1,
-            userHandle: 'UPDATED_USER#1',
+            id: userAccount.user.id,
+            userHandle: `UPDATED_USER#${userAccount.user.id}`,
             username: 'UPDATED_USER',
             email: 'UPDATED_EMAIL@EMAIL.COM',
             isActive: true,
@@ -196,7 +201,9 @@ describe('UsersController (e2e)', () => {
     it('should return user not found', async () => {
       return request(app.getHttpServer())
         .patch('/users/999')
-        .send(factories.updateUserDto.build({ password: '3Yarw#Nm%cpY9QV&' }))
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .set('Host', 'localhost:3000')
+        .send(factories.updateUserDto.build())
         .expect(404)
         .expect((res) => {
           expect(res.body).toStrictEqual({
@@ -209,17 +216,22 @@ describe('UsersController (e2e)', () => {
   });
 
   describe('/users/:id (DELETE)', () => {
+    let userAccount: UserAccount;
+
     beforeEach(async () => {
-      await userRepository.save(factories.oneUser.build());
+      const { firstUser } = await createUsersAndLogin(app);
+      userAccount = firstUser;
     });
 
     afterEach(async () => {
       await userRepository.delete({});
     });
 
-    it('should update a user', async () => {
+    it('should delete a user', async () => {
       return request(app.getHttpServer())
-        .delete('/users/1')
+        .delete(`/users/${userAccount.user.id}`)
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .set('Host', 'localhost:3000')
         .expect(200)
         .expect((res) => {
           expect(res.body).toStrictEqual({});
@@ -229,6 +241,8 @@ describe('UsersController (e2e)', () => {
     it('should return user not found', async () => {
       return request(app.getHttpServer())
         .delete('/users/999')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .set('Host', 'localhost:3000')
         .expect(404)
         .expect((res) => {
           expect(res.body).toStrictEqual({
