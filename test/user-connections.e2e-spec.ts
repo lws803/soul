@@ -508,7 +508,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user_connections/:id/platforms (POST)', () => {
+  describe('/user_connections/:id/platforms (DELETE)', () => {
     beforeEach(async () => {
       await userConnectionRepository.save(factories.oneUserConnection.build());
     });
@@ -519,7 +519,7 @@ describe('UserConnectionsController (e2e)', () => {
       await platformRepository.delete({});
     });
 
-    it('adds a new platform to the existing connection', async () => {
+    it('deletes a platform from existing connection', async () => {
       await platformRepository.save(factories.onePlatform.build());
       await platformUserRepository.save(factories.onePlatformUser.build());
 

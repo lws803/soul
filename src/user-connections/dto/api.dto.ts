@@ -1,6 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional } from 'class-validator';
 
+import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+
 import { ConnectionType } from '../enums/connection-type.enum';
 
 export class PostPlatformDto {
@@ -36,15 +38,20 @@ export class ByUserIdsParamsDto {
   toUserId: number;
 }
 
-export class PlatformIdParamDto {
-  @Type(() => Number)
-  @IsInt()
-  platformId: number;
-}
-
-export class FindMyUserConnectionsQueryParamsDto {
+export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
   @IsEnum(ConnectionType)
   connectionType: ConnectionType;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  platformId?: number;
+}
+
+export class RemovePlatformFromUserConnectionParamsDto {
+  @Type(() => Number)
+  @IsInt()
+  id: number;
 
   @IsOptional()
   @Type(() => Number)
