@@ -1,7 +1,7 @@
 # TODO list
 
-- add email verification for new sign ups https://firxworx.com/blog/coding/nodejs/email-module-for-nestjs-with-bull-queue-and-the-nest-mailer/
-  - create password reset endpoint
+- add tests for new email confirmation system
+  - maybe skip the validation process for e2e tests
 - add helmet to nestjs
 - add expires in field in access token and refresh token payload
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**

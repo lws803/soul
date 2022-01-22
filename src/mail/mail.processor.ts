@@ -52,7 +52,7 @@ export class MailProcessor {
         template: 'confirmation',
         context: {
           ...plainToClass(User, job.data.user),
-          url: `http://localhost:3000/v1/users/verify?token=${job.data.code}`,
+          url: `http://localhost:3000/v1/users/verify_confirmation_token?token=${job.data.code}`,
         },
         subject: 'Hello World',
         to: job.data.user.email,
