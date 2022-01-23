@@ -1,6 +1,6 @@
 # TODO list
 
-- fix tests
+- fix unit tests
 - add tests for new email confirmation system
   - maybe skip the validation process for e2e tests
 - add expires in field in access token and refresh token payload

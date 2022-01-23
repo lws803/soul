@@ -4,8 +4,11 @@ import * as request from 'supertest';
 
 import { User } from 'src/users/entities/user.entity';
 
-import createAppFixture from './create-app-fixture';
-import { createUsersAndLogin, UserAccount } from './create-users-and-login';
+import createAppFixture from './fixtures/create-app-fixture';
+import {
+  createUsersAndLoginFixture,
+  UserAccount,
+} from './fixtures/create-users-and-login-fixture';
 
 import * as factories from '../factories';
 
@@ -170,7 +173,7 @@ describe('UsersController (e2e)', () => {
     let userAccount: UserAccount;
 
     beforeEach(async () => {
-      const { firstUser } = await createUsersAndLogin(app);
+      const [firstUser] = await createUsersAndLoginFixture(app);
       userAccount = firstUser;
     });
 
@@ -203,7 +206,7 @@ describe('UsersController (e2e)', () => {
     let userAccount: UserAccount;
 
     beforeEach(async () => {
-      const { firstUser } = await createUsersAndLogin(app);
+      const [firstUser] = await createUsersAndLoginFixture(app);
       userAccount = firstUser;
     });
 
@@ -227,9 +230,7 @@ describe('UsersController (e2e)', () => {
     let firstUserAccessToken;
 
     beforeAll(async () => {
-      const {
-        firstUser: { accessToken },
-      } = await createUsersAndLogin(app);
+      const [{ accessToken }] = await createUsersAndLoginFixture(app);
       firstUserAccessToken = accessToken;
     });
 
