@@ -119,11 +119,11 @@ describe('ConnectionsController', () => {
   describe('findMyConnections()', () => {
     it('should find my mutual connections', async () => {
       expect(
-        await controller.findMyConnections(
-          userJwt,
-          { page: 1, numItemsPerPage: 10 },
-          { connectionType: ConnectionType.MUTUAL },
-        ),
+        await controller.findMyConnections(userJwt, {
+          connectionType: ConnectionType.MUTUAL,
+          page: 1,
+          numItemsPerPage: 10,
+        }),
       ).toEqual({
         totalCount: 2,
         userConnections: factories.userConnectionArray.build(),
@@ -139,11 +139,11 @@ describe('ConnectionsController', () => {
 
     it('should find my follower connections', async () => {
       expect(
-        await controller.findMyConnections(
-          userJwt,
-          { page: 1, numItemsPerPage: 10 },
-          { connectionType: ConnectionType.FOLLOWER },
-        ),
+        await controller.findMyConnections(userJwt, {
+          connectionType: ConnectionType.FOLLOWER,
+          page: 1,
+          numItemsPerPage: 10,
+        }),
       ).toEqual({
         totalCount: 2,
         userConnections: factories.userConnectionArray.build(),
@@ -159,11 +159,11 @@ describe('ConnectionsController', () => {
 
     it('should find my follow connections', async () => {
       expect(
-        await controller.findMyConnections(
-          userJwt,
-          { page: 1, numItemsPerPage: 10 },
-          { connectionType: ConnectionType.FOLLOW },
-        ),
+        await controller.findMyConnections(userJwt, {
+          connectionType: ConnectionType.FOLLOW,
+          page: 1,
+          numItemsPerPage: 10,
+        }),
       ).toEqual({
         totalCount: 2,
         userConnections: factories.userConnectionArray.build(),
@@ -236,11 +236,10 @@ describe('ConnectionsController', () => {
   describe('removePlatformFromUserConnection()', () => {
     it('should delete a platform from existing user connection', async () => {
       expect(
-        await controller.removePlatformFromUserConnection(
-          userJwt,
-          { id: 1 },
-          { platformId: 1 },
-        ),
+        await controller.removePlatformFromUserConnection(userJwt, {
+          platformId: 1,
+          id: 1,
+        }),
       ).toBeUndefined();
 
       expect(service.removePlatformFromUserConnection).toHaveBeenCalledWith(

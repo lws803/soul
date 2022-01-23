@@ -130,8 +130,11 @@ describe('UsersController', () => {
     it('should update a user', async () => {
       const user = factories.oneUser.build();
       const updateUserDto = factories.updateUserDto.build();
+      const jwtPayload = factories.jwtPayload.build();
 
-      expect(await controller.updateMe({ id: user.id }, updateUserDto)).toEqual(
+      expect(
+        await controller.updateMe({ user: jwtPayload }, updateUserDto),
+      ).toEqual(
         factories.oneUser.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'UPDATED_USER',
@@ -147,9 +150,10 @@ describe('UsersController', () => {
       jest
         .spyOn(usersService, 'update')
         .mockRejectedValue(new UserNotFoundException({ id: user.id }));
+      const jwtPayload = factories.jwtPayload.build();
 
       await expect(
-        async () => await controller.updateMe({ id: user.id }, {}),
+        async () => await controller.updateMe({ user: jwtPayload }, {}),
       ).rejects.toThrow(new UserNotFoundException({ id: user.id }));
     });
   });
@@ -157,8 +161,9 @@ describe('UsersController', () => {
   describe('remove()', () => {
     it('should remove a user', async () => {
       const user = factories.oneUser.build();
+      const jwtPayload = factories.jwtPayload.build();
 
-      await controller.removeMe({ id: user.id });
+      await controller.removeMe({ user: jwtPayload });
 
       expect(usersService.remove).toHaveBeenCalledWith(user.id);
     });
@@ -168,9 +173,10 @@ describe('UsersController', () => {
       jest
         .spyOn(usersService, 'remove')
         .mockRejectedValue(new UserNotFoundException({ id: user.id }));
+      const jwtPayload = factories.jwtPayload.build();
 
       await expect(
-        async () => await controller.removeMe({ id: user.id }),
+        async () => await controller.removeMe({ user: jwtPayload }),
       ).rejects.toThrow(new UserNotFoundException({ id: user.id }));
     });
   });

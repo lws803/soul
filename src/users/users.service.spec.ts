@@ -4,6 +4,7 @@ import { QueryFailedError, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 
 import * as factories from 'factories';
+import { MailService } from 'src/mail/mail.service';
 
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -38,7 +39,20 @@ describe('UsersService', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: jest.fn(),
+            get: jest.fn().mockImplementation((arg) => {
+              const keys = {
+                MAIL_TOKEN_SECRET: 'MAIL_TOKEN_SECRET',
+                MAIL_TOKEN_EXPIRATION_TIME: '3600',
+              };
+              return keys[arg];
+            }),
+          },
+        },
+        {
+          provide: MailService,
+          useValue: {
+            sendConfirmationEmail: jest.fn(),
+            sendPasswordResetEmail: jest.fn(),
           },
         },
       ],
@@ -62,6 +76,7 @@ describe('UsersService', () => {
         email: 'TEST_USER@EMAIL.COM',
         username: 'TEST_USER',
         hashedPassword: expect.any(String),
+        isActive: false,
       });
       // Update step to update the userHandle
       expect(repository.update).toHaveBeenCalledWith(
@@ -170,7 +185,6 @@ describe('UsersService', () => {
         {
           ...updatedUserDto,
           userHandle: 'UPDATED_USER#1',
-          hashedPassword: expect.any(String),
         },
       );
     });
