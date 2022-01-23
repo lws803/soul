@@ -42,12 +42,6 @@ jobs:
       mailhog:
         # Docker Hub image
         image: mailhog/mailhog
-        # Set health checks to wait until redis has started
-        options: >-
-          --health-cmd "echo | telnet 127.0.0.1 1025"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
         ports:
           - 1025:1025
           - 8025:8025
