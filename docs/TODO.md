@@ -1,8 +1,6 @@
 # TODO list
 
-- add redis and mailhog to e2e test yml
 - add tests for new email confirmation system
-  - maybe skip the validation process for e2e tests
 - add expires in field in access token and refresh token payload
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - add logging on each request
