@@ -106,7 +106,7 @@ export class UsersController {
 
   @Post('request_password_reset_token')
   requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
-    this.usersService.requestPasswordReset(email);
+    return this.usersService.requestPasswordReset(email);
   }
 
   @Post('password_reset')

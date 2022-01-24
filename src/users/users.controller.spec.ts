@@ -37,6 +37,14 @@ describe('UsersController', () => {
               }),
             ),
             remove: jest.fn(),
+            verifyConfirmationToken: jest
+              .fn()
+              .mockResolvedValue(factories.oneUser.build()),
+            resendConfirmationToken: jest.fn(),
+            requestPasswordReset: jest.fn(),
+            passwordReset: jest
+              .fn()
+              .mockResolvedValue(factories.oneUser.build()),
           },
         },
       ],
@@ -186,6 +194,59 @@ describe('UsersController', () => {
       const user = factories.oneUser.build();
       const jwtPayload = factories.jwtPayload.build();
       expect(await controller.getMe({ user: jwtPayload })).toEqual(user);
+    });
+  });
+
+  describe('verifyConfirmationToken()', () => {
+    it('verifies token successfully', async () => {
+      expect(await controller.verifyConfirmationToken('TOKEN')).toEqual(
+        factories.oneUser.build(),
+      );
+
+      expect(usersService.verifyConfirmationToken).toHaveBeenCalledWith(
+        'TOKEN',
+      );
+    });
+  });
+
+  describe('resendConfirmationToken()', () => {
+    it('resends confirmation email', async () => {
+      expect(
+        await controller.resendConfirmationToken({
+          email: factories.oneUser.build().email,
+        }),
+      ).toBeUndefined();
+
+      expect(usersService.resendConfirmationToken).toHaveBeenCalledWith(
+        factories.oneUser.build().email,
+      );
+    });
+  });
+
+  describe('requestPasswordResetToken()', () => {
+    it('requests password reset email successfully', async () => {
+      expect(
+        await controller.requestPasswordResetToken({
+          email: factories.oneUser.build().email,
+        }),
+      ).toBeUndefined();
+
+      expect(usersService.requestPasswordReset).toHaveBeenCalledWith(
+        factories.oneUser.build().email,
+      );
+    });
+  });
+
+  describe('passwordReset()', () => {
+    it('resets password for user', async () => {
+      expect(
+        await controller.passwordReset('TOKEN', { password: 'NEW_PASSWORD' }),
+      ).toEqual(factories.oneUser.build());
+
+      expect(usersService.passwordReset).toHaveBeenCalledWith(
+        'TOKEN',
+        'NEW_PASSWORD',
+      );
     });
   });
 });
