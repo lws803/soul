@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
+import * as jsonwebtoken from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
 
 import * as factories from 'factories';
 import { MailService } from 'src/mail/mail.service';
@@ -13,6 +15,7 @@ import { UserNotFoundException } from './exceptions/user-not-found.exception';
 
 describe('UsersService', () => {
   let service: UsersService;
+  let mailService: MailService;
   let repository: Repository<User>;
 
   beforeEach(async () => {
@@ -59,6 +62,7 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
+    mailService = module.get<MailService>(MailService);
     repository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
@@ -212,6 +216,86 @@ describe('UsersService', () => {
       await expect(service.remove(1)).rejects.toThrow(
         new UserNotFoundException({ id: 1 }),
       );
+    });
+  });
+
+  describe('verifyConfirmationToken()', () => {
+    beforeEach(() => {
+      jest.spyOn(jsonwebtoken, 'verify').mockImplementation(() => ({
+        id: factories.oneUser.build().id,
+        tokenType: 'confirmation',
+      }));
+    });
+
+    it('verifies and sets user as active', async () => {
+      expect(await service.verifyConfirmationToken('TOKEN')).toEqual(
+        factories.oneUser.build(),
+      );
+
+      expect(repository.save).toHaveBeenCalledWith(
+        factories.oneUser.build({ isActive: true }),
+      );
+    });
+  });
+
+  describe('resendConfirmationToken()', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(service, 'findOneByEmail')
+        .mockResolvedValue(factories.oneUser.build({ isActive: false }));
+
+      jest.spyOn(jsonwebtoken, 'sign').mockImplementation(() => 'TOKEN');
+    });
+
+    it('sends another email to user with confirmation token', async () => {
+      expect(
+        await service.resendConfirmationToken(factories.oneUser.build().email),
+      ).toBeUndefined();
+
+      expect(mailService.sendConfirmationEmail).toHaveBeenCalledWith(
+        factories.oneUser.build({ isActive: false }),
+        'TOKEN',
+      );
+    });
+  });
+
+  describe('requestPasswordReset()', () => {
+    beforeEach(() => {
+      jest.spyOn(jsonwebtoken, 'sign').mockImplementation(() => 'TOKEN');
+    });
+
+    it('sends password reset email to user', async () => {
+      expect(
+        await service.requestPasswordReset(factories.oneUser.build().email),
+      ).toBeUndefined();
+
+      expect(mailService.sendPasswordResetEmail).toHaveBeenCalledWith(
+        factories.oneUser.build(),
+        'TOKEN',
+      );
+    });
+  });
+
+  describe('passwordReset()', () => {
+    beforeEach(() => {
+      jest.spyOn(jsonwebtoken, 'verify').mockImplementation(() => ({
+        id: factories.oneUser.build().id,
+        tokenType: 'passwordReset',
+      }));
+      jest
+        .spyOn(bcrypt, 'hash')
+        .mockImplementation(() => 'NEW_HASHED_PASSWORD');
+    });
+
+    it('sends password reset email to user', async () => {
+      const savedUser = factories.oneUser.build({
+        hashedPassword: 'NEW_HASHED_PASSWORD',
+      });
+
+      expect(await service.passwordReset('TOKEN', 'NEW_PASSWORD')).toEqual(
+        savedUser,
+      );
+      expect(repository.save).toHaveBeenCalledWith(savedUser);
     });
   });
 });

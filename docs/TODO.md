@@ -1,6 +1,7 @@
 # TODO list
 
-- add tests for new email confirmation system
+- add some controller tests for new user endpoints
+- check if using `.save` from typeorm sets the createdAt and updatedAt field directly
 - add expires in field in access token and refresh token payload
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - add logging on each request
