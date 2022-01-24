@@ -47,14 +47,8 @@ describe(MailProcessor, () => {
 
       expect(sendMail).toHaveBeenCalledWith({
         context: {
-          id: 1,
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-          email: 'TEST_USER@EMAIL.COM',
-          isActive: true,
+          ...factories.oneUser.build({ hashedPassword: undefined }),
           url: 'http://localhost:3000/v1/users/verify_confirmation_token?token=TEST_CODE',
-          userHandle: 'TEST_USER#1',
-          username: 'TEST_USER',
         },
         subject: 'Hello World',
         template: 'confirmation',
@@ -76,14 +70,8 @@ describe(MailProcessor, () => {
 
       expect(sendMail).toHaveBeenCalledWith({
         context: {
-          id: 1,
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-          email: 'TEST_USER@EMAIL.COM',
-          isActive: true,
+          ...factories.oneUser.build({ hashedPassword: undefined }),
           url: 'http://localhost:3000/v1/users/password_reset?token=TEST_CODE',
-          userHandle: 'TEST_USER#1',
-          username: 'TEST_USER',
         },
         subject: 'Password Reset',
         template: 'password-reset',
