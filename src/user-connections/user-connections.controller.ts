@@ -17,11 +17,11 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserConnectionsService } from './user-connections.service';
 import {
   CreateUserConnectionDto,
-  PlatformIdParamDto,
   UserConnectionParamsDto,
   PostPlatformDto,
   ByUserIdsParamsDto,
   FindMyUserConnectionsQueryParamsDto,
+  RemovePlatformFromUserConnectionParamsDto,
 } from './dto/api.dto';
 import {
   AddNewPlatformToUserConnectionResponseDto,
@@ -63,15 +63,19 @@ export class UserConnectionsController {
   @Get('/my_connections')
   async findMyConnections(
     @Request() { user }: { user: JWTPayload },
-    @Query() paginationParams: PaginationParamsDto,
     @Query()
-    { connectionType, platformId }: FindMyUserConnectionsQueryParamsDto,
+    {
+      connectionType,
+      platformId,
+      page,
+      numItemsPerPage,
+    }: FindMyUserConnectionsQueryParamsDto,
   ): Promise<FindAllUserConnectionResponseDto> {
     return new FindAllUserConnectionResponseDto(
       await this.userConnectionsService.findMyUserConnections({
         userId: user.userId,
         connectionType,
-        paginationParams,
+        paginationParams: { page, numItemsPerPage },
         platformId,
       }),
     );
@@ -115,8 +119,7 @@ export class UserConnectionsController {
   @Delete(':id/platforms/:platformId')
   removePlatformFromUserConnection(
     @Request() { user }: { user: JWTPayload },
-    @Param() { id }: UserConnectionParamsDto,
-    @Param() { platformId }: PlatformIdParamDto,
+    @Param() { id, platformId }: RemovePlatformFromUserConnectionParamsDto,
   ) {
     return this.userConnectionsService.removePlatformFromUserConnection(
       id,

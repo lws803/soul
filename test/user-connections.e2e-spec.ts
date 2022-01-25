@@ -7,8 +7,8 @@ import { UserConnection } from 'src/user-connections/entities/user-connection.en
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 
-import createAppFixture from './create-app-fixture';
-import { createUsersAndLogin } from './create-users-and-login';
+import createAppFixture from './fixtures/create-app-fixture';
+import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fixture';
 
 import * as factories from '../factories';
 
@@ -34,9 +34,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     await connection.synchronize(true);
 
-    const {
-      firstUser: { accessToken },
-    } = await createUsersAndLogin(app);
+    const [{ accessToken }] = await createUsersAndLoginFixture(app);
     firstUserAccessToken = accessToken;
   });
 
@@ -508,7 +506,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user_connections/:id/platforms (POST)', () => {
+  describe('/user_connections/:id/platforms (DELETE)', () => {
     beforeEach(async () => {
       await userConnectionRepository.save(factories.oneUserConnection.build());
     });
@@ -519,7 +517,7 @@ describe('UserConnectionsController (e2e)', () => {
       await platformRepository.delete({});
     });
 
-    it('adds a new platform to the existing connection', async () => {
+    it('deletes a platform from existing connection', async () => {
       await platformRepository.save(factories.onePlatform.build());
       await platformUserRepository.save(factories.onePlatformUser.build());
 

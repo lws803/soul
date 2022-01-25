@@ -8,8 +8,8 @@ import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { UserRole } from 'src/roles/role.enum';
 
-import createAppFixture from './create-app-fixture';
-import { createUsersAndLogin } from './create-users-and-login';
+import createAppFixture from './fixtures/create-app-fixture';
+import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fixture';
 
 import * as factories from '../factories';
 
@@ -45,7 +45,7 @@ describe('AuthController (e2e)', () => {
     };
 
     beforeAll(async () => {
-      const { firstUser } = await createUsersAndLogin(app);
+      const [firstUser] = await createUsersAndLoginFixture(app);
       userAccount = firstUser;
 
       const platform = await platformRepository.save(
@@ -121,7 +121,7 @@ describe('AuthController (e2e)', () => {
     };
 
     beforeAll(async () => {
-      const { firstUser } = await createUsersAndLogin(app);
+      const [firstUser] = await createUsersAndLoginFixture(app);
       userAccount = firstUser;
 
       const platform = await platformRepository.save(

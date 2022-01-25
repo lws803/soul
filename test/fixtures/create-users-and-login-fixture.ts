@@ -4,9 +4,9 @@ import { Connection } from 'typeorm';
 
 import { User } from 'src/users/entities/user.entity';
 
-import * as factories from '../factories';
+import * as factories from '../../factories';
 
-export async function createUsersAndLogin(app: INestApplication) {
+export async function createUsersAndLoginFixture(app: INestApplication) {
   const connection = app.get(Connection);
   const userRepository = connection.getRepository(User);
 
@@ -37,6 +37,13 @@ export async function createUsersAndLogin(app: INestApplication) {
     )
     .expect(201);
 
+  // Sets all users to active
+  await userRepository
+    .createQueryBuilder('user')
+    .update(User)
+    .set({ isActive: true })
+    .execute();
+
   const firstUserLoginResponse = await request(app.getHttpServer())
     .post('/auth/login')
     .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
@@ -49,23 +56,23 @@ export async function createUsersAndLogin(app: INestApplication) {
     .post('/auth/login')
     .send({ email: 'TEST_USER_3@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
-  return {
-    firstUser: {
+  return [
+    {
       accessToken: firstUserLoginResponse.body.accessToken,
       refreshToken: firstUserLoginResponse.body.refreshToken,
       user: await userRepository.findOne({ email: 'TEST_USER@EMAIL.COM' }),
     },
-    secondUser: {
+    {
       accessToken: secondUserLoginResponse.body.accessToken,
       refreshToken: secondUserLoginResponse.body.refreshToken,
       user: await userRepository.findOne({ email: 'TEST_USER_2@EMAIL.COM' }),
     },
-    thirdUser: {
+    {
       accessToken: thirdUserLoginResponse.body.accessToken,
       refreshToken: thirdUserLoginResponse.body.refreshToken,
       user: await userRepository.findOne({ email: 'TEST_USER_3@EMAIL.COM' }),
     },
-  };
+  ];
 }
 
 export type UserAccount = {

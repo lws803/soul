@@ -1,9 +1,9 @@
 # TODO list
 
-- add email verification for new sign ups
-- add announcements endpoint that will let platform owners/ super admins announce a **verified message**
+- add logging on each error captured by all-exception filter
 - add logging on each request
 - validate all features of this backend service and see if there are any security flaws or unused endpoints
+- add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - create a tiny user storage for metadata or achievement purposes within the user table
 - allow folks to download their connections and data in one big json blob
 - Deal with some TODOs leftover

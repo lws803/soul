@@ -1,22 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import {
+  verify,
+  sign,
+  TokenExpiredError,
+  JsonWebTokenError,
+} from 'jsonwebtoken';
 
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { MailService } from 'src/mail/mail.service';
 
 import { UpdateUserDto, CreateUserDto } from './dto/api.dto';
 import { User } from './entities/user.entity';
-import { DuplicateUserExistException } from './exceptions/duplicate-user-exists.exception';
-import { UserNotFoundException } from './exceptions/user-not-found.exception';
+import {
+  DuplicateUserExistException,
+  UserNotFoundException,
+  UserAlreadyActiveException,
+  InvalidTokenException,
+} from './exceptions';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private configService: ConfigService,
+    private mailService: MailService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -30,6 +44,7 @@ export class UsersService {
     user.hashedPassword = hashedPassword;
     user.email = createUserDto.email;
     user.username = createUserDto.username;
+    user.isActive = false;
 
     try {
       const savedUser = await this.usersRepository.save(user);
@@ -39,6 +54,9 @@ export class UsersService {
           userHandle: `${createUserDto.username}#${savedUser.id}`,
         },
       );
+
+      this.generateCodeAndSendEmail(savedUser, 'confirmation');
+
       return this.usersRepository.findOne(savedUser.id);
     } catch (exception) {
       if (exception instanceof QueryFailedError) {
@@ -74,14 +92,6 @@ export class UsersService {
     if (updateUserDto.username) {
       updatedUser.userHandle = `${updateUserDto.username}#${user.id}`;
     }
-    if (updateUserDto.password) {
-      const hashedPassword = await bcrypt.hash(
-        updateUserDto.password,
-        await bcrypt.genSalt(),
-      );
-      updatedUser.hashedPassword = hashedPassword;
-      delete updateUserDto.password;
-    }
     await this.usersRepository.update(
       { id: user.id },
       { ...updatedUser, ...updateUserDto },
@@ -93,6 +103,70 @@ export class UsersService {
     const user = await this.findUserOrThrow({ id });
 
     await this.usersRepository.delete({ id: user.id });
+  }
+
+  async verifyConfirmationToken(token: string) {
+    try {
+      const { id, tokenType } = verify(
+        token,
+        this.configService.get('MAIL_TOKEN_SECRET'),
+      ) as EmailPayload;
+      if (tokenType !== 'confirmation') {
+        throw new InvalidTokenException();
+      }
+
+      const user = await this.findOne(id);
+      user.isActive = true;
+      await this.usersRepository.save(user);
+      return user;
+    } catch (exception) {
+      if (
+        exception instanceof TokenExpiredError ||
+        exception instanceof JsonWebTokenError
+      ) {
+        throw new InvalidTokenException();
+      }
+    }
+  }
+
+  async resendConfirmationToken(email: string) {
+    const user = await this.findOneByEmail(email);
+    if (user.isActive) {
+      throw new UserAlreadyActiveException();
+    }
+    this.generateCodeAndSendEmail(user, 'confirmation');
+  }
+
+  async requestPasswordReset(email: string) {
+    const user = await this.findOneByEmail(email);
+    this.generateCodeAndSendEmail(user, 'passwordReset');
+  }
+
+  async passwordReset(token: string, newPassword: string) {
+    try {
+      const { id, tokenType } = verify(
+        token,
+        this.configService.get('MAIL_TOKEN_SECRET'),
+      ) as EmailPayload;
+      if (tokenType !== 'passwordReset') {
+        throw new InvalidTokenException();
+      }
+
+      const user = await this.findOne(id);
+      user.hashedPassword = await bcrypt.hash(
+        newPassword,
+        await bcrypt.genSalt(),
+      );
+      await this.usersRepository.save(user);
+      return user;
+    } catch (exception) {
+      if (
+        exception instanceof TokenExpiredError ||
+        exception instanceof JsonWebTokenError
+      ) {
+        throw new InvalidTokenException();
+      }
+    }
   }
 
   private async findUserOrThrow({
@@ -113,4 +187,24 @@ export class UsersService {
 
     return user;
   }
+
+  private async generateCodeAndSendEmail(user: User, payloadType: PayloadType) {
+    const token = sign(
+      { id: user.id, tokenType: payloadType } as EmailPayload,
+      this.configService.get('MAIL_TOKEN_SECRET'),
+      { expiresIn: this.configService.get('MAIL_TOKEN_EXPIRATION_TIME') },
+    );
+    if (payloadType === 'confirmation') {
+      this.mailService.sendConfirmationEmail(user, token);
+    } else {
+      this.mailService.sendPasswordResetEmail(user, token);
+    }
+  }
 }
+
+type PayloadType = 'confirmation' | 'passwordReset';
+
+type EmailPayload = {
+  id: number;
+  tokenType: PayloadType;
+};

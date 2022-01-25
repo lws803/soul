@@ -16,7 +16,14 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto, UserParamsDto } from './dto/api.dto';
+import {
+  CreateUserDto,
+  PasswordResetDto,
+  PasswordResetRequestDto,
+  ResendEmailConfirmationDto as ResendConfirmationTokenDto,
+  UpdateUserDto,
+  UserParamsDto,
+} from './dto/api.dto';
 import {
   CreateUserResponseDto,
   FindAllUserResponseDto,
@@ -57,6 +64,23 @@ export class UsersController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  async updateMe(
+    @Request() { user }: { user: JWTPayload },
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UpdateUserResponseDto> {
+    return new UpdateUserResponseDto(
+      await this.usersService.update(user.userId, updateUserDto),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('me')
+  removeMe(@Request() { user }: { user: JWTPayload }) {
+    return this.usersService.remove(user.userId);
+  }
+
   @Get(':id')
   async findOne(
     @Param() params: UserParamsDto,
@@ -66,18 +90,32 @@ export class UsersController {
     );
   }
 
-  @Patch(':id')
-  async update(
-    @Param() @Param() params: UserParamsDto,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<UpdateUserResponseDto> {
-    return new UpdateUserResponseDto(
-      await this.usersService.update(params.id, updateUserDto),
+  @Post('verify_confirmation_token')
+  async verifyConfirmationToken(
+    @Query('token') token: string,
+  ): Promise<GetMeUserResponseDto> {
+    return new GetMeUserResponseDto(
+      await this.usersService.verifyConfirmationToken(token),
     );
   }
 
-  @Delete(':id')
-  remove(@Param() params: UserParamsDto) {
-    return this.usersService.remove(params.id);
+  @Post('resend_confirmation_token')
+  resendConfirmationToken(@Query() { email }: ResendConfirmationTokenDto) {
+    return this.usersService.resendConfirmationToken(email);
+  }
+
+  @Post('request_password_reset_token')
+  requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
+    return this.usersService.requestPasswordReset(email);
+  }
+
+  @Post('password_reset')
+  async passwordReset(
+    @Query('token') token: string,
+    @Body() { password }: PasswordResetDto,
+  ) {
+    return new GetMeUserResponseDto(
+      await this.usersService.passwordReset(token, password),
+    );
   }
 }

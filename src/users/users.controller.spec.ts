@@ -37,6 +37,14 @@ describe('UsersController', () => {
               }),
             ),
             remove: jest.fn(),
+            verifyConfirmationToken: jest
+              .fn()
+              .mockResolvedValue(factories.oneUser.build()),
+            resendConfirmationToken: jest.fn(),
+            requestPasswordReset: jest.fn(),
+            passwordReset: jest
+              .fn()
+              .mockResolvedValue(factories.oneUser.build()),
           },
         },
       ],
@@ -130,8 +138,11 @@ describe('UsersController', () => {
     it('should update a user', async () => {
       const user = factories.oneUser.build();
       const updateUserDto = factories.updateUserDto.build();
+      const jwtPayload = factories.jwtPayload.build();
 
-      expect(await controller.update({ id: user.id }, updateUserDto)).toEqual(
+      expect(
+        await controller.updateMe({ user: jwtPayload }, updateUserDto),
+      ).toEqual(
         factories.oneUser.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'UPDATED_USER',
@@ -147,9 +158,10 @@ describe('UsersController', () => {
       jest
         .spyOn(usersService, 'update')
         .mockRejectedValue(new UserNotFoundException({ id: user.id }));
+      const jwtPayload = factories.jwtPayload.build();
 
       await expect(
-        async () => await controller.update({ id: user.id }, {}),
+        async () => await controller.updateMe({ user: jwtPayload }, {}),
       ).rejects.toThrow(new UserNotFoundException({ id: user.id }));
     });
   });
@@ -157,8 +169,9 @@ describe('UsersController', () => {
   describe('remove()', () => {
     it('should remove a user', async () => {
       const user = factories.oneUser.build();
+      const jwtPayload = factories.jwtPayload.build();
 
-      await controller.remove({ id: user.id });
+      await controller.removeMe({ user: jwtPayload });
 
       expect(usersService.remove).toHaveBeenCalledWith(user.id);
     });
@@ -168,9 +181,10 @@ describe('UsersController', () => {
       jest
         .spyOn(usersService, 'remove')
         .mockRejectedValue(new UserNotFoundException({ id: user.id }));
+      const jwtPayload = factories.jwtPayload.build();
 
       await expect(
-        async () => await controller.remove({ id: user.id }),
+        async () => await controller.removeMe({ user: jwtPayload }),
       ).rejects.toThrow(new UserNotFoundException({ id: user.id }));
     });
   });
@@ -180,6 +194,59 @@ describe('UsersController', () => {
       const user = factories.oneUser.build();
       const jwtPayload = factories.jwtPayload.build();
       expect(await controller.getMe({ user: jwtPayload })).toEqual(user);
+    });
+  });
+
+  describe('verifyConfirmationToken()', () => {
+    it('verifies token successfully', async () => {
+      expect(await controller.verifyConfirmationToken('TOKEN')).toEqual(
+        factories.oneUser.build(),
+      );
+
+      expect(usersService.verifyConfirmationToken).toHaveBeenCalledWith(
+        'TOKEN',
+      );
+    });
+  });
+
+  describe('resendConfirmationToken()', () => {
+    it('resends confirmation email', async () => {
+      expect(
+        await controller.resendConfirmationToken({
+          email: factories.oneUser.build().email,
+        }),
+      ).toBeUndefined();
+
+      expect(usersService.resendConfirmationToken).toHaveBeenCalledWith(
+        factories.oneUser.build().email,
+      );
+    });
+  });
+
+  describe('requestPasswordResetToken()', () => {
+    it('requests password reset email successfully', async () => {
+      expect(
+        await controller.requestPasswordResetToken({
+          email: factories.oneUser.build().email,
+        }),
+      ).toBeUndefined();
+
+      expect(usersService.requestPasswordReset).toHaveBeenCalledWith(
+        factories.oneUser.build().email,
+      );
+    });
+  });
+
+  describe('passwordReset()', () => {
+    it('resets password for user', async () => {
+      expect(
+        await controller.passwordReset('TOKEN', { password: 'NEW_PASSWORD' }),
+      ).toEqual(factories.oneUser.build());
+
+      expect(usersService.passwordReset).toHaveBeenCalledWith(
+        'TOKEN',
+        'NEW_PASSWORD',
+      );
     });
   });
 });

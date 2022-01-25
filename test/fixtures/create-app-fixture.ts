@@ -5,7 +5,7 @@ import { ValidationError } from 'class-validator';
 
 import { ValidationException } from 'src/common/exceptions/validation.exception';
 
-import { AppModule } from './../src/app.module';
+import { AppModule } from './../../src/app.module';
 
 export default async function createAppFixture({
   imports = [],
@@ -20,6 +20,8 @@ export default async function createAppFixture({
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
         throw new ValidationException(validationErrors);
       },

@@ -38,5 +38,4 @@ export const createUserDto = Factory.define<CreateUserDto>(() => ({
 export const updateUserDto = Factory.define<UpdateUserDto>(() => ({
   email: 'UPDATED_EMAIL@EMAIL.COM',
   username: 'UPDATED_USER',
-  password: 'UPDATED_PASSWORD',
 }));

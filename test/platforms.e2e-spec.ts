@@ -6,8 +6,11 @@ import { UserRole } from 'src/roles/role.enum';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 
-import createAppFixture from './create-app-fixture';
-import { createUsersAndLogin, UserAccount } from './create-users-and-login';
+import createAppFixture from './fixtures/create-app-fixture';
+import {
+  createUsersAndLoginFixture,
+  UserAccount,
+} from './fixtures/create-users-and-login-fixture';
 
 import * as factories from '../factories';
 
@@ -30,7 +33,9 @@ describe('PlatformsController (e2e)', () => {
     platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
 
-    const { firstUser, secondUser, thirdUser } = await createUsersAndLogin(app);
+    const [firstUser, secondUser, thirdUser] = await createUsersAndLoginFixture(
+      app,
+    );
     userAccount = firstUser;
     secondUserAccount = secondUser;
     thirdUserAccount = thirdUser;
