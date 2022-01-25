@@ -24,7 +24,9 @@ describe(MailProcessor, () => {
         },
         {
           provide: ConfigService,
-          useValue: {},
+          useValue: {
+            get: jest.fn().mockReturnValue('BASE_URL'),
+          },
         },
       ],
     }).compile();
@@ -48,9 +50,9 @@ describe(MailProcessor, () => {
       expect(sendMail).toHaveBeenCalledWith({
         context: {
           ...factories.oneUser.build({ hashedPassword: undefined }),
-          url: 'http://localhost:3000/v1/users/verify_confirmation_token?token=TEST_CODE',
+          url: 'BASE_URL?token=TEST_CODE',
         },
-        subject: 'Hello World',
+        subject: 'Complete your soul profile',
         template: 'confirmation',
         to: 'TEST_USER@EMAIL.COM',
       });
@@ -71,9 +73,9 @@ describe(MailProcessor, () => {
       expect(sendMail).toHaveBeenCalledWith({
         context: {
           ...factories.oneUser.build({ hashedPassword: undefined }),
-          url: 'http://localhost:3000/v1/users/password_reset?token=TEST_CODE',
+          url: 'BASE_URL?token=TEST_CODE',
         },
-        subject: 'Password Reset',
+        subject: 'Reset password',
         template: 'password-reset',
         to: 'TEST_USER@EMAIL.COM',
       });

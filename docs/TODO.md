@@ -1,8 +1,7 @@
 # TODO list
 
-- check if using `.save` from typeorm sets the createdAt and updatedAt field directly
-- add expires in field in access token and refresh token payload
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
+- add expires in field in access token and refresh token payload
 - add logging on each request
 - validate all features of this backend service and see if there are any security flaws or unused endpoints
 - create a tiny user storage for metadata or achievement purposes within the user table

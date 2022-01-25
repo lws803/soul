@@ -52,9 +52,11 @@ export class MailProcessor {
         template: 'confirmation',
         context: {
           ...plainToClass(User, job.data.user),
-          url: `http://localhost:3000/v1/users/verify_confirmation_token?token=${job.data.code}`,
+          url: `${this.configService.get('MAIL_CONFIRMATION_BASE_URL')}?token=${
+            job.data.code
+          }`,
         },
-        subject: 'Hello World',
+        subject: 'Complete your soul profile',
         to: job.data.user.email,
       });
     } catch (error) {
@@ -73,9 +75,11 @@ export class MailProcessor {
         template: 'password-reset',
         context: {
           ...plainToClass(User, job.data.user),
-          url: `http://localhost:3000/v1/users/password_reset?token=${job.data.code}`,
+          url: `${this.configService.get(
+            'MAIL_PASSWORD_RESET_BASE_URL',
+          )}?token=${job.data.code}`,
         },
-        subject: 'Password Reset',
+        subject: 'Reset password',
         to: job.data.user.email,
       });
     } catch (error) {
