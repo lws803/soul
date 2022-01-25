@@ -14,12 +14,11 @@ import { MailProcessor } from './mail.processor';
         transport: {
           host: configService.get('MAIL_HOST'),
           port: configService.get('MAIL_PORT'),
-          secure: false, // Add a config service env for this only when env is production
+          secure: configService.get('MAIL_SECURE') === 'true' ? true : false,
           // tls: { ciphers: 'SSLv3', }, // gmail
-          auth: {
-            // TODO: Add auth only when env is in production
-            // user: configService.get('MAIL_USERNAME'),
-            // pass: configService.get('MAIL_PASSWORD'),
+          auth: configService.get('env') === 'prod' && {
+            user: configService.get('MAIL_USERNAME'),
+            pass: configService.get('MAIL_PASSWORD'),
           },
         },
         defaults: {
