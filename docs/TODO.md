@@ -1,7 +1,5 @@
 # TODO list
 
-- add logging on each error captured by all-exception filter
-- add logging on each request
 - validate all features of this backend service and see if there are any security flaws or unused endpoints
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - create a tiny user storage for metadata or achievement purposes within the user table
