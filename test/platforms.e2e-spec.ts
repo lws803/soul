@@ -26,6 +26,7 @@ describe('PlatformsController (e2e)', () => {
   beforeAll(async () => {
     app = await createAppFixture({});
     await app.init();
+    app.useLogger(false);
 
     const connection = app.get(Connection);
     await connection.synchronize(true);
