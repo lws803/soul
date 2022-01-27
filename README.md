@@ -1,5 +1,7 @@
 # Soul
 
+[![codecov](https://codecov.io/gh/lws803/soul/branch/main/graph/badge.svg?token=K9DMP9RLE7)](https://codecov.io/gh/lws803/soul)
+
 ## Description
 
 Soul is an **authentication service** and a **user relationships service** grouped into one.

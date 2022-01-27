@@ -1,6 +1,5 @@
 # TODO list
 
-- set up code cov
 - Add test to ensure that user can only perform actions within the specific platform and not other platforms
 - add some coverage reporting
 - beautify readme and add some badges for coverage
