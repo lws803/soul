@@ -16,7 +16,7 @@ import { MailProcessor } from './mail.processor';
           port: configService.get('MAIL_PORT'),
           secure: configService.get('MAIL_SECURE') === 'true' ? true : false,
           // tls: { ciphers: 'SSLv3', }, // gmail
-          auth: configService.get('env') === 'prod' && {
+          auth: configService.get('NODE_ENV') === 'prod' && {
             user: configService.get('MAIL_USERNAME'),
             pass: configService.get('MAIL_PASSWORD'),
           },
