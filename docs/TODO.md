@@ -1,8 +1,6 @@
 # TODO list
 
 - Add test to ensure that user can only perform actions within the specific platform and not other platforms
-- add some coverage reporting
-- beautify readme and add some badges for coverage
 - find a way to deploy this to heroku and set up mail service with this
 - validate all features of this backend service and see if there are any security flaws or unused endpoints
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
