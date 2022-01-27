@@ -107,6 +107,7 @@
     },
     "coveragePathIgnorePatterns": [
       ".module.ts",
+      ".exception.ts",
       "main.ts"
     ]
   }
