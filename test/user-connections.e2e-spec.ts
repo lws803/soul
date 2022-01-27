@@ -25,6 +25,7 @@ describe('UserConnectionsController (e2e)', () => {
   beforeAll(async () => {
     app = await createAppFixture({});
     await app.init();
+    app.useLogger(false);
 
     connection = app.get(Connection);
     userRepository = connection.getRepository(User);

@@ -1,7 +1,7 @@
 # TODO list
 
-- Add test to ensure that user can only perform actions within the specific platform and not other platforms
 - find a way to deploy this to heroku and set up mail service with this
+- create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - validate all features of this backend service and see if there are any security flaws or unused endpoints
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - create a tiny user storage for metadata or achievement purposes within the user table
