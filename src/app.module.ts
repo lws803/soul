@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpException } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { RavenInterceptor, RavenModule } from 'nest-raven';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -41,6 +42,7 @@ import config from '../config';
     PlatformsModule,
     UserConnectionsModule,
     MailModule,
+    RavenModule,
   ],
   controllers: [AppController],
   providers: [
@@ -48,6 +50,17 @@ import config from '../config';
     {
       provide: APP_FILTER,
       useClass: AllExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useValue: new RavenInterceptor({
+        filters: [
+          {
+            type: HttpException,
+            filter: (exception: HttpException) => 500 > exception.getStatus(),
+          },
+        ],
+      }),
     },
   ],
 })

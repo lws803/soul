@@ -45,7 +45,7 @@ export class MailProcessor {
   }
 
   @Process('confirmation')
-  async sendWelcomeEmail(job: Job<{ user: User; code: string }>) {
+  async sendConfirmationEmail(job: Job<{ user: User; code: string }>) {
     this.logger.log(`Sending confirmation email to '${job.data.user.email}'`);
     try {
       await this.mailerService.sendMail({
