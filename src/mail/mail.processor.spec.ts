@@ -36,9 +36,9 @@ describe(MailProcessor, () => {
     processor = module.get<MailProcessor>(MailProcessor);
   });
 
-  describe('sendWelcomeEmail()', () => {
+  describe('sendConfirmationEmail()', () => {
     it('sends welcome email successfully', async () => {
-      const response = await processor.sendWelcomeEmail({
+      const response = await processor.sendConfirmationEmail({
         data: {
           user: factories.oneUser.build(),
           code: 'TEST_CODE',
