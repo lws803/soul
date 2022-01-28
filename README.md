@@ -7,8 +7,8 @@
 Soul is an **authentication** and a **user relationships** service built into one. It is meant to abstract some of the most important parts
 of a social media platform (i.e. user connections, relationships and authentication) into a separate service so that this can be shared
 across different social media platforms as long as they are using soul to authenticate and build user connections.
-This service attempts to decentralize some parts of a social media, mainly, the management and
-hosting of a social media platform so that newer social media platforms would not have to start from scratch and build their user base.
+This service attempts to decentralize some parts of a social media platform. Newer platforms can be built without having to build a new
+user base while Soul users would not have to start from scratch in an entirely new social media platform.
 
 ## Installation
 
