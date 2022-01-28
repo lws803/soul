@@ -1,6 +1,6 @@
 # TODO list
 
-- add figet to soul for nice ascii art
+- add figlet to soul for nice ascii art
 - add sentry monitoring to soul
 - consider creating a github org if its free
 - find a way to deploy this to heroku and set up mail service with this
