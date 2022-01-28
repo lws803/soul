@@ -13,6 +13,8 @@ import { textSync } from 'figlet';
 import { AppModule } from './app.module';
 import { ValidationException } from './common/exceptions/validation.exception';
 
+const PORT = 3000;
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   app.enableVersioning({ type: VersioningType.URI });
@@ -42,7 +44,7 @@ async function bootstrap() {
 
   app.use(helmet());
 
-  await app.listen(3000);
+  await app.listen(PORT);
 
   console.log(
     textSync('Soul', {
@@ -51,6 +53,6 @@ async function bootstrap() {
       whitespaceBreak: true,
     }),
   );
-  console.log('Soul server started, listening on port 3000...');
+  console.log(`Soul server started, listening on port ${PORT}...`);
 }
 bootstrap();
