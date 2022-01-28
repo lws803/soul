@@ -2,18 +2,26 @@
 
 [![codecov](https://codecov.io/gh/lws803/soul/branch/main/graph/badge.svg?token=K9DMP9RLE7)](https://codecov.io/gh/lws803/soul)
 
-## Description
+## What is Soul?
 
-Soul is an **authentication service** and a **user relationships service** grouped into one.
+Soul is an **authentication** and a **user relationships** service built into one. It is meant to abstract some of the most important parts
+of a social media platform (i.e. user connections, relationships and authentication) into a separate service so that this can be shared
+across different social media platforms as long as they are using soul to authenticate and build user connections.
+This service attempts to decentralize some parts of a social media platform. Newer platforms can be built without having to build a new
+user base while Soul users would not have to start from scratch in an entirely new social media platform.
 
 ## Installation
 
 ```bash
-# Install MySQL
-$ brew install mysql
+# Set up node using nvm and use project specific npm (optional)
+$ nvm install
+$ npm -g install npm@8.3.2
+
+# Run MySQL
+$ docker run --name soul-mysql -e MYSQL_ROOT_PASSWORD=root_password -d -p 3306:3306 mysql:latest
 
 # Set up database
-$ sudo mysql
+$ docker exec -it soul-mysql mysql  -u root -p
 mysql> CREATE DATABASE soul_db_dev;
 mysql> CREATE DATABASE soul_db_test;
 
@@ -30,7 +38,7 @@ $ docker run -d -p 1025:1025 -p 8025:8025 --name mailhog mailhog/mailhog
 $ docker run -d -p 6379:6379 --name redis redis
 ```
 
-## Running the app
+## Running the service locally
 
 ```bash
 # development

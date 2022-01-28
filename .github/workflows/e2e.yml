@@ -18,7 +18,7 @@ jobs:
           MYSQL_HOST: 127.0.0.1
           MYSQL_USER: test_user
           MYSQL_PASSWORD: test_password
-          MYSQL_ROOT_PASSWORD: test_password
+          MYSQL_ROOT_PASSWORD: root_password
         ports:
           - 3306:3306
         options: >-
