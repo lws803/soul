@@ -9,8 +9,8 @@ Soul is an **authentication service** and a **user relationships service** group
 ## Installation
 
 ```bash
-# Set up node using rvm and use project specific npm (optional)
-$ rvm install
+# Set up node using nvm and use project specific npm (optional)
+$ nvm install
 $ npm install npm@8.3.2
 
 # Run MySQL
