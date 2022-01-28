@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/lws803/soul/branch/main/graph/badge.svg?token=K9DMP9RLE7)](https://codecov.io/gh/lws803/soul)
 
-## Description
+## What is Soul?
 
 Soul is an **authentication** and a **user relationships** service built into one. It is meant to abstract some of the most important parts
 of a social media platform (i.e. user connections, relationships and authentication) into a separate service so that this can be shared
