@@ -1,7 +1,5 @@
 # TODO list
 
-- update instructions to use docker mysql and use the right node version
-- consider creating a github org if its free
 - find a way to deploy this to heroku and set up mail service with this
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - validate all features of this backend service and see if there are any security flaws or unused endpoints
