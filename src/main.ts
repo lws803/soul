@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   VersioningType,
   ValidationPipe,
@@ -43,7 +44,6 @@ async function bootstrap() {
 
   await app.listen(3000);
 
-  // eslint-disable-next-line no-console
   console.log(
     textSync('Soul', {
       font: 'Epic',
@@ -51,5 +51,6 @@ async function bootstrap() {
       whitespaceBreak: true,
     }),
   );
+  console.log('Soul server started, listening on port 3000...');
 }
 bootstrap();
