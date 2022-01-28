@@ -9,11 +9,15 @@ Soul is an **authentication service** and a **user relationships service** group
 ## Installation
 
 ```bash
-# Install MySQL
-$ brew install mysql
+# Set up node using rvm and use project specific npm (optional)
+$ rvm install
+$ npm install npm@8.3.2
+
+# Run MySQL
+$ docker run --name soul-mysql -e MYSQL_ROOT_PASSWORD=root_password -d -p 3306:3306 mysql:latest
 
 # Set up database
-$ sudo mysql
+$ docker exec -it soul-mysql mysql  -u root -p
 mysql> CREATE DATABASE soul_db_dev;
 mysql> CREATE DATABASE soul_db_test;
 
