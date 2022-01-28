@@ -4,15 +4,15 @@ import {
   ValidationPipe,
   ValidationError,
   ClassSerializerInterceptor,
+  Logger,
 } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import * as helmet from 'helmet';
-import { textSync } from 'figlet';
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
-import { Logger } from '@nestjs/common';
+import * as helmet from 'helmet';
+import { textSync } from 'figlet';
 
 import { AppModule } from './app.module';
 import { ValidationException } from './common/exceptions/validation.exception';
