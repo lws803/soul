@@ -11,7 +11,7 @@ Soul is an **authentication service** and a **user relationships service** group
 ```bash
 # Set up node using nvm and use project specific npm (optional)
 $ nvm install
-$ npm install npm@8.3.2
+$ npm -g install npm@8.3.2
 
 # Run MySQL
 $ docker run --name soul-mysql -e MYSQL_ROOT_PASSWORD=root_password -d -p 3306:3306 mysql:latest
