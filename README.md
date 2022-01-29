@@ -14,7 +14,7 @@ user base while Soul users would not have to start from scratch in an entirely n
 
 ```bash
 # Set up node using nvm and use project specific npm (optional)
-$ nvm install
+$ nvm use
 $ npm -g install npm@8.3.2
 
 # Run MySQL
