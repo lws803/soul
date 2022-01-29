@@ -10,7 +10,6 @@ import {
   Request,
 } from '@nestjs/common';
 
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
@@ -47,15 +46,6 @@ export class UserConnectionsController {
         user.userId,
         createConnectionDto,
       ),
-    );
-  }
-
-  @Get()
-  async findAll(
-    @Query() paginationParams: PaginationParamsDto,
-  ): Promise<FindAllUserConnectionResponseDto> {
-    return new FindAllUserConnectionResponseDto(
-      await this.userConnectionsService.findAll(paginationParams),
     );
   }
 
