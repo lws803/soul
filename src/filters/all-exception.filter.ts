@@ -15,8 +15,6 @@ export class AllExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionFilter.name);
 
   catch(exception: Error, host: ArgumentsHost) {
-    this.logger.error(exception.message, exception.stack);
-
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
@@ -37,6 +35,7 @@ export class AllExceptionFilter implements ExceptionFilter {
         error: errorType,
       });
     } else {
+      this.logger.error(exception.message, exception.stack);
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: exception.message,
         error: 'INTERNAL_SERVER_ERROR',
