@@ -3,7 +3,7 @@
 ![pr-merge](https://github.com/soul-project/soul/actions/workflows/pr-merge.yml/badge.svg)
 ![e2e](https://github.com/soul-project/soul/actions/workflows/e2e.yml/badge.svg)
 [![codecov](https://codecov.io/gh/lws803/soul/branch/main/graph/badge.svg?token=K9DMP9RLE7)](https://codecov.io/gh/lws803/soul)
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## What is Soul?
 
