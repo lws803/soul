@@ -1,5 +1,6 @@
 # TODO list
 
+- add workflow build passing and MIT license badge to github readme
 - find a way to deploy this to heroku and set up mail service with this
 - add funding button to the repository
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
