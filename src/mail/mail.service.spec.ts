@@ -27,30 +27,6 @@ describe(MailService, () => {
     service = module.get<MailService>(MailService);
   });
 
-  describe('sendConfirmationEmail()', () => {
-    it('sends confirmation email', async () => {
-      const result = await service.sendConfirmationEmail(
-        factories.oneUser.build(),
-        'TEST_CODE',
-      );
-      expect(result).toBe(true);
-
-      expect(addToQueue).toHaveBeenCalledWith('confirmation', {
-        code: 'TEST_CODE',
-        user: factories.oneUser.build(),
-      });
-    });
-
-    it('fails to send confirmation email', async () => {
-      addToQueue.mockRejectedValueOnce(new Error('TEST_ERROR'));
-      const result = await service.sendConfirmationEmail(
-        factories.oneUser.build(),
-        'TEST_CODE',
-      );
-      expect(result).toBe(false);
-    });
-  });
-
   describe('sendPasswordResetEmail()', () => {
     it('sends password reset email', async () => {
       const result = await service.sendPasswordResetEmail(
