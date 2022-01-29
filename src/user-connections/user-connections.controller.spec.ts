@@ -74,48 +74,6 @@ describe('ConnectionsController', () => {
     });
   });
 
-  describe('findAll()', () => {
-    it('should return all user connections', async () => {
-      expect(
-        await controller.findAll({
-          page: 1,
-          numItemsPerPage: 10,
-        }),
-      ).toEqual({
-        userConnections: factories.userConnectionArray.build(),
-        totalCount: factories.userConnectionArray.build().length,
-      });
-
-      expect(service.findAll).toHaveBeenCalledWith({
-        numItemsPerPage: 10,
-        page: 1,
-      });
-    });
-
-    it('should paginate correctly', async () => {
-      const oneConnection = factories.oneUserConnection.build();
-      const userConnectionArray = factories.userConnectionArray.build();
-      jest.spyOn(service, 'findAll').mockResolvedValue({
-        totalCount: userConnectionArray.length,
-        userConnections: [oneConnection],
-      });
-      expect(
-        await controller.findAll({
-          page: 1,
-          numItemsPerPage: 1,
-        }),
-      ).toEqual({
-        userConnections: [oneConnection],
-        totalCount: userConnectionArray.length,
-      });
-
-      expect(service.findAll).toHaveBeenCalledWith({
-        numItemsPerPage: 1,
-        page: 1,
-      });
-    });
-  });
-
   describe('findMyConnections()', () => {
     it('should find my mutual connections', async () => {
       expect(
