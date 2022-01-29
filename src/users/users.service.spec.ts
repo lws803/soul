@@ -259,23 +259,6 @@ describe('UsersService', () => {
     });
   });
 
-  describe('requestPasswordReset()', () => {
-    beforeEach(() => {
-      jest.spyOn(jsonwebtoken, 'sign').mockImplementation(() => 'TOKEN');
-    });
-
-    it('sends password reset email to user', async () => {
-      expect(
-        await service.requestPasswordReset(factories.oneUser.build().email),
-      ).toBeUndefined();
-
-      expect(mailService.sendPasswordResetEmail).toHaveBeenCalledWith(
-        factories.oneUser.build(),
-        'TOKEN',
-      );
-    });
-  });
-
   describe('passwordReset()', () => {
     beforeEach(() => {
       jest.spyOn(jsonwebtoken, 'verify').mockImplementation(() => ({
