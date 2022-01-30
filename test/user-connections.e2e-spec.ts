@@ -43,7 +43,7 @@ describe('UserConnectionsController (e2e)', () => {
     app.close().then(done);
   });
 
-  describe('/user_connections (POST)', () => {
+  describe('/user-connections (POST)', () => {
     afterEach(async () => {
       await userConnectionRepository.delete({});
       await platformUserRepository.delete({});
@@ -52,7 +52,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('creates a new connection', async () => {
       return request(app.getHttpServer())
-        .post('/user_connections')
+        .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .send(factories.createUserConnectionDto.build())
@@ -83,7 +83,7 @@ describe('UserConnectionsController (e2e)', () => {
       await platformUserRepository.save(factories.onePlatformUser.build());
 
       return request(app.getHttpServer())
-        .post('/user_connections')
+        .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .send(factories.createUserConnectionDto.build({ platformId: 1 }))
@@ -134,7 +134,7 @@ describe('UserConnectionsController (e2e)', () => {
       );
 
       return request(app.getHttpServer())
-        .post('/user_connections')
+        .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .send(factories.createUserConnectionDto.build())
@@ -161,7 +161,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user_connections/by_users (GET)', () => {
+  describe('/user-connections/by_users (GET)', () => {
     beforeAll(async () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
@@ -187,7 +187,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('fetches user connection by users', async () => {
       return request(app.getHttpServer())
-        .get('/user_connections/by_users?fromUserId=1&toUserId=2')
+        .get('/user-connections/by_users?fromUserId=1&toUserId=2')
         .expect(200)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -223,7 +223,7 @@ describe('UserConnectionsController (e2e)', () => {
         }),
       ]);
       return request(app.getHttpServer())
-        .get('/user_connections/by_users?fromUserId=999&toUserId=998')
+        .get('/user-connections/by_users?fromUserId=999&toUserId=998')
         .expect(404)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -234,7 +234,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user_connections/:id (GET)', () => {
+  describe('/user-connections/:id (GET)', () => {
     beforeAll(async () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
@@ -260,7 +260,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('fetches user connection', async () => {
       return request(app.getHttpServer())
-        .get('/user_connections/1')
+        .get('/user-connections/1')
         .expect(200)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -284,7 +284,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('returns not found', async () => {
       return request(app.getHttpServer())
-        .get('/user_connections/999')
+        .get('/user-connections/999')
         .expect(404)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -295,7 +295,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user_connections/:id (DELETE)', () => {
+  describe('/user-connections/:id (DELETE)', () => {
     beforeEach(async () => {
       await userConnectionRepository.save(factories.oneUserConnection.build());
     });
@@ -306,7 +306,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('deletes user connection', async () => {
       return request(app.getHttpServer())
-        .delete('/user_connections/1')
+        .delete('/user-connections/1')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .expect(200)
@@ -333,14 +333,14 @@ describe('UserConnectionsController (e2e)', () => {
       ]);
 
       await request(app.getHttpServer())
-        .delete('/user_connections/1')
+        .delete('/user-connections/1')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .expect(200)
         .expect((res) => expect(res.body).toStrictEqual({}));
 
       return request(app.getHttpServer())
-        .get('/user_connections/2')
+        .get('/user-connections/2')
         .expect(200)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -363,7 +363,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user_connections/:id/platforms (POST)', () => {
+  describe('/user-connections/:id/platforms (POST)', () => {
     beforeEach(async () => {
       await userConnectionRepository.save(factories.oneUserConnection.build());
     });
@@ -379,7 +379,7 @@ describe('UserConnectionsController (e2e)', () => {
       await platformUserRepository.save(factories.onePlatformUser.build());
 
       await request(app.getHttpServer())
-        .post('/user_connections/1/platforms')
+        .post('/user-connections/1/platforms')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .send(factories.postPlatformToUserConnectionDto.build())
@@ -414,7 +414,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user_connections/:id/platforms (DELETE)', () => {
+  describe('/user-connections/:id/platforms (DELETE)', () => {
     beforeEach(async () => {
       await userConnectionRepository.save(factories.oneUserConnection.build());
     });
@@ -430,7 +430,7 @@ describe('UserConnectionsController (e2e)', () => {
       await platformUserRepository.save(factories.onePlatformUser.build());
 
       return request(app.getHttpServer())
-        .delete('/user_connections/1/platforms/1')
+        .delete('/user-connections/1/platforms/1')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .expect(200)
@@ -438,7 +438,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user_connections/my_connections (GET)', () => {
+  describe('/user-connections/my-connections (GET)', () => {
     afterEach(async () => {
       await userConnectionRepository.delete({});
     });
@@ -463,7 +463,7 @@ describe('UserConnectionsController (e2e)', () => {
       ]);
 
       return request(app.getHttpServer())
-        .get('/user_connections/my_connections?connectionType=mutual')
+        .get('/user-connections/my-connections?connectionType=mutual')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .expect(200)
@@ -504,7 +504,7 @@ describe('UserConnectionsController (e2e)', () => {
       await userConnectionRepository.save(secondUserConnection);
 
       return request(app.getHttpServer())
-        .get('/user_connections/my_connections?connectionType=follower')
+        .get('/user-connections/my-connections?connectionType=follower')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .expect(200)
@@ -538,7 +538,7 @@ describe('UserConnectionsController (e2e)', () => {
       await userConnectionRepository.save(firstUserConnection);
 
       return request(app.getHttpServer())
-        .get('/user_connections/my_connections?connectionType=follow')
+        .get('/user-connections/my-connections?connectionType=follow')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
         .expect(200)
@@ -592,7 +592,7 @@ describe('UserConnectionsController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get(
-          '/user_connections/my_connections?connectionType=follow&platformId=1',
+          '/user-connections/my-connections?connectionType=follow&platformId=1',
         )
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .set('Host', 'localhost:3000')
