@@ -29,7 +29,7 @@ import {
   FindOneUserConnectionResponseDto,
 } from './dto/api-responses.dto';
 
-@Controller({ version: '1', path: 'user_connections' })
+@Controller({ version: '1', path: 'user-connections' })
 export class UserConnectionsController {
   constructor(
     private readonly userConnectionsService: UserConnectionsService,
@@ -50,7 +50,7 @@ export class UserConnectionsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/my_connections')
+  @Get('/my-connections')
   async findMyConnections(
     @Request() { user }: { user: JWTPayload },
     @Query()
@@ -71,7 +71,7 @@ export class UserConnectionsController {
     );
   }
 
-  @Get('/by_users')
+  @Get('/by-users')
   async findOneByUserIds(
     @Query() { fromUserId, toUserId }: ByUserIdsParamsDto,
   ): Promise<FindOneUserConnectionResponseDto> {

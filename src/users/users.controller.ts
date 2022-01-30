@@ -90,7 +90,7 @@ export class UsersController {
     );
   }
 
-  @Post('verify_confirmation_token')
+  @Post('verify-confirmation-token')
   async verifyConfirmationToken(
     @Query('token') token: string,
   ): Promise<GetMeUserResponseDto> {
@@ -99,17 +99,17 @@ export class UsersController {
     );
   }
 
-  @Post('resend_confirmation_token')
+  @Post('resend-confirmation-token')
   resendConfirmationToken(@Query() { email }: ResendConfirmationTokenDto) {
     return this.usersService.resendConfirmationToken(email);
   }
 
-  @Post('request_password_reset_token')
+  @Post('request-password-reset-token')
   requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
     return this.usersService.requestPasswordReset(email);
   }
 
-  @Post('password_reset')
+  @Post('password-reset')
   async passwordReset(
     @Query('token') token: string,
     @Body() { password }: PasswordResetDto,
