@@ -2,9 +2,9 @@
 
 - audit and change endpoint definitions to correct conventions i.e. `verify_confirmation_token` to `verify-confirmation-token`
   - switch to kebab case
-- disable swagger documentation
 - find a way to deploy this to heroku and set up mail service with this/ or start it digital ocean
 - add funding button to the repository
+  - set up paypal or patreon for funding
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - validate all features of this backend service and see if there are any security flaws or unused endpoints
 - Store datetime in utc on the db and do the conversion when we get to the endpoint
