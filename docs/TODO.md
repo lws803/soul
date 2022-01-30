@@ -1,7 +1,5 @@
 # TODO list
 
-- audit and change endpoint definitions to correct conventions i.e. `verify_confirmation_token` to `verify-confirmation-token`
-  - switch to kebab case
 - find a way to deploy this to heroku and set up mail service with this/ or start it digital ocean
 - add funding button to the repository
   - set up paypal or patreon for funding
