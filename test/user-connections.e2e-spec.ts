@@ -161,7 +161,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user-connections/by_users (GET)', () => {
+  describe('/user-connections/by-users (GET)', () => {
     beforeAll(async () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
@@ -187,7 +187,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('fetches user connection by users', async () => {
       return request(app.getHttpServer())
-        .get('/user-connections/by_users?fromUserId=1&toUserId=2')
+        .get('/user-connections/by-users?fromUserId=1&toUserId=2')
         .expect(200)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -223,7 +223,7 @@ describe('UserConnectionsController (e2e)', () => {
         }),
       ]);
       return request(app.getHttpServer())
-        .get('/user-connections/by_users?fromUserId=999&toUserId=998')
+        .get('/user-connections/by-users?fromUserId=999&toUserId=998')
         .expect(404)
         .expect((res) =>
           expect(res.body).toStrictEqual({

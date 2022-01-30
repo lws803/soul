@@ -71,7 +71,7 @@ export class UserConnectionsController {
     );
   }
 
-  @Get('/by_users')
+  @Get('/by-users')
   async findOneByUserIds(
     @Query() { fromUserId, toUserId }: ByUserIdsParamsDto,
   ): Promise<FindOneUserConnectionResponseDto> {
