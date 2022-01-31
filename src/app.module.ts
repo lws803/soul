@@ -32,10 +32,9 @@ import config from '../config';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        ssl:
-          configService.get('DB_SSL') === 'true'
-            ? { rejectUnauthorized: false }
-            : undefined,
+        ssl: configService.get('DB_SSL')
+          ? { rejectUnauthorized: false }
+          : undefined,
         entities: [User, RefreshToken, Platform, PlatformUser, UserConnection],
         // timezone: 'Z', // TODO: See if this works
       }),
