@@ -1,5 +1,6 @@
 # TODO list
 
+- test commit
 - try to deploy soul to a VPS like vultr or aws ec2 including the database
   - compare between other VPS - VPS showdown
   - check out dokku
