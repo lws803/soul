@@ -14,7 +14,7 @@ import { MailProcessor } from './mail.processor';
         transport: {
           host: configService.get('MAIL_HOST'),
           port: configService.get('MAIL_PORT'),
-          secure: configService.get('MAIL_SECURE') === 'true' ? true : false,
+          secure: configService.get('MAIL_SECURE') ? true : false,
           // tls: { ciphers: 'SSLv3', }, // gmail
           auth: configService.get('NODE_ENV') === 'prod' && {
             user: configService.get('MAIL_USERNAME'),
@@ -40,7 +40,7 @@ import { MailProcessor } from './mail.processor';
         redis: {
           host: configService.get('REDIS_DB_HOST'),
           port: configService.get('REDIS_DB_PORT'),
-          db: parseInt(configService.get('REDIS_DB_INDEX'), 10),
+          db: configService.get('REDIS_DB_INDEX'),
         },
         defaultJobOptions: { removeOnComplete: 1000, removeOnFail: 1000 },
       }),

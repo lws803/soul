@@ -1,7 +1,5 @@
 # TODO list
 
-- add bull configuration `{ removeOnComplete: 100, removeOnFail: 100 }`
-- add env variable validation https://docs.nestjs.com/techniques/configuration#schema-validation
 - try to deploy soul to a VPS like vultr or aws ec2 including the database
   - compare between other VPS - VPS showdown
   - check out dokku

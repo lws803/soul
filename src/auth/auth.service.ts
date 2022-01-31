@@ -48,7 +48,7 @@ export class AuthService {
       accessToken: await this.generateAccessToken(user),
       refreshToken: await this.generateRefreshToken(
         user,
-        parseInt(this.configService.get('JWT_REFRESH_TOKEN_TTL'), 10),
+        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
       ),
     };
   }
@@ -74,7 +74,7 @@ export class AuthService {
       ),
       refreshToken: await this.generateRefreshToken(
         user,
-        parseInt(this.configService.get('JWT_REFRESH_TOKEN_TTL'), 10),
+        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
         platformId,
         platformUser.roles,
       ),
