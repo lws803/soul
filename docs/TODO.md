@@ -14,6 +14,7 @@
 
 ## Feature work
 
+- maybe allow users to login still but with limited access if they don't verify their acc
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - create a tiny user storage for metadata or achievement purposes within the user table
 - allow folks to download their connections and data in one big json blob
