@@ -12,4 +12,4 @@ COPY . ./
 
 RUN npm run build
 
-RUN npm start:prod
+RUN npm run start:prod
