@@ -1,5 +1,12 @@
 # TODO list
 
+- add bull configuration `{ removeOnComplete: 100, removeOnFail: 100 }`
+- add env variable validation https://docs.nestjs.com/techniques/configuration#schema-validation
+- try to deploy soul to a VPS like vultr or aws ec2 including the database
+  - compare between other VPS - VPS showdown
+  - check out dokku
+  - Use imgix for user image hosting
+  - Use minio for self hosted s3 server
 - find a way to deploy this to heroku and set up mail service with this/ or start it digital ocean
 - add funding button to the repository
   - set up paypal or patreon for funding
@@ -12,3 +19,4 @@
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - create a tiny user storage for metadata or achievement purposes within the user table
 - allow folks to download their connections and data in one big json blob
+- build an admin dashboard for soul (self-hosted)
