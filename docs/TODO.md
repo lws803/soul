@@ -1,11 +1,7 @@
 # TODO list
 
-- try to deploy soul to a VPS like vultr or aws ec2 including the database
-  - compare between other VPS - VPS showdown
-  - check out dokku
-  - Use imgix for user image hosting
-  - Use minio for self hosted s3 server
-- find a way to deploy this to heroku and set up mail service with this/ or start it digital ocean
+- hide some endpoints from being exposed in dokku/ nestjs
+- consider using this for email server https://github.com/D1ceWard/dokku-posteio
 - add funding button to the repository
   - set up paypal or patreon for funding
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
@@ -14,6 +10,7 @@
 
 ## Feature work
 
+- maybe allow users to login still but with limited access if they don't verify their acc
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - create a tiny user storage for metadata or achievement purposes within the user table
 - allow folks to download their connections and data in one big json blob

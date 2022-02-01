@@ -1,0 +1,4 @@
+WAIT=20
+ATTEMPTS=3
+
+/healthcheck OK
