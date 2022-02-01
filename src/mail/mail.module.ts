@@ -14,12 +14,16 @@ import { MailProcessor } from './mail.processor';
         transport: {
           host: configService.get('MAIL_HOST'),
           port: configService.get('MAIL_PORT'),
-          secure: configService.get('MAIL_SECURE') ? true : false,
+          secure: configService.get('MAIL_SECURE'),
           // tls: { ciphers: 'SSLv3', }, // gmail
-          auth: configService.get('NODE_ENV') === 'prod' && {
-            user: configService.get('MAIL_USERNAME'),
-            pass: configService.get('MAIL_PASSWORD'),
-          },
+          auth:
+            configService.get('MAIL_USERNAME') &&
+            configService.get('MAIL_PASSWORD')
+              ? {
+                  user: configService.get('MAIL_USERNAME'),
+                  pass: configService.get('MAIL_PASSWORD'),
+                }
+              : undefined,
         },
         defaults: {
           from: configService.get('MAIL_FROM'),
