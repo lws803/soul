@@ -16,6 +16,7 @@ const schema = Joi.object({
   HOST_URL: Joi.string().required(),
   // Redis config
   REDIS_DB_HOST: Joi.string().required(),
+  REDIS_DB_PASSWORD: Joi.string().optional().allow(''),
   REDIS_DB_INDEX: Joi.number().default(0),
   REDIS_DB_PORT: Joi.number().default(6379),
   // Mail config

@@ -1,7 +1,6 @@
 # TODO list
 
 - hide some endpoints from being exposed in dokku/ nestjs
-- consider using this for email server https://github.com/D1ceWard/dokku-posteio
 - add funding button to the repository
   - set up paypal or patreon for funding
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
