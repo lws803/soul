@@ -1,6 +1,5 @@
 # TODO list
 
-- set up github actions for automatic deployment
 - hide some endpoints from being exposed in dokku/ nestjs
 - set up ssl https://dokku.com/docs/deployment/application-deployment/#setting-up-ssl
 - consider using this for email server https://github.com/D1ceWard/dokku-posteio
