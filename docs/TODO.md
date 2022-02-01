@@ -1,6 +1,7 @@
 # TODO list
 
 - set up mail configurations with posteio https://poste.io/doc/client-settings
+  - Fix issue with poste io or maybe consider using an external mail provider
   - maybe need to enable tls
 - hide some endpoints from being exposed in dokku/ nestjs
 - add funding button to the repository

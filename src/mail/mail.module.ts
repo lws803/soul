@@ -41,6 +41,7 @@ import { MailProcessor } from './mail.processor';
           host: configService.get('REDIS_DB_HOST'),
           port: configService.get('REDIS_DB_PORT'),
           db: configService.get('REDIS_DB_INDEX'),
+          password: configService.get('REDIS_DB_PASSWORD'),
         },
         defaultJobOptions: { removeOnComplete: 1000, removeOnFail: 1000 },
       }),
