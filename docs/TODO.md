@@ -2,14 +2,7 @@
 
 - set up github actions for automatic deployment
 - set up ssl https://dokku.com/docs/deployment/application-deployment/#setting-up-ssl
-- add healthcheck checker
-- try to deploy soul to a VPS like vultr or aws ec2 including the database
-  - compare between other VPS - VPS showdown
-  - check out dokku
-  - Use imgix for user image hosting
-  - Use minio for self hosted s3 server
 - consider using this for email server https://github.com/D1ceWard/dokku-posteio
-- find a way to deploy this to heroku and set up mail service with this/ or start it digital ocean
 - add funding button to the repository
   - set up paypal or patreon for funding
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
