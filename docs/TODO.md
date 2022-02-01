@@ -1,6 +1,7 @@
 # TODO list
 
-- figure out how to pass env variables to soul server
+- set up github actions for automatic deployment
+- set up ssl https://dokku.com/docs/deployment/application-deployment/#setting-up-ssl
 - add healthcheck checker
 - try to deploy soul to a VPS like vultr or aws ec2 including the database
   - compare between other VPS - VPS showdown
