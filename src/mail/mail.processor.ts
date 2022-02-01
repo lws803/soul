@@ -10,6 +10,7 @@ import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Job } from 'bull';
 import { plainToClass } from 'class-transformer';
+import * as Sentry from '@sentry/node';
 
 import { User } from 'src/users/entities/user.entity';
 
@@ -42,6 +43,7 @@ export class MailProcessor {
       `Failed job ${job.id} of type ${job.name}: ${error.message}`,
       error.stack,
     );
+    Sentry.captureException(error);
   }
 
   @Process('confirmation')
