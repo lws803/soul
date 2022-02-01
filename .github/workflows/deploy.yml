@@ -17,6 +17,5 @@ jobs:
         uses: dokku/github-action@master
         with:
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          dokku-host: 'soul-network.com'
-          app-name: 'api'
-          git-push-flags: '--force'
+          git_remote_url: 'ssh://dokku@soul-network.com:22/api'
+          git_push_flags: '--force -vvv'
