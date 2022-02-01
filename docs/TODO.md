@@ -1,7 +1,6 @@
 # TODO list
 
 - hide some endpoints from being exposed in dokku/ nestjs
-- set up ssl https://dokku.com/docs/deployment/application-deployment/#setting-up-ssl
 - consider using this for email server https://github.com/D1ceWard/dokku-posteio
 - add funding button to the repository
   - set up paypal or patreon for funding
