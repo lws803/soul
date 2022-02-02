@@ -108,7 +108,7 @@ describe('AuthController (e2e)', () => {
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'UNAUTHORIZED_USER',
-            message: 'Unauthorized user.',
+            message: 'Incorrect username or password.',
           }),
         );
     });

@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import * as requestIp from 'request-ip';
+import * as Sentry from '@sentry/node';
+
 import { GenericException } from '../exceptions/generic.exception';
 
 const ALLOWED_WHITELIST = new Set(['127.0.0.1', '::1']);
@@ -18,6 +20,13 @@ export class LocalIpWhitelistInterceptor implements NestInterceptor {
     if (
       !ALLOWED_WHITELIST.has(requestIp.getClientIp(httpContext.getRequest()))
     ) {
+      Sentry.captureException(
+        new Error(
+          `Unauthorized IP address: ${requestIp.getClientIp(
+            httpContext.getRequest(),
+          )}`,
+        ),
+      );
       throw new GenericException(
         {
           message: `Cannot get ${httpContext.getRequest().route.path}`,
