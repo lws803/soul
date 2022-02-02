@@ -23,6 +23,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   const configService = app.get(ConfigService);
   const logger = new Logger(bootstrap.name);
+  const expressApp = app.getHttpAdapter().getInstance();
 
   app.enableVersioning({ type: VersioningType.URI });
   app.useGlobalPipes(
@@ -53,7 +54,6 @@ async function bootstrap() {
 
   if (configService.get('SENTRY_DSN')) {
     logger.log('SENTRY_DSN provided, initializing Sentry...');
-    const expressApp = app.getHttpAdapter().getInstance();
     Sentry.init({
       dsn: configService.get('SENTRY_DSN'),
       environment: configService.get('SENTRY_ENVIRONMENT'),
