@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
 import { UserRole } from 'src/roles/role.enum';
+import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
@@ -14,6 +15,7 @@ describe('PlatformsService', () => {
   let service: PlatformsService;
   let platformRepository: Repository<Platform>;
   let platformUserRepository: Repository<PlatformUser>;
+  let refreshTokenRepository: Repository<RefreshToken>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -54,6 +56,16 @@ describe('PlatformsService', () => {
           },
         },
         {
+          provide: getRepositoryToken(RefreshToken),
+          useValue: {
+            findOne: jest
+              .fn()
+              .mockResolvedValue(factories.refreshToken.build()),
+            update: jest.fn(),
+          },
+        },
+
+        {
           provide: UsersService,
           useValue: {
             findOne: jest.fn().mockResolvedValue(factories.oneUser.build()),
@@ -68,6 +80,9 @@ describe('PlatformsService', () => {
     );
     platformUserRepository = module.get<Repository<PlatformUser>>(
       getRepositoryToken(PlatformUser),
+    );
+    refreshTokenRepository = module.get<Repository<RefreshToken>>(
+      getRepositoryToken(RefreshToken),
     );
   });
 
@@ -268,6 +283,13 @@ describe('PlatformsService', () => {
       ]);
 
       expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
+      expect(refreshTokenRepository.findOne).toHaveBeenCalledWith({
+        platformUser,
+      });
+      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+        { platformUser },
+        { isRevoked: true },
+      );
     });
   });
 
@@ -286,7 +308,13 @@ describe('PlatformsService', () => {
         platform.id,
         user.id,
       );
-
+      expect(refreshTokenRepository.findOne).toHaveBeenCalledWith({
+        platformUser,
+      });
+      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+        { platformUser },
+        { isRevoked: true },
+      );
       expect(platformUserRepository.delete).toHaveBeenCalledWith({
         id: platformUser.id,
       });
