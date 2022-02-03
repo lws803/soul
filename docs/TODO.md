@@ -1,7 +1,6 @@
 # TODO list
 
 - fix the host forwarding issue, see if nginx forwards x-forwarded-host to the application
-- run migrations with prod db before merging and deploying this
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - add funding button to the repository
   - set up paypal or patreon for funding

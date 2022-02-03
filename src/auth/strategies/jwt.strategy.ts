@@ -32,6 +32,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         'Refresh token used in place of access token, please try again.',
       );
     }
+
     if (req.headers['x-forwarded-host'] !== payload.audienceUrl) {
       throw new UnauthorizedUserException('Invalid audience.');
     }
