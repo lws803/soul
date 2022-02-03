@@ -670,4 +670,43 @@ describe('PlatformsController (e2e)', () => {
         );
     });
   });
+
+  describe('/platforms/:platformId/join (POST)', () => {
+    beforeEach(async () => {
+      await platformRepository.save(factories.onePlatform.build());
+    });
+
+    afterEach(async () => {
+      await platformUserRepository.delete({});
+      await platformRepository.delete({});
+    });
+
+    it('adds myself as a platform user', async () => {
+      await request(app.getHttpServer())
+        .post('/platforms/1/join')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .set('Host', 'localhost:3000')
+        .expect(201)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            id: expect.any(Number),
+            platform: {
+              createdAt: expect.any(String),
+              hostUrl: 'TEST_HOST_URL',
+              id: 1,
+              isVerified: true,
+              name: 'TEST_PLATFORM',
+              nameHandle: 'TEST_PLATFORM#1',
+              updatedAt: expect.any(String),
+            },
+            roles: [UserRole.MEMBER],
+            user: {
+              id: 1,
+              userHandle: 'TEST_USER#1',
+              username: 'TEST_USER',
+            },
+          }),
+        );
+    });
+  });
 });
