@@ -23,7 +23,7 @@ soul!
 ### TLDR
 
 Don't let Facebook, Twitter, TikTok and Reddit monopolize the social media space,
-start your own (without having to start from a fresh user base)!
+start your own platform!
 
 ## Installation
 
