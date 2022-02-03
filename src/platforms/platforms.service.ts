@@ -123,10 +123,7 @@ export class PlatformsService {
     platformUser.platform = platform;
     platformUser.roles = [...new Set(roles)];
 
-    await this.refreshTokenRepository.update(
-      { platformUser },
-      { isRevoked: true },
-    );
+    await this.revokePlatformUserRefreshToken(platformUser);
 
     return await this.platformUserRepository.save(platformUser);
   }
@@ -152,10 +149,7 @@ export class PlatformsService {
     const platformUser = await this.findOnePlatformUser(platformId, userId);
     // Check if there are any remaining admins
     await this.findAnotherAdminOrThrow(platformId, userId);
-    await this.refreshTokenRepository.update(
-      { platformUser },
-      { isRevoked: true },
-    );
+    await this.revokePlatformUserRefreshToken(platformUser);
     return await this.platformUserRepository.delete({ id: platformUser.id });
   }
 
@@ -199,6 +193,15 @@ export class PlatformsService {
 
     if (!adminPlatformUser) {
       throw new NoAdminsRemainingException();
+    }
+  }
+
+  private async revokePlatformUserRefreshToken(platformUser: PlatformUser) {
+    if (await this.refreshTokenRepository.findOne({ platformUser })) {
+      await this.refreshTokenRepository.update(
+        { platformUser },
+        { isRevoked: true },
+      );
     }
   }
 }
