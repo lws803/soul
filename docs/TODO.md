@@ -5,7 +5,6 @@
   - set up paypal or patreon for funding
 - validate all features of this backend service and see if there are any security flaws or unused endpoints
 - Store datetime in utc on the db and do the conversion when we get to the endpoint
-- create a way to authenticate users domains using TXT record
 
 ## Feature work
 
