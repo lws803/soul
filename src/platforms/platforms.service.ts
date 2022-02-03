@@ -56,7 +56,6 @@ export class PlatformsService {
   }
 
   async findAll(params: FindAllPlatformsQueryParamDto) {
-    // TODO: Might be better to use query builder in this case
     const [platforms, totalCount] = await this.platformRepository.findAndCount({
       where:
         params.isVerified === undefined
