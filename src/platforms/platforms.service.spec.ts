@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 
 import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
@@ -10,6 +10,7 @@ import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
 import { PlatformsService } from './platforms.service';
+import { DuplicatePlatformUserException } from './exceptions';
 
 describe('PlatformsService', () => {
   let service: PlatformsService;
@@ -43,7 +44,11 @@ describe('PlatformsService', () => {
               .fn()
               .mockResolvedValue(factories.onePlatformUser.build()),
             findAndCount: jest.fn(),
-            save: jest.fn(),
+            save: jest
+              .fn()
+              .mockResolvedValue(
+                factories.onePlatformUser.build({ roles: [UserRole.MEMBER] }),
+              ),
             update: jest.fn(),
             delete: jest.fn(),
             createQueryBuilder: jest.fn().mockReturnValue({
@@ -370,6 +375,44 @@ describe('PlatformsService', () => {
           platform,
         },
       });
+    });
+  });
+
+  describe('addUser()', () => {
+    it('should add user successfully', async () => {
+      const platform = factories.onePlatform.build();
+      const user = factories.oneUser.build();
+      const platformUser = factories.onePlatformUser.build();
+      jest
+        .spyOn(service, 'findOnePlatformUser')
+        .mockResolvedValue(platformUser);
+
+      expect(await service.addUser(platform.id, user.id)).toEqual(
+        factories.onePlatformUser.build({
+          roles: [UserRole.MEMBER],
+        }),
+      );
+
+      expect(platformUserRepository.save).toHaveBeenCalledWith({
+        platform: factories.onePlatform.build(),
+        roles: [UserRole.MEMBER],
+        user: factories.oneUser.build(),
+      });
+    });
+
+    it('should raise duplicate error', async () => {
+      const platform = factories.onePlatform.build();
+      const user = factories.oneUser.build();
+
+      jest
+        .spyOn(platformUserRepository, 'save')
+        .mockRejectedValue(
+          new QueryFailedError('', [], { code: 'ER_DUP_ENTRY' }),
+        );
+
+      await expect(service.addUser(platform.id, user.id)).rejects.toThrow(
+        new DuplicatePlatformUserException(),
+      );
     });
   });
 });

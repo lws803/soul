@@ -149,9 +149,7 @@ export class PlatformsService {
 
   async addUser(platformId: number, userId: number) {
     const newPlatformUser = new PlatformUser();
-    newPlatformUser.platform = await this.findPlatformOrThrow({
-      id: platformId,
-    });
+    newPlatformUser.platform = await this.findOne(platformId);
     newPlatformUser.user = await this.usersService.findOne(userId);
     newPlatformUser.roles = [UserRole.MEMBER];
 
