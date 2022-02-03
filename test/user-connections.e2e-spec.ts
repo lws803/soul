@@ -54,7 +54,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .send(factories.createUserConnectionDto.build())
         .expect(201)
         .expect((res) =>
@@ -85,7 +85,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .send(factories.createUserConnectionDto.build({ platformId: 1 }))
         .expect(201)
         .expect((res) =>
@@ -137,7 +137,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .send(factories.createUserConnectionDto.build())
         .expect(201)
         .expect((res) =>
@@ -309,7 +309,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .delete('/user-connections/1')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(200)
         .expect((res) => expect(res.body).toStrictEqual({}));
     });
@@ -336,7 +336,7 @@ describe('UserConnectionsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/user-connections/1')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(200)
         .expect((res) => expect(res.body).toStrictEqual({}));
 
@@ -382,7 +382,7 @@ describe('UserConnectionsController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/user-connections/1/platforms')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .send(factories.postPlatformToUserConnectionDto.build())
         .expect(201)
         .expect((res) =>
@@ -434,7 +434,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .delete('/user-connections/1/platforms/1')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(200)
         .expect((res) => expect(res.body).toStrictEqual({}));
     });
@@ -467,7 +467,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/user-connections/my-connections?connectionType=mutual')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(200)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -508,7 +508,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/user-connections/my-connections?connectionType=follower')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(200)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -542,7 +542,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/user-connections/my-connections?connectionType=follow')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(200)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -597,7 +597,7 @@ describe('UserConnectionsController (e2e)', () => {
           '/user-connections/my-connections?connectionType=follow&platformId=1',
         )
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(200)
         .expect((res) =>
           expect(res.body).toStrictEqual({

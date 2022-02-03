@@ -59,7 +59,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/platforms')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .send(createPlatformDto)
         .expect(201)
         .expect((res) =>
@@ -257,7 +257,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .patch('/platforms/1')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .send({ name: 'TEST_PLATFORM_2' })
         .expect(200)
         .expect((res) =>
@@ -277,7 +277,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .patch('/platforms/1')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .send({ name: 'TEST_PLATFORM_2' })
         .expect(403)
         .expect((res) =>
@@ -311,7 +311,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -320,7 +320,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -355,7 +355,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .get('/platforms/1/users')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -379,7 +379,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .get('/platforms/1/users')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(401)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -419,7 +419,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=admin,member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -451,7 +451,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=banned')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -483,7 +483,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -502,7 +502,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=admin,member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -543,7 +543,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -556,7 +556,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/users/1')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -612,7 +612,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -625,7 +625,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(200)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -639,7 +639,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -658,7 +658,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .set('Host', 'TEST_HOST_URL')
+        .set('X-Forwarded-Host', 'TEST_HOST_URL')
         .expect(403)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -685,7 +685,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/platforms/1/join')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(201)
         .expect((res) =>
           expect(res.body).toEqual({
