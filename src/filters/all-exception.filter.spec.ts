@@ -28,7 +28,7 @@ describe(AllExceptionFilter, () => {
     expect(status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(json).toHaveBeenCalledWith({
       error: 'INTERNAL_SERVER_ERROR',
-      message: 'UNKNOWN_ERROR',
+      message: 'Internal server error',
     });
   });
 

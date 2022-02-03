@@ -308,13 +308,6 @@ describe('PlatformsService', () => {
         platform.id,
         user.id,
       );
-      expect(refreshTokenRepository.findOne).toHaveBeenCalledWith({
-        platformUser,
-      });
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
-        { platformUser },
-        { isRevoked: true },
-      );
       expect(platformUserRepository.delete).toHaveBeenCalledWith({
         id: platformUser.id,
       });
