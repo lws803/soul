@@ -8,10 +8,22 @@
 ## What is Soul?
 
 Soul is an **authentication** and a **user relationships** service built into one. It is meant to abstract some of the most important parts
-of a social media platform (i.e. user connections, relationships and authentication) into a separate service so that this can be shared
+of a social media platform (i.e. user connections, relationships and authentication) into a separate service so that it can be shared
 across different social media platforms as long as they are using soul to authenticate and build user connections.
-This service attempts to decentralize some parts of a social media platform. Newer platforms can be built without having to build a new
-user base while Soul users would not have to start from scratch in an entirely new social media platform.
+
+### The Philosophy
+
+We believe that connections and reputation are what defines a person, user or a **soul** in the cyberspace (maybe in the real world too 🤔).
+
+This service attempts to decentralize some parts of a social media platform. Newer platforms can be created and maintained without having to start from a fresh
+user base. On the other hand, Soul members would not have to start from scratch in an entirely new social media platform as they would be able to
+transfer their connections across all platforms which uses Soul to authenticate. You'll be moving across different worlds/ dimensions while preserving your
+soul!
+
+### TLDR
+
+Don't let Facebook, Twitter, TikTok and Reddit monopolize the social media space,
+start your own (without having to start from a fresh user base)!
 
 ## Installation
 
