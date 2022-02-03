@@ -27,6 +27,7 @@ import {
   RemovePLatformUserParamsDto,
   SetUserPlatformRoleParamsDto,
   SetUserPlatformRoleQueryParamsDto,
+  FindAllPlatformsQueryParamDto,
 } from './dto/api.dto';
 import {
   CreatePlatformResponseDto,
@@ -54,10 +55,10 @@ export class PlatformsController {
 
   @Get()
   async findAll(
-    @Query() paginationParams: PaginationParamsDto,
+    @Query() params: FindAllPlatformsQueryParamDto,
   ): Promise<FindAllPlatformResponseDto> {
     return new FindAllPlatformResponseDto(
-      await this.platformsService.findAll(paginationParams),
+      await this.platformsService.findAll(params),
     );
   }
 

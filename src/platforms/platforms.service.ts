@@ -7,7 +7,11 @@ import { User } from 'src/users/entities/user.entity';
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { UserRole } from 'src/roles/role.enum';
 
-import { CreatePlatformDto, UpdatePlatformDto } from './dto/api.dto';
+import {
+  CreatePlatformDto,
+  FindAllPlatformsQueryParamDto,
+  UpdatePlatformDto,
+} from './dto/api.dto';
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
 import {
@@ -51,11 +55,15 @@ export class PlatformsService {
     return updatedPlatform;
   }
 
-  async findAll(paginationParams: PaginationParamsDto) {
+  async findAll(params: FindAllPlatformsQueryParamDto) {
     const [platforms, totalCount] = await this.platformRepository.findAndCount({
+      where:
+        params.isVerified === undefined
+          ? [{ isVerified: true }, { isVerified: false }]
+          : { isVerified: params.isVerified },
       order: { id: 'ASC' },
-      take: paginationParams.numItemsPerPage,
-      skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
+      take: params.numItemsPerPage,
+      skip: (params.page - 1) * params.numItemsPerPage,
     });
     return { platforms, totalCount };
   }

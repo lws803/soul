@@ -61,7 +61,7 @@ async function bootstrap() {
         new Sentry.Integrations.Http({ tracing: true }),
         new Tracing.Integrations.Express({ app: expressApp }),
       ],
-      tracesSampleRate: 1.0,
+      tracesSampleRate: 0.2,
     });
 
     expressApp.use(Sentry.Handlers.requestHandler());
