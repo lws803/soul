@@ -77,8 +77,8 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('me')
-  removeMe(@Request() { user }: { user: JWTPayload }) {
-    return this.usersService.remove(user.userId);
+  async removeMe(@Request() { user }: { user: JWTPayload }) {
+    await this.usersService.remove(user.userId);
   }
 
   @Get(':id')

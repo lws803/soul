@@ -120,10 +120,10 @@ export class UserConnectionsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(
+  async remove(
     @Request() { user }: { user: JWTPayload },
     @Param() { id }: UserConnectionParamsDto,
   ) {
-    return this.userConnectionsService.remove(id, user.userId);
+    await this.userConnectionsService.remove(id, user.userId);
   }
 }

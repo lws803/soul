@@ -85,3 +85,9 @@ export class SetPlatformUserRoleResponseDto extends FindOnePlatformUserResponseD
     super(args);
   }
 }
+
+export class CreatePlatformUserRoleResponseDto extends FindOnePlatformUserResponseDto {
+  constructor(args: CreatePlatformUserRoleResponseDto) {
+    super(args);
+  }
+}
