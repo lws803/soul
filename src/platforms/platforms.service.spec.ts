@@ -113,6 +113,7 @@ describe('PlatformsService', () => {
       });
 
       expect(platformRepository.findAndCount).toHaveBeenCalledWith({
+        where: [{ isVerified: true }, { isVerified: false }],
         order: {
           id: 'ASC',
         },
@@ -133,10 +134,35 @@ describe('PlatformsService', () => {
       });
 
       expect(platformRepository.findAndCount).toHaveBeenCalledWith({
+        where: [{ isVerified: true }, { isVerified: false }],
         order: {
           id: 'ASC',
         },
         take: 1,
+        skip: 0,
+      });
+    });
+
+    it('should find all platforms with isVerified filter', async () => {
+      const platforms = factories.platformArray.build();
+
+      expect(
+        await service.findAll({
+          page: 1,
+          numItemsPerPage: 10,
+          isVerified: true,
+        }),
+      ).toEqual({
+        platforms,
+        totalCount: platforms.length,
+      });
+
+      expect(platformRepository.findAndCount).toHaveBeenCalledWith({
+        where: { isVerified: true },
+        order: {
+          id: 'ASC',
+        },
+        take: 10,
         skip: 0,
       });
     });

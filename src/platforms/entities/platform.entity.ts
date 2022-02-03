@@ -23,6 +23,9 @@ export class Platform {
   @Column({ name: 'host_url' })
   hostUrl: string;
 
+  @Column({ name: 'is_verified', default: false })
+  isVerified: boolean;
+
   @ManyToMany(
     () => UserConnection,
     (userConnection) => userConnection.platforms,

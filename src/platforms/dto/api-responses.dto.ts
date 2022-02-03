@@ -8,6 +8,7 @@ class FullPlatformResponseDto {
   @Expose() name: string;
   @Expose() nameHandle: string;
   @Expose() hostUrl: string;
+  @Expose() isVerified: boolean;
 
   @Expose() createdAt: Date;
   @Expose() updatedAt: Date;

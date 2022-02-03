@@ -70,6 +70,7 @@ describe('PlatformsController (e2e)', () => {
             nameHandle: expect.any(String),
             hostUrl: 'https://example.com',
             name: 'TEST_PLATFORM',
+            isVerified: false,
           }),
         );
 
@@ -106,6 +107,7 @@ describe('PlatformsController (e2e)', () => {
           id: 2,
           name: 'TEST_PLATFORM_2',
           nameHandle: 'TEST_PLATFORM_2#2',
+          isVerified: false,
         }),
       ]);
     });
@@ -127,6 +129,7 @@ describe('PlatformsController (e2e)', () => {
                 hostUrl: 'TEST_HOST_URL',
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
+                isVerified: true,
                 nameHandle: 'TEST_PLATFORM#1',
               },
               {
@@ -135,6 +138,7 @@ describe('PlatformsController (e2e)', () => {
                 hostUrl: 'TEST_HOST_URL',
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
+                isVerified: false,
                 nameHandle: 'TEST_PLATFORM_2#2',
               },
             ],
@@ -157,9 +161,32 @@ describe('PlatformsController (e2e)', () => {
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
                 nameHandle: 'TEST_PLATFORM#1',
+                isVerified: true,
               },
             ],
             totalCount: 2,
+          }),
+        );
+    });
+
+    it('fetches all platforms with isVerified filter', async () => {
+      await request(app.getHttpServer())
+        .get('/platforms?isVerified=true')
+        .expect(200)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            platforms: [
+              {
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+                hostUrl: 'TEST_HOST_URL',
+                id: expect.any(Number),
+                name: 'TEST_PLATFORM',
+                isVerified: true,
+                nameHandle: 'TEST_PLATFORM#1',
+              },
+            ],
+            totalCount: 1,
           }),
         );
     });
@@ -186,6 +213,7 @@ describe('PlatformsController (e2e)', () => {
             id: expect.any(Number),
             name: 'TEST_PLATFORM',
             nameHandle: 'TEST_PLATFORM#1',
+            isVerified: true,
           }),
         );
     });
@@ -240,6 +268,7 @@ describe('PlatformsController (e2e)', () => {
             id: 1,
             name: 'TEST_PLATFORM_2',
             nameHandle: 'TEST_PLATFORM_2#1',
+            isVerified: true,
           }),
         );
     });
@@ -401,6 +430,7 @@ describe('PlatformsController (e2e)', () => {
               hostUrl: 'TEST_HOST_URL',
               id: 1,
               name: 'TEST_PLATFORM',
+              isVerified: true,
               nameHandle: 'TEST_PLATFORM#1',
             },
             roles: [UserRole.ADMIN, UserRole.MEMBER],
@@ -431,6 +461,7 @@ describe('PlatformsController (e2e)', () => {
               updatedAt: expect.any(String),
               hostUrl: 'TEST_HOST_URL',
               id: 1,
+              isVerified: true,
               name: 'TEST_PLATFORM',
               nameHandle: 'TEST_PLATFORM#1',
             },

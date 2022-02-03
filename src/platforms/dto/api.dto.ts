@@ -2,12 +2,14 @@ import { PartialType } from '@nestjs/mapped-types';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
   IsUrl,
   MaxLength,
 } from 'class-validator';
+import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 
 import { UserRole } from 'src/roles/role.enum';
 
@@ -60,4 +62,11 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
   @IsOptional()
   @IsUrl()
   hostUrl?: string;
+}
+
+export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  isVerified?: boolean;
 }
