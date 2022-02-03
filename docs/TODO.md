@@ -1,7 +1,5 @@
 # TODO list
 
-- revoke a user's refresh token when changing roles
-  - fix tests and add more tests
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - add funding button to the repository
   - set up paypal or patreon for funding
