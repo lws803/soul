@@ -100,13 +100,15 @@ export class UsersController {
   }
 
   @Post('resend-confirmation-token')
-  resendConfirmationToken(@Query() { email }: ResendConfirmationTokenDto) {
-    return this.usersService.resendConfirmationToken(email);
+  async resendConfirmationToken(
+    @Query() { email }: ResendConfirmationTokenDto,
+  ) {
+    await this.usersService.resendConfirmationToken(email);
   }
 
   @Post('request-password-reset-token')
-  requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
-    return this.usersService.requestPasswordReset(email);
+  async requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
+    await this.usersService.requestPasswordReset(email);
   }
 
   @Post('password-reset')
