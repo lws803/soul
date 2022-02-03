@@ -33,7 +33,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       );
     }
 
-    if (req.headers['x-forwarded-host'] !== payload.audienceUrl) {
+    if (
+      payload.audienceUrl &&
+      req.headers['x-forwarded-host'] !== payload.audienceUrl
+    ) {
       throw new UnauthorizedUserException('Invalid audience.');
     }
 
