@@ -31,7 +31,7 @@ import {
 } from './dto/api.dto';
 import {
   CreatePlatformResponseDto,
-  CreatePlatformUserRoleResponseDto,
+  CreatePlatformUserResponseDto,
   FindAllPlatformResponseDto,
   FindAllPlatformUsersResponseDto,
   FindOnePlatformResponseDto,
@@ -143,7 +143,7 @@ export class PlatformsController {
     @Request() { user }: { user: JWTPayload },
     @Param() { platformId }: PlatformIdParamDto,
   ) {
-    return new CreatePlatformUserRoleResponseDto(
+    return new CreatePlatformUserResponseDto(
       await this.platformsService.addUser(platformId, user.userId),
     );
   }
