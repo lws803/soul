@@ -6,6 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { UserRole } from 'src/roles/role.enum';
+import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import {
   CreatePlatformDto,
@@ -28,6 +29,8 @@ export class PlatformsService {
     @InjectRepository(PlatformUser)
     private platformUserRepository: Repository<PlatformUser>,
     private readonly usersService: UsersService,
+    @InjectRepository(RefreshToken)
+    private readonly refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
   async create(createPlatformDto: CreatePlatformDto, userId: number) {
@@ -120,6 +123,11 @@ export class PlatformsService {
     platformUser.platform = platform;
     platformUser.roles = [...new Set(roles)];
 
+    await this.refreshTokenRepository.update(
+      { platformUser },
+      { isRevoked: true },
+    );
+
     return await this.platformUserRepository.save(platformUser);
   }
 
@@ -144,6 +152,10 @@ export class PlatformsService {
     const platformUser = await this.findOnePlatformUser(platformId, userId);
     // Check if there are any remaining admins
     await this.findAnotherAdminOrThrow(platformId, userId);
+    await this.refreshTokenRepository.update(
+      { platformUser },
+      { isRevoked: true },
+    );
     return await this.platformUserRepository.delete({ id: platformUser.id });
   }
 
