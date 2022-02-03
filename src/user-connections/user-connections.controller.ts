@@ -107,11 +107,11 @@ export class UserConnectionsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id/platforms/:platformId')
-  removePlatformFromUserConnection(
+  async removePlatformFromUserConnection(
     @Request() { user }: { user: JWTPayload },
     @Param() { id, platformId }: RemovePlatformFromUserConnectionParamsDto,
   ) {
-    return this.userConnectionsService.removePlatformFromUserConnection(
+    await this.userConnectionsService.removePlatformFromUserConnection(
       id,
       platformId,
       user.userId,
@@ -120,10 +120,10 @@ export class UserConnectionsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(
+  async remove(
     @Request() { user }: { user: JWTPayload },
     @Param() { id }: UserConnectionParamsDto,
   ) {
-    return this.userConnectionsService.remove(id, user.userId);
+    await this.userConnectionsService.remove(id, user.userId);
   }
 }

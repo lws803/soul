@@ -186,7 +186,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .send(factories.updateUserDto.build())
         .expect(200)
         .expect((res) => {
@@ -219,7 +219,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .delete('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(200)
         .expect((res) => {
           expect(res.body).toStrictEqual({});
@@ -243,7 +243,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/users/me')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .set('Host', 'localhost:3000')
+        .set('X-Forwarded-Host', 'localhost:3000')
         .expect(200)
         .expect((res) =>
           expect(res.body).toStrictEqual({

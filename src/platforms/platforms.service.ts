@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { UserRole } from 'src/roles/role.enum';
+import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import {
   CreatePlatformDto,
@@ -18,6 +19,7 @@ import {
   PlatformNotFoundException,
   PlatformUserNotFoundException,
   NoAdminsRemainingException,
+  DuplicatePlatformUserException,
 } from './exceptions';
 
 @Injectable()
@@ -28,6 +30,8 @@ export class PlatformsService {
     @InjectRepository(PlatformUser)
     private platformUserRepository: Repository<PlatformUser>,
     private readonly usersService: UsersService,
+    @InjectRepository(RefreshToken)
+    private readonly refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
   async create(createPlatformDto: CreatePlatformDto, userId: number) {
@@ -101,13 +105,7 @@ export class PlatformsService {
   async setUserRole(platformId: number, userId: number, roles: UserRole[]) {
     const platform = await this.findPlatformOrThrow({ id: platformId });
     const user = await this.usersService.findOne(userId);
-    let platformUser = await this.platformUserRepository.findOne({
-      user,
-      platform,
-    });
-    if (!platformUser) {
-      platformUser = new PlatformUser();
-    }
+    const platformUser = await this.findPlatformUserOrThrow({ user, platform });
     if (
       platformUser.roles.includes(UserRole.ADMIN) &&
       !roles.includes(UserRole.ADMIN)
@@ -119,6 +117,8 @@ export class PlatformsService {
     platformUser.user = user;
     platformUser.platform = platform;
     platformUser.roles = [...new Set(roles)];
+
+    await this.revokePlatformUserRefreshToken(platformUser);
 
     return await this.platformUserRepository.save(platformUser);
   }
@@ -144,7 +144,25 @@ export class PlatformsService {
     const platformUser = await this.findOnePlatformUser(platformId, userId);
     // Check if there are any remaining admins
     await this.findAnotherAdminOrThrow(platformId, userId);
-    return await this.platformUserRepository.delete({ id: platformUser.id });
+    await this.platformUserRepository.delete({ id: platformUser.id });
+  }
+
+  async addUser(platformId: number, userId: number) {
+    const newPlatformUser = new PlatformUser();
+    newPlatformUser.platform = await this.findOne(platformId);
+    newPlatformUser.user = await this.usersService.findOne(userId);
+    newPlatformUser.roles = [UserRole.MEMBER];
+
+    try {
+      return await this.platformUserRepository.save(newPlatformUser);
+    } catch (exception) {
+      if (exception instanceof QueryFailedError) {
+        if (exception.driverError.code === 'ER_DUP_ENTRY') {
+          throw new DuplicatePlatformUserException();
+        }
+        throw exception;
+      }
+    }
   }
 
   private async findPlatformOrThrow({ id }: { id: number }): Promise<Platform> {
@@ -187,6 +205,15 @@ export class PlatformsService {
 
     if (!adminPlatformUser) {
       throw new NoAdminsRemainingException();
+    }
+  }
+
+  private async revokePlatformUserRefreshToken(platformUser: PlatformUser) {
+    if (await this.refreshTokenRepository.findOne({ platformUser })) {
+      await this.refreshTokenRepository.update(
+        { platformUser },
+        { isRevoked: true },
+      );
     }
   }
 }

@@ -1,7 +1,6 @@
 # TODO list
 
-- revoke a user's refresh token when changing roles
-  - create a new method in auth.service for that
+- find out how to prevent users from overriding the X-Forwarded-Host header
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - add funding button to the repository
   - set up paypal or patreon for funding

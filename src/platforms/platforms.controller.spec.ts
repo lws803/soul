@@ -35,6 +35,9 @@ describe('PlatformsController', () => {
               .fn()
               .mockResolvedValue(factories.onePlatformUser.build()),
             removeUser: jest.fn(),
+            addUser: jest
+              .fn()
+              .mockResolvedValue(factories.onePlatformUser.build()),
             findAllPlatformUsers: jest.fn().mockResolvedValue({
               platformUsers: factories.platformUserArray.build(),
               totalCount: factories.platformUserArray.build().length,
@@ -144,6 +147,25 @@ describe('PlatformsController', () => {
     expect(platformsService.removeUser).toHaveBeenCalledWith(
       platform.id,
       user.id,
+    );
+  });
+
+  it('joinPlatform()', async () => {
+    const platform = factories.onePlatform.build();
+    const oneUser = factories.oneUser.build();
+
+    expect(
+      await controller.joinPlatform(
+        { user: factories.jwtPayload.build() },
+        {
+          platformId: platform.id,
+        },
+      ),
+    ).toEqual(factories.onePlatformUser.build());
+
+    expect(platformsService.addUser).toHaveBeenCalledWith(
+      platform.id,
+      oneUser.id,
     );
   });
 

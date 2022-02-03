@@ -10,7 +10,7 @@ import { JWTPayload } from '../entities/jwt-payload.entity';
 describe(JwtStrategy, () => {
   const request = {
     headers: {
-      host: 'localhost:3000',
+      'x-forwarded-host': 'localhost:3000',
     },
   } as unknown as Request;
 

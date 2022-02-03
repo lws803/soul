@@ -77,8 +77,8 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('me')
-  removeMe(@Request() { user }: { user: JWTPayload }) {
-    return this.usersService.remove(user.userId);
+  async removeMe(@Request() { user }: { user: JWTPayload }) {
+    await this.usersService.remove(user.userId);
   }
 
   @Get(':id')
@@ -100,13 +100,15 @@ export class UsersController {
   }
 
   @Post('resend-confirmation-token')
-  resendConfirmationToken(@Query() { email }: ResendConfirmationTokenDto) {
-    return this.usersService.resendConfirmationToken(email);
+  async resendConfirmationToken(
+    @Query() { email }: ResendConfirmationTokenDto,
+  ) {
+    await this.usersService.resendConfirmationToken(email);
   }
 
   @Post('request-password-reset-token')
-  requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
-    return this.usersService.requestPasswordReset(email);
+  async requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
+    await this.usersService.requestPasswordReset(email);
   }
 
   @Post('password-reset')

@@ -16,6 +16,7 @@ const ALLOWED_WHITELIST = new Set(['127.0.0.1', '::1', '::ffff:172.17.0.1']);
 export class LocalIpWhitelistInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const httpContext = context.switchToHttp();
+
     if (
       !ALLOWED_WHITELIST.has(requestIp.getClientIp(httpContext.getRequest()))
     ) {

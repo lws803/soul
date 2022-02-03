@@ -31,6 +31,7 @@ import {
 } from './dto/api.dto';
 import {
   CreatePlatformResponseDto,
+  CreatePlatformUserResponseDto,
   FindAllPlatformResponseDto,
   FindAllPlatformUsersResponseDto,
   FindOnePlatformResponseDto,
@@ -86,8 +87,8 @@ export class PlatformsController {
   @Roles(UserRole.ADMIN)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId')
-  remove(@Param() { platformId }: PlatformIdParamDto) {
-    return this.platformsService.remove(platformId);
+  async remove(@Param() { platformId }: PlatformIdParamDto) {
+    await this.platformsService.remove(platformId);
   }
 
   @Roles(UserRole.MEMBER)
@@ -120,19 +121,30 @@ export class PlatformsController {
   @Roles(UserRole.ADMIN)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId/users/:userId')
-  removePlatformUser(
+  async removePlatformUser(
     @Param() { platformId, userId }: RemovePLatformUserParamsDto,
   ) {
-    return this.platformsService.removeUser(platformId, userId);
+    await this.platformsService.removeUser(platformId, userId);
   }
 
   @Roles(UserRole.MEMBER)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId/quit')
-  removeMyself(
+  async removeMyself(
     @Request() { user }: { user: JWTPayload },
     @Param() { platformId }: PlatformIdParamDto,
   ) {
-    return this.platformsService.removeUser(platformId, user.userId);
+    await this.platformsService.removeUser(platformId, user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':platformId/join')
+  async joinPlatform(
+    @Request() { user }: { user: JWTPayload },
+    @Param() { platformId }: PlatformIdParamDto,
+  ) {
+    return new CreatePlatformUserResponseDto(
+      await this.platformsService.addUser(platformId, user.userId),
+    );
   }
 }
