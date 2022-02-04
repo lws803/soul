@@ -147,7 +147,7 @@ describe('AuthService', () => {
       const user = factories.oneUser.build();
       const platformUser = factories.onePlatformUser.build();
 
-      const response = await service.loginWithPlatform(
+      const response = await service.getCodeForPlatformAndCallback(
         user,
         platformUser.platform.id,
       );

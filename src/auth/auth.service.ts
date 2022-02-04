@@ -16,7 +16,11 @@ import { JWTPayload } from './entities/jwt-payload.entity';
 import { JWTRefreshPayload } from './entities/jwt-refresh-payload.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { TokenType } from './enums/token-type.enum';
-import { InvalidTokenException, UserNotVerifiedException } from './exceptions';
+import {
+  InvalidTokenException,
+  UserNotVerifiedException,
+  InvalidCallbackException,
+} from './exceptions';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +57,11 @@ export class AuthService {
     };
   }
 
-  async loginWithPlatform(user: User, platformId: number) {
+  async getCodeForPlatformAndCallback(
+    user: User,
+    platformId: number,
+    callback: string,
+  ) {
     const platformUser = await this.platformService.findOnePlatformUser(
       platformId,
       user.id,
@@ -62,9 +70,15 @@ export class AuthService {
     if (!user.isActive) {
       throw new UserNotVerifiedException();
     }
+    const platform = await this.platformService.findOne(platformId);
+
+    if (!platform.redirectUris.includes(callback)) {
+      throw new InvalidCallbackException();
+    }
 
     await this.refreshTokenRepository.delete({ user, platformUser });
-    return {
+
+    const payload = {
       accessToken: await this.generateAccessToken(
         user,
         platformId,
@@ -79,6 +93,29 @@ export class AuthService {
       platformId,
       roles: platformUser.roles,
     };
+    return {
+      code: this.jwtService.sign(
+        { payload, callback },
+        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
+      ),
+    };
+  }
+
+  exchangeCodeForToken(code: string, callback: string) {
+    const { payload, callback: initialCallback } = this.jwtService.verify<{
+      payload: {
+        accessToken: string;
+        refreshToken: string;
+        platformId: number;
+        roles: UserRole[];
+      };
+      callback: string;
+    }>(code);
+
+    if (initialCallback !== callback) {
+      throw new InvalidCallbackException();
+    }
+    return payload;
   }
 
   async refresh(encodedRefreshToken: string) {

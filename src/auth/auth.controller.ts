@@ -10,7 +10,12 @@ import {
 import { User } from 'src/users/entities/user.entity';
 
 import { AuthService } from './auth.service';
-import { PlatformIdQueryDto, RefreshTokenBodyDto } from './dto/api.dto';
+import {
+  PlatformIdQueryDto,
+  RefreshTokenBodyDto,
+  CodeQueryParamDto,
+  ValidateQueryParamDto,
+} from './dto/api.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller({ version: '1', path: 'auth' })
@@ -19,14 +24,26 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(
-    @Request() { user }: { user: User },
-    @Query() { platformId }: PlatformIdQueryDto,
-  ) {
-    if (platformId) {
-      return this.authService.loginWithPlatform(user, platformId);
-    }
+  async login(@Request() { user }: { user: User }) {
     return this.authService.login(user);
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('code')
+  async code(
+    @Request() { user }: { user: User },
+    @Query() { platformId, callback }: CodeQueryParamDto,
+  ) {
+    return this.authService.getCodeForPlatformAndCallback(
+      user,
+      platformId,
+      callback,
+    );
+  }
+
+  @Post('verify')
+  verify(@Query() { code, callback }: ValidateQueryParamDto) {
+    return this.authService.exchangeCodeForToken(code, callback);
   }
 
   @Post('refresh')

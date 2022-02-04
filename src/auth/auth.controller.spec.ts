@@ -70,7 +70,10 @@ describe('AuthService', () => {
         platformId: 1,
         roles: [UserRole.ADMIN, UserRole.MEMBER],
       });
-      expect(service.loginWithPlatform).toHaveBeenCalledWith(user, 1);
+      expect(service.getCodeForPlatformAndCallback).toHaveBeenCalledWith(
+        user,
+        1,
+      );
     });
   });
 
