@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
+    "preinstall": "npm --prefix login-portal install",
     "build": "npm run build-login-portal && nest build",
     "build-login-portal": "npm run --prefix login-portal build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
