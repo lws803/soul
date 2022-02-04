@@ -18,6 +18,7 @@ export const onePlatform = Factory.define<Platform>(() => ({
   updatedAt: new Date('1995-12-18T03:24:00'),
   userConnections: [],
   isVerified: true,
+  redirectUris: ['TEST_REDIRECT_URI'],
 }));
 
 export const platformArray = Factory.define<Platform[]>(() => [
@@ -47,4 +48,5 @@ export const updatePlatformDto = Factory.define<UpdatePlatformDto>(() => ({
 export const createPlatformDto = Factory.define<CreatePlatformDto>(() => ({
   name: 'TEST_PLATFORM',
   hostUrl: 'TEST_HOST_URL',
+  redirectUris: ['TEST_REDIRECT_URI'],
 }));

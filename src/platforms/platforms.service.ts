@@ -38,6 +38,7 @@ export class PlatformsService {
     const platform = new Platform();
     platform.name = createPlatformDto.name;
     platform.hostUrl = createPlatformDto.hostUrl;
+    platform.redirectUris = createPlatformDto.redirectUris;
 
     const savedPlatform = await this.platformRepository.save(platform);
     await this.platformRepository.update(

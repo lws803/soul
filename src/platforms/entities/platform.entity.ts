@@ -23,6 +23,9 @@ export class Platform {
   @Column({ name: 'host_url' })
   hostUrl: string;
 
+  @Column({ name: 'redirect_uris', type: 'json', nullable: false })
+  redirectUris: string[];
+
   @Column({ name: 'is_verified', default: false })
   isVerified: boolean;
 

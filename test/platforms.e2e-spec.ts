@@ -54,6 +54,7 @@ describe('PlatformsController (e2e)', () => {
     it('creates a new platform', async () => {
       const createPlatformDto = factories.createPlatformDto.build({
         hostUrl: 'https://example.com',
+        redirectUris: ['https://example.com/redirect'],
       });
 
       await request(app.getHttpServer())
@@ -69,6 +70,7 @@ describe('PlatformsController (e2e)', () => {
             id: expect.any(Number),
             nameHandle: expect.any(String),
             hostUrl: 'https://example.com',
+            redirectUris: ['https://example.com/redirect'],
             name: 'TEST_PLATFORM',
             isVerified: false,
           }),
@@ -269,6 +271,7 @@ describe('PlatformsController (e2e)', () => {
             name: 'TEST_PLATFORM_2',
             nameHandle: 'TEST_PLATFORM_2#1',
             isVerified: true,
+            redirectUris: ['TEST_REDIRECT_URI'],
           }),
         );
     });
