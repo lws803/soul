@@ -13,7 +13,6 @@ const schema = Joi.object({
   JWT_SECRET_KEY: Joi.string().required(),
   JWT_REFRESH_TOKEN_TTL: Joi.number().required(),
   JWT_ACCESS_TOKEN_TTL: Joi.string().required(),
-  HOST_URL: Joi.string().required(),
   // Redis config
   REDIS_DB_HOST: Joi.string().required(),
   REDIS_DB_PASSWORD: Joi.string().optional().allow(''),

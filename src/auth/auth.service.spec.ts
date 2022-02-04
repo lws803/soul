@@ -154,9 +154,7 @@ describe('AuthService', () => {
       expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
         1,
-        factories.jwtPayloadWithPlatform.build({
-          audienceUrl: 'TEST_HOST_URL',
-        }),
+        factories.jwtPayloadWithPlatform.build(),
         { secret: 'JWT_SECRET_KEY' },
       );
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(

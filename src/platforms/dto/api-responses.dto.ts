@@ -7,11 +7,12 @@ class FullPlatformResponseDto {
   @Expose() id: number;
   @Expose() name: string;
   @Expose() nameHandle: string;
-  @Expose() hostUrl: string;
   @Expose() isVerified: boolean;
 
   @Expose() createdAt: Date;
   @Expose() updatedAt: Date;
+
+  @Expose() redirectUris: string[];
 
   constructor(args: FullPlatformResponseDto) {
     Object.assign(this, args);
@@ -30,9 +31,17 @@ export class UpdatePlatformResponseDto extends FullPlatformResponseDto {
   }
 }
 
-export class FindOnePlatformResponseDto extends FullPlatformResponseDto {
+export class FindOnePlatformResponseDto {
+  @Expose() id: number;
+  @Expose() name: string;
+  @Expose() nameHandle: string;
+  @Expose() isVerified: boolean;
+
+  @Expose() createdAt: Date;
+  @Expose() updatedAt: Date;
+
   constructor(args: FindOnePlatformResponseDto) {
-    super(args);
+    Object.assign(this, args);
   }
 }
 

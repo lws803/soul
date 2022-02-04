@@ -24,7 +24,7 @@ import {
   UpdatePlatformDto,
   CreatePlatformDto,
   PlatformIdParamDto,
-  RemovePLatformUserParamsDto,
+  RemovePlatformUserParamsDto,
   SetUserPlatformRoleParamsDto,
   SetUserPlatformRoleQueryParamsDto,
   FindAllPlatformsQueryParamDto,
@@ -122,7 +122,7 @@ export class PlatformsController {
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId/users/:userId')
   async removePlatformUser(
-    @Param() { platformId, userId }: RemovePLatformUserParamsDto,
+    @Param() { platformId, userId }: RemovePlatformUserParamsDto,
   ) {
     await this.platformsService.removeUser(platformId, userId);
   }

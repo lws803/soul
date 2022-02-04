@@ -1,6 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Transform, Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsEnum,
@@ -36,7 +38,7 @@ export class SetUserPlatformRoleParamsDto {
   userId: number;
 }
 
-export class RemovePLatformUserParamsDto {
+export class RemovePlatformUserParamsDto {
   @Type(() => Number)
   @IsInt()
   platformId: number;
@@ -50,8 +52,13 @@ export class CreatePlatformDto {
   @MaxLength(32)
   name: string;
 
-  @IsUrl()
-  hostUrl: string;
+  // TODO: add more validation to prevent folks from open redirects
+  @IsArray()
+  @ArrayMaxSize(10)
+  @ArrayMinSize(1)
+  @MaxLength(2048, { each: true })
+  @IsUrl({}, { each: true })
+  redirectUris: string[];
 }
 
 export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
@@ -60,8 +67,12 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
   name?: string;
 
   @IsOptional()
-  @IsUrl()
-  hostUrl?: string;
+  @IsArray()
+  @ArrayMaxSize(10)
+  @ArrayMinSize(1)
+  @MaxLength(2048, { each: true })
+  @IsUrl({}, { each: true })
+  redirectUris?: string[];
 }
 
 export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {

@@ -1,6 +1,11 @@
 # TODO list
 
-- find out how to prevent users from overriding the X-Forwarded-Host header
+- support oauth 2.0
+  - create a new token endpoint that accepts user login + redirect uri and validates it against a list of registered ones in platform,
+    this endpoint will return a code if successful
+  - create a new endpoint to allow platforms to exchange this code + initial redirect uri with actual accessToken, refreshToken
+- create new auth form on a separate repo which accepts a redirect url and calls the login method with it
+  - when login successfully, redirect the user based on the redirect uri
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - add funding button to the repository
   - set up paypal or patreon for funding

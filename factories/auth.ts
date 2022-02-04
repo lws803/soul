@@ -27,14 +27,12 @@ export const jwtPayload = Factory.define<JWTPayload>(() => ({
   userId: factories.oneUser.build().id,
   username: factories.oneUser.build().username,
   tokenType: TokenType.ACCESS,
-  audienceUrl: 'localhost:3000',
 }));
 
 export const jwtPayloadWithPlatform = Factory.define<JWTPayload>(() => ({
   userId: factories.oneUser.build().id,
   username: factories.oneUser.build().username,
   tokenType: TokenType.ACCESS,
-  audienceUrl: 'localhost:3000',
   platformId: factories.onePlatformUser.build().platform.id,
   roles: factories.onePlatformUser.build().roles,
 }));
@@ -53,10 +51,8 @@ export const requestUserObject = Factory.define<{
   tokenType: TokenType;
   username: string;
   userId: number;
-  audienceUrl: string;
 }>(() => ({
   tokenType: TokenType.ACCESS,
   username: 'TEST_USER',
   userId: 1,
-  audienceUrl: 'localhost:3000',
 }));
