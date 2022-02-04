@@ -1,6 +1,7 @@
 # TODO list
 
 - support oauth 2.0
+  - remove the use of hostUrl and remove validation for it
   - create a new token endpoint that accepts user login + redirect uri and validates it against a list of registered ones in platform,
     this endpoint will return a code if successful
   - create a new endpoint to allow platforms to exchange this code + initial redirect uri with actual accessToken, refreshToken

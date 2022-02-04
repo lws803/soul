@@ -110,6 +110,7 @@ describe('PlatformsService', () => {
       expect(platformRepository.save).toHaveBeenCalledWith({
         hostUrl: 'TEST_HOST_URL',
         name: 'TEST_PLATFORM',
+        redirectUris: ['TEST_REDIRECT_URI'],
       });
       expect(platformRepository.update).toHaveBeenCalledWith(
         { id: platform.id },
