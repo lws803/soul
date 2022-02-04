@@ -37,7 +37,6 @@ export class PlatformsService {
   async create(createPlatformDto: CreatePlatformDto, userId: number) {
     const platform = new Platform();
     platform.name = createPlatformDto.name;
-    platform.hostUrl = createPlatformDto.hostUrl;
     platform.redirectUris = createPlatformDto.redirectUris;
 
     const savedPlatform = await this.platformRepository.save(platform);

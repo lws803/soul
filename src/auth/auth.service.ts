@@ -58,7 +58,6 @@ export class AuthService {
       platformId,
       user.id,
     );
-    const platform = await this.platformService.findOne(platformId);
 
     if (!user.isActive) {
       throw new UserNotVerifiedException();
@@ -70,7 +69,6 @@ export class AuthService {
         user,
         platformId,
         platformUser.roles,
-        platform.hostUrl,
       ),
       refreshToken: await this.generateRefreshToken(
         user,
@@ -116,12 +114,10 @@ export class AuthService {
     user: User,
     platformId?: number,
     roles?: UserRole[],
-    hostUrl?: string,
   ) {
     const payload = new JWTPayload({
       username: user.username,
       userId: user.id,
-      audienceUrl: hostUrl || this.configService.get('HOST_URL'),
       platformId,
       roles,
     });

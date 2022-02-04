@@ -6,7 +6,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import * as Sentry from '@sentry/node';
 
 import { JWTPayload } from '../entities/jwt-payload.entity';
-import { UnauthorizedUserException } from '../exceptions/unauthorized-user.exception';
 import { TokenType } from '../enums/token-type.enum';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception';
 
@@ -33,14 +32,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       );
     }
 
-    if (req.headers['x-forwarded-host'] !== payload.audienceUrl) {
-      throw new UnauthorizedUserException('Invalid audience.');
-    }
-
     Sentry.setUser({ username: payload.username });
     Sentry.setContext('additional user information', {
       userId: payload.userId,
-      audienceUrl: payload.audienceUrl,
       platformId: payload.platformId,
       roles: payload.roles,
     });

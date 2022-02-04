@@ -108,7 +108,6 @@ describe('PlatformsService', () => {
       expect(newPlatform).toEqual(platform);
 
       expect(platformRepository.save).toHaveBeenCalledWith({
-        hostUrl: 'TEST_HOST_URL',
         name: 'TEST_PLATFORM',
         redirectUris: ['TEST_REDIRECT_URI'],
       });
@@ -246,7 +245,6 @@ describe('PlatformsService', () => {
       const platform = factories.onePlatform.build();
       const updates = {
         name: 'TEST_PLATFORM_UPDATE',
-        hostUrl: 'TEST_HOST_URL_UPDATE',
         nameHandle: 'TEST_PLATFORM_UPDATE#1',
       };
       const updatedPlatform = factories.onePlatform.build(updates);

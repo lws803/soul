@@ -7,7 +7,6 @@ class FullPlatformResponseDto {
   @Expose() id: number;
   @Expose() name: string;
   @Expose() nameHandle: string;
-  @Expose() hostUrl: string;
   @Expose() isVerified: boolean;
 
   @Expose() createdAt: Date;
@@ -36,7 +35,6 @@ export class FindOnePlatformResponseDto {
   @Expose() id: number;
   @Expose() name: string;
   @Expose() nameHandle: string;
-  @Expose() hostUrl: string;
   @Expose() isVerified: boolean;
 
   @Expose() createdAt: Date;

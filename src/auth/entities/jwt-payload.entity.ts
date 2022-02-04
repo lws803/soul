@@ -5,7 +5,6 @@ import { UserRole } from 'src/roles/role.enum';
 import { TokenType } from '../enums/token-type.enum';
 
 export class JWTPayload {
-  audienceUrl: string;
   username: string;
   userId: number;
   tokenType = TokenType.ACCESS;
@@ -21,7 +20,6 @@ export class JWTPayload {
 }
 
 type JWTArgs = {
-  audienceUrl: string;
   username: string;
   userId: number;
 };

@@ -52,9 +52,6 @@ export class CreatePlatformDto {
   @MaxLength(32)
   name: string;
 
-  @IsUrl()
-  hostUrl: string;
-
   // TODO: add more validation to prevent folks from open redirects
   @IsArray()
   @ArrayMaxSize(10)
@@ -68,10 +65,6 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
   @IsOptional()
   @MaxLength(32)
   name?: string;
-
-  @IsOptional()
-  @IsUrl()
-  hostUrl?: string;
 
   @IsOptional()
   @IsArray()

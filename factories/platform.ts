@@ -13,7 +13,6 @@ export const onePlatform = Factory.define<Platform>(() => ({
   id: 1,
   name: 'TEST_PLATFORM',
   nameHandle: 'TEST_PLATFORM#1',
-  hostUrl: 'TEST_HOST_URL',
   createdAt: new Date('1995-12-17T03:24:00'),
   updatedAt: new Date('1995-12-18T03:24:00'),
   userConnections: [],
@@ -42,11 +41,9 @@ export const platformUserArray = Factory.define<PlatformUser[]>(() => [
 
 export const updatePlatformDto = Factory.define<UpdatePlatformDto>(() => ({
   name: 'TEST_PLATFORM_UPDATE',
-  hostUrl: 'TEST_HOST_URL_UPDATE',
 }));
 
 export const createPlatformDto = Factory.define<CreatePlatformDto>(() => ({
   name: 'TEST_PLATFORM',
-  hostUrl: 'TEST_HOST_URL',
   redirectUris: ['TEST_REDIRECT_URI'],
 }));
