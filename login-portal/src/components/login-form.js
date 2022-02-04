@@ -10,10 +10,10 @@ import {
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { useQueryParam, StringParam } from 'use-query-params';
+import axios from 'axios';
 
 export default function LoginForm() {
-  const [callback] = useQueryParam('callback', StringParam);
+  const { callback, platformId } = useQueryParams();
 
   const formik = useFormik({
     initialValues: {
@@ -21,9 +21,19 @@ export default function LoginForm() {
       password: '',
     },
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
-      // If login is successful
-      window.open(callback, '_blank');
+      axios
+        .post(
+          `http://localhost:3000/v1/auth/code?platformId=${platformId}&callback=${callback}`,
+          values,
+        )
+        .then((data) => console.log(data))
+        .catch((error) => console.log(error));
+
+      if (typeof window !== 'undefined') {
+        // window.open(`https://${callback}`, '_blank');
+      }
+      // TODO: If user has not signed up before then we will need to open up registration form
+      // TODO: If user has not joined the platform before, we will need to open up the join page
     },
     validationSchema: Yup.object({
       email: Yup.string().email().required(),
@@ -76,3 +86,12 @@ export default function LoginForm() {
     </Center>
   );
 }
+
+const useQueryParams = () => {
+  const result = {};
+  const search = typeof window !== 'undefined' ? window.location.search : '';
+  new URLSearchParams(search).forEach((value, key) => {
+    result[key] = value;
+  });
+  return result;
+};
