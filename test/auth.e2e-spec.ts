@@ -50,7 +50,9 @@ describe('AuthController (e2e)', () => {
       userAccount = firstUser;
 
       const platform = await platformRepository.save(
-        factories.onePlatform.build(),
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
       );
       await platformUserRepository.save(
         factories.onePlatformUser.build({
@@ -85,10 +87,14 @@ describe('AuthController (e2e)', () => {
       ).not.toBeUndefined();
     });
 
-    it('logs in successfully with a platform', async () => {
+    it('logs in successfully for platform', async () => {
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
-        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' })
+        .post(
+          `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        )
         .expect(201)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -126,7 +132,9 @@ describe('AuthController (e2e)', () => {
       userAccount = firstUser;
 
       const platform = await platformRepository.save(
-        factories.onePlatform.build(),
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
       );
       await platformUserRepository.save(
         factories.onePlatformUser.build({
@@ -154,10 +162,14 @@ describe('AuthController (e2e)', () => {
         );
     });
 
-    it('refreshes token for platform without specifying successfully', async () => {
-      const resp = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+    it('refreshes token for platform', async () => {
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const resp = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
+
       const { refreshToken } = resp.body;
 
       await request(app.getHttpServer())
@@ -174,9 +186,13 @@ describe('AuthController (e2e)', () => {
     });
 
     it('refreshes token for platform without specifying platform id', async () => {
-      const resp = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const resp = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
+
       const { refreshToken } = resp.body;
 
       await request(app.getHttpServer())
