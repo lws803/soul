@@ -68,6 +68,10 @@ describe('AuthService', () => {
               .fn()
               .mockResolvedValue(factories.jwtRefreshPayload.build()),
             sign: jest.fn().mockReturnValue('SIGNED_TOKEN'),
+            verify: jest.fn().mockReturnValue({
+              payload: factories.jwtPayloadWithPlatform.build(),
+              callback: 'TEST_REDIRECT_URI',
+            }),
           },
         },
       ],
@@ -78,10 +82,6 @@ describe('AuthService', () => {
     refreshTokenRepository = module.get<Repository<RefreshToken>>(
       getRepositoryToken(RefreshToken),
     );
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
   });
 
   describe('validateUser()', () => {
@@ -178,6 +178,29 @@ describe('AuthService', () => {
       });
 
       expect(response).toEqual({ code: 'SIGNED_TOKEN' });
+    });
+
+    it('should deny access when callback url is not registered', async () => {
+      const user = factories.oneUser.build();
+      const platformUser = factories.onePlatformUser.build();
+
+      await expect(
+        service.getCodeForPlatformAndCallback(
+          user,
+          platformUser.platform.id,
+          'INVALID_URI',
+        ),
+      ).rejects.toThrow('Invalid callback uri supplied');
+    });
+  });
+
+  describe('exchangeCodeForToken()', () => {
+    it('exchanges code for accessToken and refreshToken', () => {
+      const code = 'SIGNED_TOKEN';
+      const response = service.exchangeCodeForToken(code, 'TEST_REDIRECT_URI');
+
+      expect(jwtService.verify).toHaveBeenCalledWith(code);
+      expect(response).toStrictEqual(factories.jwtPayloadWithPlatform.build());
     });
   });
 
