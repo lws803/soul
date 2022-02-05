@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
 
 import * as factories from 'factories';
+import { UserRole } from 'src/roles/role.enum';
 import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
 
@@ -69,7 +70,8 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.jwtRefreshPayload.build()),
             sign: jest.fn().mockReturnValue('SIGNED_TOKEN'),
             verify: jest.fn().mockReturnValue({
-              payload: factories.jwtPayloadWithPlatform.build(),
+              userId: factories.oneUser.build().id,
+              platformId: factories.onePlatform.build().id,
               callback: 'TEST_REDIRECT_URI',
             }),
           },
@@ -153,24 +155,6 @@ describe('AuthService', () => {
         platformUser.platform.id,
         'TEST_REDIRECT_URI',
       );
-      expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
-      expect(jwtService.signAsync).toHaveBeenNthCalledWith(
-        1,
-        factories.jwtPayloadWithPlatform.build(),
-        { secret: 'JWT_SECRET_KEY' },
-      );
-      expect(jwtService.signAsync).toHaveBeenNthCalledWith(
-        2,
-        factories.jwtRefreshPayloadWithPlatform.build(),
-        { secret: 'JWT_SECRET_KEY', expiresIn: 3600 },
-      );
-
-      expect(refreshTokenRepository.save).toHaveBeenCalledWith({
-        user: user,
-        isRevoked: false,
-        expires: expect.any(Date),
-        platformUser: platformUser,
-      });
 
       expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
         user,
@@ -210,23 +194,55 @@ describe('AuthService', () => {
   });
 
   describe('exchangeCodeForToken()', () => {
-    it('exchanges code for accessToken and refreshToken', () => {
+    it('exchanges code for accessToken and refreshToken', async () => {
       const code = 'SIGNED_TOKEN';
-      const response = service.exchangeCodeForToken(code, 'TEST_REDIRECT_URI');
+      const response = await service.exchangeCodeForToken(
+        code,
+        'TEST_REDIRECT_URI',
+      );
+      const user = factories.oneUser.build();
+      const platformUser = factories.onePlatformUser.build();
 
       expect(jwtService.verify).toHaveBeenCalledWith(code);
-      expect(response).toStrictEqual(factories.jwtPayloadWithPlatform.build());
+
+      expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
+      expect(jwtService.signAsync).toHaveBeenNthCalledWith(
+        1,
+        factories.jwtPayloadWithPlatform.build(),
+        { secret: 'JWT_SECRET_KEY' },
+      );
+      expect(jwtService.signAsync).toHaveBeenNthCalledWith(
+        2,
+        factories.jwtRefreshPayloadWithPlatform.build(),
+        { secret: 'JWT_SECRET_KEY', expiresIn: 3600 },
+      );
+
+      expect(refreshTokenRepository.save).toHaveBeenCalledWith({
+        user: user,
+        isRevoked: false,
+        expires: expect.any(Date),
+        platformUser: platformUser,
+      });
+
+      expect(response).toStrictEqual({
+        accessToken: 'SIGNED_TOKEN',
+        refreshToken: 'SIGNED_TOKEN',
+        platformId: 1,
+        roles: [UserRole.ADMIN, UserRole.MEMBER],
+      });
     });
 
-    it('denies access when callback uri is not the same as initially provided', () => {
+    it('denies access when callback uri is not the same as initially provided', async () => {
       const code = 'SIGNED_TOKEN';
 
-      jest
-        .spyOn(jwtService, 'verify')
-        .mockImplementation(() => ({ payload: {}, callback: 'INVALID_URI' }));
-      expect(() =>
+      jest.spyOn(jwtService, 'verify').mockImplementation(() => ({
+        userId: 1,
+        platformId: 1,
+        callback: 'INVALID_URI',
+      }));
+      await expect(
         service.exchangeCodeForToken(code, 'TEST_REDIRECT_URI'),
-      ).toThrow('Invalid callback uri supplied');
+      ).rejects.toThrow('Invalid callback uri supplied');
     });
   });
 
