@@ -1,5 +1,6 @@
 # TODO list
 
+- create a separate repo and host the login page repository
 - create new auth form on a separate repo which accepts a redirect url and calls the login method with it
   - when login successfully, redirect the user based on the redirect uri
 - support oauth 2.0

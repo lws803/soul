@@ -7,11 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "preinstall": "npm --prefix login-portal ci",
-    "build": "npm run build-login-portal && nest build",
-    "build-login-portal": "npm run --prefix login-portal build",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "npm run build-login-portal && nest start",
+    "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main",
