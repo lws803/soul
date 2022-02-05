@@ -16,7 +16,7 @@ export default function Login({
   setFormState,
   platformId,
   callback,
-}) {
+}: Props) {
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -61,8 +61,8 @@ export default function Login({
   });
 
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <FormControl isInvalid={formik.errors.email && formik.touched.email}>
+    <form onSubmit={(e) => formik.handleSubmit(e as any)}>
+      <FormControl isInvalid={!!formik.errors.email && formik.touched.email}>
         <FormLabel htmlFor="email">Email</FormLabel>
         <Input
           id="email"
@@ -79,7 +79,7 @@ export default function Login({
       </FormControl>
 
       <FormControl
-        isInvalid={formik.errors.password && formik.touched.password}
+        isInvalid={!!formik.errors.password && formik.touched.password}
         marginTop={8}
       >
         <FormLabel htmlFor="password">Password</FormLabel>
@@ -105,3 +105,10 @@ export default function Login({
     </form>
   );
 }
+
+type Props = {
+  setError: (error: string | undefined) => void;
+  setFormState: (state: 'login' | 'register' | 'join-platform') => void;
+  platformId: number;
+  callback: string;
+};

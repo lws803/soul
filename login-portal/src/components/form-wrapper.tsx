@@ -6,7 +6,7 @@ import Register from './register';
 
 export default function FormWrapper() {
   const { callback, platformId } = useQueryParams();
-  const [error, setError] = useState();
+  const [error, setError] = useState<string | undefined>();
   const [formState, setFormState] = useState('login');
 
   return (
@@ -17,7 +17,7 @@ export default function FormWrapper() {
             setError={setError}
             setFormState={setFormState}
             callback={callback}
-            platformId={platformId}
+            platformId={parseInt(platformId, 10)}
           />
         ) : formState === 'register' ? (
           <Register />
@@ -34,8 +34,8 @@ export default function FormWrapper() {
   );
 }
 
-const useQueryParams = () => {
-  const result = {};
+const useQueryParams = (): Record<string, string> => {
+  const result: Record<string, string> = {};
   const search = typeof window !== 'undefined' ? window.location.search : '';
   new URLSearchParams(search).forEach((value, key) => {
     result[key] = value;

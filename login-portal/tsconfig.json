@@ -5,7 +5,8 @@
     "target": "esnext",
     "strict": true,
     "skipLibCheck": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "allowJs": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
