@@ -99,7 +99,9 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms (GET)', () => {
     beforeAll(async () => {
       await platformRepository.save([
-        factories.onePlatform.build(),
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
         factories.onePlatform.build({
           id: 2,
           name: 'TEST_PLATFORM_2',
@@ -187,7 +189,11 @@ describe('PlatformsController (e2e)', () => {
 
   describe('/platforms/:platformId (GET)', () => {
     beforeAll(async () => {
-      await platformRepository.save(factories.onePlatform.build());
+      await platformRepository.save(
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
+      );
     });
 
     afterAll(async () => {
@@ -227,7 +233,9 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId (PATCH)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.onePlatform.build(),
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
       );
       await platformUserRepository.save(
         factories.onePlatformUser.build({
@@ -242,9 +250,12 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('updates existing platform', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .patch('/platforms/1')
@@ -259,7 +270,7 @@ describe('PlatformsController (e2e)', () => {
             name: 'TEST_PLATFORM_2',
             nameHandle: 'TEST_PLATFORM_2#1',
             isVerified: true,
-            redirectUris: ['TEST_REDIRECT_URI'],
+            redirectUris: ['https://www.example.com'],
           }),
         );
     });
@@ -283,7 +294,9 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId (DELETE)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.onePlatform.build(),
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
       );
       await platformUserRepository.save(
         factories.onePlatformUser.build({
@@ -294,9 +307,12 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('deletes existing platform', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .delete('/platforms/1')
@@ -323,7 +339,9 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId/users (GET)', () => {
     beforeAll(async () => {
       const platform = await platformRepository.save(
-        factories.onePlatform.build(),
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
       );
       await platformUserRepository.save(
         factories.onePlatformUser.build({ user: userAccount.user, platform }),
@@ -336,9 +354,12 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('fetches all users within a platform', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .get('/platforms/1/users')
@@ -366,7 +387,9 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId/users/:userId (PUT)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.onePlatform.build(),
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
       );
       await platformUserRepository.save([
         factories.onePlatformUser.build({ user: userAccount.user, platform }),
@@ -385,9 +408,12 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('sets user role', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=admin,member')
@@ -415,9 +441,12 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('bans a user', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=banned')
@@ -445,10 +474,12 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('throws an error when trying to set only remaining admin to member', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
@@ -457,15 +488,19 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             error: 'NO_ADMINS_REMAINING',
             message:
-              'It seems like you might be the last admin of this platform. You need to appoint another admin before performing this action.',
+              'It seems like you might be the last admin of this platform. ' +
+              'You need to appoint another admin before performing this action.',
           }),
         );
     });
 
     it('throws with insufficient permissions', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=admin,member')
@@ -484,7 +519,9 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId/users/:userId (DELETE)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.onePlatform.build(),
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
       );
       await platformUserRepository.save([
         factories.onePlatformUser.build({ user: userAccount.user, platform }),
@@ -503,9 +540,12 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('deletes a platform user', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .delete('/platforms/1/users/2')
@@ -537,7 +577,11 @@ describe('PlatformsController (e2e)', () => {
     let platform: Platform;
 
     beforeEach(async () => {
-      platform = await platformRepository.save(factories.onePlatform.build());
+      platform = await platformRepository.save(
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
+      );
 
       await platformUserRepository.save([
         factories.onePlatformUser.build({ user: userAccount.user, platform }),
@@ -570,9 +614,12 @@ describe('PlatformsController (e2e)', () => {
           roles: [UserRole.ADMIN, UserRole.MEMBER],
         }),
       );
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
@@ -582,9 +629,12 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('quits existing platform (MEMBER)', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
@@ -613,9 +663,12 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('only remaining admin cant quit', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+      const codeResp = await request(app.getHttpServer())
+        .post('/auth/code?platformId=1&callback=https://www.example.com')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer()).post(
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+      );
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
@@ -634,7 +687,11 @@ describe('PlatformsController (e2e)', () => {
 
   describe('/platforms/:platformId/join (POST)', () => {
     beforeEach(async () => {
-      await platformRepository.save(factories.onePlatform.build());
+      await platformRepository.save(
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+        }),
+      );
     });
 
     afterEach(async () => {

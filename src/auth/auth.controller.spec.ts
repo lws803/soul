@@ -21,10 +21,13 @@ describe('AuthService', () => {
               accessToken: 'ACCESS_TOKEN',
               refreshToken: 'REFRESH_TOKEN',
             }),
-            loginWithPlatform: jest.fn().mockResolvedValue({
+            getCodeForPlatformAndCallback: jest.fn().mockResolvedValue({
+              code: 'CODE',
+            }),
+            exchangeCodeForToken: jest.fn().mockReturnValue({
               accessToken: 'ACCESS_TOKEN',
               refreshToken: 'REFRESH_TOKEN',
-              platformId: 1,
+              platformId: factories.onePlatform.build().id,
               roles: [UserRole.ADMIN, UserRole.MEMBER],
             }),
             refresh: jest.fn().mockResolvedValue({
@@ -51,26 +54,13 @@ describe('AuthService', () => {
   describe('login()', () => {
     it('should return token', async () => {
       const user = factories.oneUser.build();
-      const result = await controller.login({ user }, {});
+      const result = await controller.login({ user });
 
       expect(result).toStrictEqual({
         accessToken: 'ACCESS_TOKEN',
         refreshToken: 'REFRESH_TOKEN',
       });
       expect(service.login).toHaveBeenCalledWith(user);
-    });
-
-    it('should return token with platformId', async () => {
-      const user = factories.oneUser.build();
-      const result = await controller.login({ user }, { platformId: 1 });
-
-      expect(result).toStrictEqual({
-        accessToken: 'ACCESS_TOKEN',
-        refreshToken: 'REFRESH_TOKEN',
-        platformId: 1,
-        roles: [UserRole.ADMIN, UserRole.MEMBER],
-      });
-      expect(service.loginWithPlatform).toHaveBeenCalledWith(user, 1);
     });
   });
 
@@ -98,6 +88,42 @@ describe('AuthService', () => {
         roles: [UserRole.ADMIN, UserRole.MEMBER],
       });
       expect(service.refreshWithPlatform).toHaveBeenCalledWith(refreshToken, 1);
+    });
+  });
+
+  describe('code()', () => {
+    it('should return code for platform', async () => {
+      const user = factories.oneUser.build();
+      const platformId = 1;
+      const result = await controller.code(
+        { user },
+        { platformId, callback: 'TEST_REDIRECT_URI' },
+      );
+
+      expect(result).toStrictEqual({
+        code: 'CODE',
+      });
+      expect(service.getCodeForPlatformAndCallback).toHaveBeenCalledWith(
+        user,
+        platformId,
+        'TEST_REDIRECT_URI',
+      );
+    });
+  });
+
+  describe('verify()', () => {
+    it('should exchange code for tokens', () => {
+      const code = 'CODE';
+      const callback = 'TEST_REDIRECT_URI';
+      const result = controller.verify({ code, callback });
+
+      expect(result).toStrictEqual({
+        accessToken: 'ACCESS_TOKEN',
+        refreshToken: 'REFRESH_TOKEN',
+        platformId: 1,
+        roles: [UserRole.ADMIN, UserRole.MEMBER],
+      });
+      expect(service.exchangeCodeForToken).toHaveBeenCalledWith(code, callback);
     });
   });
 });

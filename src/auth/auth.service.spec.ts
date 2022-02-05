@@ -67,6 +67,11 @@ describe('AuthService', () => {
             verifyAsync: jest
               .fn()
               .mockResolvedValue(factories.jwtRefreshPayload.build()),
+            sign: jest.fn().mockReturnValue('SIGNED_TOKEN'),
+            verify: jest.fn().mockReturnValue({
+              payload: factories.jwtPayloadWithPlatform.build(),
+              callback: 'TEST_REDIRECT_URI',
+            }),
           },
         },
       ],
@@ -77,10 +82,6 @@ describe('AuthService', () => {
     refreshTokenRepository = module.get<Repository<RefreshToken>>(
       getRepositoryToken(RefreshToken),
     );
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
   });
 
   describe('validateUser()', () => {
@@ -142,14 +143,15 @@ describe('AuthService', () => {
     });
   });
 
-  describe('loginWithPlatform()', () => {
+  describe('getCodeForPlatformAndCallback()', () => {
     it('should generate access and refresh token on successful login', async () => {
       const user = factories.oneUser.build();
       const platformUser = factories.onePlatformUser.build();
 
-      const response = await service.loginWithPlatform(
+      const response = await service.getCodeForPlatformAndCallback(
         user,
         platformUser.platform.id,
+        'TEST_REDIRECT_URI',
       );
       expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
@@ -175,12 +177,56 @@ describe('AuthService', () => {
         platformUser: platformUser,
       });
 
-      expect(response).toEqual({
-        accessToken: 'SIGNED_TOKEN',
-        refreshToken: 'SIGNED_TOKEN',
-        platformId: platformUser.platform.id,
-        roles: platformUser.roles,
-      });
+      expect(response).toEqual({ code: 'SIGNED_TOKEN' });
+    });
+
+    it('denies access when callback uri is not registered', async () => {
+      const user = factories.oneUser.build();
+      const platformUser = factories.onePlatformUser.build();
+
+      await expect(
+        service.getCodeForPlatformAndCallback(
+          user,
+          platformUser.platform.id,
+          'INVALID_URI',
+        ),
+      ).rejects.toThrow('Invalid callback uri supplied');
+    });
+
+    it('denies access to inactive users', async () => {
+      const user = factories.oneUser.build({ isActive: false });
+      const platformUser = factories.onePlatformUser.build();
+
+      await expect(
+        service.getCodeForPlatformAndCallback(
+          user,
+          platformUser.platform.id,
+          'TEST_REDIRECT_URI',
+        ),
+      ).rejects.toThrow(
+        'User is not verified, please verify your email address.',
+      );
+    });
+  });
+
+  describe('exchangeCodeForToken()', () => {
+    it('exchanges code for accessToken and refreshToken', () => {
+      const code = 'SIGNED_TOKEN';
+      const response = service.exchangeCodeForToken(code, 'TEST_REDIRECT_URI');
+
+      expect(jwtService.verify).toHaveBeenCalledWith(code);
+      expect(response).toStrictEqual(factories.jwtPayloadWithPlatform.build());
+    });
+
+    it('denies access when callback uri is not the same as initially provided', () => {
+      const code = 'SIGNED_TOKEN';
+
+      jest
+        .spyOn(jwtService, 'verify')
+        .mockImplementation(() => ({ payload: {}, callback: 'INVALID_URI' }));
+      expect(() =>
+        service.exchangeCodeForToken(code, 'TEST_REDIRECT_URI'),
+      ).toThrow('Invalid callback uri supplied');
     });
   });
 
