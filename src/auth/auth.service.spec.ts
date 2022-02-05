@@ -67,6 +67,7 @@ describe('AuthService', () => {
             verifyAsync: jest
               .fn()
               .mockResolvedValue(factories.jwtRefreshPayload.build()),
+            sign: jest.fn().mockReturnValue('SIGNED_TOKEN'),
           },
         },
       ],
@@ -142,7 +143,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('loginWithPlatform()', () => {
+  describe('getCodeForPlatformAndCallback()', () => {
     it('should generate access and refresh token on successful login', async () => {
       const user = factories.oneUser.build();
       const platformUser = factories.onePlatformUser.build();
@@ -150,6 +151,7 @@ describe('AuthService', () => {
       const response = await service.getCodeForPlatformAndCallback(
         user,
         platformUser.platform.id,
+        'TEST_REDIRECT_URI',
       );
       expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
@@ -175,12 +177,7 @@ describe('AuthService', () => {
         platformUser: platformUser,
       });
 
-      expect(response).toEqual({
-        accessToken: 'SIGNED_TOKEN',
-        refreshToken: 'SIGNED_TOKEN',
-        platformId: platformUser.platform.id,
-        roles: platformUser.roles,
-      });
+      expect(response).toEqual({ code: 'SIGNED_TOKEN' });
     });
   });
 

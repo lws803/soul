@@ -51,29 +51,13 @@ describe('AuthService', () => {
   describe('login()', () => {
     it('should return token', async () => {
       const user = factories.oneUser.build();
-      const result = await controller.login({ user }, {});
+      const result = await controller.login({ user });
 
       expect(result).toStrictEqual({
         accessToken: 'ACCESS_TOKEN',
         refreshToken: 'REFRESH_TOKEN',
       });
       expect(service.login).toHaveBeenCalledWith(user);
-    });
-
-    it('should return token with platformId', async () => {
-      const user = factories.oneUser.build();
-      const result = await controller.login({ user }, { platformId: 1 });
-
-      expect(result).toStrictEqual({
-        accessToken: 'ACCESS_TOKEN',
-        refreshToken: 'REFRESH_TOKEN',
-        platformId: 1,
-        roles: [UserRole.ADMIN, UserRole.MEMBER],
-      });
-      expect(service.getCodeForPlatformAndCallback).toHaveBeenCalledWith(
-        user,
-        1,
-      );
     });
   });
 
