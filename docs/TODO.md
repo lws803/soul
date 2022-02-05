@@ -1,8 +1,6 @@
 # TODO list
 
 - create new auth form on a separate repo which accepts a redirect url and calls the login method with it
-  - see if we can configure preact to work in this repo, else it might be better to fork the folder
-  - use preact
   - when login successfully, redirect the user based on the redirect uri
 - support oauth 2.0
   - create a new token endpoint that accepts user login + redirect uri and validates it against a list of registered ones in platform,

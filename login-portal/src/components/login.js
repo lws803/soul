@@ -13,7 +13,7 @@ import axios from 'axios';
 
 export default function Login({
   setError,
-  setLoginState,
+  setFormState,
   platformId,
   callback,
 }) {
@@ -39,10 +39,10 @@ export default function Login({
         .catch(({ response: { data, status } }) => {
           if (status === 404) {
             if (data.error === 'USER_NOT_FOUND') {
-              setLoginState('register');
+              setFormState('register');
             }
             if (data.error === 'PLATFORM_USER_NOT_FOUND') {
-              setLoginState('join-platform');
+              setFormState('join-platform');
             }
           } else {
             setError(data.message);
@@ -98,7 +98,7 @@ export default function Login({
         <Button colorScheme="teal" type="submit">
           Login
         </Button>
-        <Button colorScheme="teal" onClick={() => setLoginState('register')}>
+        <Button colorScheme="teal" onClick={() => setFormState('register')}>
           Register
         </Button>
       </HStack>
