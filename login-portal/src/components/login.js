@@ -98,7 +98,9 @@ export default function Login({
         <Button colorScheme="teal" type="submit">
           Login
         </Button>
-        <Button colorScheme="teal">Register</Button>
+        <Button colorScheme="teal" onClick={() => setLoginState('register')}>
+          Register
+        </Button>
       </HStack>
     </form>
   );
