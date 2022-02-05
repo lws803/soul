@@ -10,10 +10,14 @@ import {
   IsOptional,
   IsUrl,
   MaxLength,
+  Matches,
 } from 'class-validator';
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 
 import { UserRole } from 'src/roles/role.enum';
+
+const REDIRECT_URI_REGEX =
+  /^(https:\/\/((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3})))(\:\d+)?(\/[-a-z\d%_.~+*]*)*|^(http(s){0,1}:\/\/localhost\/[-a-z\d%_.~+*]*)|^\/[-a-z\d%_.~+*]*/;
 
 export class PlatformIdParamDto {
   @Type(() => Number)
@@ -52,12 +56,17 @@ export class CreatePlatformDto {
   @MaxLength(32)
   name: string;
 
-  // TODO: add more validation to prevent folks from open redirects
   @IsArray()
   @ArrayMaxSize(10)
   @ArrayMinSize(1)
-  @MaxLength(2048, { each: true })
+  @MaxLength(256, { each: true })
   @IsUrl({}, { each: true })
+  @Matches(REDIRECT_URI_REGEX, {
+    each: true,
+    message:
+      'Redirect URI must adhere to the follow restrictions ' +
+      'https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
+  })
   redirectUris: string[];
 }
 
@@ -70,8 +79,14 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
   @IsArray()
   @ArrayMaxSize(10)
   @ArrayMinSize(1)
-  @MaxLength(2048, { each: true })
+  @MaxLength(256, { each: true })
   @IsUrl({}, { each: true })
+  @Matches(REDIRECT_URI_REGEX, {
+    each: true,
+    message:
+      'Redirect URI must adhere to the follow restrictions ' +
+      'https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
+  })
   redirectUris?: string[];
 }
 
