@@ -62,14 +62,15 @@ export class AuthService {
     platformId: number,
     callback: string,
   ) {
+    if (!user.isActive) {
+      throw new UserNotVerifiedException();
+    }
+
     const platformUser = await this.platformService.findOnePlatformUser(
       platformId,
       user.id,
     );
 
-    if (!user.isActive) {
-      throw new UserNotVerifiedException();
-    }
     const platform = await this.platformService.findOne(platformId);
 
     if (!platform.redirectUris.includes(callback)) {
