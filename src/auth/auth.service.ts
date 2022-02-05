@@ -76,10 +76,36 @@ export class AuthService {
     if (!platform.redirectUris.includes(callback)) {
       throw new InvalidCallbackException();
     }
-
     await this.refreshTokenRepository.delete({ user, platformUser });
+    return {
+      code: this.jwtService.sign(
+        { userId: user.id, platformId, callback },
+        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
+      ),
+    };
+  }
 
-    const payload = {
+  async exchangeCodeForToken(code: string, callback: string) {
+    const {
+      platformId,
+      callback: initialCallback,
+      userId,
+    } = this.jwtService.verify<{
+      platformId: number;
+      userId: number;
+      callback: string;
+    }>(code);
+
+    if (initialCallback !== callback) {
+      throw new InvalidCallbackException();
+    }
+    const platformUser = await this.platformService.findOnePlatformUser(
+      platformId,
+      userId,
+    );
+    const user = await this.usersService.findOne(userId);
+
+    return {
       accessToken: await this.generateAccessToken(
         user,
         platformId,
@@ -94,29 +120,6 @@ export class AuthService {
       platformId,
       roles: platformUser.roles,
     };
-    return {
-      code: this.jwtService.sign(
-        { payload, callback },
-        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
-      ),
-    };
-  }
-
-  exchangeCodeForToken(code: string, callback: string) {
-    const { payload, callback: initialCallback } = this.jwtService.verify<{
-      payload: {
-        accessToken: string;
-        refreshToken: string;
-        platformId: number;
-        roles: UserRole[];
-      };
-      callback: string;
-    }>(code);
-
-    if (initialCallback !== callback) {
-      throw new InvalidCallbackException();
-    }
-    return payload;
   }
 
   async refresh(encodedRefreshToken: string) {
