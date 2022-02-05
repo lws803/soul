@@ -180,7 +180,7 @@ describe('AuthService', () => {
       expect(response).toEqual({ code: 'SIGNED_TOKEN' });
     });
 
-    it('should deny access when callback url is not registered', async () => {
+    it('denies access when callback uri is not registered', async () => {
       const user = factories.oneUser.build();
       const platformUser = factories.onePlatformUser.build();
 
@@ -192,6 +192,21 @@ describe('AuthService', () => {
         ),
       ).rejects.toThrow('Invalid callback uri supplied');
     });
+
+    it('denies access to inactive users', async () => {
+      const user = factories.oneUser.build({ isActive: false });
+      const platformUser = factories.onePlatformUser.build();
+
+      await expect(
+        service.getCodeForPlatformAndCallback(
+          user,
+          platformUser.platform.id,
+          'TEST_REDIRECT_URI',
+        ),
+      ).rejects.toThrow(
+        'User is not verified, please verify your email address.',
+      );
+    });
   });
 
   describe('exchangeCodeForToken()', () => {
@@ -201,6 +216,17 @@ describe('AuthService', () => {
 
       expect(jwtService.verify).toHaveBeenCalledWith(code);
       expect(response).toStrictEqual(factories.jwtPayloadWithPlatform.build());
+    });
+
+    it('denies access when callback uri is not the same as initially provided', () => {
+      const code = 'SIGNED_TOKEN';
+
+      jest
+        .spyOn(jwtService, 'verify')
+        .mockImplementation(() => ({ payload: {}, callback: 'INVALID_URI' }));
+      expect(() =>
+        service.exchangeCodeForToken(code, 'TEST_REDIRECT_URI'),
+      ).toThrow('Invalid callback uri supplied');
     });
   });
 
