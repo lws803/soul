@@ -1,6 +1,5 @@
 # TODO list
 
-- refactor and tweak the regex up a little bit to include port numbers at the end of urls e.g. `:3000` ‼️
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - add funding button to the repository
   - set up paypal or patreon for funding
