@@ -78,4 +78,24 @@ describe(IsValidRedirectUri, () => {
       },
     ]);
   });
+
+  it('returns invalid for invalid url', async () => {
+    const mockClass = new MockClass();
+    mockClass.redirectUri = 'INVALID_URL';
+    await expect(validate(mockClass)).resolves.toEqual([
+      {
+        children: [],
+        constraints: {
+          IsValidRedirectUri:
+            'Redirect URI must adhere to the follow restrictions ' +
+            'https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
+        },
+        property: 'redirectUri',
+        target: {
+          redirectUri: 'INVALID_URL',
+        },
+        value: 'INVALID_URL',
+      },
+    ]);
+  });
 });
