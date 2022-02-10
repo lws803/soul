@@ -27,8 +27,8 @@ describe('UsersController (e2e)', () => {
     await connection.synchronize(true);
   });
 
-  afterAll((done) => {
-    app.close().then(done);
+  afterAll(async () => {
+    await app.close();
   });
 
   describe('/users (POST)', () => {

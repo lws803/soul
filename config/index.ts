@@ -3,32 +3,64 @@ import * as Joi from 'joi';
 
 const schema = Joi.object({
   // DB config
-  DB_HOST: Joi.string().required(),
-  DB_PORT: Joi.number().default(3306),
-  DB_SSL: Joi.boolean().default(false),
-  DB_USER: Joi.string().required(),
-  DB_PASSWORD: Joi.string().optional().allow(''),
-  DB_NAME: Joi.string().required(),
+  DB_HOST: Joi.string().required().description('Primary database host'),
+  DB_PORT: Joi.number().default(3306).description('Primary database port'),
+  DB_SSL: Joi.boolean()
+    .default(false)
+    .description('Use SSL for primary database connection'),
+  DB_USER: Joi.string().required().description('Primary database user'),
+  DB_PASSWORD: Joi.string()
+    .optional()
+    .allow('')
+    .description('Primary database password'),
+  DB_NAME: Joi.string().required().description('Primary database name'),
   // Auth config
-  JWT_SECRET_KEY: Joi.string().required(),
-  JWT_REFRESH_TOKEN_TTL: Joi.number().required(),
-  JWT_ACCESS_TOKEN_TTL: Joi.string().required(),
+  JWT_SECRET_KEY: Joi.string().required().description('Auth JWT secret key'),
+  JWT_REFRESH_TOKEN_TTL: Joi.alternatives(Joi.number(), Joi.string())
+    .required()
+    .description('Auth JWT refresh token TTL'),
+  JWT_ACCESS_TOKEN_TTL: Joi.alternatives(Joi.string(), Joi.number())
+    .required()
+    .description('Auth JWT access token TTL'),
   // Redis config
-  REDIS_DB_HOST: Joi.string().required(),
-  REDIS_DB_PASSWORD: Joi.string().optional().allow(''),
-  REDIS_DB_INDEX: Joi.number().default(0),
-  REDIS_DB_PORT: Joi.number().default(6379),
+  REDIS_DB_HOST: Joi.string().required().description('Redis database host'),
+  REDIS_DB_PASSWORD: Joi.string()
+    .optional()
+    .allow('')
+    .description('Redis database password'),
+  REDIS_DB_INDEX: Joi.number().default(0).description('Redis database index'),
+  REDIS_DB_PORT: Joi.number().default(6379).description('Redis database port'),
   // Mail config
-  MAIL_HOST: Joi.string().required(),
-  MAIL_PORT: Joi.number().required(),
-  MAIL_SECURE: Joi.boolean().default(false),
-  MAIL_USERNAME: Joi.string().optional().allow(''),
-  MAIL_PASSWORD: Joi.string().optional().allow(''),
-  MAIL_FROM: Joi.string().required(),
-  MAIL_TOKEN_EXPIRATION_TIME: Joi.number().required(),
+  MAIL_HOST: Joi.string().required().description('Mail provider host'),
+  MAIL_PORT: Joi.number().required().description('Mail provider port'),
+  MAIL_SECURE: Joi.boolean()
+    .default(false)
+    .description(
+      'Mail provider secure, if set to secure, mail messages will be encrypted.',
+    ),
+  MAIL_USERNAME: Joi.string()
+    .optional()
+    .allow('')
+    .description('Mail provider username'),
+  MAIL_PASSWORD: Joi.string()
+    .optional()
+    .allow('')
+    .description('Mail provider password'),
+  MAIL_FROM: Joi.string()
+    .required()
+    .description(
+      'Mail from address for transaction emails such as password reset and email confirmation',
+    ),
+  MAIL_TOKEN_EXPIRATION_TIME: Joi.alternatives(Joi.number(), Joi.string())
+    .required()
+    .description('Mail token expiration time'),
   MAIL_TOKEN_SECRET: Joi.string().required(),
-  MAIL_CONFIRMATION_BASE_URL: Joi.string().required(),
-  MAIL_PASSWORD_RESET_BASE_URL: Joi.string().required(),
+  MAIL_CONFIRMATION_BASE_URL: Joi.string()
+    .required()
+    .description('Mail confirmation base URL'),
+  MAIL_PASSWORD_RESET_BASE_URL: Joi.string()
+    .required()
+    .description('Mail password reset base URL'),
   // Sentry config
   SENTRY_DSN: Joi.string().optional().allow(''),
   SENTRY_ENVIRONMENT: Joi.string().default('local'),

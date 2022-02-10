@@ -34,8 +34,8 @@ describe('AuthController (e2e)', () => {
     platformRepository = connection.getRepository(Platform);
   });
 
-  afterAll((done) => {
-    app.close().then(done);
+  afterAll(async () => {
+    await app.close();
   });
 
   describe('/auth/login (POST)', () => {
