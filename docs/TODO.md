@@ -1,8 +1,6 @@
 # TODO list
 
-- add `description` to the env config `Joi` schema
-- use `async afterAll` in tests so we don't need the `done` and `promise`
-- add type strict enforcements for configService
+- redesign confirmation and password reset emails to look nicer
 - make ormconfig more dynamic - have it load overrides from *.local files if present
 - use jest mock extended to mock proxy for some of the tests
   - install this lib https://www.npmjs.com/package/jest-mock-extended

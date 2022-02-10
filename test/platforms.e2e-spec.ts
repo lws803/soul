@@ -42,8 +42,8 @@ describe('PlatformsController (e2e)', () => {
     thirdUserAccount = thirdUser;
   });
 
-  afterAll((done) => {
-    app.close().then(done);
+  afterAll(async () => {
+    await app.close();
   });
 
   describe('/platforms (POST)', () => {

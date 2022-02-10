@@ -39,8 +39,8 @@ describe('UserConnectionsController (e2e)', () => {
     firstUserAccessToken = accessToken;
   });
 
-  afterAll((done) => {
-    app.close().then(done);
+  afterAll(async () => {
+    await app.close();
   });
 
   describe('/user-connections (POST)', () => {
