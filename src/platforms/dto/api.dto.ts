@@ -8,7 +8,6 @@ import {
   IsEnum,
   IsInt,
   IsOptional,
-  IsUrl,
   MaxLength,
 } from 'class-validator';
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
@@ -56,7 +55,6 @@ export class CreatePlatformDto {
   @IsArray()
   @ArrayMaxSize(10)
   @ArrayMinSize(1)
-  @IsUrl({}, { each: true })
   @IsValidRedirectUri({ each: true })
   redirectUris: string[];
 }
@@ -70,7 +68,6 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
   @IsArray()
   @ArrayMaxSize(10)
   @ArrayMinSize(1)
-  @IsUrl({}, { each: true })
   @IsValidRedirectUri({ each: true })
   redirectUris?: string[];
 }
