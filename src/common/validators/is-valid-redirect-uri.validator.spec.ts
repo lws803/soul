@@ -27,7 +27,7 @@ describe(IsValidRedirectUri, () => {
         children: [],
         constraints: {
           IsValidRedirectUri:
-            'Redirect URI must adhere to the follow restrictions ' +
+            'Redirect URI must adhere to the following restrictions ' +
             'https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
         },
         property: 'redirectUri',
@@ -47,7 +47,7 @@ describe(IsValidRedirectUri, () => {
         children: [],
         constraints: {
           IsValidRedirectUri:
-            'Redirect URI must adhere to the follow restrictions ' +
+            'Redirect URI must adhere to the following restrictions ' +
             'https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
         },
         property: 'redirectUri',
@@ -67,7 +67,7 @@ describe(IsValidRedirectUri, () => {
         children: [],
         constraints: {
           IsValidRedirectUri:
-            'Redirect URI must adhere to the follow restrictions ' +
+            'Redirect URI must adhere to the following restrictions ' +
             'https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
         },
         property: 'redirectUri',
@@ -87,7 +87,7 @@ describe(IsValidRedirectUri, () => {
         children: [],
         constraints: {
           IsValidRedirectUri:
-            'Redirect URI must adhere to the follow restrictions ' +
+            'Redirect URI must adhere to the following restrictions ' +
             'https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
         },
         property: 'redirectUri',

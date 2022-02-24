@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, IsInt, IsUrl } from 'class-validator';
+import { IsOptional, IsString, IsInt } from 'class-validator';
+
+import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.validator';
 
 export class PlatformIdQueryDto {
   @IsOptional()
@@ -18,7 +20,8 @@ export class CodeQueryParamDto {
   @IsInt()
   platformId: number;
 
-  @IsUrl()
+  @IsString()
+  @IsValidRedirectUri()
   callback: string;
 }
 
@@ -26,6 +29,7 @@ export class ValidateQueryParamDto {
   @IsString()
   code: string;
 
-  @IsUrl()
+  @IsString()
+  @IsValidRedirectUri()
   callback: string;
 }
