@@ -1,6 +1,4 @@
-<img src="resources/banner.png"/>
-
----
+# <img src="resources/banner.png"/>
 
 ![pr-merge](https://github.com/soul-project/soul/actions/workflows/pr-merge.yml/badge.svg)
 ![e2e](https://github.com/soul-project/soul/actions/workflows/e2e.yml/badge.svg)
