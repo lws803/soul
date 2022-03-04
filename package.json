@@ -58,7 +58,8 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^4.3.0",
-    "typeorm": "^0.2.41"
+    "typeorm": "^0.2.41",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
@@ -74,6 +75,7 @@
     "@types/passport-local": "^1.0.34",
     "@types/request-ip": "^0.0.37",
     "@types/supertest": "^2.0.11",
+    "@types/zxcvbn": "^4.4.1",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "dotenv": "^12.0.4",

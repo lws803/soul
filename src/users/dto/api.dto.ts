@@ -4,12 +4,10 @@ import {
   IsInt,
   IsOptional,
   IsString,
-  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
-
-const PASSWORD_REGEX = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+import { IsPasswordValid } from 'src/common/validators/password.validator';
 
 export class CreateUserDto {
   @MaxLength(32)
@@ -21,9 +19,7 @@ export class CreateUserDto {
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  @Matches(PASSWORD_REGEX, {
-    message: 'password too weak',
-  })
+  @IsPasswordValid()
   password: string;
 }
 
@@ -64,8 +60,6 @@ export class PasswordResetDto {
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  @Matches(PASSWORD_REGEX, {
-    message: 'password too weak',
-  })
+  @IsPasswordValid()
   password: string;
 }
