@@ -1,7 +1,15 @@
 import { ConnectionOptions } from 'typeorm';
 import { config } from 'dotenv';
+import fs = require('fs');
 
-config({ path: './config/env/.env.development' });
+const LOCAL_ENV_PATH = './config/env/.env.development.local';
+const ENV_PATH = './config/env/.env.development';
+
+if (fs.existsSync(LOCAL_ENV_PATH)) {
+  config({ path: LOCAL_ENV_PATH });
+} else {
+  config({ path: ENV_PATH });
+}
 
 export default {
   type: 'mysql',
