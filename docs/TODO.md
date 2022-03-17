@@ -1,8 +1,6 @@
 # TODO list
 
 - redesign confirmation and password reset emails to look nicer
-- use jest mock extended to mock proxy for some of the tests
-  - install this lib https://www.npmjs.com/package/jest-mock-extended
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - add funding button to the repository
   - set up paypal or patreon for funding
