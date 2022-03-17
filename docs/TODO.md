@@ -1,14 +1,12 @@
 # TODO list
 
 - redesign confirmation and password reset emails to look nicer
-- make ormconfig more dynamic - have it load overrides from *.local files if present
-- use jest mock extended to mock proxy for some of the tests
-  - install this lib https://www.npmjs.com/package/jest-mock-extended
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - add funding button to the repository
   - set up paypal or patreon for funding
 - validate all features of this backend service and see if there are any security flaws or unused endpoints
 - Store datetime in utc on the db and do the conversion when we get to the endpoint
+- build a simple feed posting social app that uses soul network
 
 ## Feature work
 
