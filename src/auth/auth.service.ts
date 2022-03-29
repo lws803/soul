@@ -197,7 +197,7 @@ export class AuthService {
     token.user = user;
     token.isRevoked = false;
     const expiration = new Date();
-    expiration.setTime(expiration.getTime() + ttl);
+    expiration.setTime(expiration.getTime() + ttl * 1000);
 
     token.expires = expiration;
     if (platformId) {
