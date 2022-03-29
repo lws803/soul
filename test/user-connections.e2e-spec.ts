@@ -23,7 +23,6 @@ describe('UserConnectionsController (e2e)', () => {
   let firstUserAccessToken: string;
 
   beforeAll(async () => {
-    jest.setTimeout(60000);
     app = await createAppFixture({});
     await app.init();
     app.useLogger(false);
