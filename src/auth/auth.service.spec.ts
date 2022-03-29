@@ -59,6 +59,12 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.refreshToken.build()),
             save: jest.fn().mockResolvedValue(factories.refreshToken.build()),
             delete: jest.fn(),
+            createQueryBuilder: jest.fn().mockImplementation(() => ({
+              delete: jest.fn().mockReturnThis(),
+              where: jest.fn().mockReturnThis(),
+              andWhere: jest.fn().mockReturnThis(),
+              execute: jest.fn(),
+            })),
           },
         },
         {
@@ -156,10 +162,7 @@ describe('AuthService', () => {
         'TEST_REDIRECT_URI',
       );
 
-      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
-        user,
-        platformUser: platformUser,
-      });
+      expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
 
       expect(response).toEqual({ code: 'SIGNED_TOKEN' });
     });
