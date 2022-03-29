@@ -24,6 +24,7 @@ describe('PlatformsController (e2e)', () => {
   let thirdUserAccount: UserAccount;
 
   beforeAll(async () => {
+    jest.setTimeout(60000);
     app = await createAppFixture({});
     await app.init();
     app.useLogger(false);
