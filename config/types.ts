@@ -7,8 +7,8 @@ export type ConfigProperties = {
   DB_NAME: string;
   // Auth config
   JWT_SECRET_KEY: string;
-  JWT_REFRESH_TOKEN_TTL: string | number;
-  JWT_ACCESS_TOKEN_TTL: string | number;
+  JWT_REFRESH_TOKEN_TTL: number;
+  JWT_ACCESS_TOKEN_TTL: number;
   // Redis config
   REDIS_DB_HOST: string;
   REDIS_DB_PASSWORD?: string;
@@ -21,7 +21,7 @@ export type ConfigProperties = {
   MAIL_USERNAME?: string;
   MAIL_PASSWORD?: string;
   MAIL_FROM: string;
-  MAIL_TOKEN_EXPIRATION_TIME: string | number;
+  MAIL_TOKEN_EXPIRATION_TIME: number;
   MAIL_TOKEN_SECRET: string;
   MAIL_CONFIRMATION_BASE_URL: string;
   MAIL_PASSWORD_RESET_BASE_URL: string;

@@ -16,12 +16,12 @@ const schema = Joi.object({
   DB_NAME: Joi.string().required().description('Primary database name'),
   // Auth config
   JWT_SECRET_KEY: Joi.string().required().description('Auth JWT secret key'),
-  JWT_REFRESH_TOKEN_TTL: Joi.alternatives(Joi.number(), Joi.string())
+  JWT_REFRESH_TOKEN_TTL: Joi.number()
     .required()
-    .description('Auth JWT refresh token TTL'),
-  JWT_ACCESS_TOKEN_TTL: Joi.alternatives(Joi.string(), Joi.number())
+    .description('Auth JWT refresh token TTL (in seconds)'),
+  JWT_ACCESS_TOKEN_TTL: Joi.number()
     .required()
-    .description('Auth JWT access token TTL'),
+    .description('Auth JWT access token TTL (in seconds)'),
   // Redis config
   REDIS_DB_HOST: Joi.string().required().description('Redis database host'),
   REDIS_DB_PASSWORD: Joi.string()
@@ -51,9 +51,9 @@ const schema = Joi.object({
     .description(
       'Mail from address for transaction emails such as password reset and email confirmation',
     ),
-  MAIL_TOKEN_EXPIRATION_TIME: Joi.alternatives(Joi.number(), Joi.string())
+  MAIL_TOKEN_EXPIRATION_TIME: Joi.number()
     .required()
-    .description('Mail token expiration time'),
+    .description('Mail token expiration time (in seconds)'),
   MAIL_TOKEN_SECRET: Joi.string().required(),
   MAIL_CONFIRMATION_BASE_URL: Joi.string()
     .required()
