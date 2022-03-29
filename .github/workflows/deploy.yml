@@ -6,19 +6,9 @@ on:
 
 jobs:
   unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-      - name: run tests
-        uses: ./.github/workflows/pr-merge.yml
+    uses: ./.github/workflows/pr-merge.yml
   integration-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-      - name: run tests
-        uses: ./.github/workflows/e2e.yml
+    uses: ./.github/workflows/e2e.yml
   deploy:
     needs: [unit-tests, integration-tests]
     runs-on: ubuntu-latest
