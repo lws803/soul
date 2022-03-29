@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { classToPlain } from 'class-transformer';
-import { Between, Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
 
 import { User } from 'src/users/entities/user.entity';
@@ -76,16 +76,19 @@ export class AuthService {
     if (!platform.redirectUris.includes(callback)) {
       throw new InvalidCallbackException();
     }
-    const BeforeDate = (date: Date) =>
-      Between(new Date(date.getFullYear() - 1), date);
 
-    const currentDate = new Date();
-    const getStaleRefreshTokens = await this.refreshTokenRepository.find({
-      where: { expires: BeforeDate(currentDate), user, platformUser },
-    });
-    await this.refreshTokenRepository.delete({
-      id: In(getStaleRefreshTokens.map((refreshToken) => refreshToken.id)),
-    });
+    await this.refreshTokenRepository
+      .createQueryBuilder('refresh_tokens')
+      .delete()
+      .where('refresh_tokens.expires <= :currentDate', {
+        currentDate: new Date(),
+      })
+      .andWhere('refresh_tokens.user_id = :userId', { userId: user.id })
+      .andWhere('refresh_tokens.platform_user_id = :platformUserId', {
+        platformUserId: platformUser.id,
+      })
+      .execute();
+
     return {
       code: this.jwtService.sign(
         { userId: user.id, platformId, callback },
