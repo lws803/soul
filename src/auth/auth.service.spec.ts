@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
 
 import * as factories from 'factories';
@@ -59,6 +59,7 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.refreshToken.build()),
             save: jest.fn().mockResolvedValue(factories.refreshToken.build()),
             delete: jest.fn(),
+            find: jest.fn().mockResolvedValue([factories.refreshToken.build()]),
           },
         },
         {
@@ -157,8 +158,7 @@ describe('AuthService', () => {
       );
 
       expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
-        user,
-        platformUser: platformUser,
+        id: In([factories.refreshToken.build().id]),
       });
 
       expect(response).toEqual({ code: 'SIGNED_TOKEN' });
