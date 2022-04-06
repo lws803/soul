@@ -27,7 +27,6 @@ export class ReputationService {
     const followerCount = await this.userConnectionsRepository.count({
       toUser: { id: userId },
     });
-    // TODO: Add tests for this (e2e and unit)
 
     return {
       userId,
