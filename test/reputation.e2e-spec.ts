@@ -15,7 +15,7 @@ import {
 
 import * as factories from '../factories';
 
-describe('UsersController (e2e)', () => {
+describe('ReputationController (e2e)', () => {
   let app: INestApplication;
   let connection: Connection;
   let userConnectionRepository: Repository<UserConnection>;
