@@ -18,6 +18,7 @@ import { UserConnectionsModule } from './user-connections/user-connections.modul
 import { UserConnection } from './user-connections/entities/user-connection.entity';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { MailModule } from './mail/mail.module';
+import { ReputationModule } from './reputation/reputation.module';
 
 import config from '../config';
 
@@ -36,7 +37,6 @@ import config from '../config';
           ? { rejectUnauthorized: false }
           : undefined,
         entities: [User, RefreshToken, Platform, PlatformUser, UserConnection],
-        // timezone: 'Z', // TODO: See if this works
       }),
       inject: [ConfigService],
     }),
@@ -46,6 +46,7 @@ import config from '../config';
     UserConnectionsModule,
     MailModule,
     RavenModule,
+    ReputationModule,
   ],
   controllers: [AppController],
   providers: [
