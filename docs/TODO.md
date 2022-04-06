@@ -10,10 +10,9 @@
 
 ## Feature work
 
-- maybe allow users to login still but with limited access if they don't verify their acc
+- allow folks to download their connections and data in one big json blob
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - create a tiny user storage for metadata or achievement purposes within the user table
-- allow folks to download their connections and data in one big json blob
-- build an admin dashboard for soul (self-hosted)
 - consider implementing a different login method where users can login using their crypto wallets public key instead
 - consider using SRP as a method to login as well
+- maybe allow users to login still but with limited access if they don't verify their acc
