@@ -95,5 +95,18 @@ describe('ReputationController (e2e)', () => {
           });
         });
     });
+
+    it('should return 404 when user does not exist', async () => {
+      return request(app.getHttpServer())
+        .get('/reputation/999')
+        .expect(404)
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            error: 'USER_NOT_FOUND',
+            message:
+              'A user with the id: 999 could not be found, please try again.',
+          });
+        });
+    });
   });
 });
