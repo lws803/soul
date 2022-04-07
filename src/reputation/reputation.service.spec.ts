@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as factories from 'factories';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
+import { UsersService } from 'src/users/users.service';
 
 import { ReputationService } from './reputation.service';
 
@@ -18,6 +19,12 @@ describe('ReputationService', () => {
           provide: getRepositoryToken(UserConnection),
           useValue: {
             count: jest.fn().mockResolvedValue(10),
+          },
+        },
+        {
+          provide: UsersService,
+          useValue: {
+            findOne: jest.fn().mockResolvedValue(factories.oneUser.build()),
           },
         },
         {
