@@ -5,6 +5,7 @@ import {
   UseGuards,
   Query,
   Body,
+  Header,
 } from '@nestjs/common';
 
 import { User } from 'src/users/entities/user.entity';
@@ -23,12 +24,14 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
+  @Header('Cache-Control', 'no-store')
   @Post('login')
   async login(@Request() { user }: { user: User }) {
     return this.authService.login(user);
   }
 
   @UseGuards(LocalAuthGuard)
+  @Header('Cache-Control', 'no-store')
   @Post('code')
   async code(
     @Request() { user }: { user: User },
@@ -42,11 +45,13 @@ export class AuthController {
   }
 
   @Post('verify')
+  @Header('Cache-Control', 'no-store')
   verify(@Query() { code, callback }: ValidateQueryParamDto) {
     return this.authService.exchangeCodeForToken(code, callback);
   }
 
   @Post('refresh')
+  @Header('Cache-Control', 'no-store')
   async refresh(
     @Query() { platformId }: PlatformIdQueryDto,
     @Body() { refreshToken }: RefreshTokenBodyDto,
