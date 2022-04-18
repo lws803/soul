@@ -73,12 +73,13 @@ describe('AuthController (e2e)', () => {
         .post('/auth/login')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' })
         .expect(201)
-        .expect((res) =>
+        .expect((res) => {
+          expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
             accessToken: expect.any(String),
             refreshToken: expect.any(String),
-          }),
-        );
+          });
+        });
       const user = await userRepository.findOne({
         email: 'TEST_USER@EMAIL.COM',
       });
@@ -96,14 +97,15 @@ describe('AuthController (e2e)', () => {
           `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
         )
         .expect(201)
-        .expect((res) =>
+        .expect((res) => {
+          expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
             accessToken: expect.any(String),
             refreshToken: expect.any(String),
             platformId: 1,
             roles: [UserRole.ADMIN, UserRole.MEMBER],
-          }),
-        );
+          });
+        });
     });
 
     it('fails to login with wrong credentials', async () => {
@@ -155,11 +157,12 @@ describe('AuthController (e2e)', () => {
         .post('/auth/refresh')
         .send({ refreshToken: userAccount.refreshToken })
         .expect(201)
-        .expect((res) =>
+        .expect((res) => {
+          expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
             accessToken: expect.any(String),
-          }),
-        );
+          });
+        });
     });
 
     it('refreshes token for platform', async () => {
@@ -176,13 +179,14 @@ describe('AuthController (e2e)', () => {
         .post('/auth/refresh?platformId=1')
         .send({ refreshToken })
         .expect(201)
-        .expect((res) =>
+        .expect((res) => {
+          expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
             accessToken: expect.any(String),
             platformId: 1,
             roles: [UserRole.ADMIN, UserRole.MEMBER],
-          }),
-        );
+          });
+        });
     });
 
     it('refreshes token for platform without specifying platform id', async () => {
