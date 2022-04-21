@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsEmail,
@@ -10,12 +11,15 @@ import {
 import { IsPasswordValid } from 'src/common/validators/password.validator';
 
 export class CreateUserDto {
+  @ApiProperty({ name: 'username', example: 'johndoe' })
   @MaxLength(32)
   username: string;
 
+  @ApiProperty({ name: 'email', example: 'john@email.com' })
   @IsEmail()
   email: string;
 
+  @ApiProperty({ name: 'password', example: 'very_strong_password' })
   @IsString()
   @MinLength(4)
   @MaxLength(20)
@@ -24,10 +28,12 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto {
+  @ApiProperty({ name: 'username', example: 'johndoe' })
   @IsOptional()
   @MaxLength(32)
   username?: string;
 
+  @ApiProperty({ name: 'email', example: 'john@email.com' })
   @IsOptional()
   @IsEmail()
   email?: string;

@@ -9,7 +9,9 @@ import {
   Query,
   UseGuards,
   Request,
+  HttpStatus,
 } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -36,6 +38,8 @@ import {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ description: 'Creates a new user' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: CreateUserResponseDto })
   @Post()
   async create(
     @Body() createUserDto: CreateUserDto,
@@ -45,6 +49,10 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ description: 'Lists all users' })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'numItemsPerPage', required: false })
+  @ApiResponse({ status: HttpStatus.OK, type: FindAllUserResponseDto })
   @Get()
   async findAll(
     @Query() paginationParams: PaginationParamsDto,
@@ -54,6 +62,8 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ description: 'Retrieve myself (requires auth bearer token)' })
+  @ApiResponse({ status: HttpStatus.OK, type: GetMeUserResponseDto })
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(
@@ -64,6 +74,8 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ description: 'Patch myself (requires auth bearer token)' })
+  @ApiResponse({ status: HttpStatus.OK, type: UpdateUserResponseDto })
   @UseGuards(JwtAuthGuard)
   @Patch('me')
   async updateMe(
@@ -75,12 +87,17 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ description: 'Deletes myself (requires auth bearer token)' })
+  @ApiResponse({ status: HttpStatus.OK })
   @UseGuards(JwtAuthGuard)
   @Delete('me')
   async removeMe(@Request() { user }: { user: JWTPayload }) {
     await this.usersService.remove(user.userId);
   }
 
+  @ApiOperation({ description: 'Finds a user from a given id' })
+  @ApiParam({ name: 'id', required: true, example: 1234 })
+  @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponseDto })
   @Get(':id')
   async findOne(
     @Param() params: UserParamsDto,
@@ -90,6 +107,7 @@ export class UsersController {
     );
   }
 
+  // TODO: Document the rest of the endpoints
   @Post('verify-confirmation-token')
   async verifyConfirmationToken(
     @Query('token') token: string,

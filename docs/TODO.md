@@ -1,5 +1,6 @@
 # TODO list
 
+- Start documenting the API in Swagger
 - redesign confirmation and password reset emails to look nicer
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - add funding button to the repository
@@ -10,7 +11,6 @@
 
 ## Feature work
 
-- allow folks to download their connections and data in one big json blob
 - add announcements endpoint that will let platform owners/ super admins announce a **verified message**
 - create a tiny user storage for metadata or achievement purposes within the user table
 - consider implementing a different login method where users can login using their crypto wallets public key instead
