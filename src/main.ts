@@ -13,6 +13,7 @@ import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import * as helmet from 'helmet';
 import { textSync } from 'figlet';
+import { RedocModule, RedocOptions } from 'nestjs-redoc';
 
 import { AppModule } from './app.module';
 import { ValidationException } from './common/exceptions/validation.exception';
@@ -48,7 +49,14 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+
+  const redocOptions: RedocOptions = {
+    title: 'Soul API docs',
+    sortPropsAlphabetically: true,
+    hideDownloadButton: false,
+    hideHostname: false,
+  };
+  await RedocModule.setup('docs', app, document, redocOptions);
 
   app.use(helmet());
 
