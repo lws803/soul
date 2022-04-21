@@ -107,7 +107,12 @@ export class UsersController {
     );
   }
 
-  // TODO: Document the rest of the endpoints
+  @ApiOperation({
+    description:
+      'Verifies confirmation token which is used to log a user into an external platform',
+  })
+  @ApiQuery({ name: 'token', required: true })
+  @ApiResponse({ status: HttpStatus.CREATED, type: GetMeUserResponseDto })
   @Post('verify-confirmation-token')
   async verifyConfirmationToken(
     @Query('token') token: string,
@@ -117,6 +122,12 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({
+    description:
+      'Resend email confirmation token if user has not been validated yet',
+  })
+  @ApiQuery({ name: 'email', required: true, example: 'john@email.com' })
+  @ApiResponse({ status: HttpStatus.CREATED })
   @Post('resend-confirmation-token')
   async resendConfirmationToken(
     @Query() { email }: ResendConfirmationTokenDto,
@@ -124,11 +135,21 @@ export class UsersController {
     await this.usersService.resendConfirmationToken(email);
   }
 
+  @ApiOperation({
+    description: 'Request password reset email for a specified email',
+  })
+  @ApiQuery({ name: 'email', required: true, example: 'john@email.com' })
+  @ApiResponse({ status: HttpStatus.CREATED })
   @Post('request-password-reset-token')
   async requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
     await this.usersService.requestPasswordReset(email);
   }
 
+  @ApiOperation({
+    description: 'Reset password from a valid request password reset token',
+  })
+  @ApiQuery({ name: 'token', required: true })
+  @ApiResponse({ status: HttpStatus.CREATED })
   @Post('password-reset')
   async passwordReset(
     @Query('token') token: string,
