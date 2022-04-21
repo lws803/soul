@@ -23,6 +23,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  // TODO: Document the endpoints here
   @UseGuards(LocalAuthGuard)
   @Header('Cache-Control', 'no-store')
   @Post('login')

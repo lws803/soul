@@ -43,6 +43,7 @@ import {
 export class PlatformsController {
   constructor(private readonly platformsService: PlatformsService) {}
 
+  // TODO: Document the endpoints here
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(

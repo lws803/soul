@@ -35,6 +35,7 @@ export class UserConnectionsController {
     private readonly userConnectionsService: UserConnectionsService,
   ) {}
 
+  // TODO: Document the endpoints here
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
