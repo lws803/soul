@@ -21,7 +21,7 @@ export class CreateUserConnectionDto {
   @IsInt()
   toUserId: number;
 
-  @ApiProperty({ name: 'platformId', example: 1 })
+  @ApiProperty({ name: 'platformId', example: 1, required: false })
   @IsOptional()
   @IsInt()
   platformId?: number;
@@ -30,7 +30,6 @@ export class CreateUserConnectionDto {
 export class UserConnectionParamsDto {
   @ApiProperty({
     name: 'id',
-    required: true,
     example: 1,
     description: 'User connection id',
     type: Number,
@@ -67,7 +66,6 @@ export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
     name: 'connectionType',
     example: ConnectionType.MUTUAL,
     type: String,
-    required: true,
   })
   @IsEnum(ConnectionType)
   connectionType: ConnectionType;
@@ -100,6 +98,7 @@ export class RemovePlatformFromUserConnectionParamsDto {
     type: Number,
     description: 'Platform id',
     example: 1,
+    required: false,
   })
   @IsOptional()
   @Type(() => Number)

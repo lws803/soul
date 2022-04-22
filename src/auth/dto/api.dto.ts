@@ -19,14 +19,13 @@ export class RefreshTokenBodyDto {
 }
 
 export class CodeQueryParamDto {
-  @ApiProperty({ name: 'platformId', required: true, example: 1, type: Number })
+  @ApiProperty({ name: 'platformId', example: 1, type: Number })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 
   @ApiProperty({
     name: 'callback',
-    required: true,
     example: 'http://localhost:3000',
     type: String,
   })
@@ -36,13 +35,12 @@ export class CodeQueryParamDto {
 }
 
 export class ValidateQueryParamDto {
-  @ApiProperty({ name: 'code', required: true, type: String })
+  @ApiProperty({ name: 'code', type: String })
   @IsString()
   code: string;
 
   @ApiProperty({
     name: 'callback',
-    required: true,
     example: 'http://localhost:3000',
     type: String,
   })

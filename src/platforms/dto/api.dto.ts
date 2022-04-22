@@ -28,7 +28,6 @@ export class SetUserPlatformRoleQueryParamsDto {
     name: 'roles',
     example: 'admin,member',
     type: String,
-    required: true,
     description: 'Comma separated list of roles',
   })
   @Transform(({ value }) => value.split(','))
@@ -89,6 +88,7 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
     name: 'name',
     example: 'soul',
     description: 'Name of the platform',
+    required: false,
   })
   @IsOptional()
   @MaxLength(32)
@@ -100,6 +100,7 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
     description:
       'List of redirect uris for the platform, they must follow the following restrictions ' +
       'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
+    required: false,
   })
   @IsOptional()
   @IsArray()
@@ -114,6 +115,7 @@ export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
     name: 'isVerified',
     example: true,
     description: 'Is the platform verified, used only for official platforms',
+    required: false,
   })
   @IsOptional()
   @Type(() => Boolean)

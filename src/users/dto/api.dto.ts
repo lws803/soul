@@ -28,19 +28,19 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto {
-  @ApiProperty({ name: 'username', example: 'johndoe' })
+  @ApiProperty({ name: 'username', example: 'johndoe', required: false })
   @IsOptional()
   @MaxLength(32)
   username?: string;
 
-  @ApiProperty({ name: 'email', example: 'john@email.com' })
+  @ApiProperty({ name: 'email', example: 'john@email.com', required: false })
   @IsOptional()
   @IsEmail()
   email?: string;
 }
 
 export class UserParamsDto {
-  @ApiProperty({ name: 'id', required: true, example: 1234, type: Number })
+  @ApiProperty({ name: 'id', example: 1234, type: Number })
   @Type(() => Number)
   @IsInt()
   id: number;
@@ -49,7 +49,6 @@ export class UserParamsDto {
 export class ResendConfirmationTokenDto {
   @ApiProperty({
     name: 'email',
-    required: true,
     example: 'john@email.com',
     type: String,
   })
@@ -61,7 +60,6 @@ export class ResendConfirmationTokenDto {
 export class TokenQueryParamDto {
   @ApiProperty({
     name: 'token',
-    required: true,
     type: String,
   })
   @IsString()
@@ -71,16 +69,16 @@ export class TokenQueryParamDto {
 export class PasswordResetRequestDto {
   @ApiProperty({
     name: 'email',
-    required: true,
     example: 'john@email.com',
     type: String,
+    required: false,
   })
   @IsOptional()
   @IsString()
   @IsEmail()
   email?: string;
 
-  @ApiProperty({ name: 'username', example: 'johndoe' })
+  @ApiProperty({ name: 'username', example: 'johndoe', required: false })
   @IsOptional()
   @IsString()
   username?: string;
