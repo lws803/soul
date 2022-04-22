@@ -2,38 +2,23 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
 class FullUserResponseDto {
-  @ApiProperty({
-    name: 'id',
-    example: 1234,
-  })
+  @ApiProperty({ name: 'id', example: 1234 })
   @Expose()
   id: number;
 
-  @ApiProperty({
-    name: 'username',
-    example: 'johndoe',
-  })
+  @ApiProperty({ name: 'username', example: 'johndoe' })
   @Expose()
   username: string;
 
-  @ApiProperty({
-    name: 'userHandle',
-    example: 'johndoe#1234',
-  })
+  @ApiProperty({ name: 'userHandle', example: 'johndoe#1234' })
   @Expose()
   userHandle: string;
 
-  @ApiProperty({
-    name: 'email',
-    example: 'john@email.com',
-  })
+  @ApiProperty({ name: 'email', example: 'john@email.com' })
   @Expose()
   email: string;
 
-  @ApiProperty({
-    name: 'isActive',
-    example: 'false',
-  })
+  @ApiProperty({ name: 'isActive', example: false })
   @Expose()
   isActive: boolean;
 

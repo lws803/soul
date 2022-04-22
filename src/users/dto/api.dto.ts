@@ -46,7 +46,7 @@ export class UserParamsDto {
   id: number;
 }
 
-export class ResendEmailConfirmationDto {
+export class ResendConfirmationTokenDto {
   @ApiProperty({
     name: 'email',
     required: true,

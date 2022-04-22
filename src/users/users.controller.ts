@@ -22,7 +22,7 @@ import {
   CreateUserDto,
   PasswordResetDto,
   PasswordResetRequestDto,
-  ResendEmailConfirmationDto as ResendConfirmationTokenDto,
+  ResendConfirmationTokenDto,
   TokenQueryParamDto,
   UpdateUserDto,
   UserParamsDto,
@@ -143,12 +143,12 @@ export class UsersController {
   @ApiOperation({
     description: 'Reset password from a valid request password reset token',
   })
-  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({ status: HttpStatus.CREATED, type: GetMeUserResponseDto })
   @Post('password-reset')
   async passwordReset(
     @Query() { token }: TokenQueryParamDto,
     @Body() { password }: PasswordResetDto,
-  ) {
+  ): Promise<GetMeUserResponseDto> {
     return new GetMeUserResponseDto(
       await this.usersService.passwordReset(token, password),
     );
