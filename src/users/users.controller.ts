@@ -9,7 +9,9 @@ import {
   Query,
   UseGuards,
   Request,
+  HttpStatus,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -20,7 +22,8 @@ import {
   CreateUserDto,
   PasswordResetDto,
   PasswordResetRequestDto,
-  ResendEmailConfirmationDto as ResendConfirmationTokenDto,
+  ResendConfirmationTokenDto,
+  TokenQueryParamDto,
   UpdateUserDto,
   UserParamsDto,
 } from './dto/api.dto';
@@ -36,6 +39,8 @@ import {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ description: 'Creates a new user' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: CreateUserResponseDto })
   @Post()
   async create(
     @Body() createUserDto: CreateUserDto,
@@ -45,6 +50,8 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ description: 'Lists all users' })
+  @ApiResponse({ status: HttpStatus.OK, type: FindAllUserResponseDto })
   @Get()
   async findAll(
     @Query() paginationParams: PaginationParamsDto,
@@ -54,6 +61,8 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ description: 'Retrieve myself (requires auth bearer token)' })
+  @ApiResponse({ status: HttpStatus.OK, type: GetMeUserResponseDto })
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(
@@ -64,6 +73,8 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ description: 'Patch myself (requires auth bearer token)' })
+  @ApiResponse({ status: HttpStatus.OK, type: UpdateUserResponseDto })
   @UseGuards(JwtAuthGuard)
   @Patch('me')
   async updateMe(
@@ -75,12 +86,16 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ description: 'Deletes myself (requires auth bearer token)' })
+  @ApiResponse({ status: HttpStatus.OK })
   @UseGuards(JwtAuthGuard)
   @Delete('me')
   async removeMe(@Request() { user }: { user: JWTPayload }) {
     await this.usersService.remove(user.userId);
   }
 
+  @ApiOperation({ description: 'Finds a user from a given id' })
+  @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponseDto })
   @Get(':id')
   async findOne(
     @Param() params: UserParamsDto,
@@ -90,15 +105,25 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({
+    description:
+      'Verifies confirmation token which is used to log a user into an external platform',
+  })
+  @ApiResponse({ status: HttpStatus.CREATED, type: GetMeUserResponseDto })
   @Post('verify-confirmation-token')
   async verifyConfirmationToken(
-    @Query('token') token: string,
+    @Query() { token }: TokenQueryParamDto,
   ): Promise<GetMeUserResponseDto> {
     return new GetMeUserResponseDto(
       await this.usersService.verifyConfirmationToken(token),
     );
   }
 
+  @ApiOperation({
+    description:
+      'Resend email confirmation token if user has not been validated yet',
+  })
+  @ApiResponse({ status: HttpStatus.CREATED })
   @Post('resend-confirmation-token')
   async resendConfirmationToken(
     @Query() { email }: ResendConfirmationTokenDto,
@@ -106,16 +131,24 @@ export class UsersController {
     await this.usersService.resendConfirmationToken(email);
   }
 
+  @ApiOperation({
+    description: 'Request password reset email for a specified email',
+  })
+  @ApiResponse({ status: HttpStatus.CREATED })
   @Post('request-password-reset-token')
   async requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
     await this.usersService.requestPasswordReset(email);
   }
 
+  @ApiOperation({
+    description: 'Reset password from a valid request password reset token',
+  })
+  @ApiResponse({ status: HttpStatus.CREATED, type: GetMeUserResponseDto })
   @Post('password-reset')
   async passwordReset(
-    @Query('token') token: string,
+    @Query() { token }: TokenQueryParamDto,
     @Body() { password }: PasswordResetDto,
-  ) {
+  ): Promise<GetMeUserResponseDto> {
     return new GetMeUserResponseDto(
       await this.usersService.passwordReset(token, password),
     );

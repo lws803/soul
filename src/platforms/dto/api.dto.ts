@@ -1,4 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -16,12 +17,19 @@ import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.
 import { UserRole } from 'src/roles/role.enum';
 
 export class PlatformIdParamDto {
+  @ApiProperty({ name: 'platformId', example: 1, type: Number })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 }
 
 export class SetUserPlatformRoleQueryParamsDto {
+  @ApiProperty({
+    name: 'roles',
+    example: 'admin,member',
+    type: String,
+    description: 'Comma separated list of roles',
+  })
   @Transform(({ value }) => value.split(','))
   @IsArray()
   @IsEnum(UserRole, { each: true })
@@ -29,29 +37,45 @@ export class SetUserPlatformRoleQueryParamsDto {
 }
 
 export class SetUserPlatformRoleParamsDto {
+  @ApiProperty({ name: 'platformId', example: 1, type: Number })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 
+  @ApiProperty({ name: 'userId', example: 1234, type: Number })
   @Type(() => Number)
   @IsInt()
   userId: number;
 }
 
 export class RemovePlatformUserParamsDto {
+  @ApiProperty({ name: 'platformId', example: 1, type: Number })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 
+  @ApiProperty({ name: 'userId', example: 1234, type: Number })
   @Type(() => Number)
   @IsInt()
   userId: number;
 }
 
 export class CreatePlatformDto {
+  @ApiProperty({
+    name: 'name',
+    example: 'soul',
+    description: 'Name of the platform',
+  })
   @MaxLength(32)
   name: string;
 
+  @ApiProperty({
+    name: 'redirectUris',
+    example: ['https://example.com', 'http://localhost:3000'],
+    description:
+      'List of redirect uris for the platform, they must follow the following restrictions ' +
+      'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
+  })
   @IsArray()
   @ArrayMaxSize(10)
   @ArrayMinSize(1)
@@ -60,10 +84,24 @@ export class CreatePlatformDto {
 }
 
 export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
+  @ApiProperty({
+    name: 'name',
+    example: 'soul',
+    description: 'Name of the platform',
+    required: false,
+  })
   @IsOptional()
   @MaxLength(32)
   name?: string;
 
+  @ApiProperty({
+    name: 'redirectUris',
+    example: ['https://example.com', 'http://localhost:3000'],
+    description:
+      'List of redirect uris for the platform, they must follow the following restrictions ' +
+      'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
+    required: false,
+  })
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(10)
@@ -73,6 +111,12 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
 }
 
 export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
+  @ApiProperty({
+    name: 'isVerified',
+    example: true,
+    description: 'Is the platform verified, used only for official platforms',
+    required: false,
+  })
   @IsOptional()
   @Type(() => Boolean)
   @IsBoolean()

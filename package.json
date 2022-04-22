@@ -50,6 +50,7 @@
     "joi": "^17.6.0",
     "mysql2": "^2.3.3",
     "nest-raven": "^8.0.0",
+    "nestjs-redoc": "^2.2.2",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",

@@ -10,7 +10,9 @@ import {
   Request,
   Query,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
@@ -43,6 +45,8 @@ import {
 export class PlatformsController {
   constructor(private readonly platformsService: PlatformsService) {}
 
+  @ApiOperation({ description: 'Create a new platform' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: CreatePlatformResponseDto })
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
@@ -54,6 +58,8 @@ export class PlatformsController {
     );
   }
 
+  @ApiOperation({ description: 'List all platforms with pagination support' })
+  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseDto })
   @Get()
   async findAll(
     @Query() params: FindAllPlatformsQueryParamDto,
@@ -63,6 +69,8 @@ export class PlatformsController {
     );
   }
 
+  @ApiOperation({ description: 'Find one platform from a given platformId' })
+  @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseDto })
   @Get(':platformId')
   async findOne(
     @Param() { platformId }: PlatformIdParamDto,
@@ -72,6 +80,11 @@ export class PlatformsController {
     );
   }
 
+  @ApiOperation({
+    description:
+      'Updates a platform (only authorized platform owners can update a platform)',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: UpdatePlatformResponseDto })
   @Roles(UserRole.ADMIN)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Patch(':platformId')
@@ -84,6 +97,11 @@ export class PlatformsController {
     );
   }
 
+  @ApiOperation({
+    description:
+      'Deletes a platform (only authorized platform owners can delete a platform)',
+  })
+  @ApiResponse({ status: HttpStatus.OK })
   @Roles(UserRole.ADMIN)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId')
@@ -91,6 +109,10 @@ export class PlatformsController {
     await this.platformsService.remove(platformId);
   }
 
+  @ApiOperation({
+    description: 'Lists all platform users',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformUsersResponseDto })
   @Roles(UserRole.MEMBER)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Get(':platformId/users')
@@ -106,6 +128,10 @@ export class PlatformsController {
     );
   }
 
+  @ApiOperation({
+    description: 'Sets a role for a user on a platform',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: SetPlatformUserRoleResponseDto })
   @Roles(UserRole.ADMIN)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Put(':platformId/users/:userId')
@@ -118,6 +144,10 @@ export class PlatformsController {
     );
   }
 
+  @ApiOperation({
+    description: 'Deletes a user from a platform',
+  })
+  @ApiResponse({ status: HttpStatus.OK })
   @Roles(UserRole.ADMIN)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId/users/:userId')
@@ -127,6 +157,10 @@ export class PlatformsController {
     await this.platformsService.removeUser(platformId, userId);
   }
 
+  @ApiOperation({
+    description: 'Quits a platform by deleting self from it',
+  })
+  @ApiResponse({ status: HttpStatus.OK })
   @Roles(UserRole.MEMBER)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId/quit')
@@ -137,12 +171,19 @@ export class PlatformsController {
     await this.platformsService.removeUser(platformId, user.userId);
   }
 
+  @ApiOperation({
+    description: 'Joins a platform by adding self to it',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: CreatePlatformUserResponseDto,
+  })
   @UseGuards(JwtAuthGuard)
   @Post(':platformId/join')
   async joinPlatform(
     @Request() { user }: { user: JWTPayload },
     @Param() { platformId }: PlatformIdParamDto,
-  ) {
+  ): Promise<CreatePlatformUserResponseDto> {
     return new CreatePlatformUserResponseDto(
       await this.platformsService.addUser(platformId, user.userId),
     );

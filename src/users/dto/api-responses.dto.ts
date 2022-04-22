@@ -1,14 +1,34 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
 class FullUserResponseDto {
-  @Expose() id: number;
-  @Expose() username: string;
-  @Expose() userHandle: string;
-  @Expose() email: string;
-  @Expose() isActive: boolean;
+  @ApiProperty({ name: 'id', example: 1234 })
+  @Expose()
+  id: number;
 
-  @Expose() createdAt: Date;
-  @Expose() updatedAt: Date;
+  @ApiProperty({ name: 'username', example: 'johndoe' })
+  @Expose()
+  username: string;
+
+  @ApiProperty({ name: 'userHandle', example: 'johndoe#1234' })
+  @Expose()
+  userHandle: string;
+
+  @ApiProperty({ name: 'email', example: 'john@email.com' })
+  @Expose()
+  email: string;
+
+  @ApiProperty({ name: 'isActive', example: false })
+  @Expose()
+  isActive: boolean;
+
+  @ApiProperty({ name: 'createdAt', type: Date })
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty({ name: 'updatedAt', type: Date })
+  @Expose()
+  updatedAt: Date;
 
   constructor(args: FullUserResponseDto) {
     Object.assign(this, args);
@@ -34,9 +54,17 @@ export class UpdateUserResponseDto extends FullUserResponseDto {
 }
 
 export class FindOneUserResponseDto {
-  @Expose() id: number;
-  @Expose() username: string;
-  @Expose() userHandle: string;
+  @ApiProperty({ name: 'id', example: 1234 })
+  @Expose()
+  id: number;
+
+  @ApiProperty({ name: 'username', example: 'johndoe' })
+  @Expose()
+  username: string;
+
+  @ApiProperty({ name: 'userHandle', example: 'johndoe#1234' })
+  @Expose()
+  userHandle: string;
 
   constructor(args: FindOneUserResponseDto) {
     Object.assign(this, args);
@@ -44,10 +72,17 @@ export class FindOneUserResponseDto {
 }
 
 export class FindAllUserResponseDto {
+  @ApiProperty({
+    name: 'users',
+    type: [FindOneUserResponseDto],
+  })
   @Expose()
   @Type(() => FindOneUserResponseDto)
   users: FindOneUserResponseDto[];
-  @Expose() totalCount: number;
+
+  @ApiProperty({ name: 'totalCount', example: 10 })
+  @Expose()
+  totalCount: number;
 
   constructor(args: FindAllUserResponseDto) {
     Object.assign(this, args);
