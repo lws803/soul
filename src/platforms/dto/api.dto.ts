@@ -1,4 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -49,9 +50,21 @@ export class RemovePlatformUserParamsDto {
 }
 
 export class CreatePlatformDto {
+  @ApiProperty({
+    name: 'name',
+    example: 'soul',
+    description: 'Name of the platform',
+  })
   @MaxLength(32)
   name: string;
 
+  @ApiProperty({
+    name: 'redirectUris',
+    example: ['https://example.com', 'http://localhost:3000'],
+    description:
+      'List of redirect uris for the platform, they must follow the following restrictions ' +
+      'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
+  })
   @IsArray()
   @ArrayMaxSize(10)
   @ArrayMinSize(1)
@@ -60,10 +73,22 @@ export class CreatePlatformDto {
 }
 
 export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
+  @ApiProperty({
+    name: 'name',
+    example: 'soul',
+    description: 'Name of the platform',
+  })
   @IsOptional()
   @MaxLength(32)
   name?: string;
 
+  @ApiProperty({
+    name: 'redirectUris',
+    example: ['https://example.com', 'http://localhost:3000'],
+    description:
+      'List of redirect uris for the platform, they must follow the following restrictions ' +
+      'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
+  })
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(10)
@@ -73,6 +98,11 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
 }
 
 export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
+  @ApiProperty({
+    name: 'isVerified',
+    example: true,
+    description: 'Is the platform verified, used only for official platforms',
+  })
   @IsOptional()
   @Type(() => Boolean)
   @IsBoolean()

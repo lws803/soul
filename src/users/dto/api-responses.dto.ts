@@ -95,13 +95,7 @@ export class FindOneUserResponseDto {
 export class FindAllUserResponseDto {
   @ApiProperty({
     name: 'users',
-    example: [
-      {
-        id: 1234,
-        username: 'johndoe',
-        userHandle: 'johndoe#1234',
-      },
-    ],
+    type: [FindOneUserResponseDto],
   })
   @Expose()
   @Type(() => FindOneUserResponseDto)

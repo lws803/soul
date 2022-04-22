@@ -1,6 +1,7 @@
 # TODO list
 
 - Start documenting the API in Swagger
+- Maybe rename redirectUris to redirect urls since it's technically a URL
 - redesign confirmation and password reset emails to look nicer
 - create documentation for this that's deployed to github pages, maybe start work on the live platform site as well
 - add funding button to the repository

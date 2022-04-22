@@ -32,7 +32,7 @@ export class PlatformLoginResponseDto extends LoginResponseDto {
   @Expose()
   platformId: number;
 
-  @ApiProperty({ name: 'roles', example: ['admin', 'member'] })
+  @ApiProperty({ name: 'roles', example: [UserRole.ADMIN, UserRole.MEMBER] })
   @Expose()
   roles: UserRole[];
 
@@ -57,7 +57,7 @@ export class RefreshTokenWithPlatformResponseDto extends RefreshTokenResponseDto
   @Expose()
   platformId: number;
 
-  @ApiProperty({ name: 'roles', example: ['admin', 'member'] })
+  @ApiProperty({ name: 'roles', example: [UserRole.ADMIN, UserRole.MEMBER] })
   @Expose()
   roles: UserRole[];
 
