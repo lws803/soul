@@ -28,25 +28,56 @@ export class CreateUserConnectionDto {
 }
 
 export class UserConnectionParamsDto {
+  @ApiProperty({
+    name: 'id',
+    required: true,
+    example: 1,
+    description: 'User connection id',
+    type: Number,
+  })
   @Type(() => Number)
   @IsInt()
   id: number;
 }
 
 export class ByUserIdsParamsDto {
+  @ApiProperty({
+    name: 'fromUserId',
+    required: false,
+    example: 1234,
+    type: Number,
+  })
   @Type(() => Number)
   @IsInt()
   fromUserId: number;
 
+  @ApiProperty({
+    name: 'toUserId',
+    required: false,
+    example: 12345,
+    type: Number,
+  })
   @Type(() => Number)
   @IsInt()
   toUserId: number;
 }
 
 export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
+  @ApiProperty({
+    name: 'connectionType',
+    example: ConnectionType.MUTUAL,
+    type: String,
+    required: true,
+  })
   @IsEnum(ConnectionType)
   connectionType: ConnectionType;
 
+  @ApiProperty({
+    name: 'platformId',
+    example: 1,
+    type: Number,
+    required: false,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
@@ -54,10 +85,22 @@ export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
 }
 
 export class RemovePlatformFromUserConnectionParamsDto {
+  @ApiProperty({
+    name: 'id',
+    type: Number,
+    description: 'User connection id',
+    example: 1,
+  })
   @Type(() => Number)
   @IsInt()
   id: number;
 
+  @ApiProperty({
+    name: 'platformId',
+    type: Number,
+    description: 'Platform id',
+    example: 1,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()

@@ -8,7 +8,7 @@ import {
   Header,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { User } from 'src/users/entities/user.entity';
 
@@ -45,12 +45,6 @@ export class AuthController {
     description:
       'Login with external platform, returns code to be exchanged for a token',
   })
-  @ApiQuery({ name: 'platformId', required: true, example: 1 })
-  @ApiQuery({
-    name: 'callback',
-    required: true,
-    example: 'http://localhost:3000',
-  })
   @ApiResponse({ status: HttpStatus.CREATED, type: CodeResponseDto })
   @UseGuards(LocalAuthGuard)
   @Header('Cache-Control', 'no-store')
@@ -72,12 +66,6 @@ export class AuthController {
     description:
       'Verify code returned to external platform and exchange for access tokens',
   })
-  @ApiQuery({ name: 'code', required: true })
-  @ApiQuery({
-    name: 'callback',
-    required: true,
-    example: 'http://localhost:3000',
-  })
   @ApiResponse({ status: HttpStatus.CREATED, type: PlatformLoginResponseDto })
   @Post('verify')
   @Header('Cache-Control', 'no-store')
@@ -94,7 +82,6 @@ export class AuthController {
       'Refresh access token, returns new access token. ' +
       'If platformId is provided, returns new access token for that platform',
   })
-  @ApiQuery({ name: 'platformId', required: false })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: RefreshTokenWithPlatformResponseDto,

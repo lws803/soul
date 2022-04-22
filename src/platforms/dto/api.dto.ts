@@ -17,12 +17,20 @@ import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.
 import { UserRole } from 'src/roles/role.enum';
 
 export class PlatformIdParamDto {
+  @ApiProperty({ name: 'platformId', example: 1, type: Number })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 }
 
 export class SetUserPlatformRoleQueryParamsDto {
+  @ApiProperty({
+    name: 'roles',
+    example: 'admin,member',
+    type: String,
+    required: true,
+    description: 'Comma separated list of roles',
+  })
   @Transform(({ value }) => value.split(','))
   @IsArray()
   @IsEnum(UserRole, { each: true })
@@ -30,20 +38,24 @@ export class SetUserPlatformRoleQueryParamsDto {
 }
 
 export class SetUserPlatformRoleParamsDto {
+  @ApiProperty({ name: 'platformId', example: 1, type: Number })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 
+  @ApiProperty({ name: 'userId', example: 1234, type: Number })
   @Type(() => Number)
   @IsInt()
   userId: number;
 }
 
 export class RemovePlatformUserParamsDto {
+  @ApiProperty({ name: 'platformId', example: 1, type: Number })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 
+  @ApiProperty({ name: 'userId', example: 1234, type: Number })
   @Type(() => Number)
   @IsInt()
   userId: number;

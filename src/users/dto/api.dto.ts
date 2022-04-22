@@ -40,21 +40,41 @@ export class UpdateUserDto {
 }
 
 export class UserParamsDto {
-  @ApiProperty({ name: 'id', example: 1234 })
+  @ApiProperty({ name: 'id', required: true, example: 1234, type: Number })
   @Type(() => Number)
   @IsInt()
   id: number;
 }
 
 export class ResendEmailConfirmationDto {
-  @ApiProperty({ name: 'email', example: 'john@email.com' })
+  @ApiProperty({
+    name: 'email',
+    required: true,
+    example: 'john@email.com',
+    type: String,
+  })
   @IsString()
   @IsEmail()
   email: string;
 }
 
+export class TokenQueryParamDto {
+  @ApiProperty({
+    name: 'token',
+    required: true,
+    type: String,
+  })
+  @IsString()
+  token: string;
+}
+
 export class PasswordResetRequestDto {
-  @ApiProperty({ name: 'email', example: 'john@email.com' })
+  @ApiProperty({
+    name: 'email',
+    required: true,
+    example: 'john@email.com',
+    type: String,
+  })
   @IsOptional()
   @IsString()
   @IsEmail()
