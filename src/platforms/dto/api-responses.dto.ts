@@ -133,10 +133,7 @@ class FindOnePlatformUserResponseDto {
   @Expose()
   id: number;
 
-  @ApiProperty({
-    name: 'user',
-    type: FindOneUserResponseDto,
-  })
+  @ApiProperty({ name: 'user', type: FindOneUserResponseDto })
   @Expose()
   @Type(() => FindOneUserResponseDto)
   user: FindOneUserResponseDto;
