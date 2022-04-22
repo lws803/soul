@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString, IsInt } from 'class-validator';
 
@@ -11,6 +12,7 @@ export class PlatformIdQueryDto {
 }
 
 export class RefreshTokenBodyDto {
+  @ApiProperty({ name: 'refreshToken' })
   @IsString()
   refreshToken: string;
 }

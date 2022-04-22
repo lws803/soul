@@ -56,7 +56,7 @@ describe('AuthService', () => {
       const user = factories.oneUser.build();
       const result = await controller.login({ user });
 
-      expect(result).toStrictEqual({
+      expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',
         refreshToken: 'REFRESH_TOKEN',
       });
@@ -69,7 +69,7 @@ describe('AuthService', () => {
       const refreshToken = 'REFRESH_TOKEN';
       const result = await controller.refresh({}, { refreshToken });
 
-      expect(result).toStrictEqual({
+      expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',
       });
       expect(service.refresh).toHaveBeenCalledWith(refreshToken);
@@ -82,7 +82,7 @@ describe('AuthService', () => {
         { refreshToken },
       );
 
-      expect(result).toStrictEqual({
+      expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',
         platformId: 1,
         roles: [UserRole.ADMIN, UserRole.MEMBER],
@@ -100,7 +100,7 @@ describe('AuthService', () => {
         { platformId, callback: 'TEST_REDIRECT_URI' },
       );
 
-      expect(result).toStrictEqual({
+      expect(result).toEqual({
         code: 'CODE',
       });
       expect(service.getCodeForPlatformAndCallback).toHaveBeenCalledWith(
@@ -112,12 +112,12 @@ describe('AuthService', () => {
   });
 
   describe('verify()', () => {
-    it('should exchange code for tokens', () => {
+    it('should exchange code for tokens', async () => {
       const code = 'CODE';
       const callback = 'TEST_REDIRECT_URI';
-      const result = controller.verify({ code, callback });
+      const result = await controller.verify({ code, callback });
 
-      expect(result).toStrictEqual({
+      expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',
         refreshToken: 'REFRESH_TOKEN',
         platformId: 1,
