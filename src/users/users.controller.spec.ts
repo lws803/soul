@@ -199,9 +199,9 @@ describe('UsersController', () => {
 
   describe('verifyConfirmationToken()', () => {
     it('verifies token successfully', async () => {
-      expect(await controller.verifyConfirmationToken('TOKEN')).toEqual(
-        factories.oneUser.build(),
-      );
+      expect(
+        await controller.verifyConfirmationToken({ token: 'TOKEN' }),
+      ).toEqual(factories.oneUser.build());
 
       expect(usersService.verifyConfirmationToken).toHaveBeenCalledWith(
         'TOKEN',
@@ -240,7 +240,10 @@ describe('UsersController', () => {
   describe('passwordReset()', () => {
     it('resets password for user', async () => {
       expect(
-        await controller.passwordReset('TOKEN', { password: 'NEW_PASSWORD' }),
+        await controller.passwordReset(
+          { token: 'TOKEN' },
+          { password: 'NEW_PASSWORD' },
+        ),
       ).toEqual(factories.oneUser.build());
 
       expect(usersService.passwordReset).toHaveBeenCalledWith(
