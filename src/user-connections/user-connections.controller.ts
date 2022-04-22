@@ -8,7 +8,9 @@ import {
   Query,
   UseGuards,
   Request,
+  HttpStatus,
 } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -35,7 +37,11 @@ export class UserConnectionsController {
     private readonly userConnectionsService: UserConnectionsService,
   ) {}
 
-  // TODO: Document the endpoints here
+  @ApiOperation({ description: 'Creates a new user connection' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: CreateUserConnectionResponseDto,
+  })
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
@@ -50,6 +56,15 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiOperation({ description: 'List my connections' })
+  @ApiQuery({ name: 'platformId', required: false, type: Number })
+  @ApiQuery({ name: 'connectionType', required: false, type: String })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'numItemsPerPage', required: false, type: Number })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: FindAllUserConnectionResponseDto,
+  })
   @UseGuards(JwtAuthGuard)
   @Get('/my-connections')
   async findMyConnections(
@@ -72,6 +87,18 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiOperation({ description: 'Get connection by users' })
+  @ApiQuery({
+    name: 'fromUserId',
+    required: false,
+    example: 1234,
+    type: Number,
+  })
+  @ApiQuery({ name: 'toUserId', required: false, example: 12345, type: Number })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: FindOneUserConnectionResponseDto,
+  })
   @Get('/by-users')
   async findOneByUserIds(
     @Query() { fromUserId, toUserId }: ByUserIdsParamsDto,
@@ -81,6 +108,18 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiOperation({ description: 'Get connection by id' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    example: 1,
+    description: 'User connection id',
+    type: Number,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: FindOneUserConnectionResponseDto,
+  })
   @Get(':id')
   async findOne(
     @Param() { id }: UserConnectionParamsDto,
@@ -90,6 +129,20 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiOperation({
+    description: 'Add a new platform to an existing user connection',
+  })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    example: 1,
+    description: 'User connection id',
+    type: Number,
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: AddNewPlatformToUserConnectionResponseDto,
+  })
   @UseGuards(JwtAuthGuard)
   @Post(':id/platforms')
   async addNewPlatformToUserConnection(
@@ -106,6 +159,24 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiOperation({
+    description: 'Delete platform from an existing user connection',
+  })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    example: 1,
+    description: 'User connection id',
+    type: Number,
+  })
+  @ApiParam({
+    name: 'platformId',
+    required: true,
+    example: 1,
+    description: 'Platform id',
+    type: Number,
+  })
+  @ApiResponse({ status: HttpStatus.OK })
   @UseGuards(JwtAuthGuard)
   @Delete(':id/platforms/:platformId')
   async removePlatformFromUserConnection(
@@ -119,6 +190,17 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiOperation({
+    description: 'Delete a user connection',
+  })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    example: 1,
+    description: 'User connection id',
+    type: Number,
+  })
+  @ApiResponse({ status: HttpStatus.OK })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(

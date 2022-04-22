@@ -50,8 +50,8 @@ export class UsersController {
   }
 
   @ApiOperation({ description: 'Lists all users' })
-  @ApiQuery({ name: 'page', required: false })
-  @ApiQuery({ name: 'numItemsPerPage', required: false })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'numItemsPerPage', required: false, type: Number })
   @ApiResponse({ status: HttpStatus.OK, type: FindAllUserResponseDto })
   @Get()
   async findAll(
@@ -96,7 +96,7 @@ export class UsersController {
   }
 
   @ApiOperation({ description: 'Finds a user from a given id' })
-  @ApiParam({ name: 'id', required: true, example: 1234 })
+  @ApiParam({ name: 'id', required: true, example: 1234, type: Number })
   @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponseDto })
   @Get(':id')
   async findOne(
@@ -111,7 +111,7 @@ export class UsersController {
     description:
       'Verifies confirmation token which is used to log a user into an external platform',
   })
-  @ApiQuery({ name: 'token', required: true })
+  @ApiQuery({ name: 'token', required: true, type: String })
   @ApiResponse({ status: HttpStatus.CREATED, type: GetMeUserResponseDto })
   @Post('verify-confirmation-token')
   async verifyConfirmationToken(
@@ -148,7 +148,7 @@ export class UsersController {
   @ApiOperation({
     description: 'Reset password from a valid request password reset token',
   })
-  @ApiQuery({ name: 'token', required: true })
+  @ApiQuery({ name: 'token', required: true, type: String })
   @ApiResponse({ status: HttpStatus.CREATED })
   @Post('password-reset')
   async passwordReset(

@@ -37,17 +37,11 @@ class FullUserResponseDto {
   @Expose()
   isActive: boolean;
 
-  @ApiProperty({
-    name: 'createdAt',
-    example: '2022-02-06T15:27:53.385Z',
-  })
+  @ApiProperty({ name: 'createdAt', type: Date })
   @Expose()
   createdAt: Date;
 
-  @ApiProperty({
-    name: 'updatedAt',
-    example: '2022-02-06T15:27:53.385Z',
-  })
+  @ApiProperty({ name: 'updatedAt', type: Date })
   @Expose()
   updatedAt: Date;
 
