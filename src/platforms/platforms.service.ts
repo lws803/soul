@@ -59,16 +59,30 @@ export class PlatformsService {
     return updatedPlatform;
   }
 
-  async findAll(params: FindAllPlatformsQueryParamDto) {
-    const [platforms, totalCount] = await this.platformRepository.findAndCount({
-      where:
-        params.isVerified === undefined
-          ? [{ isVerified: true }, { isVerified: false }]
-          : { isVerified: params.isVerified },
-      order: { id: 'ASC' },
-      take: params.numItemsPerPage,
-      skip: (params.page - 1) * params.numItemsPerPage,
-    });
+  async findAll(queryParams: FindAllPlatformsQueryParamDto) {
+    let baseQuery = this.platformRepository
+      .createQueryBuilder('platform')
+      .select();
+    const fullTextQuery = queryParams.q;
+    if (fullTextQuery) {
+      baseQuery = baseQuery.where(
+        'MATCH(platform.name) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
+        { fullTextQuery },
+      );
+    }
+    const isVerified = queryParams.isVerified;
+    if (isVerified) {
+      baseQuery = baseQuery.where('platform.isVerified = :isVerified', {
+        isVerified,
+      });
+    }
+    baseQuery = baseQuery
+      .orderBy('platform.id', 'ASC')
+      .take(queryParams.numItemsPerPage)
+      .skip((queryParams.page - 1) * queryParams.numItemsPerPage);
+
+    const [platforms, totalCount] = await baseQuery.getManyAndCount();
+
     return { platforms, totalCount };
   }
 

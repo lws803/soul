@@ -185,6 +185,27 @@ describe('PlatformsController (e2e)', () => {
           }),
         );
     });
+
+    it('fetches all platforms with full text search', async () => {
+      await request(app.getHttpServer())
+        .get('/platforms?q=TEST_PLATFORM')
+        .expect(200)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            platforms: [
+              {
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+                id: expect.any(Number),
+                name: 'TEST_PLATFORM',
+                isVerified: true,
+                nameHandle: 'TEST_PLATFORM#1',
+              },
+            ],
+            totalCount: 1,
+          }),
+        );
+    });
   });
 
   describe('/platforms/:platformId (GET)', () => {

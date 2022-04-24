@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Entity,
+  Index,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -13,6 +14,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index({ fulltext: true, unique: false })
   @Column()
   username: string;
 

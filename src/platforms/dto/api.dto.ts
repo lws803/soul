@@ -121,4 +121,14 @@ export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
   @Type(() => Boolean)
   @IsBoolean()
   isVerified?: boolean;
+
+  @ApiProperty({
+    name: 'q',
+    example: 'soul',
+    description: 'Search query',
+    required: false,
+  })
+  @IsOptional()
+  @MaxLength(32)
+  q?: string;
 }
