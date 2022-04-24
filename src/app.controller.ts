@@ -1,4 +1,5 @@
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 import { AppService } from './app.service';
 import { LocalIpWhitelistInterceptor } from './common/interceptors/local-ip-whitelist.interceptor';
@@ -8,6 +9,7 @@ import { LocalIpWhitelistInterceptor } from './common/interceptors/local-ip-whit
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @ApiExcludeEndpoint()
   @Get('healthcheck')
   async getHealthcheck(): Promise<{ status: 'OK' }> {
     return await this.appService.getHealthcheck();
