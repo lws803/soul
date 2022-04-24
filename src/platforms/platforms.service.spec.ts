@@ -17,8 +17,23 @@ describe('PlatformsService', () => {
   let platformRepository: Repository<Platform>;
   let platformUserRepository: Repository<PlatformUser>;
   let refreshTokenRepository: Repository<RefreshToken>;
+  let platformCreateQueryBuilder: any;
 
   beforeEach(async () => {
+    platformCreateQueryBuilder = {
+      select: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      where: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      orderBy: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      skip: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      take: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      getManyAndCount: jest
+        .fn()
+        .mockResolvedValue([
+          factories.platformArray.build(),
+          factories.platformArray.build().length,
+        ]),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PlatformsService,
@@ -35,6 +50,9 @@ describe('PlatformsService', () => {
             save: jest.fn().mockResolvedValue(factories.onePlatform.build()),
             update: jest.fn(),
             delete: jest.fn(),
+            createQueryBuilder: jest
+              .fn()
+              .mockImplementation(() => platformCreateQueryBuilder),
           },
         },
         {
@@ -131,36 +149,21 @@ describe('PlatformsService', () => {
         platforms,
         totalCount: platforms.length,
       });
-
-      expect(platformRepository.findAndCount).toHaveBeenCalledWith({
-        where: [{ isVerified: true }, { isVerified: false }],
-        order: {
-          id: 'ASC',
-        },
-        take: 10,
-        skip: 0,
-      });
     });
 
     it('should find all platforms with pagination', async () => {
       const platforms = factories.platformArray.build();
       jest
-        .spyOn(platformRepository, 'findAndCount')
-        .mockResolvedValue([[platforms[0]], platforms.length]);
+        .spyOn(platformCreateQueryBuilder, 'getManyAndCount')
+        .mockResolvedValueOnce([[platforms[0]], platforms.length]);
 
       expect(await service.findAll({ page: 1, numItemsPerPage: 1 })).toEqual({
         platforms: [platforms[0]],
         totalCount: platforms.length,
       });
 
-      expect(platformRepository.findAndCount).toHaveBeenCalledWith({
-        where: [{ isVerified: true }, { isVerified: false }],
-        order: {
-          id: 'ASC',
-        },
-        take: 1,
-        skip: 0,
-      });
+      expect(platformCreateQueryBuilder.skip).toHaveBeenCalledWith(0);
+      expect(platformCreateQueryBuilder.take).toHaveBeenCalledWith(1);
     });
 
     it('should find all platforms with isVerified filter', async () => {
@@ -177,14 +180,30 @@ describe('PlatformsService', () => {
         totalCount: platforms.length,
       });
 
-      expect(platformRepository.findAndCount).toHaveBeenCalledWith({
-        where: { isVerified: true },
-        order: {
-          id: 'ASC',
-        },
-        take: 10,
-        skip: 0,
+      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'platform.isVerified = :isVerified',
+        { isVerified: true },
+      );
+    });
+
+    it('should query for platforms with the given full text query', async () => {
+      const platforms = factories.platformArray.build();
+
+      expect(
+        await service.findAll({
+          page: 1,
+          numItemsPerPage: 10,
+          q: 'TEST_PLATFORM',
+        }),
+      ).toEqual({
+        platforms,
+        totalCount: platforms.length,
       });
+
+      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'MATCH(platform.name) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
+        { fullTextQuery: 'TEST_PLATFORM' },
+      );
     });
   });
 

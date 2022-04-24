@@ -10,10 +10,13 @@ import {
   JsonWebTokenError,
 } from 'jsonwebtoken';
 
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { MailService } from 'src/mail/mail.service';
 
-import { UpdateUserDto, CreateUserDto } from './dto/api.dto';
+import {
+  UpdateUserDto,
+  CreateUserDto,
+  FindAllUsersQueryParamDto,
+} from './dto/api.dto';
 import { User } from './entities/user.entity';
 import {
   DuplicateUserExistException,
@@ -66,12 +69,21 @@ export class UsersService {
     }
   }
 
-  async findAll(paginationParams: PaginationParamsDto) {
-    const [users, totalCount] = await this.usersRepository.findAndCount({
-      order: { id: 'ASC' },
-      take: paginationParams.numItemsPerPage,
-      skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
-    });
+  async findAll(queryParams: FindAllUsersQueryParamDto) {
+    let baseQuery = this.usersRepository.createQueryBuilder('user').select();
+    const fullTextQuery = queryParams.q;
+    if (fullTextQuery) {
+      baseQuery = baseQuery.where(
+        'MATCH(user.username) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
+        { fullTextQuery },
+      );
+    }
+    baseQuery = baseQuery
+      .orderBy('user.id', 'ASC')
+      .take(queryParams.numItemsPerPage)
+      .skip((queryParams.page - 1) * queryParams.numItemsPerPage);
+
+    const [users, totalCount] = await baseQuery.getManyAndCount();
     return { users, totalCount };
   }
 

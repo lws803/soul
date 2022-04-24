@@ -132,6 +132,24 @@ describe('UsersController (e2e)', () => {
           });
         });
     });
+
+    it('should return partial list of users with full text search', async () => {
+      return request(app.getHttpServer())
+        .get('/users?q=TEST_USER')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            totalCount: 1,
+            users: [
+              {
+                id: expect.any(Number),
+                userHandle: 'TEST_USER#1',
+                username: 'TEST_USER',
+              },
+            ],
+          });
+        });
+    });
   });
 
   describe('/users/:id (GET)', () => {

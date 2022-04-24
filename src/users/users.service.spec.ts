@@ -18,7 +18,23 @@ describe('UsersService', () => {
   let mailService: MailService;
   let repository: Repository<User>;
 
+  let userCreateQueryBuilder: any;
+
   beforeEach(async () => {
+    userCreateQueryBuilder = {
+      select: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      where: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      orderBy: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      skip: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      take: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      getManyAndCount: jest
+        .fn()
+        .mockResolvedValue([
+          factories.userArray.build(),
+          factories.userArray.build().length,
+        ]),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -27,16 +43,13 @@ describe('UsersService', () => {
           useValue: {
             find: jest.fn().mockResolvedValue(factories.userArray.build()),
             findOne: jest.fn().mockResolvedValue(factories.oneUser.build()),
-            findAndCount: jest
-              .fn()
-              .mockResolvedValue([
-                factories.userArray.build(),
-                factories.userArray.build().length,
-              ]),
             save: jest.fn().mockResolvedValue(factories.oneUser.build()),
             update: jest.fn(),
             remove: jest.fn(),
             delete: jest.fn(),
+            createQueryBuilder: jest
+              .fn()
+              .mockImplementation(() => userCreateQueryBuilder),
           },
         },
         {
@@ -112,20 +125,12 @@ describe('UsersService', () => {
       expect(
         await service.findAll({ page: 1, numItemsPerPage: 10 }),
       ).toStrictEqual({ users, totalCount });
-
-      expect(repository.findAndCount).toHaveBeenCalledWith({
-        order: {
-          id: 'ASC',
-        },
-        skip: 0,
-        take: 10,
-      });
     });
 
     it('should paginate correctly', async () => {
       jest
-        .spyOn(repository, 'findAndCount')
-        .mockResolvedValue([
+        .spyOn(userCreateQueryBuilder, 'getManyAndCount')
+        .mockResolvedValueOnce([
           [factories.userArray.build()[0]],
           factories.userArray.build().length,
         ]);
@@ -137,13 +142,22 @@ describe('UsersService', () => {
         totalCount: factories.userArray.build().length,
       });
 
-      expect(repository.findAndCount).toHaveBeenCalledWith({
-        order: {
-          id: 'ASC',
-        },
-        skip: 0,
-        take: 1,
+      expect(userCreateQueryBuilder.skip).toHaveBeenCalledWith(0);
+      expect(userCreateQueryBuilder.take).toHaveBeenCalledWith(1);
+    });
+
+    it('should query for users with the given full text query', async () => {
+      expect(
+        await service.findAll({ page: 1, numItemsPerPage: 10, q: 'TEST_USER' }),
+      ).toStrictEqual({
+        users: factories.userArray.build(),
+        totalCount: factories.userArray.build().length,
       });
+
+      expect(userCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'MATCH(user.username) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
+        { fullTextQuery: 'TEST_USER' },
+      );
     });
   });
 

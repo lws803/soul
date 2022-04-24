@@ -13,13 +13,13 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 
 import { UsersService } from './users.service';
 import {
   CreateUserDto,
+  FindAllUsersQueryParamDto,
   PasswordResetDto,
   PasswordResetRequestDto,
   ResendConfirmationTokenDto,
@@ -54,10 +54,10 @@ export class UsersController {
   @ApiResponse({ status: HttpStatus.OK, type: FindAllUserResponseDto })
   @Get()
   async findAll(
-    @Query() paginationParams: PaginationParamsDto,
+    @Query() queryParams: FindAllUsersQueryParamDto,
   ): Promise<FindAllUserResponseDto> {
     return new FindAllUserResponseDto(
-      await this.usersService.findAll(paginationParams),
+      await this.usersService.findAll(queryParams),
     );
   }
 

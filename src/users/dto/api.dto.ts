@@ -8,6 +8,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+
+import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { IsPasswordValid } from 'src/common/validators/password.validator';
 
 export class CreateUserDto {
@@ -91,4 +93,16 @@ export class PasswordResetDto {
   @MaxLength(20)
   @IsPasswordValid()
   password: string;
+}
+
+export class FindAllUsersQueryParamDto extends PaginationParamsDto {
+  @ApiProperty({
+    name: 'q',
+    example: 'john',
+    description: 'Search query',
+    required: false,
+  })
+  @IsOptional()
+  @MaxLength(32)
+  q?: string;
 }

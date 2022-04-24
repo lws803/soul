@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   JoinTable,
   ManyToMany,
+  Index,
 } from 'typeorm';
 
 import { UserConnection } from '../../user-connections/entities/user-connection.entity';
@@ -14,6 +15,7 @@ export class Platform {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index({ fulltext: true, unique: false })
   @Column()
   name: string;
 
