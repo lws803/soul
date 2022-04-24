@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError, Repository, SelectQueryBuilder } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
@@ -18,7 +18,23 @@ describe('UsersService', () => {
   let mailService: MailService;
   let repository: Repository<User>;
 
+  let userCreateQueryBuilder: any;
+
   beforeEach(async () => {
+    userCreateQueryBuilder = {
+      select: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      where: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      orderBy: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      skip: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      take: jest.fn().mockImplementation(() => userCreateQueryBuilder),
+      getManyAndCount: jest
+        .fn()
+        .mockResolvedValue([
+          factories.userArray.build(),
+          factories.userArray.build().length,
+        ]),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -31,19 +47,9 @@ describe('UsersService', () => {
             update: jest.fn(),
             remove: jest.fn(),
             delete: jest.fn(),
-            createQueryBuilder: jest.fn().mockImplementation(() => ({
-              select: jest.fn().mockReturnThis(),
-              where: jest.fn().mockReturnThis(),
-              take: jest.fn().mockReturnThis(),
-              skip: jest.fn().mockReturnThis(),
-              orderBy: jest.fn().mockReturnThis(),
-              getManyAndCount: jest
-                .fn()
-                .mockResolvedValue([
-                  factories.userArray.build(),
-                  factories.userArray.build().length,
-                ]),
-            })),
+            createQueryBuilder: jest
+              .fn()
+              .mockImplementation(() => userCreateQueryBuilder),
           },
         },
         {
@@ -122,22 +128,12 @@ describe('UsersService', () => {
     });
 
     it('should paginate correctly', async () => {
-      jest.spyOn(repository, 'createQueryBuilder').mockImplementation(
-        () =>
-          ({
-            select: jest.fn().mockReturnThis(),
-            where: jest.fn().mockReturnThis(),
-            take: jest.fn().mockReturnThis(),
-            skip: jest.fn().mockReturnThis(),
-            orderBy: jest.fn().mockReturnThis(),
-            getManyAndCount: jest
-              .fn()
-              .mockResolvedValue([
-                [factories.userArray.build()[0]],
-                factories.userArray.build().length,
-              ]),
-          } as unknown as SelectQueryBuilder<User>),
-      );
+      jest
+        .spyOn(userCreateQueryBuilder, 'getManyAndCount')
+        .mockResolvedValueOnce([
+          [factories.userArray.build()[0]],
+          factories.userArray.build().length,
+        ]);
 
       expect(
         await service.findAll({ page: 1, numItemsPerPage: 1 }),
@@ -146,7 +142,8 @@ describe('UsersService', () => {
         totalCount: factories.userArray.build().length,
       });
 
-      // TODO: Maybe add test for the query builder here
+      expect(userCreateQueryBuilder.skip).toHaveBeenCalledWith(0);
+      expect(userCreateQueryBuilder.take).toHaveBeenCalledWith(1);
     });
 
     it('should query for users with the given full text query', async () => {
@@ -157,7 +154,10 @@ describe('UsersService', () => {
         totalCount: factories.userArray.build().length,
       });
 
-      // TODO: Maybe add test for the query builder here
+      expect(userCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'MATCH(user.username) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
+        { fullTextQuery: 'TEST_USER' },
+      );
     });
   });
 

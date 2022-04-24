@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError, Repository, SelectQueryBuilder } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 
 import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
@@ -17,8 +17,23 @@ describe('PlatformsService', () => {
   let platformRepository: Repository<Platform>;
   let platformUserRepository: Repository<PlatformUser>;
   let refreshTokenRepository: Repository<RefreshToken>;
+  let platformCreateQueryBuilder: any;
 
   beforeEach(async () => {
+    platformCreateQueryBuilder = {
+      select: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      where: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      orderBy: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      skip: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      take: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      getManyAndCount: jest
+        .fn()
+        .mockResolvedValue([
+          factories.platformArray.build(),
+          factories.platformArray.build().length,
+        ]),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PlatformsService,
@@ -35,19 +50,9 @@ describe('PlatformsService', () => {
             save: jest.fn().mockResolvedValue(factories.onePlatform.build()),
             update: jest.fn(),
             delete: jest.fn(),
-            createQueryBuilder: jest.fn().mockImplementation(() => ({
-              select: jest.fn().mockReturnThis(),
-              where: jest.fn().mockReturnThis(),
-              take: jest.fn().mockReturnThis(),
-              skip: jest.fn().mockReturnThis(),
-              orderBy: jest.fn().mockReturnThis(),
-              getManyAndCount: jest
-                .fn()
-                .mockResolvedValue([
-                  factories.platformArray.build(),
-                  factories.platformArray.build().length,
-                ]),
-            })),
+            createQueryBuilder: jest
+              .fn()
+              .mockImplementation(() => platformCreateQueryBuilder),
           },
         },
         {
@@ -148,26 +153,17 @@ describe('PlatformsService', () => {
 
     it('should find all platforms with pagination', async () => {
       const platforms = factories.platformArray.build();
-      jest.spyOn(platformRepository, 'createQueryBuilder').mockImplementation(
-        () =>
-          ({
-            select: jest.fn().mockReturnThis(),
-            where: jest.fn().mockReturnThis(),
-            take: jest.fn().mockReturnThis(),
-            skip: jest.fn().mockReturnThis(),
-            orderBy: jest.fn().mockReturnThis(),
-            getManyAndCount: jest
-              .fn()
-              .mockResolvedValue([[platforms[0]], platforms.length]),
-          } as unknown as SelectQueryBuilder<Platform>),
-      );
+      jest
+        .spyOn(platformCreateQueryBuilder, 'getManyAndCount')
+        .mockResolvedValueOnce([[platforms[0]], platforms.length]);
 
       expect(await service.findAll({ page: 1, numItemsPerPage: 1 })).toEqual({
         platforms: [platforms[0]],
         totalCount: platforms.length,
       });
 
-      // TODO: Maybe add test for the query builder here
+      expect(platformCreateQueryBuilder.skip).toHaveBeenCalledWith(0);
+      expect(platformCreateQueryBuilder.take).toHaveBeenCalledWith(1);
     });
 
     it('should find all platforms with isVerified filter', async () => {
@@ -183,7 +179,11 @@ describe('PlatformsService', () => {
         platforms,
         totalCount: platforms.length,
       });
-      // TODO: Maybe add test for the query builder here
+
+      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'platform.isVerified = :isVerified',
+        { isVerified: true },
+      );
     });
 
     it('should query for platforms with the given full text query', async () => {
@@ -200,7 +200,10 @@ describe('PlatformsService', () => {
         totalCount: platforms.length,
       });
 
-      // TODO: Maybe add test for the query builder here
+      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'MATCH(platform.name) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
+        { fullTextQuery: 'TEST_PLATFORM' },
+      );
     });
   });
 
