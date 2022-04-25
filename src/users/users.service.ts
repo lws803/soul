@@ -71,12 +71,11 @@ export class UsersService {
 
   async findAll(queryParams: FindAllUsersQueryParamDto) {
     let baseQuery = this.usersRepository.createQueryBuilder('user').select();
-    const fullTextQuery = queryParams.q;
-    if (fullTextQuery) {
-      baseQuery = baseQuery.where(
-        'MATCH(user.username) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
-        { fullTextQuery },
-      );
+    const query = queryParams.q;
+    if (query) {
+      baseQuery = baseQuery.where('user.username like :query', {
+        query: `${query}%`,
+      });
     }
     baseQuery = baseQuery
       .orderBy('user.id', 'ASC')

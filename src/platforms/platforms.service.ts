@@ -63,12 +63,11 @@ export class PlatformsService {
     let baseQuery = this.platformRepository
       .createQueryBuilder('platform')
       .select();
-    const fullTextQuery = queryParams.q;
-    if (fullTextQuery) {
-      baseQuery = baseQuery.where(
-        'MATCH(platform.name) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
-        { fullTextQuery },
-      );
+    const query = queryParams.q;
+    if (query) {
+      baseQuery = baseQuery.where('platform.name like :query', {
+        query: `${query}%`,
+      });
     }
     const isVerified = queryParams.isVerified;
     if (isVerified) {
