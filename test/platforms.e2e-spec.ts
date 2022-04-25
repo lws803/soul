@@ -188,7 +188,7 @@ describe('PlatformsController (e2e)', () => {
 
     it('fetches all platforms with full text search', async () => {
       await request(app.getHttpServer())
-        .get('/platforms?q=TEST_PLATFORM')
+        .get('/platforms?q=TEST_PLATFORM_2')
         .expect(200)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -197,9 +197,9 @@ describe('PlatformsController (e2e)', () => {
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM',
-                isVerified: true,
-                nameHandle: 'TEST_PLATFORM#1',
+                name: 'TEST_PLATFORM_2',
+                isVerified: false,
+                nameHandle: 'TEST_PLATFORM_2#2',
               },
             ],
             totalCount: 1,

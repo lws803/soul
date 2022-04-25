@@ -155,8 +155,8 @@ describe('UsersService', () => {
       });
 
       expect(userCreateQueryBuilder.where).toHaveBeenCalledWith(
-        'MATCH(user.username) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
-        { fullTextQuery: 'TEST_USER' },
+        'user.username like :query',
+        { query: 'TEST_USER%' },
       );
     });
   });

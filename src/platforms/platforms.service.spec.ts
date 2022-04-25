@@ -201,8 +201,8 @@ describe('PlatformsService', () => {
       });
 
       expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
-        'MATCH(platform.name) AGAINST (:fullTextQuery IN BOOLEAN MODE)',
-        { fullTextQuery: 'TEST_PLATFORM' },
+        'platform.name like :query',
+        { query: 'TEST_PLATFORM%' },
       );
     });
   });
