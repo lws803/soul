@@ -8,7 +8,7 @@ import {
   Header,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { User } from 'src/users/entities/user.entity';
 
@@ -32,6 +32,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiExcludeEndpoint()
   @ApiOperation({ description: 'Login with email and password' })
   @ApiResponse({ status: HttpStatus.CREATED, type: LoginResponseDto })
   @UseGuards(LocalAuthGuard)
