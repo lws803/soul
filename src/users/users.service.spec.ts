@@ -271,6 +271,20 @@ describe('UsersService', () => {
         'TOKEN',
       );
     });
+
+    it('does not surface UserNotFoundException when user is not found', async () => {
+      jest
+        .spyOn(service, 'findOneByEmail')
+        .mockRejectedValue(
+          new UserNotFoundException({ email: 'test@email.com' }),
+        );
+
+      expect(
+        await service.resendConfirmationToken(factories.oneUser.build().email),
+      ).toBeUndefined();
+
+      expect(mailService.sendConfirmationEmail).not.toHaveBeenCalled();
+    });
   });
 
   describe('requestPasswordReset()', () => {
@@ -287,6 +301,19 @@ describe('UsersService', () => {
         factories.oneUser.build(),
         'TOKEN',
       );
+    });
+
+    it('does not surface UserNotFoundException when user is not found', async () => {
+      jest
+        .spyOn(service, 'findOneByEmail')
+        .mockRejectedValue(
+          new UserNotFoundException({ email: 'test@email.com' }),
+        );
+
+      expect(
+        await service.requestPasswordReset(factories.oneUser.build().email),
+      ).toBeUndefined();
+      expect(mailService.sendPasswordResetEmail).not.toHaveBeenCalled();
     });
   });
 
