@@ -21,7 +21,6 @@ import { User } from './entities/user.entity';
 import {
   DuplicateUserExistException,
   UserNotFoundException,
-  UserAlreadyActiveException,
   InvalidTokenException,
 } from './exceptions';
 
@@ -139,16 +138,29 @@ export class UsersService {
   }
 
   async resendConfirmationToken(email: string) {
-    const user = await this.findOneByEmail(email);
-    if (user.isActive) {
-      throw new UserAlreadyActiveException();
+    try {
+      const user = await this.findOneByEmail(email);
+      if (!user.isActive) {
+        this.generateCodeAndSendEmail(user, 'confirmation');
+      }
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        return;
+      }
+      throw error;
     }
-    this.generateCodeAndSendEmail(user, 'confirmation');
   }
 
   async requestPasswordReset(email: string) {
-    const user = await this.findOneByEmail(email);
-    this.generateCodeAndSendEmail(user, 'passwordReset');
+    try {
+      const user = await this.findOneByEmail(email);
+      this.generateCodeAndSendEmail(user, 'passwordReset');
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        return;
+      }
+      throw error;
+    }
   }
 
   async passwordReset(token: string, newPassword: string) {

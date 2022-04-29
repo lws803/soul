@@ -271,6 +271,43 @@ describe('UsersService', () => {
         'TOKEN',
       );
     });
+
+    it('does not surface UserNotFoundException when user is not found', async () => {
+      jest
+        .spyOn(service, 'findOneByEmail')
+        .mockRejectedValue(
+          new UserNotFoundException({ email: 'test@email.com' }),
+        );
+
+      expect(
+        await service.resendConfirmationToken(factories.oneUser.build().email),
+      ).toBeUndefined();
+
+      expect(mailService.sendConfirmationEmail).not.toHaveBeenCalled();
+    });
+
+    it('does not send confirmation email when user is active', async () => {
+      jest
+        .spyOn(service, 'findOneByEmail')
+        .mockResolvedValue(factories.oneUser.build({ isActive: true }));
+
+      expect(
+        await service.resendConfirmationToken(factories.oneUser.build().email),
+      ).toBeUndefined();
+
+      expect(mailService.sendConfirmationEmail).not.toHaveBeenCalled();
+    });
+
+    it('surfaces other errors that are not related to user not found', async () => {
+      const error = new Error('UNKNOWN_ERROR');
+      jest.spyOn(service, 'findOneByEmail').mockRejectedValue(error);
+
+      expect(
+        service.resendConfirmationToken(factories.oneUser.build().email),
+      ).rejects.toThrow(error);
+
+      expect(mailService.sendConfirmationEmail).not.toHaveBeenCalled();
+    });
   });
 
   describe('requestPasswordReset()', () => {
@@ -287,6 +324,29 @@ describe('UsersService', () => {
         factories.oneUser.build(),
         'TOKEN',
       );
+    });
+
+    it('does not surface UserNotFoundException when user is not found', async () => {
+      jest
+        .spyOn(service, 'findOneByEmail')
+        .mockRejectedValue(
+          new UserNotFoundException({ email: 'test@email.com' }),
+        );
+
+      expect(
+        await service.requestPasswordReset(factories.oneUser.build().email),
+      ).toBeUndefined();
+      expect(mailService.sendPasswordResetEmail).not.toHaveBeenCalled();
+    });
+
+    it('surfaces other errors that are not related to user not found', async () => {
+      const error = new Error('UNKNOWN_ERROR');
+      jest.spyOn(service, 'findOneByEmail').mockRejectedValue(error);
+
+      expect(
+        service.requestPasswordReset(factories.oneUser.build().email),
+      ).rejects.toThrow(error);
+      expect(mailService.sendPasswordResetEmail).not.toHaveBeenCalled();
     });
   });
 
