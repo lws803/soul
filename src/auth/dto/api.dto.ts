@@ -33,7 +33,13 @@ export class CodeQueryParamDto {
   @IsValidRedirectUri()
   callback: string;
 
-  @ApiProperty({ name: 'state', type: String })
+  @ApiProperty({
+    name: 'state',
+    type: String,
+    description:
+      'State which will be passed down together with the code as a query parameter to the callback url. ' +
+      'Use this code to mitigate CSRF attacks and point your platform to the correct state upon successful login.',
+  })
   @IsString()
   state: string;
 }
