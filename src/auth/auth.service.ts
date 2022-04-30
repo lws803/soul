@@ -21,6 +21,8 @@ import {
   UserNotVerifiedException,
   InvalidCallbackException,
 } from './exceptions';
+import { VerifyQueryParamDto } from './dto/api.dto';
+import { PlatformLoginResponseDto } from './dto/api-responses.dto';
 
 @Injectable()
 export class AuthService {
@@ -97,7 +99,11 @@ export class AuthService {
     };
   }
 
-  async exchangeCodeForToken(code: string, callback: string) {
+  async exchangeCodeForToken({
+    code,
+    callback,
+    state,
+  }: VerifyQueryParamDto): Promise<PlatformLoginResponseDto> {
     const {
       platformId,
       callback: initialCallback,
@@ -131,6 +137,7 @@ export class AuthService {
       ),
       platformId,
       roles: platformUser.roles,
+      state,
     };
   }
 

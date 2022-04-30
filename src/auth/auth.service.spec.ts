@@ -199,10 +199,10 @@ describe('AuthService', () => {
   describe('exchangeCodeForToken()', () => {
     it('exchanges code for accessToken and refreshToken', async () => {
       const code = 'SIGNED_TOKEN';
-      const response = await service.exchangeCodeForToken(
+      const response = await service.exchangeCodeForToken({
         code,
-        'TEST_REDIRECT_URI',
-      );
+        callback: 'TEST_REDIRECT_URI',
+      });
       const user = factories.oneUser.build();
       const platformUser = factories.onePlatformUser.build();
 
@@ -232,6 +232,47 @@ describe('AuthService', () => {
         refreshToken: 'SIGNED_TOKEN',
         platformId: 1,
         roles: [UserRole.ADMIN, UserRole.MEMBER],
+        state: undefined,
+      });
+    });
+
+    it('exchanges code for accessToken and refreshToken with state', async () => {
+      const code = 'SIGNED_TOKEN';
+      const response = await service.exchangeCodeForToken({
+        code,
+        callback: 'TEST_REDIRECT_URI',
+        state: 'TEST_STATE',
+      });
+      const user = factories.oneUser.build();
+      const platformUser = factories.onePlatformUser.build();
+
+      expect(jwtService.verify).toHaveBeenCalledWith(code);
+
+      expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
+      expect(jwtService.signAsync).toHaveBeenNthCalledWith(
+        1,
+        factories.jwtPayloadWithPlatform.build(),
+        { secret: 'JWT_SECRET_KEY' },
+      );
+      expect(jwtService.signAsync).toHaveBeenNthCalledWith(
+        2,
+        factories.jwtRefreshPayloadWithPlatform.build(),
+        { secret: 'JWT_SECRET_KEY', expiresIn: 3600 },
+      );
+
+      expect(refreshTokenRepository.save).toHaveBeenCalledWith({
+        user: user,
+        isRevoked: false,
+        expires: expect.any(Date),
+        platformUser: platformUser,
+      });
+
+      expect(response).toStrictEqual({
+        accessToken: 'SIGNED_TOKEN',
+        refreshToken: 'SIGNED_TOKEN',
+        platformId: 1,
+        roles: [UserRole.ADMIN, UserRole.MEMBER],
+        state: 'TEST_STATE',
       });
     });
 
@@ -244,7 +285,11 @@ describe('AuthService', () => {
         callback: 'INVALID_URI',
       }));
       await expect(
-        service.exchangeCodeForToken(code, 'TEST_REDIRECT_URI'),
+        service.exchangeCodeForToken({
+          code,
+          callback: 'TEST_REDIRECT_URI',
+          state: 'TEST_STATE',
+        }),
       ).rejects.toThrow('Invalid callback uri supplied');
     });
   });

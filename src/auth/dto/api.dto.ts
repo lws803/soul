@@ -34,7 +34,7 @@ export class CodeQueryParamDto {
   callback: string;
 }
 
-export class ValidateQueryParamDto {
+export class VerifyQueryParamDto {
   @ApiProperty({ name: 'code', type: String })
   @IsString()
   code: string;
@@ -47,4 +47,9 @@ export class ValidateQueryParamDto {
   @IsString()
   @IsValidRedirectUri()
   callback: string;
+
+  @ApiProperty({ name: 'state', type: String, required: false })
+  @IsOptional()
+  @IsString()
+  state?: string;
 }

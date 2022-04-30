@@ -24,7 +24,7 @@ import {
   PlatformIdQueryDto,
   RefreshTokenBodyDto,
   CodeQueryParamDto,
-  ValidateQueryParamDto,
+  VerifyQueryParamDto,
 } from './dto/api.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
@@ -71,10 +71,10 @@ export class AuthController {
   @Post('verify')
   @Header('Cache-Control', 'no-store')
   async verify(
-    @Query() { code, callback }: ValidateQueryParamDto,
+    @Query() { code, callback, state }: VerifyQueryParamDto,
   ): Promise<PlatformLoginResponseDto> {
     return new PlatformLoginResponseDto(
-      await this.authService.exchangeCodeForToken(code, callback),
+      await this.authService.exchangeCodeForToken({ code, callback, state }),
     );
   }
 

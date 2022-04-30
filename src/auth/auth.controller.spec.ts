@@ -123,7 +123,10 @@ describe('AuthService', () => {
         platformId: 1,
         roles: [UserRole.ADMIN, UserRole.MEMBER],
       });
-      expect(service.exchangeCodeForToken).toHaveBeenCalledWith(code, callback);
+      expect(service.exchangeCodeForToken).toHaveBeenCalledWith({
+        code,
+        callback,
+      });
     });
   });
 });

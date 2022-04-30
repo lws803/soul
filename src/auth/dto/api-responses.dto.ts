@@ -36,6 +36,10 @@ export class PlatformLoginResponseDto extends LoginResponseDto {
   @Expose()
   roles: UserRole[];
 
+  @ApiProperty({ name: 'state', type: String, required: false })
+  @Expose()
+  state: string;
+
   constructor(args: PlatformLoginResponseDto) {
     super(args);
     Object.assign(this, args);
