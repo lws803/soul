@@ -52,14 +52,15 @@ export class AuthController {
   @Post('code')
   async code(
     @Request() { user }: { user: User },
-    @Query() { platformId, callback }: CodeQueryParamDto,
+    @Query() { platformId, callback, state }: CodeQueryParamDto,
   ): Promise<CodeResponseDto> {
     return new CodeResponseDto(
-      await this.authService.getCodeForPlatformAndCallback(
+      await this.authService.getCodeForPlatformAndCallback({
         user,
         platformId,
         callback,
-      ),
+        state,
+      }),
     );
   }
 

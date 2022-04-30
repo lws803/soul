@@ -156,15 +156,16 @@ describe('AuthService', () => {
       const user = factories.oneUser.build();
       const platformUser = factories.onePlatformUser.build();
 
-      const response = await service.getCodeForPlatformAndCallback(
+      const response = await service.getCodeForPlatformAndCallback({
         user,
-        platformUser.platform.id,
-        'TEST_REDIRECT_URI',
-      );
+        platformId: platformUser.platform.id,
+        callback: 'TEST_REDIRECT_URI',
+        state: 'TEST_STATE',
+      });
 
       expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
 
-      expect(response).toEqual({ code: 'SIGNED_TOKEN' });
+      expect(response).toEqual({ code: 'SIGNED_TOKEN', state: 'TEST_STATE' });
     });
 
     it('denies access when callback uri is not registered', async () => {
@@ -172,11 +173,12 @@ describe('AuthService', () => {
       const platformUser = factories.onePlatformUser.build();
 
       await expect(
-        service.getCodeForPlatformAndCallback(
+        service.getCodeForPlatformAndCallback({
           user,
-          platformUser.platform.id,
-          'INVALID_URI',
-        ),
+          platformId: platformUser.platform.id,
+          callback: 'INVALID_URI',
+          state: 'TEST_STATE',
+        }),
       ).rejects.toThrow('Invalid callback uri supplied');
     });
 
@@ -185,11 +187,12 @@ describe('AuthService', () => {
       const platformUser = factories.onePlatformUser.build();
 
       await expect(
-        service.getCodeForPlatformAndCallback(
+        service.getCodeForPlatformAndCallback({
           user,
-          platformUser.platform.id,
-          'TEST_REDIRECT_URI',
-        ),
+          platformId: platformUser.platform.id,
+          callback: 'TEST_REDIRECT_URI',
+          state: 'TEST_STATE',
+        }),
       ).rejects.toThrow(
         'User is not verified, please verify your email address.',
       );

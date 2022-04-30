@@ -32,6 +32,10 @@ export class CodeQueryParamDto {
   @IsString()
   @IsValidRedirectUri()
   callback: string;
+
+  @ApiProperty({ name: 'state', type: String })
+  @IsString()
+  state: string;
 }
 
 export class ValidateQueryParamDto {

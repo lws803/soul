@@ -22,6 +22,10 @@ export class CodeResponseDto {
   @Expose()
   code: string;
 
+  @ApiProperty({ name: 'state' })
+  @Expose()
+  state: string;
+
   constructor(args: CodeResponseDto) {
     Object.assign(this, args);
   }
