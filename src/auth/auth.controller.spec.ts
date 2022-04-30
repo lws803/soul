@@ -97,17 +97,18 @@ describe('AuthService', () => {
       const platformId = 1;
       const result = await controller.code(
         { user },
-        { platformId, callback: 'TEST_REDIRECT_URI' },
+        { platformId, callback: 'TEST_REDIRECT_URI', state: 'TEST_STATE' },
       );
 
       expect(result).toEqual({
         code: 'CODE',
       });
-      expect(service.getCodeForPlatformAndCallback).toHaveBeenCalledWith(
+      expect(service.getCodeForPlatformAndCallback).toHaveBeenCalledWith({
         user,
         platformId,
-        'TEST_REDIRECT_URI',
-      );
+        callback: 'TEST_REDIRECT_URI',
+        state: 'TEST_STATE',
+      });
     });
   });
 

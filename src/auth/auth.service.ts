@@ -21,6 +21,7 @@ import {
   UserNotVerifiedException,
   InvalidCallbackException,
 } from './exceptions';
+import { CodeResponseDto } from './dto/api-responses.dto';
 
 @Injectable()
 export class AuthService {
@@ -57,11 +58,17 @@ export class AuthService {
     };
   }
 
-  async getCodeForPlatformAndCallback(
-    user: User,
-    platformId: number,
-    callback: string,
-  ) {
+  async getCodeForPlatformAndCallback({
+    user,
+    platformId,
+    callback,
+    state,
+  }: {
+    user: User;
+    platformId: number;
+    callback: string;
+    state: string;
+  }): Promise<CodeResponseDto> {
     if (!user.isActive) {
       throw new UserNotVerifiedException();
     }
@@ -94,6 +101,7 @@ export class AuthService {
         { userId: user.id, platformId, callback },
         this.configService.get('JWT_REFRESH_TOKEN_TTL'),
       ),
+      state,
     };
   }
 

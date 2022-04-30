@@ -90,7 +90,9 @@ describe('AuthController (e2e)', () => {
 
     it('logs in successfully for platform', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       await request(app.getHttpServer())
         .post(
@@ -167,7 +169,9 @@ describe('AuthController (e2e)', () => {
 
     it('refreshes token for platform', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const resp = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -191,7 +195,9 @@ describe('AuthController (e2e)', () => {
 
     it('refreshes token for platform without specifying platform id', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const resp = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,

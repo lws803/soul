@@ -272,7 +272,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('updates existing platform', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -329,7 +331,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('deletes existing platform', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -376,7 +380,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('fetches all users within a platform', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -430,7 +436,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('sets user role', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -463,7 +471,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('bans a user', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -496,7 +506,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('throws an error when trying to set only remaining admin to member', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -517,7 +529,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('throws with insufficient permissions', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -562,7 +576,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('deletes a platform user', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -636,7 +652,9 @@ describe('PlatformsController (e2e)', () => {
         }),
       );
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -651,7 +669,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('quits existing platform (MEMBER)', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
@@ -685,7 +705,9 @@ describe('PlatformsController (e2e)', () => {
 
     it('only remaining admin cant quit', async () => {
       const codeResp = await request(app.getHttpServer())
-        .post('/auth/code?platformId=1&callback=https://www.example.com')
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+        )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
         `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
