@@ -6,7 +6,7 @@ export class PlatformCategoryNotFoundException extends GenericException {
   constructor({ name }: { name: string }) {
     super(
       {
-        message: `The category with with name: ${name} was not found, please try again.`,
+        message: `The category with name: ${name} was not found, please try again.`,
         error: 'PLATFORM_CATEGORY_NOT_FOUND',
       },
       HttpStatus.NOT_FOUND,

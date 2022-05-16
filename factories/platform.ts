@@ -54,4 +54,5 @@ export const updatePlatformDto = Factory.define<UpdatePlatformDto>(() => ({
 export const createPlatformDto = Factory.define<CreatePlatformDto>(() => ({
   name: 'TEST_PLATFORM',
   redirectUris: ['TEST_REDIRECT_URI'],
+  category: onePlatformCategory.build().name,
 }));

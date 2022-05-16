@@ -144,6 +144,7 @@ describe('PlatformsService', () => {
       expect(platformRepository.save).toHaveBeenCalledWith({
         name: 'TEST_PLATFORM',
         redirectUris: ['TEST_REDIRECT_URI'],
+        category: factories.onePlatformCategory.build(),
       });
       expect(platformRepository.update).toHaveBeenCalledWith(
         { id: platform.id },
@@ -165,7 +166,7 @@ describe('PlatformsService', () => {
           user.id,
         ),
       ).rejects.toThrow(
-        'The category with with name: UNKNOWN_CATEGORY was not found, please try again.',
+        'The category with name: UNKNOWN_CATEGORY was not found, please try again.',
       );
       expect(platformRepository.save).not.toHaveBeenCalled();
       expect(platformRepository.update).not.toHaveBeenCalled();
@@ -330,7 +331,7 @@ describe('PlatformsService', () => {
       await expect(
         service.update(platform.id, factories.updatePlatformDto.build()),
       ).rejects.toThrow(
-        'The category with with name: CATEGORY_UPDATE was not found, please try again.',
+        'The category with name: CATEGORY_UPDATE was not found, please try again.',
       );
       expect(platformRepository.update).not.toHaveBeenCalled();
     });
