@@ -7,9 +7,14 @@ import {
   JoinTable,
   ManyToMany,
   Index,
+  JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 
+import { PlatformCategory } from './platform-category.entity';
+
 import { UserConnection } from '../../user-connections/entities/user-connection.entity';
+
 @Entity({ name: 'platforms' })
 export class Platform {
   @PrimaryGeneratedColumn()
@@ -58,4 +63,8 @@ export class Platform {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updatedAt: Date;
+
+  @ManyToOne(() => PlatformCategory)
+  @JoinColumn([{ name: 'platform_category_id', referencedColumnName: 'id' }])
+  category?: PlatformCategory;
 }
