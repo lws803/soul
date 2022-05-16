@@ -6,6 +6,7 @@ import { User } from 'src/users/entities/user.entity';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
+import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { UserRole } from 'src/roles/role.enum';
 
 import createAppFixture from './fixtures/create-app-fixture';
@@ -19,6 +20,7 @@ describe('AuthController (e2e)', () => {
   let refreshTokenRepository: Repository<RefreshToken>;
   let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
+  let platformCategoryRepository: Repository<PlatformCategory>;
 
   beforeAll(async () => {
     app = await createAppFixture({});
@@ -32,6 +34,11 @@ describe('AuthController (e2e)', () => {
     refreshTokenRepository = connection.getRepository(RefreshToken);
     platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
+    platformCategoryRepository = connection.getRepository(PlatformCategory);
+
+    await platformCategoryRepository.save(
+      factories.onePlatformCategory.build(),
+    );
   });
 
   afterAll(async () => {

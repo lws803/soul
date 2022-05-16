@@ -6,6 +6,7 @@ import { User } from 'src/users/entities/user.entity';
 import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
+import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
 import createAppFixture from './fixtures/create-app-fixture';
 import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fixture';
@@ -19,6 +20,7 @@ describe('UserConnectionsController (e2e)', () => {
   let userConnectionRepository: Repository<UserConnection>;
   let platformRepository: Repository<Platform>;
   let platformUserRepository: Repository<PlatformUser>;
+  let platformCategoryRepository: Repository<PlatformCategory>;
 
   let firstUserAccessToken: string;
 
@@ -32,11 +34,16 @@ describe('UserConnectionsController (e2e)', () => {
     userConnectionRepository = connection.getRepository(UserConnection);
     platformRepository = connection.getRepository(Platform);
     platformUserRepository = connection.getRepository(PlatformUser);
+    platformCategoryRepository = connection.getRepository(PlatformCategory);
 
     await connection.synchronize(true);
 
     const [{ accessToken }] = await createUsersAndLoginFixture(app);
     firstUserAccessToken = accessToken;
+
+    await platformCategoryRepository.save(
+      factories.onePlatformCategory.build(),
+    );
   });
 
   afterAll(async () => {
@@ -109,6 +116,10 @@ describe('UserConnectionsController (e2e)', () => {
                 isVerified: true,
                 name: 'TEST_PLATFORM',
                 nameHandle: 'TEST_PLATFORM#1',
+                category: {
+                  id: 1,
+                  name: 'CATEGORY',
+                },
               },
             ],
             isMutual: false,
@@ -401,6 +412,10 @@ describe('UserConnectionsController (e2e)', () => {
                 isVerified: true,
                 name: 'TEST_PLATFORM',
                 nameHandle: 'TEST_PLATFORM#1',
+                category: {
+                  id: 1,
+                  name: 'CATEGORY',
+                },
               },
             ],
           }),

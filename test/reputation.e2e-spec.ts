@@ -6,6 +6,7 @@ import { UserConnection } from 'src/user-connections/entities/user-connection.en
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { UserRole } from 'src/roles/role.enum';
+import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
 import createAppFixture from './fixtures/create-app-fixture';
 import {
@@ -21,6 +22,7 @@ describe('ReputationController (e2e)', () => {
   let userConnectionRepository: Repository<UserConnection>;
   let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
+  let platformCategoryRepository: Repository<PlatformCategory>;
   let userAccount: UserAccount;
   let secondUserAccount: UserAccount;
   let thirdUserAccount: UserAccount;
@@ -36,6 +38,7 @@ describe('ReputationController (e2e)', () => {
     userConnectionRepository = connection.getRepository(UserConnection);
     platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
+    platformCategoryRepository = connection.getRepository(PlatformCategory);
 
     const [firstUser, secondUser, thirdUser] = await createUsersAndLoginFixture(
       app,
@@ -43,6 +46,10 @@ describe('ReputationController (e2e)', () => {
     userAccount = firstUser;
     secondUserAccount = secondUser;
     thirdUserAccount = thirdUser;
+
+    await platformCategoryRepository.save(
+      factories.onePlatformCategory.build(),
+    );
   });
 
   afterAll(async () => {
