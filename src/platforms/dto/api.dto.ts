@@ -85,7 +85,7 @@ export class CreatePlatformDto {
   @ApiProperty({
     name: 'category',
     description: 'One of predefined categories for this platform.',
-    example: ['official', 'tech', 'food'],
+    example: 'tech',
     required: false,
   })
   @IsOptional()
@@ -122,7 +122,7 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
   @ApiProperty({
     name: 'category',
     description: 'One of predefined categories for this platform.',
-    example: ['official', 'tech', 'food'],
+    example: 'tech',
     required: false,
   })
   @IsOptional()
@@ -155,7 +155,7 @@ export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
   @ApiProperty({
     name: 'category',
     description: 'One of predefined categories for this platform.',
-    example: ['official', 'tech', 'food'],
+    example: 'tech',
     required: false,
   })
   @IsOptional()

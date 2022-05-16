@@ -12,7 +12,7 @@ export class PlatformCategoryResponseDto {
   @ApiProperty({
     name: 'name',
     description: 'One of predefined category names for the platform.',
-    example: ['official', 'tech', 'food'],
+    example: 'tech',
   })
   @Expose()
   name: string;
