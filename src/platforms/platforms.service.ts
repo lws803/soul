@@ -122,7 +122,6 @@ export class PlatformsService {
       updatedPlatform.category = await this.findOneCategoryOrThrow(
         categoryName,
       );
-      delete updatedPlatform.category;
     }
     if (updatePlatformDto.redirectUris) {
       updatedPlatform.redirectUris = updatePlatformDto.redirectUris;

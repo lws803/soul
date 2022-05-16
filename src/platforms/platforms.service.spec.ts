@@ -28,6 +28,9 @@ describe('PlatformsService', () => {
       orderBy: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       skip: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       take: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      leftJoinAndSelect: jest
+        .fn()
+        .mockImplementation(() => platformCreateQueryBuilder),
       getManyAndCount: jest
         .fn()
         .mockResolvedValue([
@@ -274,16 +277,23 @@ describe('PlatformsService', () => {
 
   describe('update()', () => {
     it('should update platform successfully', async () => {
+      const updatedCategory = factories.onePlatformCategory.build({
+        name: 'CATEGORY_UPDATE',
+      });
       const platform = factories.onePlatform.build();
       const updates = {
         name: 'TEST_PLATFORM_UPDATE',
         nameHandle: 'TEST_PLATFORM_UPDATE#1',
-        category: factories.onePlatformCategory.build(),
+        category: updatedCategory,
       };
       const updatedPlatform = factories.onePlatform.build(updates);
+
       jest
         .spyOn(platformRepository, 'findOne')
         .mockResolvedValue(updatedPlatform);
+      jest
+        .spyOn(platformCategoryRepository, 'findOne')
+        .mockResolvedValue(updatedCategory);
 
       expect(
         await service.update(platform.id, factories.updatePlatformDto.build()),
