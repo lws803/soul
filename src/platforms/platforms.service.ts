@@ -15,11 +15,13 @@ import {
 } from './dto/api.dto';
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
+import { PlatformCategory } from './entities/platform-category.entity';
 import {
   PlatformNotFoundException,
   PlatformUserNotFoundException,
   NoAdminsRemainingException,
   DuplicatePlatformUserException,
+  PlatformCategoryNotFoundException,
 } from './exceptions';
 
 @Injectable()
@@ -32,12 +34,21 @@ export class PlatformsService {
     private readonly usersService: UsersService,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
+    @InjectRepository(PlatformCategory)
+    private readonly platformCategoryRepository: Repository<PlatformCategory>,
   ) {}
 
   async create(createPlatformDto: CreatePlatformDto, userId: number) {
     const platform = new Platform();
     platform.name = createPlatformDto.name;
     platform.redirectUris = createPlatformDto.redirectUris;
+
+    if (createPlatformDto.category) {
+      const category = await this.findOneCategoryOrThrow(
+        createPlatformDto.category,
+      );
+      platform.category = category;
+    }
 
     const savedPlatform = await this.platformRepository.save(platform);
     await this.platformRepository.update(
@@ -62,7 +73,9 @@ export class PlatformsService {
   async findAll(queryParams: FindAllPlatformsQueryParamDto) {
     let baseQuery = this.platformRepository
       .createQueryBuilder('platform')
+      .leftJoinAndSelect('platform.category', 'category')
       .select();
+
     const query = queryParams.q;
     if (query) {
       baseQuery = baseQuery.where('platform.name like :query', {
@@ -102,11 +115,20 @@ export class PlatformsService {
 
     if (updatePlatformDto.name) {
       updatedPlatform.nameHandle = `${updatePlatformDto.name}#${platform.id}`;
+      updatedPlatform.name = updatePlatformDto.name;
     }
-    await this.platformRepository.update(
-      { id: platform.id },
-      { ...updatedPlatform, ...updatePlatformDto },
-    );
+    if (updatePlatformDto.category) {
+      const categoryName = updatePlatformDto.category;
+      updatedPlatform.category = await this.findOneCategoryOrThrow(
+        categoryName,
+      );
+      delete updatedPlatform.category;
+    }
+    if (updatePlatformDto.redirectUris) {
+      updatedPlatform.redirectUris = updatePlatformDto.redirectUris;
+    }
+
+    await this.platformRepository.update({ id: platform.id }, updatedPlatform);
     return await this.platformRepository.findOne(id);
   }
 
@@ -180,7 +202,7 @@ export class PlatformsService {
 
   private async findPlatformOrThrow({ id }: { id: number }): Promise<Platform> {
     const platform = await this.platformRepository.findOne(id, {
-      relations: ['userConnections'],
+      relations: ['userConnections', 'category'],
     });
     if (!platform) throw new PlatformNotFoundException({ id });
     return platform;
@@ -228,5 +250,11 @@ export class PlatformsService {
         { isRevoked: true },
       );
     }
+  }
+
+  private async findOneCategoryOrThrow(name: string) {
+    const category = await this.platformCategoryRepository.findOne({ name });
+    if (!category) throw new PlatformCategoryNotFoundException({ name });
+    return category;
   }
 }

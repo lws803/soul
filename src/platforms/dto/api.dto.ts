@@ -81,6 +81,16 @@ export class CreatePlatformDto {
   @ArrayMinSize(1)
   @IsValidRedirectUri({ each: true })
   redirectUris: string[];
+
+  @ApiProperty({
+    name: 'category',
+    description: 'One of predefined categories for this platform.',
+    example: ['official', 'tech', 'food'],
+    required: false,
+  })
+  @IsOptional()
+  @MaxLength(32)
+  category?: string;
 }
 
 export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
@@ -108,6 +118,16 @@ export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {
   @ArrayMinSize(1)
   @IsValidRedirectUri({ each: true })
   redirectUris?: string[];
+
+  @ApiProperty({
+    name: 'category',
+    description: 'One of predefined categories for this platform.',
+    example: ['official', 'tech', 'food'],
+    required: false,
+  })
+  @IsOptional()
+  @MaxLength(32)
+  category?: string;
 }
 
 export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
@@ -131,4 +151,14 @@ export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
   @IsOptional()
   @MaxLength(32)
   q?: string;
+
+  @ApiProperty({
+    name: 'category',
+    description: 'One of predefined categories for this platform.',
+    example: ['official', 'tech', 'food'],
+    required: false,
+  })
+  @IsOptional()
+  @MaxLength(32)
+  category?: string;
 }

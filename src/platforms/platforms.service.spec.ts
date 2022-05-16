@@ -9,6 +9,7 @@ import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
+import { PlatformCategory } from './entities/platform-category.entity';
 import { PlatformsService } from './platforms.service';
 import { DuplicatePlatformUserException } from './exceptions';
 
@@ -17,6 +18,7 @@ describe('PlatformsService', () => {
   let platformRepository: Repository<Platform>;
   let platformUserRepository: Repository<PlatformUser>;
   let refreshTokenRepository: Repository<RefreshToken>;
+  let platformCategoryRepository: Repository<PlatformCategory>;
   let platformCreateQueryBuilder: any;
 
   beforeEach(async () => {
@@ -53,6 +55,14 @@ describe('PlatformsService', () => {
             createQueryBuilder: jest
               .fn()
               .mockImplementation(() => platformCreateQueryBuilder),
+          },
+        },
+        {
+          provide: getRepositoryToken(PlatformCategory),
+          useValue: {
+            findOne: jest
+              .fn()
+              .mockResolvedValue(factories.onePlatformCategory.build()),
           },
         },
         {
@@ -106,6 +116,9 @@ describe('PlatformsService', () => {
     );
     refreshTokenRepository = module.get<Repository<RefreshToken>>(
       getRepositoryToken(RefreshToken),
+    );
+    platformCategoryRepository = module.get<Repository<PlatformCategory>>(
+      getRepositoryToken(PlatformCategory),
     );
   });
 
@@ -214,7 +227,7 @@ describe('PlatformsService', () => {
       expect(await service.findOne(platform.id)).toEqual(platform);
 
       expect(platformRepository.findOne).toHaveBeenCalledWith(platform.id, {
-        relations: ['userConnections'],
+        relations: ['userConnections', 'category'],
       });
     });
 
@@ -265,6 +278,7 @@ describe('PlatformsService', () => {
       const updates = {
         name: 'TEST_PLATFORM_UPDATE',
         nameHandle: 'TEST_PLATFORM_UPDATE#1',
+        category: factories.onePlatformCategory.build(),
       };
       const updatedPlatform = factories.onePlatform.build(updates);
       jest
@@ -274,6 +288,10 @@ describe('PlatformsService', () => {
       expect(
         await service.update(platform.id, factories.updatePlatformDto.build()),
       ).toEqual(updatedPlatform);
+
+      expect(platformCategoryRepository.findOne).toHaveBeenCalledWith({
+        name: 'CATEGORY_UPDATE',
+      });
 
       expect(platformRepository.update).toHaveBeenCalledWith(
         { id: platform.id },

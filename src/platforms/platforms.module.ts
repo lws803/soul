@@ -8,10 +8,16 @@ import { PlatformsService } from './platforms.service';
 import { PlatformsController } from './platforms.controller';
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
+import { PlatformCategory } from './entities/platform-category.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Platform, PlatformUser, RefreshToken]),
+    TypeOrmModule.forFeature([
+      Platform,
+      PlatformUser,
+      RefreshToken,
+      PlatformCategory,
+    ]),
     UsersModule,
   ],
   controllers: [PlatformsController],
