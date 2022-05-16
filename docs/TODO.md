@@ -1,8 +1,9 @@
 # TODO list
 
-- Fix tests
 - Fix code in `src/platforms/platforms.controller.spec.ts` and tidy up the factory code
+  - Add more tests for the new entity
 - Add filtering platforms by categories
+  - Add more tests
 - redesign confirmation and password reset emails to look nicer
 - add funding button to the repository
   - set up paypal or patreon for funding
