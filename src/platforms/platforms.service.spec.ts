@@ -155,6 +155,21 @@ describe('PlatformsService', () => {
         user,
       });
     });
+
+    it("should throw an error when category doesn't exist", async () => {
+      jest.spyOn(platformCategoryRepository, 'findOne').mockResolvedValue(null);
+      const user = factories.oneUser.build();
+      await expect(
+        service.create(
+          factories.createPlatformDto.build({ category: 'UNKNOWN_CATEGORY' }),
+          user.id,
+        ),
+      ).rejects.toThrow(
+        'The category with with name: UNKNOWN_CATEGORY was not found, please try again.',
+      );
+      expect(platformRepository.save).not.toHaveBeenCalled();
+      expect(platformRepository.update).not.toHaveBeenCalled();
+    });
   });
 
   describe('findAll()', () => {
@@ -307,6 +322,17 @@ describe('PlatformsService', () => {
         { id: platform.id },
         updates,
       );
+    });
+
+    it("should throw an error when category doesn't exist", async () => {
+      jest.spyOn(platformCategoryRepository, 'findOne').mockResolvedValue(null);
+      const platform = factories.onePlatform.build();
+      await expect(
+        service.update(platform.id, factories.updatePlatformDto.build()),
+      ).rejects.toThrow(
+        'The category with with name: CATEGORY_UPDATE was not found, please try again.',
+      );
+      expect(platformRepository.update).not.toHaveBeenCalled();
     });
   });
 
