@@ -23,13 +23,14 @@ describe('PlatformsController', () => {
               totalCount: factories.platformArray.build().length,
             }),
             findOne: jest.fn().mockResolvedValue(factories.onePlatform.build()),
-            update: jest
-              .fn()
-              .mockResolvedValue(
-                factories.onePlatform.build(
-                  factories.updatePlatformDto.build(),
-                ),
-              ),
+            update: jest.fn().mockResolvedValue(
+              factories.onePlatform.build({
+                ...factories.updatePlatformDto.build(),
+                category: factories.onePlatformCategory.build({
+                  name: 'CATEGORY_UPDATE',
+                }),
+              }),
+            ),
             remove: jest.fn(),
             setUserRole: jest
               .fn()
@@ -91,7 +92,12 @@ describe('PlatformsController', () => {
   it('update()', async () => {
     const updatePlatformDto = factories.updatePlatformDto.build();
     const platform = factories.onePlatform.build();
-    const updatedPlatform = factories.onePlatform.build(updatePlatformDto);
+    const updatedPlatform = factories.onePlatform.build({
+      ...updatePlatformDto,
+      category: factories.onePlatformCategory.build({
+        name: 'CATEGORY_UPDATE',
+      }),
+    });
 
     expect(
       await controller.update({ platformId: platform.id }, updatePlatformDto),

@@ -5,6 +5,7 @@ import { Repository, Connection } from 'typeorm';
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
+import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
 import createAppFixture from './fixtures/create-app-fixture';
 import {
@@ -18,6 +19,7 @@ describe('PlatformsController (e2e)', () => {
   let app: INestApplication;
   let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
+  let platformCategoryRepository: Repository<PlatformCategory>;
 
   let userAccount: UserAccount;
   let secondUserAccount: UserAccount;
@@ -33,6 +35,7 @@ describe('PlatformsController (e2e)', () => {
 
     platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
+    platformCategoryRepository = connection.getRepository(PlatformCategory);
 
     const [firstUser, secondUser, thirdUser] = await createUsersAndLoginFixture(
       app,
@@ -40,9 +43,14 @@ describe('PlatformsController (e2e)', () => {
     userAccount = firstUser;
     secondUserAccount = secondUser;
     thirdUserAccount = thirdUser;
+
+    await platformCategoryRepository.save(
+      factories.onePlatformCategory.build(),
+    );
   });
 
   afterAll(async () => {
+    await platformCategoryRepository.delete({});
     await app.close();
   });
 
@@ -107,6 +115,7 @@ describe('PlatformsController (e2e)', () => {
           name: 'TEST_PLATFORM_2',
           nameHandle: 'TEST_PLATFORM_2#2',
           isVerified: false,
+          category: null,
         }),
       ]);
     });
@@ -129,6 +138,10 @@ describe('PlatformsController (e2e)', () => {
                 name: 'TEST_PLATFORM',
                 isVerified: true,
                 nameHandle: 'TEST_PLATFORM#1',
+                category: {
+                  id: 1,
+                  name: 'CATEGORY',
+                },
               },
               {
                 createdAt: expect.any(String),
@@ -137,6 +150,7 @@ describe('PlatformsController (e2e)', () => {
                 name: 'TEST_PLATFORM_2',
                 isVerified: false,
                 nameHandle: 'TEST_PLATFORM_2#2',
+                category: null,
               },
             ],
             totalCount: 2,
@@ -158,6 +172,10 @@ describe('PlatformsController (e2e)', () => {
                 name: 'TEST_PLATFORM',
                 nameHandle: 'TEST_PLATFORM#1',
                 isVerified: true,
+                category: {
+                  id: 1,
+                  name: 'CATEGORY',
+                },
               },
             ],
             totalCount: 2,
@@ -179,6 +197,10 @@ describe('PlatformsController (e2e)', () => {
                 name: 'TEST_PLATFORM',
                 isVerified: true,
                 nameHandle: 'TEST_PLATFORM#1',
+                category: {
+                  id: 1,
+                  name: 'CATEGORY',
+                },
               },
             ],
             totalCount: 1,
@@ -200,6 +222,7 @@ describe('PlatformsController (e2e)', () => {
                 name: 'TEST_PLATFORM_2',
                 isVerified: false,
                 nameHandle: 'TEST_PLATFORM_2#2',
+                category: null,
               },
             ],
             totalCount: 1,
@@ -233,6 +256,10 @@ describe('PlatformsController (e2e)', () => {
             name: 'TEST_PLATFORM',
             nameHandle: 'TEST_PLATFORM#1',
             isVerified: true,
+            category: {
+              id: 1,
+              name: 'CATEGORY',
+            },
           }),
         );
     });
@@ -458,6 +485,10 @@ describe('PlatformsController (e2e)', () => {
               name: 'TEST_PLATFORM',
               isVerified: true,
               nameHandle: 'TEST_PLATFORM#1',
+              category: {
+                id: 1,
+                name: 'CATEGORY',
+              },
             },
             roles: [UserRole.ADMIN, UserRole.MEMBER],
             user: {
@@ -493,6 +524,10 @@ describe('PlatformsController (e2e)', () => {
               isVerified: true,
               name: 'TEST_PLATFORM',
               nameHandle: 'TEST_PLATFORM#1',
+              category: {
+                id: 1,
+                name: 'CATEGORY',
+              },
             },
             roles: [UserRole.BANNED],
             user: {
@@ -757,6 +792,10 @@ describe('PlatformsController (e2e)', () => {
               name: 'TEST_PLATFORM',
               nameHandle: 'TEST_PLATFORM#1',
               updatedAt: expect.any(String),
+              category: {
+                id: 1,
+                name: 'CATEGORY',
+              },
             },
             roles: [UserRole.MEMBER],
             user: {

@@ -9,6 +9,7 @@ import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
+import { PlatformCategory } from './entities/platform-category.entity';
 import { PlatformsService } from './platforms.service';
 import { DuplicatePlatformUserException } from './exceptions';
 
@@ -17,6 +18,7 @@ describe('PlatformsService', () => {
   let platformRepository: Repository<Platform>;
   let platformUserRepository: Repository<PlatformUser>;
   let refreshTokenRepository: Repository<RefreshToken>;
+  let platformCategoryRepository: Repository<PlatformCategory>;
   let platformCreateQueryBuilder: any;
 
   beforeEach(async () => {
@@ -26,6 +28,9 @@ describe('PlatformsService', () => {
       orderBy: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       skip: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       take: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      leftJoinAndSelect: jest
+        .fn()
+        .mockImplementation(() => platformCreateQueryBuilder),
       getManyAndCount: jest
         .fn()
         .mockResolvedValue([
@@ -53,6 +58,14 @@ describe('PlatformsService', () => {
             createQueryBuilder: jest
               .fn()
               .mockImplementation(() => platformCreateQueryBuilder),
+          },
+        },
+        {
+          provide: getRepositoryToken(PlatformCategory),
+          useValue: {
+            findOne: jest
+              .fn()
+              .mockResolvedValue(factories.onePlatformCategory.build()),
           },
         },
         {
@@ -107,6 +120,9 @@ describe('PlatformsService', () => {
     refreshTokenRepository = module.get<Repository<RefreshToken>>(
       getRepositoryToken(RefreshToken),
     );
+    platformCategoryRepository = module.get<Repository<PlatformCategory>>(
+      getRepositoryToken(PlatformCategory),
+    );
   });
 
   it('should be defined', () => {
@@ -128,6 +144,7 @@ describe('PlatformsService', () => {
       expect(platformRepository.save).toHaveBeenCalledWith({
         name: 'TEST_PLATFORM',
         redirectUris: ['TEST_REDIRECT_URI'],
+        category: factories.onePlatformCategory.build(),
       });
       expect(platformRepository.update).toHaveBeenCalledWith(
         { id: platform.id },
@@ -138,6 +155,21 @@ describe('PlatformsService', () => {
         roles: [UserRole.ADMIN, UserRole.MEMBER],
         user,
       });
+    });
+
+    it("should throw an error when category doesn't exist", async () => {
+      jest.spyOn(platformCategoryRepository, 'findOne').mockResolvedValue(null);
+      const user = factories.oneUser.build();
+      await expect(
+        service.create(
+          factories.createPlatformDto.build({ category: 'UNKNOWN_CATEGORY' }),
+          user.id,
+        ),
+      ).rejects.toThrow(
+        'The category with name: UNKNOWN_CATEGORY was not found, please try again.',
+      );
+      expect(platformRepository.save).not.toHaveBeenCalled();
+      expect(platformRepository.update).not.toHaveBeenCalled();
     });
   });
 
@@ -214,7 +246,7 @@ describe('PlatformsService', () => {
       expect(await service.findOne(platform.id)).toEqual(platform);
 
       expect(platformRepository.findOne).toHaveBeenCalledWith(platform.id, {
-        relations: ['userConnections'],
+        relations: ['userConnections', 'category'],
       });
     });
 
@@ -261,24 +293,47 @@ describe('PlatformsService', () => {
 
   describe('update()', () => {
     it('should update platform successfully', async () => {
+      const updatedCategory = factories.onePlatformCategory.build({
+        name: 'CATEGORY_UPDATE',
+      });
       const platform = factories.onePlatform.build();
       const updates = {
         name: 'TEST_PLATFORM_UPDATE',
         nameHandle: 'TEST_PLATFORM_UPDATE#1',
+        category: updatedCategory,
       };
       const updatedPlatform = factories.onePlatform.build(updates);
+
       jest
         .spyOn(platformRepository, 'findOne')
         .mockResolvedValue(updatedPlatform);
+      jest
+        .spyOn(platformCategoryRepository, 'findOne')
+        .mockResolvedValue(updatedCategory);
 
       expect(
         await service.update(platform.id, factories.updatePlatformDto.build()),
       ).toEqual(updatedPlatform);
 
+      expect(platformCategoryRepository.findOne).toHaveBeenCalledWith({
+        name: 'CATEGORY_UPDATE',
+      });
+
       expect(platformRepository.update).toHaveBeenCalledWith(
         { id: platform.id },
         updates,
       );
+    });
+
+    it("should throw an error when category doesn't exist", async () => {
+      jest.spyOn(platformCategoryRepository, 'findOne').mockResolvedValue(null);
+      const platform = factories.onePlatform.build();
+      await expect(
+        service.update(platform.id, factories.updatePlatformDto.build()),
+      ).rejects.toThrow(
+        'The category with name: CATEGORY_UPDATE was not found, please try again.',
+      );
+      expect(platformRepository.update).not.toHaveBeenCalled();
     });
   });
 

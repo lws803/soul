@@ -19,6 +19,7 @@ import { UserConnection } from './user-connections/entities/user-connection.enti
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { MailModule } from './mail/mail.module';
 import { ReputationModule } from './reputation/reputation.module';
+import { PlatformCategory } from './platforms/entities/platform-category.entity';
 
 import config from '../config';
 
@@ -36,7 +37,14 @@ import config from '../config';
         ssl: configService.get('DB_SSL')
           ? { rejectUnauthorized: false }
           : undefined,
-        entities: [User, RefreshToken, Platform, PlatformUser, UserConnection],
+        entities: [
+          User,
+          RefreshToken,
+          Platform,
+          PlatformUser,
+          UserConnection,
+          PlatformCategory,
+        ],
       }),
       inject: [ConfigService],
     }),

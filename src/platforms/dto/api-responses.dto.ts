@@ -4,6 +4,24 @@ import { Expose, Type } from 'class-transformer';
 import { UserRole } from 'src/roles/role.enum';
 import { FindOneUserResponseDto } from 'src/users/dto/api-responses.dto';
 
+export class PlatformCategoryResponseDto {
+  @ApiProperty({ name: 'id', example: 1 })
+  @Expose()
+  id: number;
+
+  @ApiProperty({
+    name: 'name',
+    description: 'One of predefined category names for the platform.',
+    example: 'tech',
+  })
+  @Expose()
+  name: string;
+
+  constructor(args: PlatformCategoryResponseDto) {
+    Object.assign(this, args);
+  }
+}
+
 class FullPlatformResponseDto {
   @ApiProperty({ name: 'id', example: 1 })
   @Expose()
@@ -50,6 +68,11 @@ class FullPlatformResponseDto {
   })
   @Expose()
   redirectUris: string[];
+
+  @ApiProperty({ name: 'category', type: PlatformCategoryResponseDto })
+  @Expose()
+  @Type(() => PlatformCategoryResponseDto)
+  category?: PlatformCategoryResponseDto;
 
   constructor(args: FullPlatformResponseDto) {
     Object.assign(this, args);
@@ -104,6 +127,11 @@ export class FindOnePlatformResponseDto {
   @ApiProperty({ name: 'updatedAt', type: Date })
   @Expose()
   updatedAt: Date;
+
+  @ApiProperty({ name: 'category', type: PlatformCategoryResponseDto })
+  @Expose()
+  @Type(() => PlatformCategoryResponseDto)
+  category?: PlatformCategoryResponseDto;
 
   constructor(args: FindOnePlatformResponseDto) {
     Object.assign(this, args);
