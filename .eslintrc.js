@@ -8,7 +8,14 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
   ],
+  settings: {
+    'import/resolver': {
+      typescript: true,
+    },
+  },
   root: true,
   env: {
     node: true,
@@ -24,5 +31,26 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': ['error'],
     'no-console': ['error'],
     'no-only-tests/no-only-tests': 'error',
+    'import/order': [
+      'error',
+      {
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          'type',
+          'parent',
+          'sibling',
+        ],
+        'newlines-between': 'always-and-inside-groups',
+      },
+    ],
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'enumMember',
+        format: ['StrictPascalCase'],
+      },
+    ],
   },
 };

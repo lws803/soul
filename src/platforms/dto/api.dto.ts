@@ -11,6 +11,7 @@ import {
   IsOptional,
   MaxLength,
 } from 'class-validator';
+
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.validator';
 
@@ -33,7 +34,7 @@ export class SetUserPlatformRoleQueryParamsDto {
   @Transform(({ value }) => value.split(','))
   @IsArray()
   @IsEnum(UserRole, { each: true })
-  roles: UserRole[] = [UserRole.MEMBER];
+  roles: UserRole[] = [UserRole.Member];
 }
 
 export class SetUserPlatformRoleParamsDto {

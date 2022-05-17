@@ -1,4 +1,5 @@
 import { ArgumentsHost, HttpStatus, HttpException } from '@nestjs/common';
+
 import { GenericException } from 'src/common/exceptions/generic.exception';
 
 import { AllExceptionFilter } from './all-exception.filter';

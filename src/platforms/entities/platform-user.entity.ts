@@ -9,9 +9,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Platform } from './platform.entity';
 import { UserRole } from '../../roles/role.enum';
 import { User } from '../../users/entities/user.entity';
+
+import { Platform } from './platform.entity';
 
 @Unique(['user', 'platform'])
 @Entity({ name: 'platform_users' })

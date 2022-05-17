@@ -1,4 +1,5 @@
 import { validate } from 'class-validator';
+
 import { IsValidRedirectUri } from './is-valid-redirect-uri.validator';
 
 class MockClass {

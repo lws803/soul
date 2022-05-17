@@ -81,7 +81,7 @@ describe('PlatformsService', () => {
             save: jest
               .fn()
               .mockResolvedValue(
-                factories.onePlatformUser.build({ roles: [UserRole.MEMBER] }),
+                factories.onePlatformUser.build({ roles: [UserRole.Member] }),
               ),
             update: jest.fn(),
             delete: jest.fn(),
@@ -155,7 +155,7 @@ describe('PlatformsService', () => {
       );
       expect(platformUserRepository.save).toHaveBeenCalledWith({
         platform,
-        roles: [UserRole.ADMIN, UserRole.MEMBER],
+        roles: [UserRole.Admin, UserRole.Member],
         user,
       });
     });
@@ -396,8 +396,8 @@ describe('PlatformsService', () => {
       const user = factories.oneUser.build();
 
       await service.setUserRole(platform.id, user.id, [
-        UserRole.ADMIN,
-        UserRole.MEMBER,
+        UserRole.Admin,
+        UserRole.Member,
       ]);
 
       expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
@@ -502,13 +502,13 @@ describe('PlatformsService', () => {
 
       expect(await service.addUser(platform.id, user.id)).toEqual(
         factories.onePlatformUser.build({
-          roles: [UserRole.MEMBER],
+          roles: [UserRole.Member],
         }),
       );
 
       expect(platformUserRepository.save).toHaveBeenCalledWith({
         platform: factories.onePlatform.build(),
-        roles: [UserRole.MEMBER],
+        roles: [UserRole.Member],
         user: factories.oneUser.build(),
       });
     });

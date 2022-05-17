@@ -171,7 +171,7 @@ class FindOnePlatformUserResponseDto {
   @Type(() => FindOnePlatformResponseDto)
   platform: FindOnePlatformResponseDto;
 
-  @ApiProperty({ name: 'roles', example: [UserRole.ADMIN] })
+  @ApiProperty({ name: 'roles', example: [UserRole.Admin] })
   @Expose()
   roles: UserRole[];
 

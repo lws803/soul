@@ -1,6 +1,6 @@
-import { LocalStrategy } from './local.strategy';
-
 import { AuthService } from '../auth.service';
+
+import { LocalStrategy } from './local.strategy';
 
 describe(LocalStrategy, () => {
   it('validates email and password successfully', async () => {

@@ -376,7 +376,7 @@ describe('ConnectionsService', () => {
       expect(
         await service.findMyUserConnections({
           userId: 1,
-          connectionType: ConnectionType.FOLLOW,
+          connectionType: ConnectionType.Follow,
           paginationParams: {
             numItemsPerPage: 10,
             page: 1,
@@ -400,7 +400,7 @@ describe('ConnectionsService', () => {
       expect(
         await service.findMyUserConnections({
           userId: 1,
-          connectionType: ConnectionType.FOLLOWER,
+          connectionType: ConnectionType.Follower,
           paginationParams: {
             numItemsPerPage: 10,
             page: 1,
@@ -424,7 +424,7 @@ describe('ConnectionsService', () => {
       expect(
         await service.findMyUserConnections({
           userId: 1,
-          connectionType: ConnectionType.MUTUAL,
+          connectionType: ConnectionType.Mutual,
           paginationParams: {
             numItemsPerPage: 10,
             page: 1,

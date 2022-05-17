@@ -4,13 +4,13 @@ import * as request from 'supertest';
 
 import { User } from 'src/users/entities/user.entity';
 
+import * as factories from '../factories';
+
 import createAppFixture from './fixtures/create-app-fixture';
 import {
   createUsersAndLoginFixture,
   UserAccount,
 } from './fixtures/create-users-and-login-fixture';
-
-import * as factories from '../factories';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;

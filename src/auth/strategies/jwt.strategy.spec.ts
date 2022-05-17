@@ -4,8 +4,9 @@ import { ExtractJwt } from 'passport-jwt';
 
 import * as factories from 'factories';
 
-import { JwtStrategy } from './jwt.strategy';
 import { JWTPayload } from '../entities/jwt-payload.entity';
+
+import { JwtStrategy } from './jwt.strategy';
 
 describe(JwtStrategy, () => {
   const request = {} as unknown as Request;

@@ -202,9 +202,9 @@ export class UserConnectionsService {
       where['id'] = In(userConnectionIds);
     }
 
-    if (connectionType === ConnectionType.MUTUAL) {
+    if (connectionType === ConnectionType.Mutual) {
       where = { mutualConnection: Not(IsNull()), fromUser };
-    } else if (connectionType === ConnectionType.FOLLOWER) {
+    } else if (connectionType === ConnectionType.Follower) {
       where = { mutualConnection: IsNull(), toUser: fromUser };
     }
     const [userConnections, totalCount] =

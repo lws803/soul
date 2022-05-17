@@ -8,13 +8,13 @@ import { Platform } from 'src/platforms/entities/platform.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
+import * as factories from '../factories';
+
 import createAppFixture from './fixtures/create-app-fixture';
 import {
   createUsersAndLoginFixture,
   UserAccount,
 } from './fixtures/create-users-and-login-fixture';
-
-import * as factories from '../factories';
 
 describe('ReputationController (e2e)', () => {
   let app: INestApplication;
@@ -67,7 +67,7 @@ describe('ReputationController (e2e)', () => {
         factories.onePlatformUser.build({
           user: userAccount.user,
           platform,
-          roles: [UserRole.BANNED],
+          roles: [UserRole.Banned],
         }),
       );
       await userConnectionRepository.save(

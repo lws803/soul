@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import * as factories from 'factories';
-import { ConnectionType } from './enums/connection-type.enum';
 
+import { ConnectionType } from './enums/connection-type.enum';
 import { UserConnectionsController } from './user-connections.controller';
 import { UserConnectionsService } from './user-connections.service';
 
@@ -78,7 +78,7 @@ describe('ConnectionsController', () => {
     it('should find my mutual connections', async () => {
       expect(
         await controller.findMyConnections(userJwt, {
-          connectionType: ConnectionType.MUTUAL,
+          connectionType: ConnectionType.Mutual,
           page: 1,
           numItemsPerPage: 10,
         }),
@@ -88,7 +88,7 @@ describe('ConnectionsController', () => {
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
-        connectionType: ConnectionType.MUTUAL,
+        connectionType: ConnectionType.Mutual,
         paginationParams: { numItemsPerPage: 10, page: 1 },
         platformId: undefined,
         userId: 1,
@@ -98,7 +98,7 @@ describe('ConnectionsController', () => {
     it('should find my follower connections', async () => {
       expect(
         await controller.findMyConnections(userJwt, {
-          connectionType: ConnectionType.FOLLOWER,
+          connectionType: ConnectionType.Follower,
           page: 1,
           numItemsPerPage: 10,
         }),
@@ -108,7 +108,7 @@ describe('ConnectionsController', () => {
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
-        connectionType: ConnectionType.FOLLOWER,
+        connectionType: ConnectionType.Follower,
         paginationParams: { numItemsPerPage: 10, page: 1 },
         platformId: undefined,
         userId: 1,
@@ -118,7 +118,7 @@ describe('ConnectionsController', () => {
     it('should find my follow connections', async () => {
       expect(
         await controller.findMyConnections(userJwt, {
-          connectionType: ConnectionType.FOLLOW,
+          connectionType: ConnectionType.Follow,
           page: 1,
           numItemsPerPage: 10,
         }),
@@ -128,7 +128,7 @@ describe('ConnectionsController', () => {
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
-        connectionType: ConnectionType.FOLLOW,
+        connectionType: ConnectionType.Follow,
         paginationParams: { numItemsPerPage: 10, page: 1 },
         platformId: undefined,
         userId: 1,

@@ -237,7 +237,7 @@ export class AuthService {
   public async resolveRefreshToken(encoded: string, platformId?: number) {
     const payload = await this.decodeRefreshToken(encoded);
 
-    if (payload.tokenType === TokenType.ACCESS) {
+    if (payload.tokenType === TokenType.Access) {
       throw new InvalidTokenException(
         'Access token used in place of refresh token, please try again.',
       );

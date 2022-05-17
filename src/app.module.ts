@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { RavenInterceptor, RavenModule } from 'nest-raven';
 
+import config from '../config';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -20,8 +22,6 @@ import { AllExceptionFilter } from './filters/all-exception.filter';
 import { MailModule } from './mail/mail.module';
 import { ReputationModule } from './reputation/reputation.module';
 import { PlatformCategory } from './platforms/entities/platform-category.entity';
-
-import config from '../config';
 
 @Module({
   imports: [

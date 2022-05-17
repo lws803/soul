@@ -1,6 +1,6 @@
 export enum UserRole {
-  SUPER_ADMIN = 'super_admin',
-  ADMIN = 'admin',
-  MEMBER = 'member',
-  BANNED = 'banned',
+  SuperAdmin = 'super_admin',
+  Admin = 'admin',
+  Member = 'member',
+  Banned = 'banned',
 }

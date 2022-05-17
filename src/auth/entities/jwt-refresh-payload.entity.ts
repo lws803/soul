@@ -5,7 +5,7 @@ import { TokenType } from '../enums/token-type.enum';
 export class JWTRefreshPayload {
   tokenId: number;
   userId: number;
-  tokenType = TokenType.REFRESH;
+  tokenType = TokenType.Refresh;
   platformId?: number;
   roles?: UserRole[];
 

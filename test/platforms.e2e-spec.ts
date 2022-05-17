@@ -7,13 +7,13 @@ import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
+import * as factories from '../factories';
+
 import createAppFixture from './fixtures/create-app-fixture';
 import {
   createUsersAndLoginFixture,
   UserAccount,
 } from './fixtures/create-users-and-login-fixture';
-
-import * as factories from '../factories';
 
 describe('PlatformsController (e2e)', () => {
   let app: INestApplication;
@@ -85,7 +85,7 @@ describe('PlatformsController (e2e)', () => {
         user: userAccount.user,
       });
       expect(platformUser).toBeDefined();
-      expect(platformUser.roles).toEqual([UserRole.ADMIN, UserRole.MEMBER]);
+      expect(platformUser.roles).toEqual([UserRole.Admin, UserRole.Member]);
     });
 
     it('throws when user is not logged in', async () => {
@@ -463,7 +463,7 @@ describe('PlatformsController (e2e)', () => {
             platformUsers: [
               {
                 id: 1,
-                roles: [UserRole.ADMIN, UserRole.MEMBER],
+                roles: [UserRole.Admin, UserRole.Member],
                 user: {
                   id: 1,
                   userHandle: 'TEST_USER#1',
@@ -489,7 +489,7 @@ describe('PlatformsController (e2e)', () => {
           id: 2,
           user: secondUserAccount.user,
           platform,
-          roles: [UserRole.MEMBER],
+          roles: [UserRole.Member],
         }),
       ]);
     });
@@ -528,7 +528,7 @@ describe('PlatformsController (e2e)', () => {
                 name: 'CATEGORY',
               },
             },
-            roles: [UserRole.ADMIN, UserRole.MEMBER],
+            roles: [UserRole.Admin, UserRole.Member],
             user: {
               id: 2,
               userHandle: 'TEST_USER_2#2',
@@ -567,7 +567,7 @@ describe('PlatformsController (e2e)', () => {
                 name: 'CATEGORY',
               },
             },
-            roles: [UserRole.BANNED],
+            roles: [UserRole.Banned],
             user: {
               id: 2,
               userHandle: 'TEST_USER_2#2',
@@ -637,7 +637,7 @@ describe('PlatformsController (e2e)', () => {
           id: 2,
           user: secondUserAccount.user,
           platform,
-          roles: [UserRole.MEMBER],
+          roles: [UserRole.Member],
         }),
       ]);
     });
@@ -699,13 +699,13 @@ describe('PlatformsController (e2e)', () => {
           id: 2,
           user: secondUserAccount.user,
           platform,
-          roles: [UserRole.MEMBER],
+          roles: [UserRole.Member],
         }),
         factories.onePlatformUser.build({
           id: 3,
           user: thirdUserAccount.user,
           platform,
-          roles: [UserRole.BANNED],
+          roles: [UserRole.Banned],
         }),
       ]);
     });
@@ -721,7 +721,7 @@ describe('PlatformsController (e2e)', () => {
           id: 2,
           user: secondUserAccount.user,
           platform,
-          roles: [UserRole.ADMIN, UserRole.MEMBER],
+          roles: [UserRole.Admin, UserRole.Member],
         }),
       );
       const codeResp = await request(app.getHttpServer())
@@ -835,7 +835,7 @@ describe('PlatformsController (e2e)', () => {
                 name: 'CATEGORY',
               },
             },
-            roles: [UserRole.MEMBER],
+            roles: [UserRole.Member],
             user: {
               id: 1,
               userHandle: 'TEST_USER#1',
