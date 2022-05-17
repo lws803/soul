@@ -11,7 +11,10 @@ import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
 import { PlatformCategory } from './entities/platform-category.entity';
 import { PlatformsService } from './platforms.service';
-import { DuplicatePlatformUserException } from './exceptions';
+import {
+  DuplicatePlatformUserException,
+  PlatformCategoryNotFoundException,
+} from './exceptions';
 
 describe('PlatformsService', () => {
   let service: PlatformsService;
@@ -258,6 +261,20 @@ describe('PlatformsService', () => {
       expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
         'platform.category = :categoryId',
         { categoryId: factories.onePlatformCategory.build().id },
+      );
+    });
+
+    it('should throw if the filtering category does not exist', async () => {
+      jest.spyOn(platformCategoryRepository, 'findOne').mockResolvedValue(null);
+      const categoryName = 'UNKNOWN_CATEGORY';
+      await expect(
+        service.findAll({
+          page: 1,
+          numItemsPerPage: 10,
+          category: categoryName,
+        }),
+      ).rejects.toThrow(
+        new PlatformCategoryNotFoundException({ name: categoryName }),
       );
     });
   });
