@@ -237,6 +237,29 @@ describe('PlatformsService', () => {
         { query: 'TEST_PLATFORM%' },
       );
     });
+
+    it('should filter for platforms with the associated category', async () => {
+      const platforms = factories.platformArray.build();
+
+      expect(
+        await service.findAll({
+          page: 1,
+          numItemsPerPage: 10,
+          category: 'CATEGORY',
+        }),
+      ).toEqual({
+        platforms,
+        totalCount: platforms.length,
+      });
+
+      expect(platformCategoryRepository.findOne).toHaveBeenCalledWith({
+        name: 'CATEGORY',
+      });
+      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'platform.category = :categoryId',
+        { categoryId: factories.onePlatformCategory.build().id },
+      );
+    });
   });
 
   describe('findOne()', () => {

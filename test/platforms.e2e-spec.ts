@@ -208,6 +208,44 @@ describe('PlatformsController (e2e)', () => {
         );
     });
 
+    it('fetches all platforms with category filter', async () => {
+      await request(app.getHttpServer())
+        .get('/platforms?category=CATEGORY')
+        .expect(200)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            platforms: [
+              {
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+                id: expect.any(Number),
+                name: 'TEST_PLATFORM',
+                isVerified: true,
+                nameHandle: 'TEST_PLATFORM#1',
+                category: {
+                  id: 1,
+                  name: 'CATEGORY',
+                },
+              },
+            ],
+            totalCount: 1,
+          }),
+        );
+    });
+
+    it('throws unknown category error when category does not exist', async () => {
+      await request(app.getHttpServer())
+        .get('/platforms?category=UNKNOWN_CATEGORY')
+        .expect(404)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            error: 'PLATFORM_CATEGORY_NOT_FOUND',
+            message:
+              'The category with name: UNKNOWN_CATEGORY was not found, please try again.',
+          }),
+        );
+    });
+
     it('fetches all platforms with full text search', async () => {
       await request(app.getHttpServer())
         .get('/platforms?q=TEST_PLATFORM_2')

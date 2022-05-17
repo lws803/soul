@@ -1,7 +1,6 @@
 # TODO list
 
-- Add filtering platforms by categories
-  - Add more tests
+- Add a new endpoint to list available categories
 - redesign confirmation and password reset emails to look nicer
 - add funding button to the repository
   - set up paypal or patreon for funding

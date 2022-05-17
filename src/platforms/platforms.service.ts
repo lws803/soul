@@ -88,6 +88,14 @@ export class PlatformsService {
         isVerified,
       });
     }
+    const categoryNameFilter = queryParams.category;
+    if (categoryNameFilter) {
+      const category = await this.findOneCategoryOrThrow(categoryNameFilter);
+      baseQuery = baseQuery.where('platform.category = :categoryId', {
+        categoryId: category.id,
+      });
+    }
+
     baseQuery = baseQuery
       .orderBy('platform.id', 'ASC')
       .take(queryParams.numItemsPerPage)
