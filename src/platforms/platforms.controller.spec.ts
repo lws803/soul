@@ -127,7 +127,7 @@ describe('PlatformsController', () => {
       await controller.setPlatformUserRole(
         { platformId: platform.id, userId: user.id },
         {
-          roles: [UserRole.MEMBER],
+          roles: [UserRole.Member],
         },
       ),
     ).toEqual(factories.onePlatformUser.build());
@@ -135,7 +135,7 @@ describe('PlatformsController', () => {
     expect(platformsService.setUserRole).toHaveBeenCalledWith(
       platform.id,
       user.id,
-      [UserRole.MEMBER],
+      [UserRole.Member],
     );
   });
 

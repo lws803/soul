@@ -11,7 +11,10 @@ import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
 import { PlatformCategory } from './entities/platform-category.entity';
 import { PlatformsService } from './platforms.service';
-import { DuplicatePlatformUserException } from './exceptions';
+import {
+  DuplicatePlatformUserException,
+  PlatformCategoryNotFoundException,
+} from './exceptions';
 
 describe('PlatformsService', () => {
   let service: PlatformsService;
@@ -78,7 +81,7 @@ describe('PlatformsService', () => {
             save: jest
               .fn()
               .mockResolvedValue(
-                factories.onePlatformUser.build({ roles: [UserRole.MEMBER] }),
+                factories.onePlatformUser.build({ roles: [UserRole.Member] }),
               ),
             update: jest.fn(),
             delete: jest.fn(),
@@ -152,7 +155,7 @@ describe('PlatformsService', () => {
       );
       expect(platformUserRepository.save).toHaveBeenCalledWith({
         platform,
-        roles: [UserRole.ADMIN, UserRole.MEMBER],
+        roles: [UserRole.Admin, UserRole.Member],
         user,
       });
     });
@@ -235,6 +238,43 @@ describe('PlatformsService', () => {
       expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
         'platform.name like :query',
         { query: 'TEST_PLATFORM%' },
+      );
+    });
+
+    it('should filter for platforms with the associated category', async () => {
+      const platforms = factories.platformArray.build();
+
+      expect(
+        await service.findAll({
+          page: 1,
+          numItemsPerPage: 10,
+          category: 'CATEGORY',
+        }),
+      ).toEqual({
+        platforms,
+        totalCount: platforms.length,
+      });
+
+      expect(platformCategoryRepository.findOne).toHaveBeenCalledWith({
+        name: 'CATEGORY',
+      });
+      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'platform.category = :categoryId',
+        { categoryId: factories.onePlatformCategory.build().id },
+      );
+    });
+
+    it('should throw if the filtering category does not exist', async () => {
+      jest.spyOn(platformCategoryRepository, 'findOne').mockResolvedValue(null);
+      const categoryName = 'UNKNOWN_CATEGORY';
+      await expect(
+        service.findAll({
+          page: 1,
+          numItemsPerPage: 10,
+          category: categoryName,
+        }),
+      ).rejects.toThrow(
+        new PlatformCategoryNotFoundException({ name: categoryName }),
       );
     });
   });
@@ -356,8 +396,8 @@ describe('PlatformsService', () => {
       const user = factories.oneUser.build();
 
       await service.setUserRole(platform.id, user.id, [
-        UserRole.ADMIN,
-        UserRole.MEMBER,
+        UserRole.Admin,
+        UserRole.Member,
       ]);
 
       expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
@@ -462,13 +502,13 @@ describe('PlatformsService', () => {
 
       expect(await service.addUser(platform.id, user.id)).toEqual(
         factories.onePlatformUser.build({
-          roles: [UserRole.MEMBER],
+          roles: [UserRole.Member],
         }),
       );
 
       expect(platformUserRepository.save).toHaveBeenCalledWith({
         platform: factories.onePlatform.build(),
-        roles: [UserRole.MEMBER],
+        roles: [UserRole.Member],
         user: factories.oneUser.build(),
       });
     });

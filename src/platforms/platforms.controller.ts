@@ -85,7 +85,7 @@ export class PlatformsController {
       'Updates a platform (only authorized platform owners can update a platform)',
   })
   @ApiResponse({ status: HttpStatus.OK, type: UpdatePlatformResponseDto })
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Patch(':platformId')
   async update(
@@ -102,7 +102,7 @@ export class PlatformsController {
       'Deletes a platform (only authorized platform owners can delete a platform)',
   })
   @ApiResponse({ status: HttpStatus.OK })
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId')
   async remove(@Param() { platformId }: PlatformIdParamDto) {
@@ -113,7 +113,7 @@ export class PlatformsController {
     description: 'Lists all platform users',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformUsersResponseDto })
-  @Roles(UserRole.MEMBER)
+  @Roles(UserRole.Member)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Get(':platformId/users')
   async findAllPlatformUsers(
@@ -132,7 +132,7 @@ export class PlatformsController {
     description: 'Sets a role for a user on a platform',
   })
   @ApiResponse({ status: HttpStatus.OK, type: SetPlatformUserRoleResponseDto })
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Put(':platformId/users/:userId')
   async setPlatformUserRole(
@@ -148,7 +148,7 @@ export class PlatformsController {
     description: 'Deletes a user from a platform',
   })
   @ApiResponse({ status: HttpStatus.OK })
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId/users/:userId')
   async removePlatformUser(
@@ -161,7 +161,7 @@ export class PlatformsController {
     description: 'Quits a platform by deleting self from it',
   })
   @ApiResponse({ status: HttpStatus.OK })
-  @Roles(UserRole.MEMBER)
+  @Roles(UserRole.Member)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platformId/quit')
   async removeMyself(

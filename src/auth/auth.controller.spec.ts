@@ -2,9 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import * as factories from 'factories';
 
+import { UserRole } from 'src/roles/role.enum';
+
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UserRole } from 'src/roles/role.enum';
 
 describe('AuthService', () => {
   let controller: AuthController;
@@ -28,7 +29,7 @@ describe('AuthService', () => {
               accessToken: 'ACCESS_TOKEN',
               refreshToken: 'REFRESH_TOKEN',
               platformId: factories.onePlatform.build().id,
-              roles: [UserRole.ADMIN, UserRole.MEMBER],
+              roles: [UserRole.Admin, UserRole.Member],
             }),
             refresh: jest.fn().mockResolvedValue({
               accessToken: 'ACCESS_TOKEN',
@@ -36,7 +37,7 @@ describe('AuthService', () => {
             refreshWithPlatform: jest.fn().mockResolvedValue({
               accessToken: 'ACCESS_TOKEN',
               platformId: 1,
-              roles: [UserRole.ADMIN, UserRole.MEMBER],
+              roles: [UserRole.Admin, UserRole.Member],
             }),
           },
         },
@@ -85,7 +86,7 @@ describe('AuthService', () => {
       expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',
         platformId: 1,
-        roles: [UserRole.ADMIN, UserRole.MEMBER],
+        roles: [UserRole.Admin, UserRole.Member],
       });
       expect(service.refreshWithPlatform).toHaveBeenCalledWith(refreshToken, 1);
     });
@@ -122,7 +123,7 @@ describe('AuthService', () => {
         accessToken: 'ACCESS_TOKEN',
         refreshToken: 'REFRESH_TOKEN',
         platformId: 1,
-        roles: [UserRole.ADMIN, UserRole.MEMBER],
+        roles: [UserRole.Admin, UserRole.Member],
       });
       expect(service.exchangeCodeForToken).toHaveBeenCalledWith(code, callback);
     });

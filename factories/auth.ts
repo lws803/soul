@@ -20,19 +20,19 @@ export const refreshToken = Factory.define<RefreshToken>(() => ({
 export const jwtRefreshPayload = Factory.define<JWTRefreshPayload>(() => ({
   tokenId: refreshToken.build().id,
   userId: factories.oneUser.build().id,
-  tokenType: TokenType.REFRESH,
+  tokenType: TokenType.Refresh,
 }));
 
 export const jwtPayload = Factory.define<JWTPayload>(() => ({
   userId: factories.oneUser.build().id,
   username: factories.oneUser.build().username,
-  tokenType: TokenType.ACCESS,
+  tokenType: TokenType.Access,
 }));
 
 export const jwtPayloadWithPlatform = Factory.define<JWTPayload>(() => ({
   userId: factories.oneUser.build().id,
   username: factories.oneUser.build().username,
-  tokenType: TokenType.ACCESS,
+  tokenType: TokenType.Access,
   platformId: factories.onePlatformUser.build().platform.id,
   roles: factories.onePlatformUser.build().roles,
 }));
@@ -41,7 +41,7 @@ export const jwtRefreshPayloadWithPlatform = Factory.define<JWTRefreshPayload>(
   () => ({
     tokenId: refreshToken.build().id,
     userId: factories.oneUser.build().id,
-    tokenType: TokenType.REFRESH,
+    tokenType: TokenType.Refresh,
     platformId: factories.onePlatformUser.build().platform.id,
     roles: factories.onePlatformUser.build().roles,
   }),
@@ -52,7 +52,7 @@ export const requestUserObject = Factory.define<{
   username: string;
   userId: number;
 }>(() => ({
-  tokenType: TokenType.ACCESS,
+  tokenType: TokenType.Access,
   username: 'TEST_USER',
   userId: 1,
 }));

@@ -1,5 +1,6 @@
-import { LocalIpWhitelistInterceptor } from './local-ip-whitelist.interceptor';
 import { CallHandler, ExecutionContext } from '@nestjs/common';
+
+import { LocalIpWhitelistInterceptor } from './local-ip-whitelist.interceptor';
 
 describe(LocalIpWhitelistInterceptor, () => {
   const localIpWhitelistInterceptor = new LocalIpWhitelistInterceptor();

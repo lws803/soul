@@ -4,9 +4,9 @@ import {
   ArgumentsHost,
   HttpStatus,
   HttpException,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { Logger } from '@nestjs/common';
 
 import { GenericException } from 'src/common/exceptions/generic.exception';
 

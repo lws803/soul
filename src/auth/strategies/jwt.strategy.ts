@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload) {
       throw new InvalidTokenException();
     }
-    if (payload.tokenType !== TokenType.ACCESS) {
+    if (payload.tokenType !== TokenType.Access) {
       throw new InvalidTokenException(
         'Refresh token used in place of access token, please try again.',
       );

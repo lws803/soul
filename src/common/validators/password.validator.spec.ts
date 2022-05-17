@@ -1,4 +1,5 @@
 import { validate } from 'class-validator';
+
 import { IsPasswordValid } from './password.validator';
 
 class MockClass {

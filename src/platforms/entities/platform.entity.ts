@@ -11,9 +11,9 @@ import {
   ManyToOne,
 } from 'typeorm';
 
-import { PlatformCategory } from './platform-category.entity';
-
 import { UserConnection } from '../../user-connections/entities/user-connection.entity';
+
+import { PlatformCategory } from './platform-category.entity';
 
 @Entity({ name: 'platforms' })
 export class Platform {

@@ -7,7 +7,7 @@ import { TokenType } from '../enums/token-type.enum';
 export class JWTPayload {
   username: string;
   userId: number;
-  tokenType = TokenType.ACCESS;
+  tokenType = TokenType.Access;
 
   @Type(() => Number)
   platformId?: number;

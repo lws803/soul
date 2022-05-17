@@ -64,7 +64,7 @@ export class PlatformsService {
     const newPlatformUser = new PlatformUser();
     newPlatformUser.platform = updatedPlatform;
     newPlatformUser.user = await this.usersService.findOne(userId);
-    newPlatformUser.roles = [UserRole.ADMIN, UserRole.MEMBER];
+    newPlatformUser.roles = [UserRole.Admin, UserRole.Member];
 
     await this.platformUserRepository.save(newPlatformUser);
     return updatedPlatform;
@@ -88,6 +88,14 @@ export class PlatformsService {
         isVerified,
       });
     }
+    const categoryNameFilter = queryParams.category;
+    if (categoryNameFilter) {
+      const category = await this.findOneCategoryOrThrow(categoryNameFilter);
+      baseQuery = baseQuery.where('platform.category = :categoryId', {
+        categoryId: category.id,
+      });
+    }
+
     baseQuery = baseQuery
       .orderBy('platform.id', 'ASC')
       .take(queryParams.numItemsPerPage)
@@ -145,8 +153,8 @@ export class PlatformsService {
     const user = await this.usersService.findOne(userId);
     const platformUser = await this.findPlatformUserOrThrow({ user, platform });
     if (
-      platformUser.roles.includes(UserRole.ADMIN) &&
-      !roles.includes(UserRole.ADMIN)
+      platformUser.roles.includes(UserRole.Admin) &&
+      !roles.includes(UserRole.Admin)
     ) {
       // Check if there are any remaining admins
       await this.findAnotherAdminOrThrow(platformId, userId);
@@ -189,7 +197,7 @@ export class PlatformsService {
     const newPlatformUser = new PlatformUser();
     newPlatformUser.platform = await this.findOne(platformId);
     newPlatformUser.user = await this.usersService.findOne(userId);
-    newPlatformUser.roles = [UserRole.MEMBER];
+    newPlatformUser.roles = [UserRole.Member];
 
     try {
       return await this.platformUserRepository.save(newPlatformUser);

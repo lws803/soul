@@ -64,7 +64,7 @@ export class ByUserIdsParamsDto {
 export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
   @ApiProperty({
     name: 'connectionType',
-    example: ConnectionType.MUTUAL,
+    example: ConnectionType.Mutual,
     type: String,
   })
   @IsEnum(ConnectionType)

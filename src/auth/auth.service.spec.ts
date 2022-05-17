@@ -234,7 +234,7 @@ describe('AuthService', () => {
         accessToken: 'SIGNED_TOKEN',
         refreshToken: 'SIGNED_TOKEN',
         platformId: 1,
-        roles: [UserRole.ADMIN, UserRole.MEMBER],
+        roles: [UserRole.Admin, UserRole.Member],
       });
     });
 

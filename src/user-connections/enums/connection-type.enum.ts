@@ -1,5 +1,5 @@
 export enum ConnectionType {
-  MUTUAL = 'mutual',
-  FOLLOWER = 'follower',
-  FOLLOW = 'follow',
+  Mutual = 'mutual',
+  Follower = 'follower',
+  Follow = 'follow',
 }

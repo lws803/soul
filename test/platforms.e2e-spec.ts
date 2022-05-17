@@ -7,13 +7,13 @@ import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
+import * as factories from '../factories';
+
 import createAppFixture from './fixtures/create-app-fixture';
 import {
   createUsersAndLoginFixture,
   UserAccount,
 } from './fixtures/create-users-and-login-fixture';
-
-import * as factories from '../factories';
 
 describe('PlatformsController (e2e)', () => {
   let app: INestApplication;
@@ -85,7 +85,7 @@ describe('PlatformsController (e2e)', () => {
         user: userAccount.user,
       });
       expect(platformUser).toBeDefined();
-      expect(platformUser.roles).toEqual([UserRole.ADMIN, UserRole.MEMBER]);
+      expect(platformUser.roles).toEqual([UserRole.Admin, UserRole.Member]);
     });
 
     it('throws when user is not logged in', async () => {
@@ -204,6 +204,44 @@ describe('PlatformsController (e2e)', () => {
               },
             ],
             totalCount: 1,
+          }),
+        );
+    });
+
+    it('fetches all platforms with category filter', async () => {
+      await request(app.getHttpServer())
+        .get('/platforms?category=CATEGORY')
+        .expect(200)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            platforms: [
+              {
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+                id: expect.any(Number),
+                name: 'TEST_PLATFORM',
+                isVerified: true,
+                nameHandle: 'TEST_PLATFORM#1',
+                category: {
+                  id: 1,
+                  name: 'CATEGORY',
+                },
+              },
+            ],
+            totalCount: 1,
+          }),
+        );
+    });
+
+    it('throws unknown category error when category does not exist', async () => {
+      await request(app.getHttpServer())
+        .get('/platforms?category=UNKNOWN_CATEGORY')
+        .expect(404)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            error: 'PLATFORM_CATEGORY_NOT_FOUND',
+            message:
+              'The category with name: UNKNOWN_CATEGORY was not found, please try again.',
           }),
         );
     });
@@ -425,7 +463,7 @@ describe('PlatformsController (e2e)', () => {
             platformUsers: [
               {
                 id: 1,
-                roles: [UserRole.ADMIN, UserRole.MEMBER],
+                roles: [UserRole.Admin, UserRole.Member],
                 user: {
                   id: 1,
                   userHandle: 'TEST_USER#1',
@@ -451,7 +489,7 @@ describe('PlatformsController (e2e)', () => {
           id: 2,
           user: secondUserAccount.user,
           platform,
-          roles: [UserRole.MEMBER],
+          roles: [UserRole.Member],
         }),
       ]);
     });
@@ -490,7 +528,7 @@ describe('PlatformsController (e2e)', () => {
                 name: 'CATEGORY',
               },
             },
-            roles: [UserRole.ADMIN, UserRole.MEMBER],
+            roles: [UserRole.Admin, UserRole.Member],
             user: {
               id: 2,
               userHandle: 'TEST_USER_2#2',
@@ -529,7 +567,7 @@ describe('PlatformsController (e2e)', () => {
                 name: 'CATEGORY',
               },
             },
-            roles: [UserRole.BANNED],
+            roles: [UserRole.Banned],
             user: {
               id: 2,
               userHandle: 'TEST_USER_2#2',
@@ -599,7 +637,7 @@ describe('PlatformsController (e2e)', () => {
           id: 2,
           user: secondUserAccount.user,
           platform,
-          roles: [UserRole.MEMBER],
+          roles: [UserRole.Member],
         }),
       ]);
     });
@@ -661,13 +699,13 @@ describe('PlatformsController (e2e)', () => {
           id: 2,
           user: secondUserAccount.user,
           platform,
-          roles: [UserRole.MEMBER],
+          roles: [UserRole.Member],
         }),
         factories.onePlatformUser.build({
           id: 3,
           user: thirdUserAccount.user,
           platform,
-          roles: [UserRole.BANNED],
+          roles: [UserRole.Banned],
         }),
       ]);
     });
@@ -683,7 +721,7 @@ describe('PlatformsController (e2e)', () => {
           id: 2,
           user: secondUserAccount.user,
           platform,
-          roles: [UserRole.ADMIN, UserRole.MEMBER],
+          roles: [UserRole.Admin, UserRole.Member],
         }),
       );
       const codeResp = await request(app.getHttpServer())
@@ -797,7 +835,7 @@ describe('PlatformsController (e2e)', () => {
                 name: 'CATEGORY',
               },
             },
-            roles: [UserRole.MEMBER],
+            roles: [UserRole.Member],
             user: {
               id: 1,
               userHandle: 'TEST_USER#1',

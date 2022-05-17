@@ -36,7 +36,7 @@ export const onePlatformUser = Factory.define<PlatformUser>(() => ({
   id: 1,
   user: factories.oneUser.build(),
   platform: factories.onePlatform.build(),
-  roles: [UserRole.ADMIN, UserRole.MEMBER],
+  roles: [UserRole.Admin, UserRole.Member],
   createdAt: new Date('1995-12-17T03:24:00'),
   updatedAt: new Date('1995-12-18T03:24:00'),
 }));

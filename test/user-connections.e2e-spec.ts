@@ -8,10 +8,10 @@ import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
+import * as factories from '../factories';
+
 import createAppFixture from './fixtures/create-app-fixture';
 import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fixture';
-
-import * as factories from '../factories';
 
 describe('UserConnectionsController (e2e)', () => {
   let app: INestApplication;

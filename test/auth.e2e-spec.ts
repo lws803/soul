@@ -9,10 +9,10 @@ import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { UserRole } from 'src/roles/role.enum';
 
+import * as factories from '../factories';
+
 import createAppFixture from './fixtures/create-app-fixture';
 import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fixture';
-
-import * as factories from '../factories';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -112,7 +112,7 @@ describe('AuthController (e2e)', () => {
             accessToken: expect.any(String),
             refreshToken: expect.any(String),
             platformId: 1,
-            roles: [UserRole.ADMIN, UserRole.MEMBER],
+            roles: [UserRole.Admin, UserRole.Member],
           });
         });
     });
@@ -195,7 +195,7 @@ describe('AuthController (e2e)', () => {
           expect(res.body).toEqual({
             accessToken: expect.any(String),
             platformId: 1,
-            roles: [UserRole.ADMIN, UserRole.MEMBER],
+            roles: [UserRole.Admin, UserRole.Member],
           });
         });
     });
