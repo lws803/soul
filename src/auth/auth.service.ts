@@ -48,7 +48,16 @@ export class AuthService {
   }
 
   async login(user: User) {
-    await this.refreshTokenRepository.delete({ user, platformUser: null });
+    await this.refreshTokenRepository
+      .createQueryBuilder('refresh_tokens')
+      .delete()
+      .where('refresh_tokens.expires <= :currentDate', {
+        currentDate: new Date(),
+      })
+      .andWhere('refresh_tokens.user_id = :userId', { userId: user.id })
+      .andWhere('refresh_tokens.platform_user_id is NULL')
+      .execute();
+
     if (!user.isActive) {
       throw new UserNotVerifiedException();
     }
@@ -193,7 +202,11 @@ export class AuthService {
     } = await this.resolveRefreshToken(encodedRefreshToken, platformId);
 
     const token = await this.generateAccessToken(user, platformId, roles);
-    await this.refreshTokenRepository.delete({ id: refreshToken.id });
+
+    // For refresh token reuse detection
+    await this.refreshTokenRepository.update(refreshToken.id, {
+      isRevoked: true,
+    });
 
     return { user, token, roles };
   }
@@ -258,7 +271,9 @@ export class AuthService {
   }
 
   private async findTokenById(id: number) {
-    return this.refreshTokenRepository.findOne(id);
+    return this.refreshTokenRepository.findOne(id, {
+      relations: ['user', 'platformUser'],
+    });
   }
 
   public async resolveRefreshToken(encoded: string, platformId?: number) {
@@ -276,6 +291,15 @@ export class AuthService {
     }
 
     if (token.isRevoked) {
+      // Revokes all existing tokens for this platform and user
+      this.refreshTokenRepository.update(
+        {
+          user: token.user,
+          platformUser: token.platformUser || null,
+        },
+        { isRevoked: true },
+      );
+
       throw new InvalidTokenException('Refresh token revoked');
     }
 

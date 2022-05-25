@@ -18,8 +18,20 @@ describe('AuthService', () => {
   let service: AuthService;
   let jwtService: JwtService;
   let refreshTokenRepository: Repository<RefreshToken>;
+  let refreshTokenCreateQueryBuilder: any;
 
   beforeEach(async () => {
+    refreshTokenCreateQueryBuilder = {
+      delete: jest
+        .fn()
+        .mockImplementation(() => refreshTokenCreateQueryBuilder),
+      where: jest.fn().mockImplementation(() => refreshTokenCreateQueryBuilder),
+      andWhere: jest
+        .fn()
+        .mockImplementation(() => refreshTokenCreateQueryBuilder),
+      execute: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -59,12 +71,10 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.refreshToken.build()),
             save: jest.fn().mockResolvedValue(factories.refreshToken.build()),
             delete: jest.fn(),
-            createQueryBuilder: jest.fn().mockImplementation(() => ({
-              delete: jest.fn().mockReturnThis(),
-              where: jest.fn().mockReturnThis(),
-              andWhere: jest.fn().mockReturnThis(),
-              execute: jest.fn(),
-            })),
+            createQueryBuilder: jest
+              .fn()
+              .mockImplementation(() => refreshTokenCreateQueryBuilder),
+            update: jest.fn().mockResolvedValue(factories.refreshToken.build()),
           },
         },
         {
@@ -139,10 +149,20 @@ describe('AuthService', () => {
         expires: expect.any(Date),
       });
 
-      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
-        user,
-        platformUser: null,
-      });
+      expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
+      expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'refresh_tokens.expires <= :currentDate',
+        { currentDate: expect.any(Date) },
+      );
+      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
+        1,
+        'refresh_tokens.user_id = :userId',
+        { userId: 1 },
+      );
+      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
+        2,
+        'refresh_tokens.platform_user_id is NULL',
+      );
 
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
@@ -164,6 +184,20 @@ describe('AuthService', () => {
       });
 
       expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
+      expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'refresh_tokens.expires <= :currentDate',
+        { currentDate: expect.any(Date) },
+      );
+      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
+        1,
+        'refresh_tokens.user_id = :userId',
+        { userId: 1 },
+      );
+      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
+        2,
+        'refresh_tokens.platform_user_id = :platformUserId',
+        { platformUserId: 1 },
+      );
 
       expect(response).toEqual({ code: 'SIGNED_TOKEN', state: 'TEST_STATE' });
     });
@@ -258,6 +292,7 @@ describe('AuthService', () => {
 
       expect(refreshTokenRepository.findOne).toHaveBeenCalledWith(
         factories.refreshToken.build().id,
+        { relations: ['user', 'platformUser'] },
       );
 
       expect(jwtService.signAsync).toHaveBeenCalledWith(
@@ -265,9 +300,10 @@ describe('AuthService', () => {
         { secret: 'JWT_SECRET_KEY' },
       );
 
-      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
-        id: factories.refreshToken.build().id,
-      });
+      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+        factories.refreshToken.build().id,
+        { isRevoked: true },
+      );
 
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
@@ -296,6 +332,27 @@ describe('AuthService', () => {
         'Refresh token expired',
       );
     });
+
+    it('should throw when refresh token is revoked, and revokes all existing tokens', async () => {
+      const revokedRefreshToken = factories.refreshToken.build({
+        isRevoked: true,
+        platformUser: undefined,
+      });
+      jest
+        .spyOn(refreshTokenRepository, 'findOne')
+        .mockResolvedValue(revokedRefreshToken);
+
+      await expect(service.refresh('REFRESH_TOKEN')).rejects.toThrow(
+        'Refresh token revoked',
+      );
+      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+        {
+          platformUser: null,
+          user: revokedRefreshToken.user,
+        },
+        { isRevoked: true },
+      );
+    });
   });
 
   describe('refreshWithPlatform()', () => {
@@ -313,14 +370,16 @@ describe('AuthService', () => {
 
       expect(refreshTokenRepository.findOne).toHaveBeenCalledWith(
         factories.refreshToken.build().id,
+        { relations: ['user', 'platformUser'] },
       );
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         factories.jwtPayloadWithPlatform.build(),
         { secret: 'JWT_SECRET_KEY' },
       );
-      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
-        id: factories.refreshToken.build().id,
-      });
+      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+        factories.refreshToken.build().id,
+        { isRevoked: true },
+      );
 
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
@@ -352,6 +411,26 @@ describe('AuthService', () => {
       await expect(
         service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
       ).rejects.toThrow('Refresh token expired');
+    });
+
+    it('should throw when refresh token is revoked, and revokes all existing tokens', async () => {
+      const revokedRefreshToken = factories.refreshToken.build({
+        isRevoked: true,
+      });
+      jest
+        .spyOn(refreshTokenRepository, 'findOne')
+        .mockResolvedValue(revokedRefreshToken);
+
+      await expect(service.refresh('REFRESH_TOKEN')).rejects.toThrow(
+        'Refresh token revoked',
+      );
+      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+        {
+          platformUser: revokedRefreshToken.platformUser,
+          user: revokedRefreshToken.user,
+        },
+        { isRevoked: true },
+      );
     });
   });
 });
