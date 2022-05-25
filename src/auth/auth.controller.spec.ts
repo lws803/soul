@@ -33,9 +33,11 @@ describe('AuthService', () => {
             }),
             refresh: jest.fn().mockResolvedValue({
               accessToken: 'ACCESS_TOKEN',
+              refreshToken: 'REFRESH_TOKEN',
             }),
             refreshWithPlatform: jest.fn().mockResolvedValue({
               accessToken: 'ACCESS_TOKEN',
+              refreshToken: 'REFRESH_TOKEN',
               platformId: 1,
               roles: [UserRole.Admin, UserRole.Member],
             }),
@@ -72,6 +74,7 @@ describe('AuthService', () => {
 
       expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',
+        refreshToken: 'REFRESH_TOKEN',
       });
       expect(service.refresh).toHaveBeenCalledWith(refreshToken);
     });
@@ -85,6 +88,7 @@ describe('AuthService', () => {
 
       expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',
+        refreshToken: 'REFRESH_TOKEN',
         platformId: 1,
         roles: [UserRole.Admin, UserRole.Member],
       });

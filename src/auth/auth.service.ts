@@ -21,7 +21,11 @@ import {
   UserNotVerifiedException,
   InvalidCallbackException,
 } from './exceptions';
-import { CodeResponseDto } from './dto/api-responses.dto';
+import {
+  CodeResponseDto,
+  RefreshTokenResponseDto,
+  RefreshTokenWithPlatformResponseDto,
+} from './dto/api-responses.dto';
 
 @Injectable()
 export class AuthService {
@@ -142,31 +146,54 @@ export class AuthService {
     };
   }
 
-  async refresh(encodedRefreshToken: string) {
-    const { token } = await this.createAccessTokenFromRefreshToken(
-      encodedRefreshToken,
-    );
-    return { accessToken: token };
+  async refresh(encodedRefreshToken: string): Promise<RefreshTokenResponseDto> {
+    const { token, user } =
+      await this.createAccessTokenFromRefreshTokenAndRemoveExisting(
+        encodedRefreshToken,
+      );
+    return {
+      accessToken: token,
+      refreshToken: await this.generateRefreshToken(
+        user,
+        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
+      ),
+    };
   }
 
-  async refreshWithPlatform(encodedRefreshToken: string, platformId: number) {
-    const { token, roles } = await this.createAccessTokenFromRefreshToken(
-      encodedRefreshToken,
+  async refreshWithPlatform(
+    encodedRefreshToken: string,
+    platformId: number,
+  ): Promise<RefreshTokenWithPlatformResponseDto> {
+    const { token, roles, user } =
+      await this.createAccessTokenFromRefreshTokenAndRemoveExisting(
+        encodedRefreshToken,
+        platformId,
+      );
+    return {
+      accessToken: token,
       platformId,
-    );
-    return { accessToken: token, platformId, roles };
+      roles,
+      refreshToken: await this.generateRefreshToken(
+        user,
+        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
+        platformId,
+        roles,
+      ),
+    };
   }
 
-  private async createAccessTokenFromRefreshToken(
+  private async createAccessTokenFromRefreshTokenAndRemoveExisting(
     encodedRefreshToken: string,
     platformId?: number,
   ) {
-    const { user, roles } = await this.resolveRefreshToken(
-      encodedRefreshToken,
-      platformId,
-    );
+    const {
+      user,
+      roles,
+      token: refreshToken,
+    } = await this.resolveRefreshToken(encodedRefreshToken, platformId);
 
     const token = await this.generateAccessToken(user, platformId, roles);
+    await this.refreshTokenRepository.delete({ id: refreshToken.id });
 
     return { user, token, roles };
   }
