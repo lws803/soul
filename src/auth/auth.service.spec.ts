@@ -265,9 +265,9 @@ describe('AuthService', () => {
         { secret: 'JWT_SECRET_KEY' },
       );
 
-      expect(refreshTokenRepository.delete).toHaveBeenCalledWith(
-        factories.refreshToken.build(),
-      );
+      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
+        id: factories.refreshToken.build().id,
+      });
 
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
@@ -318,9 +318,9 @@ describe('AuthService', () => {
         factories.jwtPayloadWithPlatform.build(),
         { secret: 'JWT_SECRET_KEY' },
       );
-      expect(refreshTokenRepository.delete).toHaveBeenCalledWith(
-        factories.refreshToken.build(),
-      );
+      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
+        id: factories.refreshToken.build().id,
+      });
 
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',

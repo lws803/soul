@@ -147,9 +147,10 @@ export class AuthService {
   }
 
   async refresh(encodedRefreshToken: string): Promise<RefreshTokenResponseDto> {
-    const { token, user } = await this.createAccessTokenFromRefreshToken(
-      encodedRefreshToken,
-    );
+    const { token, user } =
+      await this.createAccessTokenFromRefreshTokenAndRemoveExisting(
+        encodedRefreshToken,
+      );
     return {
       accessToken: token,
       refreshToken: await this.generateRefreshToken(
@@ -163,10 +164,11 @@ export class AuthService {
     encodedRefreshToken: string,
     platformId: number,
   ): Promise<RefreshTokenWithPlatformResponseDto> {
-    const { token, roles, user } = await this.createAccessTokenFromRefreshToken(
-      encodedRefreshToken,
-      platformId,
-    );
+    const { token, roles, user } =
+      await this.createAccessTokenFromRefreshTokenAndRemoveExisting(
+        encodedRefreshToken,
+        platformId,
+      );
     return {
       accessToken: token,
       platformId,
@@ -180,7 +182,7 @@ export class AuthService {
     };
   }
 
-  private async createAccessTokenFromRefreshToken(
+  private async createAccessTokenFromRefreshTokenAndRemoveExisting(
     encodedRefreshToken: string,
     platformId?: number,
   ) {
@@ -190,8 +192,8 @@ export class AuthService {
       token: refreshToken,
     } = await this.resolveRefreshToken(encodedRefreshToken, platformId);
 
-    await this.refreshTokenRepository.delete(refreshToken);
     const token = await this.generateAccessToken(user, platformId, roles);
+    await this.refreshTokenRepository.delete({ id: refreshToken.id });
 
     return { user, token, roles };
   }
