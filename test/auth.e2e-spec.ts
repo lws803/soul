@@ -170,6 +170,7 @@ describe('AuthController (e2e)', () => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
             accessToken: expect.any(String),
+            refreshToken: expect.any(String),
           });
         });
     });
@@ -194,6 +195,7 @@ describe('AuthController (e2e)', () => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
             accessToken: expect.any(String),
+            refreshToken: expect.any(String),
             platformId: 1,
             roles: [UserRole.Admin, UserRole.Member],
           });

@@ -51,6 +51,10 @@ export class RefreshTokenResponseDto {
   @Expose()
   accessToken: string;
 
+  @ApiProperty({ name: 'refreshToken' })
+  @Expose()
+  refreshToken: string;
+
   constructor(args: RefreshTokenResponseDto) {
     Object.assign(this, args);
   }
