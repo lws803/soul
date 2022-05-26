@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Repository, Connection } from 'typeorm';
+import * as sha256 from 'sha256';
 
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
@@ -24,6 +25,9 @@ describe('PlatformsController (e2e)', () => {
   let userAccount: UserAccount;
   let secondUserAccount: UserAccount;
   let thirdUserAccount: UserAccount;
+
+  const codeVerifier = 'CODE_VERIFIER';
+  const codeChallenge = sha256(codeVerifier);
 
   beforeAll(async () => {
     app = await createAppFixture({});
@@ -338,11 +342,11 @@ describe('PlatformsController (e2e)', () => {
     it('updates existing platform', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())
@@ -397,11 +401,11 @@ describe('PlatformsController (e2e)', () => {
     it('deletes existing platform', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())
@@ -446,11 +450,11 @@ describe('PlatformsController (e2e)', () => {
     it('fetches all users within a platform', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())
@@ -502,11 +506,11 @@ describe('PlatformsController (e2e)', () => {
     it('sets user role', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())
@@ -541,11 +545,11 @@ describe('PlatformsController (e2e)', () => {
     it('bans a user', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())
@@ -580,11 +584,11 @@ describe('PlatformsController (e2e)', () => {
     it('throws an error when trying to set only remaining admin to member', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=member')
@@ -603,11 +607,11 @@ describe('PlatformsController (e2e)', () => {
     it('throws with insufficient permissions', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())
@@ -650,11 +654,11 @@ describe('PlatformsController (e2e)', () => {
     it('deletes a platform user', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())
@@ -726,11 +730,11 @@ describe('PlatformsController (e2e)', () => {
       );
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())
@@ -743,11 +747,11 @@ describe('PlatformsController (e2e)', () => {
     it('quits existing platform (MEMBER)', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())
@@ -779,11 +783,11 @@ describe('PlatformsController (e2e)', () => {
     it('only remaining admin cant quit', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       await request(app.getHttpServer())

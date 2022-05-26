@@ -297,6 +297,7 @@ describe('AuthService', () => {
         platformId: 1,
         roles: [UserRole.Admin, UserRole.Member],
       });
+      // TODO: Add a test case for failed code challenge
     });
 
     it('denies access when callback uri is not the same as initially provided', async () => {
