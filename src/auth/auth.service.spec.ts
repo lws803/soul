@@ -16,6 +16,7 @@ import { PlatformsService } from 'src/platforms/platforms.service';
 
 import { AuthService } from './auth.service';
 import { RefreshToken } from './entities/refresh-token.entity';
+import { PKCENotMatchException } from './exceptions';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -297,7 +298,6 @@ describe('AuthService', () => {
         platformId: 1,
         roles: [UserRole.Admin, UserRole.Member],
       });
-      // TODO: Add a test case for failed code challenge
     });
 
     it('denies access when callback uri is not the same as initially provided', async () => {
@@ -315,6 +315,21 @@ describe('AuthService', () => {
           codeVerifier: 'CODE_VERIFIER',
         }),
       ).rejects.toThrow('Invalid callback uri supplied');
+    });
+
+    it('throws error when PKCE mismatch', async () => {
+      jest
+        .spyOn(cacheManager, 'get')
+        .mockResolvedValue('DIFFERENT_CODE_CHALLENGE');
+
+      const code = 'SIGNED_TOKEN';
+      await expect(
+        service.exchangeCodeForToken({
+          code,
+          callback: 'TEST_REDIRECT_URI',
+          codeVerifier: 'CODE_VERIFIER',
+        }),
+      ).rejects.toThrow(new PKCENotMatchException());
     });
   });
 

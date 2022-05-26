@@ -133,6 +133,28 @@ describe('AuthController (e2e)', () => {
           }),
         );
     });
+
+    it('fails to login with platform due to PKCE mismatch', async () => {
+      const codeResp = await request(app.getHttpServer())
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE' +
+            '&codeChallenge=UNKNOWN_CODE',
+        )
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      await request(app.getHttpServer())
+        .post(
+          `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&` +
+            `codeVerifier=${codeVerifier}`,
+        )
+        .expect(401)
+        .expect((res) => {
+          expect(res.headers['cache-control']).toBe('no-store');
+          expect(res.body).toEqual({
+            error: 'INVALID_CODE_CHALLENGE',
+            message: 'Code challenge and code verifier does not match.',
+          });
+        });
+    });
   });
 
   describe('/auth/refresh', () => {
@@ -258,4 +280,3 @@ describe('AuthController (e2e)', () => {
     });
   });
 });
-// TODO: Add some tests for failing code challenge verification
