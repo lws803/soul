@@ -134,6 +134,7 @@ export class AuthService {
     callback,
     codeVerifier,
   }: ValidateQueryParamDto) {
+    // TODO: Wrap this in try catch, throw an error if it is malformed
     const {
       platformId,
       callback: initialCallback,
@@ -153,6 +154,7 @@ export class AuthService {
     const challengeCode = await this.cacheManager.get(
       `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${codeChallengeKey}`,
     );
+    // TODO: Delete the key as soon as it's used
     if (challengeCode !== sha256(codeVerifier)) {
       throw new PKCENotMatchException();
     }
