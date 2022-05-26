@@ -16,7 +16,7 @@ import { PlatformsService } from 'src/platforms/platforms.service';
 
 import { AuthService } from './auth.service';
 import { RefreshToken } from './entities/refresh-token.entity';
-import { PKCENotMatchException } from './exceptions';
+import { InvalidCodeException, PKCENotMatchException } from './exceptions';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -103,6 +103,7 @@ describe('AuthService', () => {
           useValue: {
             set: jest.fn(),
             get: jest.fn().mockResolvedValue(sha256('CODE_VERIFIER')),
+            del: jest.fn(),
           },
         },
       ],
@@ -288,9 +289,9 @@ describe('AuthService', () => {
         platformUser: platformUser,
       });
 
-      expect(cacheManager.get).toHaveBeenCalledWith(
-        'REDIS_DB_KEY_PREFIX:CODE_CHALLENGE_KEY',
-      );
+      const redisKey = 'REDIS_DB_KEY_PREFIX:CODE_CHALLENGE_KEY';
+      expect(cacheManager.get).toHaveBeenCalledWith(redisKey);
+      expect(cacheManager.del).toHaveBeenCalledWith(redisKey);
 
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
@@ -330,6 +331,21 @@ describe('AuthService', () => {
           codeVerifier: 'CODE_VERIFIER',
         }),
       ).rejects.toThrow(new PKCENotMatchException());
+    });
+
+    it('throws error when code has expired or malformed', async () => {
+      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
+        throw new Error('Invalid error');
+      });
+
+      const code = 'SIGNED_TOKEN';
+      await expect(
+        service.exchangeCodeForToken({
+          code,
+          callback: 'TEST_REDIRECT_URI',
+          codeVerifier: 'CODE_VERIFIER',
+        }),
+      ).rejects.toThrow(new InvalidCodeException());
     });
   });
 

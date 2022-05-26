@@ -24,6 +24,7 @@ import {
   UserNotVerifiedException,
   InvalidCallbackException,
   PKCENotMatchException,
+  InvalidCodeException,
 } from './exceptions';
 import {
   CodeResponseDto,
@@ -31,6 +32,7 @@ import {
   RefreshTokenWithPlatformResponseDto,
 } from './dto/api-responses.dto';
 import { CodeQueryParamDto, ValidateQueryParamDto } from './dto/api.dto';
+import { DecodedCode } from './types';
 
 @Injectable()
 export class AuthService {
@@ -120,9 +122,15 @@ export class AuthService {
       { ttl: this.configService.get('PKCE_CODE_CHALLENGE_TTL') },
     );
 
+    const decodedCode: DecodedCode = {
+      userId: user.id,
+      platformId,
+      callback,
+      codeChallengeKey,
+    };
     return {
       code: this.jwtService.sign(
-        { userId: user.id, platformId, callback, codeChallengeKey },
+        decodedCode,
         this.configService.get('JWT_REFRESH_TOKEN_TTL'),
       ),
       state,
@@ -134,48 +142,50 @@ export class AuthService {
     callback,
     codeVerifier,
   }: ValidateQueryParamDto) {
-    const {
-      platformId,
-      callback: initialCallback,
-      userId,
-      codeChallengeKey,
-    } = this.jwtService.verify<{
-      platformId: number;
-      userId: number;
-      callback: string;
-      codeChallengeKey: string;
-    }>(code);
+    let decodedToken: DecodedCode;
+    try {
+      decodedToken = this.jwtService.verify<DecodedCode>(code);
+    } catch (Error) {
+      throw new InvalidCodeException();
+    }
 
-    if (initialCallback !== callback) {
+    if (decodedToken.callback !== callback) {
       throw new InvalidCallbackException();
     }
 
     const challengeCode = await this.cacheManager.get(
-      `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${codeChallengeKey}`,
+      `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
+        decodedToken.codeChallengeKey
+      }`,
+    );
+    await this.cacheManager.del(
+      `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
+        decodedToken.codeChallengeKey
+      }`,
     );
     if (challengeCode !== sha256(codeVerifier)) {
       throw new PKCENotMatchException();
     }
 
     const platformUser = await this.platformService.findOnePlatformUser(
-      platformId,
-      userId,
+      decodedToken.platformId,
+      decodedToken.userId,
     );
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findOne(decodedToken.userId);
 
     return {
       accessToken: await this.generateAccessToken(
         user,
-        platformId,
+        decodedToken.platformId,
         platformUser.roles,
       ),
       refreshToken: await this.generateRefreshToken(
         user,
         this.configService.get('JWT_REFRESH_TOKEN_TTL'),
-        platformId,
+        decodedToken.platformId,
         platformUser.roles,
       ),
-      platformId,
+      platformId: decodedToken.platformId,
       roles: platformUser.roles,
     };
   }
