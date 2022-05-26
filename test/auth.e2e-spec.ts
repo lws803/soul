@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Repository, Connection } from 'typeorm';
+import * as sha256 from 'sha256';
 
 import { User } from 'src/users/entities/user.entity';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
@@ -21,6 +22,9 @@ describe('AuthController (e2e)', () => {
   let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
   let platformCategoryRepository: Repository<PlatformCategory>;
+
+  const codeVerifier = 'CODE_VERIFIER';
+  const codeChallenge = sha256(codeVerifier);
 
   beforeAll(async () => {
     app = await createAppFixture({});
@@ -98,12 +102,12 @@ describe('AuthController (e2e)', () => {
     it('logs in successfully for platform', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       await request(app.getHttpServer())
         .post(
-          `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+          `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
         )
         .expect(201)
         .expect((res) => {
@@ -128,6 +132,28 @@ describe('AuthController (e2e)', () => {
             message: 'Incorrect username or password.',
           }),
         );
+    });
+
+    it('fails to login with platform due to PKCE mismatch', async () => {
+      const codeResp = await request(app.getHttpServer())
+        .post(
+          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE' +
+            '&codeChallenge=UNKNOWN_CODE',
+        )
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      await request(app.getHttpServer())
+        .post(
+          `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&` +
+            `codeVerifier=${codeVerifier}`,
+        )
+        .expect(401)
+        .expect((res) => {
+          expect(res.headers['cache-control']).toBe('no-store');
+          expect(res.body).toEqual({
+            error: 'INVALID_CODE_CHALLENGE',
+            message: 'Code challenge and code verifier does not match.',
+          });
+        });
     });
   });
 
@@ -178,11 +204,11 @@ describe('AuthController (e2e)', () => {
     it('refreshes token for platform', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const resp = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       const { refreshToken } = resp.body;
@@ -205,11 +231,11 @@ describe('AuthController (e2e)', () => {
     it('refreshes token for platform without specifying platform id', async () => {
       const codeResp = await request(app.getHttpServer())
         .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE',
+          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
         )
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const resp = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com`,
+        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
       );
 
       const { refreshToken } = resp.body;

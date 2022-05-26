@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisClientOptions } from 'redis';
+import * as redisStore from 'cache-manager-redis-store';
 
 import { PlatformsModule } from 'src/platforms/platforms.module';
 import { UsersModule } from 'src/users/users.module';
@@ -26,6 +28,16 @@ import { LocalStrategy } from './strategies/local.strategy';
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([RefreshToken]),
+    CacheModule.registerAsync<RedisClientOptions>({
+      useFactory: (configService: ConfigService) => ({
+        store: redisStore,
+        host: configService.get('REDIS_DB_HOST'),
+        port: configService.get('REDIS_DB_PORT'),
+        database: configService.get('REDIS_DB_INDEX'),
+        password: configService.get('REDIS_DB_PASSWORD'),
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],

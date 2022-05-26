@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +6,9 @@ import * as bcrypt from 'bcrypt';
 import { classToPlain } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
+import { Cache } from 'cache-manager';
+import { v4 as uuidv4 } from 'uuid';
+import * as sha256 from 'sha256';
 
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -20,12 +23,14 @@ import {
   InvalidTokenException,
   UserNotVerifiedException,
   InvalidCallbackException,
+  PKCENotMatchException,
 } from './exceptions';
 import {
   CodeResponseDto,
   RefreshTokenResponseDto,
   RefreshTokenWithPlatformResponseDto,
 } from './dto/api-responses.dto';
+import { CodeQueryParamDto, ValidateQueryParamDto } from './dto/api.dto';
 
 @Injectable()
 export class AuthService {
@@ -36,6 +41,7 @@ export class AuthService {
     private platformService: PlatformsService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -76,12 +82,10 @@ export class AuthService {
     platformId,
     callback,
     state,
+    codeChallenge,
   }: {
     user: User;
-    platformId: number;
-    callback: string;
-    state: string;
-  }): Promise<CodeResponseDto> {
+  } & CodeQueryParamDto): Promise<CodeResponseDto> {
     if (!user.isActive) {
       throw new UserNotVerifiedException();
     }
@@ -109,29 +113,50 @@ export class AuthService {
       })
       .execute();
 
+    const codeChallengeKey = uuidv4();
+    await this.cacheManager.set(
+      `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${codeChallengeKey}`,
+      codeChallenge,
+      { ttl: this.configService.get('PKCE_CODE_CHALLENGE_TTL') },
+    );
+
     return {
       code: this.jwtService.sign(
-        { userId: user.id, platformId, callback },
+        { userId: user.id, platformId, callback, codeChallengeKey },
         this.configService.get('JWT_REFRESH_TOKEN_TTL'),
       ),
       state,
     };
   }
 
-  async exchangeCodeForToken(code: string, callback: string) {
+  async exchangeCodeForToken({
+    code,
+    callback,
+    codeVerifier,
+  }: ValidateQueryParamDto) {
     const {
       platformId,
       callback: initialCallback,
       userId,
+      codeChallengeKey,
     } = this.jwtService.verify<{
       platformId: number;
       userId: number;
       callback: string;
+      codeChallengeKey: string;
     }>(code);
 
     if (initialCallback !== callback) {
       throw new InvalidCallbackException();
     }
+
+    const challengeCode = await this.cacheManager.get(
+      `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${codeChallengeKey}`,
+    );
+    if (challengeCode !== sha256(codeVerifier)) {
+      throw new PKCENotMatchException();
+    }
+
     const platformUser = await this.platformService.findOnePlatformUser(
       platformId,
       userId,

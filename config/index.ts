@@ -1,3 +1,4 @@
+/* eslint-disable import/namespace */
 import { ConfigModuleOptions } from '@nestjs/config';
 import * as Joi from 'joi';
 
@@ -30,6 +31,12 @@ const schema = Joi.object({
     .description('Redis database password'),
   REDIS_DB_INDEX: Joi.number().default(0).description('Redis database index'),
   REDIS_DB_PORT: Joi.number().default(6379).description('Redis database port'),
+  REDIS_DB_BG_QUEUE_KEY_PREFIX: Joi.string()
+    .required()
+    .description('Background queue key prefix'),
+  REDIS_DB_KEY_PREFIX: Joi.string()
+    .required()
+    .description('Redis general use key prefix'),
   // Mail config
   MAIL_HOST: Joi.string().required().description('Mail provider host'),
   MAIL_PORT: Joi.number().required().description('Mail provider port'),
@@ -64,6 +71,10 @@ const schema = Joi.object({
   // Sentry config
   SENTRY_DSN: Joi.string().optional().allow(''),
   SENTRY_ENVIRONMENT: Joi.string().default('local'),
+  // PKCE auth
+  PKCE_CODE_CHALLENGE_TTL: Joi.number()
+    .required()
+    .description('PKCE code challenge TTL (in seconds)'),
 });
 
 const config: ConfigModuleOptions = {
