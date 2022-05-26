@@ -103,6 +103,7 @@ describe('AuthService', () => {
           useValue: {
             set: jest.fn(),
             get: jest.fn().mockResolvedValue(sha256('CODE_VERIFIER')),
+            del: jest.fn(),
           },
         },
       ],
@@ -288,9 +289,9 @@ describe('AuthService', () => {
         platformUser: platformUser,
       });
 
-      expect(cacheManager.get).toHaveBeenCalledWith(
-        'REDIS_DB_KEY_PREFIX:CODE_CHALLENGE_KEY',
-      );
+      const redisKey = 'REDIS_DB_KEY_PREFIX:CODE_CHALLENGE_KEY';
+      expect(cacheManager.get).toHaveBeenCalledWith(redisKey);
+      expect(cacheManager.del).toHaveBeenCalledWith(redisKey);
 
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
