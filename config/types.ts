@@ -14,6 +14,8 @@ export type ConfigProperties = {
   REDIS_DB_PASSWORD?: string;
   REDIS_DB_INDEX: number;
   REDIS_DB_PORT: number;
+  REDIS_DB_BG_QUEUE_KEY_PREFIX: string;
+  REDIS_DB_KEY_PREFIX: string;
   // Mail config
   MAIL_HOST: string;
   MAIL_PORT: number;
@@ -28,4 +30,6 @@ export type ConfigProperties = {
   // Sentry config
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT: string;
+  // PKCE auth
+  PKCE_CODE_CHALLENGE_TTL: number;
 };

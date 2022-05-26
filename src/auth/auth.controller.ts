@@ -52,14 +52,12 @@ export class AuthController {
   @Post('code')
   async code(
     @Request() { user }: { user: User },
-    @Query() { platformId, callback, state }: CodeQueryParamDto,
+    @Query() queryArgs: CodeQueryParamDto,
   ): Promise<CodeResponseDto> {
     return new CodeResponseDto(
       await this.authService.getCodeForPlatformAndCallback({
         user,
-        platformId,
-        callback,
-        state,
+        ...queryArgs,
       }),
     );
   }
@@ -72,10 +70,10 @@ export class AuthController {
   @Post('verify')
   @Header('Cache-Control', 'no-store')
   async verify(
-    @Query() { code, callback }: ValidateQueryParamDto,
+    @Query() queryArgs: ValidateQueryParamDto,
   ): Promise<PlatformLoginResponseDto> {
     return new PlatformLoginResponseDto(
-      await this.authService.exchangeCodeForToken(code, callback),
+      await this.authService.exchangeCodeForToken(queryArgs),
     );
   }
 

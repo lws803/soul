@@ -43,6 +43,15 @@ export class CodeQueryParamDto {
   })
   @IsString()
   state: string;
+
+  @ApiProperty({
+    name: 'codeChallenge',
+    type: String,
+    description:
+      'Code challenge for PKCE flow. See https://tools.ietf.org/html/rfc7636',
+  })
+  @IsString()
+  codeChallenge: string;
 }
 
 export class ValidateQueryParamDto {
@@ -58,4 +67,13 @@ export class ValidateQueryParamDto {
   @IsString()
   @IsValidRedirectUri()
   callback: string;
+
+  @ApiProperty({
+    name: 'codeVerifier',
+    type: String,
+    description:
+      'Code verifier for PKCE flow. See https://tools.ietf.org/html/rfc7636',
+  })
+  @IsString()
+  codeVerifier: string;
 }
