@@ -74,7 +74,7 @@ const schema = Joi.object({
   // PKCE auth
   PKCE_CODE_CHALLENGE_TTL: Joi.number()
     .required()
-    .description('PKCE code challenge TTL (in milliseconds)'),
+    .description('PKCE code challenge TTL (in seconds)'),
 });
 
 const config: ConfigModuleOptions = {
