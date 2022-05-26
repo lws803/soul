@@ -102,7 +102,12 @@ describe('AuthService', () => {
       const platformId = 1;
       const result = await controller.code(
         { user },
-        { platformId, callback: 'TEST_REDIRECT_URI', state: 'TEST_STATE' },
+        {
+          platformId,
+          callback: 'TEST_REDIRECT_URI',
+          state: 'TEST_STATE',
+          codeChallenge: 'CODE_CHALLENGE',
+        },
       );
 
       expect(result).toEqual({
@@ -113,6 +118,7 @@ describe('AuthService', () => {
         platformId,
         callback: 'TEST_REDIRECT_URI',
         state: 'TEST_STATE',
+        codeChallenge: 'CODE_CHALLENGE',
       });
     });
   });
@@ -121,7 +127,8 @@ describe('AuthService', () => {
     it('should exchange code for tokens', async () => {
       const code = 'CODE';
       const callback = 'TEST_REDIRECT_URI';
-      const result = await controller.verify({ code, callback });
+      const codeVerifier = 'CODE_VERIFIER';
+      const result = await controller.verify({ code, callback, codeVerifier });
 
       expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',
@@ -129,7 +136,11 @@ describe('AuthService', () => {
         platformId: 1,
         roles: [UserRole.Admin, UserRole.Member],
       });
-      expect(service.exchangeCodeForToken).toHaveBeenCalledWith(code, callback);
+      expect(service.exchangeCodeForToken).toHaveBeenCalledWith({
+        callback: 'TEST_REDIRECT_URI',
+        code: 'CODE',
+        codeVerifier: 'CODE_VERIFIER',
+      });
     });
   });
 });

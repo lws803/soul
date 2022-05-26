@@ -5,6 +5,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
+import { CACHE_MANAGER } from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import * as sha256 from 'sha256';
 
 import * as factories from 'factories';
 import { UserRole } from 'src/roles/role.enum';
@@ -19,6 +22,7 @@ describe('AuthService', () => {
   let jwtService: JwtService;
   let refreshTokenRepository: Repository<RefreshToken>;
   let refreshTokenCreateQueryBuilder: any;
+  let cacheManager: Cache;
 
   beforeEach(async () => {
     refreshTokenCreateQueryBuilder = {
@@ -89,7 +93,15 @@ describe('AuthService', () => {
               userId: factories.oneUser.build().id,
               platformId: factories.onePlatform.build().id,
               callback: 'TEST_REDIRECT_URI',
+              codeChallengeKey: 'CODE_CHALLENGE_KEY',
             }),
+          },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            set: jest.fn(),
+            get: jest.fn().mockResolvedValue(sha256('CODE_VERIFIER')),
           },
         },
       ],
@@ -100,6 +112,7 @@ describe('AuthService', () => {
     refreshTokenRepository = module.get<Repository<RefreshToken>>(
       getRepositoryToken(RefreshToken),
     );
+    cacheManager = module.get<Cache>(CACHE_MANAGER);
   });
 
   describe('validateUser()', () => {
@@ -175,12 +188,14 @@ describe('AuthService', () => {
     it('should generate access and refresh token on successful login', async () => {
       const user = factories.oneUser.build();
       const platformUser = factories.onePlatformUser.build();
+      const codeChallenge = 'CODE_CHALLENGE';
 
       const response = await service.getCodeForPlatformAndCallback({
         user,
         platformId: platformUser.platform.id,
         callback: 'TEST_REDIRECT_URI',
         state: 'TEST_STATE',
+        codeChallenge,
       });
 
       expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
@@ -198,6 +213,11 @@ describe('AuthService', () => {
         'refresh_tokens.platform_user_id = :platformUserId',
         { platformUserId: 1 },
       );
+      expect(cacheManager.set).toHaveBeenCalledWith(
+        expect.stringContaining('REDIS_DB_KEY_PREFIX:'),
+        codeChallenge,
+        { ttl: 'PKCE_CODE_CHALLENGE_TTL' },
+      );
 
       expect(response).toEqual({ code: 'SIGNED_TOKEN', state: 'TEST_STATE' });
     });
@@ -212,6 +232,7 @@ describe('AuthService', () => {
           platformId: platformUser.platform.id,
           callback: 'INVALID_URI',
           state: 'TEST_STATE',
+          codeChallenge: 'CODE_CHALLENGE',
         }),
       ).rejects.toThrow('Invalid callback uri supplied');
     });
@@ -226,6 +247,7 @@ describe('AuthService', () => {
           platformId: platformUser.platform.id,
           callback: 'TEST_REDIRECT_URI',
           state: 'TEST_STATE',
+          codeChallenge: 'CODE_CHALLENGE',
         }),
       ).rejects.toThrow(
         'User is not verified, please verify your email address.',
@@ -236,10 +258,11 @@ describe('AuthService', () => {
   describe('exchangeCodeForToken()', () => {
     it('exchanges code for accessToken and refreshToken', async () => {
       const code = 'SIGNED_TOKEN';
-      const response = await service.exchangeCodeForToken(
+      const response = await service.exchangeCodeForToken({
         code,
-        'TEST_REDIRECT_URI',
-      );
+        callback: 'TEST_REDIRECT_URI',
+        codeVerifier: 'CODE_VERIFIER',
+      });
       const user = factories.oneUser.build();
       const platformUser = factories.onePlatformUser.build();
 
@@ -264,6 +287,10 @@ describe('AuthService', () => {
         platformUser: platformUser,
       });
 
+      expect(cacheManager.get).toHaveBeenCalledWith(
+        'REDIS_DB_KEY_PREFIX:CODE_CHALLENGE_KEY',
+      );
+
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
         refreshToken: 'SIGNED_TOKEN',
@@ -281,7 +308,11 @@ describe('AuthService', () => {
         callback: 'INVALID_URI',
       }));
       await expect(
-        service.exchangeCodeForToken(code, 'TEST_REDIRECT_URI'),
+        service.exchangeCodeForToken({
+          code,
+          callback: 'TEST_REDIRECT_URI',
+          codeVerifier: 'CODE_VERIFIER',
+        }),
       ).rejects.toThrow('Invalid callback uri supplied');
     });
   });
