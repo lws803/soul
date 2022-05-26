@@ -16,7 +16,7 @@ import { PlatformsService } from 'src/platforms/platforms.service';
 
 import { AuthService } from './auth.service';
 import { RefreshToken } from './entities/refresh-token.entity';
-import { PKCENotMatchException } from './exceptions';
+import { InvalidCodeException, PKCENotMatchException } from './exceptions';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -331,6 +331,21 @@ describe('AuthService', () => {
           codeVerifier: 'CODE_VERIFIER',
         }),
       ).rejects.toThrow(new PKCENotMatchException());
+    });
+
+    it('throws error when code has expired or malformed', async () => {
+      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
+        throw new Error('Invalid error');
+      });
+
+      const code = 'SIGNED_TOKEN';
+      await expect(
+        service.exchangeCodeForToken({
+          code,
+          callback: 'TEST_REDIRECT_URI',
+          codeVerifier: 'CODE_VERIFIER',
+        }),
+      ).rejects.toThrow(new InvalidCodeException());
     });
   });
 
