@@ -1,5 +1,7 @@
 # TODO list
 
+- Implement magic link support for login
+- Consider using sendgrid instead for email sending services
 - Add a new endpoint to list available categories
 - redesign confirmation and password reset emails to look nicer
 - add funding button to the repository

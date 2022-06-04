@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Connection, Repository } from 'typeorm';
 import * as request from 'supertest';
 
@@ -94,7 +94,7 @@ describe('ReputationController (e2e)', () => {
     it('should return a user reputation', async () => {
       return request(app.getHttpServer())
         .get('/reputation/1')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             userId: userAccount.user.id,
@@ -106,7 +106,7 @@ describe('ReputationController (e2e)', () => {
     it('should return 404 when user does not exist', async () => {
       return request(app.getHttpServer())
         .get('/reputation/999')
-        .expect(404)
+        .expect(HttpStatus.NOT_FOUND)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             error: 'USER_NOT_FOUND',
