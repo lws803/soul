@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Connection, Repository } from 'typeorm';
 import * as request from 'supertest';
 
@@ -44,7 +44,7 @@ describe('UsersController (e2e)', () => {
             password: '3Yarw#Nm%cpY9QV&',
           }),
         )
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: 1,
@@ -63,7 +63,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/users')
         .send(factories.createUserDto.build({ password: '3Yarw#Nm%cpY9QV&' }))
-        .expect(409)
+        .expect(HttpStatus.CONFLICT)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             error: 'DUPLICATE_USER_EXISTS',
@@ -95,7 +95,7 @@ describe('UsersController (e2e)', () => {
     it('should return full list of users', async () => {
       return request(app.getHttpServer())
         .get('/users')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             totalCount: 2,
@@ -118,7 +118,7 @@ describe('UsersController (e2e)', () => {
     it('should return partial list of users with pagination', async () => {
       return request(app.getHttpServer())
         .get('/users?page=1&numItemsPerPage=1')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             totalCount: 2,
@@ -136,7 +136,7 @@ describe('UsersController (e2e)', () => {
     it('should return partial list of users with full text search', async () => {
       return request(app.getHttpServer())
         .get('/users?q=TEST_USER_2')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             totalCount: 1,
@@ -164,7 +164,7 @@ describe('UsersController (e2e)', () => {
     it('should return a user', async () => {
       return request(app.getHttpServer())
         .get('/users/1')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: expect.any(Number),
@@ -177,7 +177,7 @@ describe('UsersController (e2e)', () => {
     it('should return user not found', async () => {
       return request(app.getHttpServer())
         .get('/users/999')
-        .expect(404)
+        .expect(HttpStatus.NOT_FOUND)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             error: 'USER_NOT_FOUND',
@@ -205,7 +205,7 @@ describe('UsersController (e2e)', () => {
         .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .send(factories.updateUserDto.build())
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: userAccount.user.id,
@@ -236,7 +236,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .delete('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({});
         });
@@ -259,7 +259,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/users/me')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             createdAt: expect.any(String),

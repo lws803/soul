@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Repository, Connection } from 'typeorm';
 import * as sha256 from 'sha256';
@@ -72,7 +72,7 @@ describe('PlatformsController (e2e)', () => {
         .post('/platforms')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .send(createPlatformDto)
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toEqual({
             createdAt: expect.any(String),
@@ -98,7 +98,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/platforms')
         .send(createPlatformDto)
-        .expect(401)
+        .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'UNAUTHORIZED_ERROR',
@@ -131,7 +131,7 @@ describe('PlatformsController (e2e)', () => {
     it('fetches all platforms', async () => {
       await request(app.getHttpServer())
         .get('/platforms')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             platforms: [
@@ -165,7 +165,7 @@ describe('PlatformsController (e2e)', () => {
     it('paginates correctly', async () => {
       await request(app.getHttpServer())
         .get('/platforms?numItemsPerPage=1&page=1')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             platforms: [
@@ -190,7 +190,7 @@ describe('PlatformsController (e2e)', () => {
     it('fetches all platforms with isVerified filter', async () => {
       await request(app.getHttpServer())
         .get('/platforms?isVerified=true')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             platforms: [
@@ -215,7 +215,7 @@ describe('PlatformsController (e2e)', () => {
     it('fetches all platforms with category filter', async () => {
       await request(app.getHttpServer())
         .get('/platforms?category=CATEGORY')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             platforms: [
@@ -240,7 +240,7 @@ describe('PlatformsController (e2e)', () => {
     it('throws unknown category error when category does not exist', async () => {
       await request(app.getHttpServer())
         .get('/platforms?category=UNKNOWN_CATEGORY')
-        .expect(404)
+        .expect(HttpStatus.NOT_FOUND)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'PLATFORM_CATEGORY_NOT_FOUND',
@@ -253,7 +253,7 @@ describe('PlatformsController (e2e)', () => {
     it('fetches all platforms with full text search', async () => {
       await request(app.getHttpServer())
         .get('/platforms?q=TEST_PLATFORM_2')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             platforms: [
@@ -289,7 +289,7 @@ describe('PlatformsController (e2e)', () => {
     it('fetches a platform by id', async () => {
       await request(app.getHttpServer())
         .get('/platforms/1')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             createdAt: expect.any(String),
@@ -309,7 +309,7 @@ describe('PlatformsController (e2e)', () => {
     it('throws not found', async () => {
       await request(app.getHttpServer())
         .get('/platforms/999')
-        .expect(404)
+        .expect(HttpStatus.NOT_FOUND)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'PLATFORM_NOT_FOUND',
@@ -353,7 +353,7 @@ describe('PlatformsController (e2e)', () => {
         .patch('/platforms/1')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
         .send({ name: 'TEST_PLATFORM_2' })
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             createdAt: expect.any(String),
@@ -372,7 +372,7 @@ describe('PlatformsController (e2e)', () => {
         .patch('/platforms/1')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .send({ name: 'TEST_PLATFORM_2' })
-        .expect(403)
+        .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'PERMISSION_DENIED',
@@ -411,7 +411,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toEqual({}));
     });
 
@@ -419,7 +419,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .expect(403)
+        .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'PERMISSION_DENIED',
@@ -460,7 +460,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .get('/platforms/1/users')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             totalCount: 1,
@@ -516,7 +516,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=admin,member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
@@ -555,7 +555,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=banned')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
@@ -593,7 +593,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(403)
+        .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'NO_ADMINS_REMAINING',
@@ -617,7 +617,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=admin,member')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(403)
+        .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'PERMISSION_DENIED',
@@ -664,7 +664,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toEqual({}));
     });
 
@@ -676,7 +676,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/users/1')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(403)
+        .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'PERMISSION_DENIED',
@@ -740,7 +740,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toEqual({}));
     });
 
@@ -757,7 +757,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toEqual({}));
     });
 
@@ -770,7 +770,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(403)
+        .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'PERMISSION_DENIED',
@@ -793,7 +793,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
         .set('Authorization', `Bearer ${response.body.accessToken}`)
-        .expect(403)
+        .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'NO_ADMINS_REMAINING',
@@ -823,7 +823,7 @@ describe('PlatformsController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/platforms/1/join')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toEqual({
             id: expect.any(Number),

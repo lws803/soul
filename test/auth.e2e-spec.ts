@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Repository, Connection } from 'typeorm';
 import * as sha256 from 'sha256';
@@ -83,7 +83,7 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/login')
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -109,7 +109,7 @@ describe('AuthController (e2e)', () => {
         .post(
           `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
         )
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -125,7 +125,7 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/login')
         .send({ email: 'TEST_USER@EMAIL.COM', password: 'WRONG_PASSWORD' })
-        .expect(401)
+        .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'UNAUTHORIZED_USER',
@@ -146,7 +146,7 @@ describe('AuthController (e2e)', () => {
           `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&` +
             `codeVerifier=${codeVerifier}`,
         )
-        .expect(401)
+        .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -191,7 +191,7 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
         .send({ refreshToken: userAccount.refreshToken })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -216,7 +216,7 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh?platformId=1')
         .send({ refreshToken })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -243,7 +243,7 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
         .send({ refreshToken })
-        .expect(401)
+        .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'INVALID_TOKEN',
@@ -256,7 +256,7 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
         .send({ refreshToken: userAccount.accessToken })
-        .expect(401)
+        .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'INVALID_TOKEN',
@@ -270,7 +270,7 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
         .send({ refreshToken: userAccount.refreshToken + 'INVALID' })
-        .expect(401)
+        .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'INVALID_TOKEN',

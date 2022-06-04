@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Connection, Repository } from 'typeorm';
 import * as request from 'supertest';
 
@@ -62,7 +62,7 @@ describe('UserConnectionsController (e2e)', () => {
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .send(factories.createUserConnectionDto.build())
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             createdAt: expect.any(String),
@@ -92,7 +92,7 @@ describe('UserConnectionsController (e2e)', () => {
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .send(factories.createUserConnectionDto.build({ platformId: 1 }))
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             createdAt: expect.any(String),
@@ -146,7 +146,7 @@ describe('UserConnectionsController (e2e)', () => {
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .send(factories.createUserConnectionDto.build())
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             createdAt: expect.any(String),
@@ -196,7 +196,7 @@ describe('UserConnectionsController (e2e)', () => {
     it('fetches user connection by users', async () => {
       return request(app.getHttpServer())
         .get('/user-connections/by-users?fromUserId=1&toUserId=2')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             createdAt: expect.any(String),
@@ -269,7 +269,7 @@ describe('UserConnectionsController (e2e)', () => {
     it('fetches user connection', async () => {
       return request(app.getHttpServer())
         .get('/user-connections/1')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             createdAt: expect.any(String),
@@ -293,7 +293,7 @@ describe('UserConnectionsController (e2e)', () => {
     it('returns not found', async () => {
       return request(app.getHttpServer())
         .get('/user-connections/999')
-        .expect(404)
+        .expect(HttpStatus.NOT_FOUND)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             error: 'USER_CONNECTION_NOT_FOUND',
@@ -316,7 +316,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .delete('/user-connections/1')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toStrictEqual({}));
     });
 
@@ -342,12 +342,12 @@ describe('UserConnectionsController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/user-connections/1')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toStrictEqual({}));
 
       return request(app.getHttpServer())
         .get('/user-connections/2')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             createdAt: expect.any(String),
@@ -388,7 +388,7 @@ describe('UserConnectionsController (e2e)', () => {
         .post('/user-connections/1/platforms')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .send(factories.postPlatformToUserConnectionDto.build())
-        .expect(201)
+        .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             id: 1,
@@ -441,7 +441,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .delete('/user-connections/1/platforms/1')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toStrictEqual({}));
     });
   });
@@ -473,7 +473,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/user-connections/my-connections?connectionType=mutual')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             totalCount: 1,
@@ -513,7 +513,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/user-connections/my-connections?connectionType=follower')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             totalCount: 1,
@@ -546,7 +546,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/user-connections/my-connections?connectionType=follow')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             totalCount: 1,
@@ -600,7 +600,7 @@ describe('UserConnectionsController (e2e)', () => {
           '/user-connections/my-connections?connectionType=follow&platformId=1',
         )
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             totalCount: 1,
