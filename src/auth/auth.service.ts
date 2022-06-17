@@ -123,15 +123,6 @@ export class AuthService {
       { ttl: this.configService.get('PKCE_CODE_CHALLENGE_TTL') },
     );
 
-    // TODO: Remove this
-    if (
-      !(await this.cacheManager.get(
-        `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${codeChallengeKey}`,
-      ))
-    ) {
-      captureMessage(`Code challenge not set, ${codeChallengeKey}`);
-    }
-
     const decodedCode: DecodedCode = {
       userId: user.id,
       platformId,
@@ -168,13 +159,6 @@ export class AuthService {
         decodedToken.codeChallengeKey
       }`,
     );
-
-    // await this.cacheManager.del(
-    //   `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
-    //     decodedToken.codeChallengeKey
-    //   }`,
-    // );
-
     if (challengeCode !== sha256(codeVerifier).toString()) {
       // TODO: Remove this
       captureMessage(
@@ -182,8 +166,19 @@ export class AuthService {
           codeVerifier,
         ).toString()}`,
       );
+      await this.cacheManager.del(
+        `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
+          decodedToken.codeChallengeKey
+        }`,
+      );
       throw new PKCENotMatchException();
     }
+
+    await this.cacheManager.del(
+      `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
+        decodedToken.codeChallengeKey
+      }`,
+    );
 
     const platformUser = await this.platformService.findOnePlatformUser(
       decodedToken.platformId,
