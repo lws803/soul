@@ -159,6 +159,7 @@ export class AuthService {
         decodedToken.codeChallengeKey
       }`,
     );
+
     if (challengeCode !== sha256(codeVerifier).toString()) {
       // TODO: Remove this
       captureMessage(
