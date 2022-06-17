@@ -158,14 +158,16 @@ export class AuthService {
         decodedToken.codeChallengeKey
       }`,
     );
+
+    if (challengeCode !== sha256(codeVerifier).toString()) {
+      throw new PKCENotMatchException();
+    }
+
     await this.cacheManager.del(
       `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
         decodedToken.codeChallengeKey
       }`,
     );
-    if (challengeCode !== sha256(codeVerifier).toString()) {
-      throw new PKCENotMatchException();
-    }
 
     const platformUser = await this.platformService.findOnePlatformUser(
       decodedToken.platformId,
