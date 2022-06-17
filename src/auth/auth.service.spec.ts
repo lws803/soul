@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import * as sha256 from 'sha256';
+import * as sha256 from 'crypto-js/sha256';
 
 import * as factories from 'factories';
 import { UserRole } from 'src/roles/role.enum';
@@ -102,7 +102,9 @@ describe('AuthService', () => {
           provide: CACHE_MANAGER,
           useValue: {
             set: jest.fn(),
-            get: jest.fn().mockResolvedValue(sha256('CODE_VERIFIER')),
+            get: jest
+              .fn()
+              .mockResolvedValue(sha256('CODE_VERIFIER').toString()),
             del: jest.fn(),
           },
         },

@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
-import * as sha256 from 'sha256';
+import * as sha256 from 'crypto-js/sha256';
 
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -163,7 +163,7 @@ export class AuthService {
         decodedToken.codeChallengeKey
       }`,
     );
-    if (challengeCode !== sha256(codeVerifier)) {
+    if (challengeCode !== sha256(codeVerifier).toString()) {
       throw new PKCENotMatchException();
     }
 

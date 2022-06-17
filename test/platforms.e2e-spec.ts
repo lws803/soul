@@ -1,7 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Repository, Connection } from 'typeorm';
-import * as sha256 from 'sha256';
+import * as sha256 from 'crypto-js/sha256';
 
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
@@ -27,7 +27,7 @@ describe('PlatformsController (e2e)', () => {
   let thirdUserAccount: UserAccount;
 
   const codeVerifier = 'CODE_VERIFIER';
-  const codeChallenge = sha256(codeVerifier);
+  const codeChallenge = sha256(codeVerifier).toString();
 
   beforeAll(async () => {
     app = await createAppFixture({});
