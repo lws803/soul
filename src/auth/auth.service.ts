@@ -169,11 +169,11 @@ export class AuthService {
       }`,
     );
 
-    await this.cacheManager.del(
-      `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
-        decodedToken.codeChallengeKey
-      }`,
-    );
+    // await this.cacheManager.del(
+    //   `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
+    //     decodedToken.codeChallengeKey
+    //   }`,
+    // );
 
     if (challengeCode !== sha256(codeVerifier).toString()) {
       // TODO: Remove this
