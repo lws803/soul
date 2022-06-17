@@ -9,7 +9,6 @@ import { TokenExpiredError } from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
 import * as sha256 from 'crypto-js/sha256';
-import { captureMessage } from '@sentry/node';
 
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -161,12 +160,6 @@ export class AuthService {
     );
 
     if (challengeCode !== sha256(codeVerifier).toString()) {
-      // TODO: Remove this
-      captureMessage(
-        `PKCENotMatchException, ${challengeCode}, ${sha256(
-          codeVerifier,
-        ).toString()}`,
-      );
       await this.cacheManager.del(
         `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
           decodedToken.codeChallengeKey
