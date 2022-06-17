@@ -174,7 +174,7 @@ export class AuthService {
       throw new PKCENotMatchException();
     }
 
-    await this.cacheManager.del(
+    this.cacheManager.del(
       `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
         decodedToken.codeChallengeKey
       }`,
