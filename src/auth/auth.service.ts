@@ -123,6 +123,15 @@ export class AuthService {
       { ttl: this.configService.get('PKCE_CODE_CHALLENGE_TTL') },
     );
 
+    // TODO: Remove this
+    if (
+      !(await this.cacheManager.get(
+        `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${codeChallengeKey}`,
+      ))
+    ) {
+      captureMessage(`Code challenge not set, ${codeChallengeKey}`);
+    }
+
     const decodedCode: DecodedCode = {
       userId: user.id,
       platformId,
@@ -167,6 +176,7 @@ export class AuthService {
     );
 
     if (challengeCode !== sha256(codeVerifier).toString()) {
+      // TODO: Remove this
       captureMessage(
         `PKCENotMatchException, ${challengeCode}, ${sha256(
           codeVerifier,
