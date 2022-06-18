@@ -10,24 +10,24 @@ class FullUserResponseDto {
   @Expose()
   username: string;
 
-  @ApiProperty({ name: 'userHandle', example: 'johndoe#1234' })
-  @Expose()
+  @ApiProperty({ name: 'user_handle', example: 'johndoe#1234' })
+  @Expose({ name: 'user_handle' })
   userHandle: string;
 
   @ApiProperty({ name: 'email', example: 'john@email.com' })
   @Expose()
   email: string;
 
-  @ApiProperty({ name: 'isActive', example: false })
-  @Expose()
+  @ApiProperty({ name: 'is_active', example: false })
+  @Expose({ name: 'is_active' })
   isActive: boolean;
 
-  @ApiProperty({ name: 'createdAt', type: Date })
-  @Expose()
+  @ApiProperty({ name: 'created_at', type: Date })
+  @Expose({ name: 'created_at' })
   createdAt: Date;
 
-  @ApiProperty({ name: 'updatedAt', type: Date })
-  @Expose()
+  @ApiProperty({ name: 'updated_at', type: Date })
+  @Expose({ name: 'updated_at' })
   updatedAt: Date;
 
   constructor(args: FullUserResponseDto) {
@@ -62,8 +62,8 @@ export class FindOneUserResponseDto {
   @Expose()
   username: string;
 
-  @ApiProperty({ name: 'userHandle', example: 'johndoe#1234' })
-  @Expose()
+  @ApiProperty({ name: 'user_handle', example: 'johndoe#1234' })
+  @Expose({ name: 'user_handle' })
   userHandle: string;
 
   constructor(args: FindOneUserResponseDto) {
@@ -80,8 +80,8 @@ export class FindAllUserResponseDto {
   @Type(() => FindOneUserResponseDto)
   users: FindOneUserResponseDto[];
 
-  @ApiProperty({ name: 'totalCount', example: 10 })
-  @Expose()
+  @ApiProperty({ name: 'total_count', example: 10 })
+  @Expose({ name: 'total_count' })
   totalCount: number;
 
   constructor(args: FindAllUserResponseDto) {

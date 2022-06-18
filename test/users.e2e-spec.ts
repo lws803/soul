@@ -50,10 +50,10 @@ describe('UsersController (e2e)', () => {
             id: 1,
             email: 'TEST_USER@EMAIL.COM',
             username: 'TEST_USER',
-            userHandle: 'TEST_USER#1',
-            isActive: false,
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            user_handle: 'TEST_USER#1',
+            is_active: false,
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
           });
         });
     });
@@ -98,16 +98,16 @@ describe('UsersController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
-            totalCount: 2,
+            total_count: 2,
             users: [
               {
                 id: expect.any(Number),
-                userHandle: 'TEST_USER#1',
+                user_handle: 'TEST_USER#1',
                 username: 'TEST_USER',
               },
               {
                 id: expect.any(Number),
-                userHandle: 'TEST_USER_2#2',
+                user_handle: 'TEST_USER_2#2',
                 username: 'TEST_USER_2',
               },
             ],
@@ -121,11 +121,11 @@ describe('UsersController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
-            totalCount: 2,
+            total_count: 2,
             users: [
               {
                 id: expect.any(Number),
-                userHandle: 'TEST_USER#1',
+                user_handle: 'TEST_USER#1',
                 username: 'TEST_USER',
               },
             ],
@@ -139,11 +139,11 @@ describe('UsersController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
-            totalCount: 1,
+            total_count: 1,
             users: [
               {
                 id: expect.any(Number),
-                userHandle: 'TEST_USER_2#2',
+                user_handle: 'TEST_USER_2#2',
                 username: 'TEST_USER_2',
               },
             ],
@@ -168,7 +168,7 @@ describe('UsersController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: expect.any(Number),
-            userHandle: 'TEST_USER#1',
+            user_handle: 'TEST_USER#1',
             username: 'TEST_USER',
           });
         });
@@ -209,12 +209,12 @@ describe('UsersController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: userAccount.user.id,
-            userHandle: `UPDATED_USER#${userAccount.user.id}`,
+            user_handle: `UPDATED_USER#${userAccount.user.id}`,
             username: 'UPDATED_USER',
             email: 'UPDATED_EMAIL@EMAIL.COM',
-            isActive: true,
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            is_active: true,
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
           });
         });
     });
@@ -262,12 +262,12 @@ describe('UsersController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: expect.any(Number),
             email: 'TEST_USER@EMAIL.COM',
-            isActive: true,
-            userHandle: expect.any(String),
+            is_active: true,
+            user_handle: expect.any(String),
             username: 'TEST_USER',
           }),
         );
