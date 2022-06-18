@@ -8,6 +8,7 @@ import { TokenExpiredError } from 'jsonwebtoken';
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import * as sha256 from 'crypto-js/sha256';
+import base64url from 'base64url';
 
 import * as factories from 'factories';
 import { UserRole } from 'src/roles/role.enum';
@@ -104,7 +105,9 @@ describe('AuthService', () => {
             set: jest.fn(),
             get: jest
               .fn()
-              .mockResolvedValue(sha256('CODE_VERIFIER').toString()),
+              .mockResolvedValue(
+                base64url(sha256('CODE_VERIFIER').toString(), 'hex'),
+              ),
             del: jest.fn(),
           },
         },
@@ -184,6 +187,7 @@ describe('AuthService', () => {
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
         refreshToken: 'SIGNED_TOKEN',
+        expiresIn: 'JWT_ACCESS_TOKEN_TTL',
       });
     });
   });
@@ -300,6 +304,7 @@ describe('AuthService', () => {
         refreshToken: 'SIGNED_TOKEN',
         platformId: 1,
         roles: [UserRole.Admin, UserRole.Member],
+        expiresIn: 'JWT_ACCESS_TOKEN_TTL',
       });
     });
 
@@ -373,6 +378,7 @@ describe('AuthService', () => {
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
         refreshToken: 'SIGNED_TOKEN',
+        expiresIn: 'JWT_ACCESS_TOKEN_TTL',
       });
     });
 
@@ -451,6 +457,7 @@ describe('AuthService', () => {
         refreshToken: 'SIGNED_TOKEN',
         platformId: platformUser.platform.id,
         roles: platformUser.roles,
+        expiresIn: 'JWT_ACCESS_TOKEN_TTL',
       });
     });
 

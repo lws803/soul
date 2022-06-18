@@ -12,6 +12,10 @@ export class LoginResponseDto {
   @Expose({ name: 'refresh_token' })
   refreshToken: string;
 
+  @ApiProperty({ name: 'expires_in' })
+  @Expose({ name: 'expires_in' })
+  expiresIn: number;
+
   constructor(args: LoginResponseDto) {
     Object.assign(this, args);
   }
@@ -54,6 +58,10 @@ export class RefreshTokenResponseDto {
   @ApiProperty({ name: 'refresh_token' })
   @Expose({ name: 'refresh_token' })
   refreshToken: string;
+
+  @ApiProperty({ name: 'expires_in' })
+  @Expose({ name: 'expires_in' })
+  expiresIn: number;
 
   constructor(args: RefreshTokenResponseDto) {
     Object.assign(this, args);

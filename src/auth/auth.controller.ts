@@ -82,7 +82,7 @@ export class AuthController {
   @ApiOperation({
     description:
       'Refresh access token, returns new access token and a new refresh token. ' +
-      'If platformId is provided, returns new access token for that platform. ' +
+      'If client_id is provided, returns new access token for that platform. ' +
       'Note that the existing refresh token will no longer be usable.',
   })
   @ApiResponse({

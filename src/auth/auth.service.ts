@@ -29,6 +29,8 @@ import {
 } from './exceptions';
 import {
   CodeResponseDto,
+  LoginResponseDto,
+  PlatformLoginResponseDto,
   RefreshTokenResponseDto,
   RefreshTokenWithPlatformResponseDto,
 } from './dto/api-responses.dto';
@@ -56,7 +58,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User) {
+  async login(user: User): Promise<LoginResponseDto> {
     await this.refreshTokenRepository
       .createQueryBuilder('refresh_tokens')
       .delete()
@@ -77,6 +79,7 @@ export class AuthService {
         user,
         this.configService.get('JWT_REFRESH_TOKEN_TTL'),
       ),
+      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     };
   }
 
@@ -142,7 +145,7 @@ export class AuthService {
     code,
     callback,
     codeVerifier,
-  }: ValidateBodyDto) {
+  }: ValidateBodyDto): Promise<PlatformLoginResponseDto> {
     let decodedToken: DecodedCode;
     try {
       decodedToken = this.jwtService.verify<DecodedCode>(code);
@@ -195,6 +198,7 @@ export class AuthService {
       ),
       platformId: decodedToken.platformId,
       roles: platformUser.roles,
+      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     };
   }
 
@@ -209,6 +213,7 @@ export class AuthService {
         user,
         this.configService.get('JWT_REFRESH_TOKEN_TTL'),
       ),
+      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     };
   }
 
@@ -231,6 +236,7 @@ export class AuthService {
         platformId,
         roles,
       ),
+      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     };
   }
 
