@@ -22,7 +22,6 @@ import {
   RefreshTokenWithPlatformResponseDto,
 } from './dto/api-responses.dto';
 import {
-  PlatformIdQueryDto,
   RefreshTokenBodyDto,
   CodeQueryParamDto,
   ValidateBodyDto,
@@ -90,10 +89,10 @@ export class AuthController {
     type: RefreshTokenWithPlatformResponseDto,
   })
   @Post('refresh')
+  @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   async refresh(
-    @Query() { platformId }: PlatformIdQueryDto,
-    @Body() { refreshToken }: RefreshTokenBodyDto,
+    @Body() { refreshToken, platformId }: RefreshTokenBodyDto,
   ): Promise<RefreshTokenWithPlatformResponseDto | RefreshTokenResponseDto> {
     if (platformId) {
       return new RefreshTokenWithPlatformResponseDto(

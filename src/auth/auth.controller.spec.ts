@@ -70,7 +70,7 @@ describe('AuthService', () => {
   describe('refresh()', () => {
     it('should return token', async () => {
       const refreshToken = 'REFRESH_TOKEN';
-      const result = await controller.refresh({}, { refreshToken });
+      const result = await controller.refresh({ refreshToken });
 
       expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',
@@ -81,10 +81,7 @@ describe('AuthService', () => {
 
     it('should return token with platformId', async () => {
       const refreshToken = 'REFRESH_TOKEN';
-      const result = await controller.refresh(
-        { platformId: 1 },
-        { refreshToken },
-      );
+      const result = await controller.refresh({ platformId: 1, refreshToken });
 
       expect(result).toEqual({
         accessToken: 'ACCESS_TOKEN',

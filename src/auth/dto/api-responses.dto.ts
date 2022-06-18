@@ -36,8 +36,8 @@ export class CodeResponseDto {
 }
 
 export class PlatformLoginResponseDto extends LoginResponseDto {
-  @ApiProperty({ name: 'platformId', example: 1 })
-  @Expose()
+  @ApiProperty({ name: 'platform_id', example: 1 })
+  @Expose({ name: 'platform_id' })
   platformId: number;
 
   @ApiProperty({ name: 'roles', example: [UserRole.Admin, UserRole.Member] })

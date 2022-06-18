@@ -4,7 +4,12 @@ import { IsOptional, IsString, IsInt } from 'class-validator';
 
 import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.validator';
 
-export class PlatformIdQueryDto {
+export class RefreshTokenBodyDto {
+  @ApiProperty({ name: 'refresh_token' })
+  @Expose({ name: 'refresh_token' })
+  @IsString()
+  refreshToken: string;
+
   @ApiProperty({
     name: 'client_id',
     required: false,
@@ -16,13 +21,6 @@ export class PlatformIdQueryDto {
   @Type(() => Number)
   @IsInt()
   platformId?: number;
-}
-
-export class RefreshTokenBodyDto {
-  @ApiProperty({ name: 'refresh_token' })
-  @Expose({ name: 'refresh_token' })
-  @IsString()
-  refreshToken: string;
 }
 
 export class CodeQueryParamDto {
