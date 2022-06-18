@@ -7,6 +7,7 @@ import {
   Body,
   Header,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -24,7 +25,7 @@ import {
   PlatformIdQueryDto,
   RefreshTokenBodyDto,
   CodeQueryParamDto,
-  ValidateQueryParamDto,
+  ValidateBodyDto,
 } from './dto/api.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
@@ -68,12 +69,13 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.CREATED, type: PlatformLoginResponseDto })
   @Post('verify')
+  @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   async verify(
-    @Query() queryArgs: ValidateQueryParamDto,
+    @Body() args: ValidateBodyDto,
   ): Promise<PlatformLoginResponseDto> {
     return new PlatformLoginResponseDto(
-      await this.authService.exchangeCodeForToken(queryArgs),
+      await this.authService.exchangeCodeForToken(args),
     );
   }
 

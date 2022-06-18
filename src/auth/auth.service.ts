@@ -9,6 +9,7 @@ import { TokenExpiredError } from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
 import * as sha256 from 'crypto-js/sha256';
+import base64url from 'base64url';
 
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -31,7 +32,7 @@ import {
   RefreshTokenResponseDto,
   RefreshTokenWithPlatformResponseDto,
 } from './dto/api-responses.dto';
-import { CodeQueryParamDto, ValidateQueryParamDto } from './dto/api.dto';
+import { CodeQueryParamDto, ValidateBodyDto } from './dto/api.dto';
 import { DecodedCode } from './types';
 
 @Injectable()
@@ -141,7 +142,7 @@ export class AuthService {
     code,
     callback,
     codeVerifier,
-  }: ValidateQueryParamDto) {
+  }: ValidateBodyDto) {
     let decodedToken: DecodedCode;
     try {
       decodedToken = this.jwtService.verify<DecodedCode>(code);
@@ -159,7 +160,7 @@ export class AuthService {
       }`,
     );
 
-    if (challengeCode !== sha256(codeVerifier).toString()) {
+    if (challengeCode !== base64url(sha256(codeVerifier).toString(), 'hex')) {
       await this.cacheManager.del(
         `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${
           decodedToken.codeChallengeKey
