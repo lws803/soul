@@ -13,7 +13,7 @@ export class ReputationController {
     description: "Find one user's reputation from a given user id",
   })
   @ApiResponse({ status: HttpStatus.OK, type: ReputationResponseDto })
-  @Get(':userId')
+  @Get(':user_id')
   async findOneUserReputation(
     @Param() params: ReputationParamDto,
   ): Promise<ReputationResponseDto> {

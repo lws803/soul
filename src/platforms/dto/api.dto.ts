@@ -19,6 +19,7 @@ import { UserRole } from 'src/roles/role.enum';
 
 export class PlatformIdParamDto {
   @ApiProperty({ name: 'platform_id', example: 1, type: Number })
+  @Expose({ name: 'platform_id' })
   @Type(() => Number)
   @IsInt()
   platformId: number;
@@ -39,11 +40,13 @@ export class SetUserPlatformRoleQueryParamsDto {
 
 export class SetUserPlatformRoleParamsDto {
   @ApiProperty({ name: 'platform_id', example: 1, type: Number })
+  @Expose({ name: 'platform_id' })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 
-  @ApiProperty({ name: 'userId', example: 1234, type: Number })
+  @ApiProperty({ name: 'user_id', example: 1234, type: Number })
+  @Expose({ name: 'user_id' })
   @Type(() => Number)
   @IsInt()
   userId: number;
@@ -51,11 +54,13 @@ export class SetUserPlatformRoleParamsDto {
 
 export class RemovePlatformUserParamsDto {
   @ApiProperty({ name: 'platform_id', example: 1, type: Number })
+  @Expose({ name: 'platform_id' })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 
   @ApiProperty({ name: 'user_id', example: 1234, type: Number })
+  @Expose({ name: 'user_id' })
   @Type(() => Number)
   @IsInt()
   userId: number;

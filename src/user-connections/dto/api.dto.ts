@@ -19,7 +19,7 @@ export class CreateUserConnectionDto {
   @IsInt()
   fromUserId: number;
 
-  @ApiProperty({ name: 'toUserId', example: 12345 })
+  @ApiProperty({ name: 'to_user_id', example: 12345 })
   @Expose({ name: 'to_user_id' })
   @IsInt()
   toUserId: number;
@@ -102,12 +102,13 @@ export class RemovePlatformFromUserConnectionParamsDto {
   id: number;
 
   @ApiProperty({
-    name: 'platformId',
+    name: 'platform_id',
     type: Number,
     description: 'Platform id',
     example: 1,
     required: false,
   })
+  @Expose({ name: 'platform_id' })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
