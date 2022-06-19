@@ -56,3 +56,17 @@ export const createPlatformDto = Factory.define<CreatePlatformDto>(() => ({
   redirectUris: ['TEST_REDIRECT_URI'],
   category: onePlatformCategory.build().name,
 }));
+
+type CreatePlatformRequest = {
+  name: string;
+  redirect_uris: string[];
+  category: string;
+};
+
+export const createPlatformRequestDto = Factory.define<CreatePlatformRequest>(
+  () => ({
+    name: 'TEST_PLATFORM',
+    redirect_uris: ['TEST_REDIRECT_URI'],
+    category: onePlatformCategory.build().name,
+  }),
+);

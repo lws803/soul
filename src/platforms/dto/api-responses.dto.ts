@@ -36,37 +36,37 @@ class FullPlatformResponseDto {
   name: string;
 
   @ApiProperty({
-    name: 'nameHandle',
+    name: 'name_handle',
     example: 'soul#1',
     description: 'Includes the id number after the # symbol',
   })
-  @Expose()
+  @Expose({ name: 'name_handle' })
   nameHandle: string;
 
   @ApiProperty({
-    name: 'isVerified',
+    name: 'is_verified',
     example: true,
     description: 'Is the platform verified, used only for official platforms',
   })
-  @Expose()
+  @Expose({ name: 'is_verified' })
   isVerified: boolean;
 
-  @ApiProperty({ name: 'createdAt', type: Date })
-  @Expose()
+  @ApiProperty({ name: 'created_at', type: Date })
+  @Expose({ name: 'created_at' })
   createdAt: Date;
 
-  @ApiProperty({ name: 'updatedAt', type: Date })
-  @Expose()
+  @ApiProperty({ name: 'updated_at', type: Date })
+  @Expose({ name: 'updated_at' })
   updatedAt: Date;
 
   @ApiProperty({
-    name: 'redirectUris',
+    name: 'redirect_uris',
     example: ['https://example.com', 'http://localhost:3000'],
     description:
       'List of redirect uris for the platform, they must follow the following restrictions ' +
       'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
   })
-  @Expose()
+  @Expose({ name: 'redirect_uris' })
   redirectUris: string[];
 
   @ApiProperty({ name: 'category', type: PlatformCategoryResponseDto })
@@ -105,27 +105,27 @@ export class FindOnePlatformResponseDto {
   name: string;
 
   @ApiProperty({
-    name: 'nameHandle',
+    name: 'name_handle',
     example: 'soul#1',
     description: 'Includes the id number after the # symbol',
   })
-  @Expose()
+  @Expose({ name: 'name_handle' })
   nameHandle: string;
 
   @ApiProperty({
-    name: 'isVerified',
+    name: 'is_verified',
     example: true,
     description: 'Is the platform verified, used only for official platforms',
   })
-  @Expose()
+  @Expose({ name: 'is_verified' })
   isVerified: boolean;
 
-  @ApiProperty({ name: 'createdAt', type: Date })
-  @Expose()
+  @ApiProperty({ name: 'created_at', type: Date })
+  @Expose({ name: 'created_at' })
   createdAt: Date;
 
-  @ApiProperty({ name: 'updatedAt', type: Date })
-  @Expose()
+  @ApiProperty({ name: 'updated_at', type: Date })
+  @Expose({ name: 'updated_at' })
   updatedAt: Date;
 
   @ApiProperty({ name: 'category', type: PlatformCategoryResponseDto })
@@ -147,8 +147,8 @@ export class FindAllPlatformResponseDto {
   @Type(() => FindOnePlatformResponseDto)
   platforms: FindOnePlatformResponseDto[];
 
-  @ApiProperty({ name: 'totalCount', example: 100 })
-  @Expose()
+  @ApiProperty({ name: 'total_count', example: 100 })
+  @Expose({ name: 'total_count' })
   totalCount: number;
 
   constructor(args: FindAllPlatformResponseDto) {
@@ -182,15 +182,15 @@ class FindOnePlatformUserResponseDto {
 
 export class FindAllPlatformUsersResponseDto {
   @ApiProperty({
-    name: 'platformUsers',
+    name: 'platform_users',
     type: [FindOnePlatformUserResponseDto],
   })
-  @Expose()
+  @Expose({ name: 'platform_users' })
   @Type(() => FindOnePlatformUserResponseDto)
   platformUsers: FindOnePlatformUserResponseDto[];
 
-  @ApiProperty({ name: 'totalCount', example: 100 })
-  @Expose()
+  @ApiProperty({ name: 'total_count', example: 100 })
+  @Expose({ name: 'total_count' })
   totalCount: number;
 
   constructor(args: FindAllPlatformUsersResponseDto) {

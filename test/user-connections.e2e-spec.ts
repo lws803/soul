@@ -110,12 +110,12 @@ describe('UserConnectionsController (e2e)', () => {
             },
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
-                isVerified: true,
+                is_verified: true,
                 name: 'TEST_PLATFORM',
-                nameHandle: 'TEST_PLATFORM#1',
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -406,12 +406,12 @@ describe('UserConnectionsController (e2e)', () => {
             },
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: 1,
-                isVerified: true,
+                is_verified: true,
                 name: 'TEST_PLATFORM',
-                nameHandle: 'TEST_PLATFORM#1',
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -616,12 +616,12 @@ describe('UserConnectionsController (e2e)', () => {
                 },
                 platforms: [
                   {
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String),
+                    created_at: expect.any(String),
+                    updated_at: expect.any(String),
                     id: 1,
-                    isVerified: true,
+                    is_verified: true,
                     name: 'TEST_PLATFORM',
-                    nameHandle: 'TEST_PLATFORM#1',
+                    name_handle: 'TEST_PLATFORM#1',
                   },
                 ],
                 toUser: {

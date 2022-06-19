@@ -65,8 +65,8 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('creates a new platform', async () => {
-      const createPlatformDto = factories.createPlatformDto.build({
-        redirectUris: ['https://example.com/redirect'],
+      const createPlatformDto = factories.createPlatformRequestDto.build({
+        redirect_uris: ['https://example.com/redirect'],
       });
 
       await request(app.getHttpServer())
@@ -76,13 +76,13 @@ describe('PlatformsController (e2e)', () => {
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: expect.any(Number),
-            nameHandle: expect.any(String),
-            redirectUris: ['https://example.com/redirect'],
+            name_handle: expect.any(String),
+            redirect_uris: ['https://example.com/redirect'],
             name: 'TEST_PLATFORM',
-            isVerified: false,
+            is_verified: false,
           }),
         );
 
@@ -94,7 +94,7 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('throws when user is not logged in', async () => {
-      const createPlatformDto = factories.createPlatformDto.build();
+      const createPlatformDto = factories.createPlatformRequestDto.build();
 
       await request(app.getHttpServer())
         .post('/platforms')
@@ -137,28 +137,28 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
-                isVerified: true,
-                nameHandle: 'TEST_PLATFORM#1',
+                is_verified: true,
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
                 },
               },
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
-                isVerified: false,
-                nameHandle: 'TEST_PLATFORM_2#2',
+                is_verified: false,
+                name_handle: 'TEST_PLATFORM_2#2',
                 category: null,
               },
             ],
-            totalCount: 2,
+            total_count: 2,
           }),
         );
     });
@@ -171,44 +171,44 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
-                nameHandle: 'TEST_PLATFORM#1',
-                isVerified: true,
+                name_handle: 'TEST_PLATFORM#1',
+                is_verified: true,
                 category: {
                   id: 1,
                   name: 'CATEGORY',
                 },
               },
             ],
-            totalCount: 2,
+            total_count: 2,
           }),
         );
     });
 
-    it('fetches all platforms with isVerified filter', async () => {
+    it('fetches all platforms with is_verified filter', async () => {
       await request(app.getHttpServer())
-        .get('/platforms?isVerified=true')
+        .get('/platforms?is_verified=true')
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
-                isVerified: true,
-                nameHandle: 'TEST_PLATFORM#1',
+                is_verified: true,
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
                 },
               },
             ],
-            totalCount: 1,
+            total_count: 1,
           }),
         );
     });
@@ -221,19 +221,19 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
-                isVerified: true,
-                nameHandle: 'TEST_PLATFORM#1',
+                is_verified: true,
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
                 },
               },
             ],
-            totalCount: 1,
+            total_count: 1,
           }),
         );
     });
@@ -259,16 +259,16 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
-                isVerified: false,
-                nameHandle: 'TEST_PLATFORM_2#2',
+                is_verified: false,
+                name_handle: 'TEST_PLATFORM_2#2',
                 category: null,
               },
             ],
-            totalCount: 1,
+            total_count: 1,
           }),
         );
     });
@@ -293,12 +293,12 @@ describe('PlatformsController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: expect.any(Number),
             name: 'TEST_PLATFORM',
-            nameHandle: 'TEST_PLATFORM#1',
-            isVerified: true,
+            name_handle: 'TEST_PLATFORM#1',
+            is_verified: true,
             category: {
               id: 1,
               name: 'CATEGORY',
@@ -365,13 +365,13 @@ describe('PlatformsController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: 1,
             name: 'TEST_PLATFORM_2',
-            nameHandle: 'TEST_PLATFORM_2#1',
-            isVerified: true,
-            redirectUris: ['https://www.example.com'],
+            name_handle: 'TEST_PLATFORM_2#1',
+            is_verified: true,
+            redirect_uris: ['https://www.example.com'],
           }),
         );
     });
@@ -488,8 +488,8 @@ describe('PlatformsController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
-            totalCount: 1,
-            platformUsers: [
+            total_count: 1,
+            platform_users: [
               {
                 id: 1,
                 roles: [UserRole.Admin, UserRole.Member],
@@ -554,12 +554,12 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             id: 2,
             platform: {
-              createdAt: expect.any(String),
-              updatedAt: expect.any(String),
+              created_at: expect.any(String),
+              updated_at: expect.any(String),
               id: 1,
               name: 'TEST_PLATFORM',
-              isVerified: true,
-              nameHandle: 'TEST_PLATFORM#1',
+              is_verified: true,
+              name_handle: 'TEST_PLATFORM#1',
               category: {
                 id: 1,
                 name: 'CATEGORY',
@@ -601,12 +601,12 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             id: 2,
             platform: {
-              createdAt: expect.any(String),
-              updatedAt: expect.any(String),
+              created_at: expect.any(String),
+              updated_at: expect.any(String),
               id: 1,
-              isVerified: true,
+              is_verified: true,
               name: 'TEST_PLATFORM',
-              nameHandle: 'TEST_PLATFORM#1',
+              name_handle: 'TEST_PLATFORM#1',
               category: {
                 id: 1,
                 name: 'CATEGORY',
@@ -919,12 +919,12 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             id: expect.any(Number),
             platform: {
-              createdAt: expect.any(String),
+              created_at: expect.any(String),
               id: 1,
-              isVerified: true,
+              is_verified: true,
               name: 'TEST_PLATFORM',
-              nameHandle: 'TEST_PLATFORM#1',
-              updatedAt: expect.any(String),
+              name_handle: 'TEST_PLATFORM#1',
+              updated_at: expect.any(String),
               category: {
                 id: 1,
                 name: 'CATEGORY',
