@@ -117,7 +117,7 @@ describe('UsersController (e2e)', () => {
 
     it('should return partial list of users with pagination', async () => {
       return request(app.getHttpServer())
-        .get('/users?page=1&numItemsPerPage=1')
+        .get('/users?page=1&num_items_per_page=1')
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({

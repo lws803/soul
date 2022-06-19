@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
-class FullUserResponseDto {
+import { CreatedAtUpdatedAtDto } from 'src/common/dto/created-at-updated-at.dto';
+
+class FullUserResponseDto extends CreatedAtUpdatedAtDto {
   @ApiProperty({ name: 'id', example: 1234 })
   @Expose()
   id: number;
@@ -22,15 +24,8 @@ class FullUserResponseDto {
   @Expose({ name: 'is_active' })
   isActive: boolean;
 
-  @ApiProperty({ name: 'created_at', type: Date })
-  @Expose({ name: 'created_at' })
-  createdAt: Date;
-
-  @ApiProperty({ name: 'updated_at', type: Date })
-  @Expose({ name: 'updated_at' })
-  updatedAt: Date;
-
   constructor(args: FullUserResponseDto) {
+    super(args);
     Object.assign(this, args);
   }
 }

@@ -1,5 +1,5 @@
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { DEFAULT_NUM_ITEMS_PER_PAGE } from '../constants';
@@ -13,13 +13,17 @@ export class PaginationParamsDto {
   page = 1;
 
   @ApiProperty({
-    name: 'numItemsPerPage',
+    name: 'num_items_per_page',
     example: 10,
     type: Number,
     required: false,
   })
+  @Expose({ name: 'num_items_per_page' })
   @IsOptional()
-  @Type(() => Number)
+  // TODO: Tidy this up a little bit
+  @Transform((value) =>
+    value.value ? Number(value.value) : DEFAULT_NUM_ITEMS_PER_PAGE,
+  )
   @IsInt()
   @Max(100)
   @Min(1)

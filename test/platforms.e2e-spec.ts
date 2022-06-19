@@ -165,7 +165,7 @@ describe('PlatformsController (e2e)', () => {
 
     it('paginates correctly', async () => {
       await request(app.getHttpServer())
-        .get('/platforms?numItemsPerPage=1&page=1')
+        .get('/platforms?num_items_per_page=1&page=1')
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
+import { CreatedAtUpdatedAtDto } from 'src/common/dto/created-at-updated-at.dto';
 import { UserRole } from 'src/roles/role.enum';
 import { FindOneUserResponseDto } from 'src/users/dto/api-responses.dto';
 
@@ -22,7 +23,7 @@ export class PlatformCategoryResponseDto {
   }
 }
 
-class FullPlatformResponseDto {
+class FullPlatformResponseDto extends CreatedAtUpdatedAtDto {
   @ApiProperty({ name: 'id', example: 1 })
   @Expose()
   id: number;
@@ -50,14 +51,6 @@ class FullPlatformResponseDto {
   })
   @Expose({ name: 'is_verified' })
   isVerified: boolean;
-
-  @ApiProperty({ name: 'created_at', type: Date })
-  @Expose({ name: 'created_at' })
-  createdAt: Date;
-
-  @ApiProperty({ name: 'updated_at', type: Date })
-  @Expose({ name: 'updated_at' })
-  updatedAt: Date;
 
   @ApiProperty({
     name: 'redirect_uris',
@@ -75,6 +68,7 @@ class FullPlatformResponseDto {
   category?: PlatformCategoryResponseDto;
 
   constructor(args: FullPlatformResponseDto) {
+    super(args);
     Object.assign(this, args);
   }
 }
@@ -91,7 +85,7 @@ export class UpdatePlatformResponseDto extends FullPlatformResponseDto {
   }
 }
 
-export class FindOnePlatformResponseDto {
+export class FindOnePlatformResponseDto extends CreatedAtUpdatedAtDto {
   @ApiProperty({ name: 'id', example: 1 })
   @Expose()
   id: number;
@@ -120,20 +114,13 @@ export class FindOnePlatformResponseDto {
   @Expose({ name: 'is_verified' })
   isVerified: boolean;
 
-  @ApiProperty({ name: 'created_at', type: Date })
-  @Expose({ name: 'created_at' })
-  createdAt: Date;
-
-  @ApiProperty({ name: 'updated_at', type: Date })
-  @Expose({ name: 'updated_at' })
-  updatedAt: Date;
-
   @ApiProperty({ name: 'category', type: PlatformCategoryResponseDto })
   @Expose()
   @Type(() => PlatformCategoryResponseDto)
   category?: PlatformCategoryResponseDto;
 
   constructor(args: FindOnePlatformResponseDto) {
+    super(args);
     Object.assign(this, args);
   }
 }
