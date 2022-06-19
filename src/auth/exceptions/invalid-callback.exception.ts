@@ -6,8 +6,8 @@ export class InvalidCallbackException extends GenericException {
   constructor() {
     super(
       {
-        message: 'Invalid callback uri supplied',
-        error: 'INVALID_CALLBACK_URI',
+        message: 'Invalid redirect uri supplied',
+        error: 'INVALID_REDIRECT_URI',
       },
       HttpStatus.BAD_REQUEST,
     );

@@ -242,7 +242,7 @@ describe('AuthService', () => {
           state: 'TEST_STATE',
           codeChallenge: 'CODE_CHALLENGE',
         }),
-      ).rejects.toThrow('Invalid callback uri supplied');
+      ).rejects.toThrow('Invalid redirect uri supplied');
     });
 
     it('denies access to inactive users', async () => {
@@ -322,7 +322,7 @@ describe('AuthService', () => {
           callback: 'TEST_REDIRECT_URI',
           codeVerifier: 'CODE_VERIFIER',
         }),
-      ).rejects.toThrow('Invalid callback uri supplied');
+      ).rejects.toThrow('Invalid redirect uri supplied');
     });
 
     it('throws error when PKCE mismatch', async () => {
