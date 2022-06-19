@@ -20,7 +20,6 @@ export class PaginationParamsDto {
   })
   @Expose({ name: 'num_items_per_page' })
   @IsOptional()
-  // TODO: Tidy this up a little bit
   @Transform((value) =>
     value.value ? Number(value.value) : DEFAULT_NUM_ITEMS_PER_PAGE,
   )
