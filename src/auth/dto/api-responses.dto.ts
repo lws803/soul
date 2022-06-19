@@ -4,13 +4,17 @@ import { Expose } from 'class-transformer';
 import { UserRole } from 'src/roles/role.enum';
 
 export class LoginResponseDto {
-  @ApiProperty({ name: 'accessToken' })
-  @Expose()
+  @ApiProperty({ name: 'access_token' })
+  @Expose({ name: 'access_token' })
   accessToken: string;
 
-  @ApiProperty({ name: 'refreshToken' })
-  @Expose()
+  @ApiProperty({ name: 'refresh_token' })
+  @Expose({ name: 'refresh_token' })
   refreshToken: string;
+
+  @ApiProperty({ name: 'expires_in' })
+  @Expose({ name: 'expires_in' })
+  expiresIn: number;
 
   constructor(args: LoginResponseDto) {
     Object.assign(this, args);
@@ -32,8 +36,8 @@ export class CodeResponseDto {
 }
 
 export class PlatformLoginResponseDto extends LoginResponseDto {
-  @ApiProperty({ name: 'platformId', example: 1 })
-  @Expose()
+  @ApiProperty({ name: 'platform_id', example: 1 })
+  @Expose({ name: 'platform_id' })
   platformId: number;
 
   @ApiProperty({ name: 'roles', example: [UserRole.Admin, UserRole.Member] })
@@ -47,13 +51,17 @@ export class PlatformLoginResponseDto extends LoginResponseDto {
 }
 
 export class RefreshTokenResponseDto {
-  @ApiProperty({ name: 'accessToken' })
-  @Expose()
+  @ApiProperty({ name: 'access_token' })
+  @Expose({ name: 'access_token' })
   accessToken: string;
 
-  @ApiProperty({ name: 'refreshToken' })
-  @Expose()
+  @ApiProperty({ name: 'refresh_token' })
+  @Expose({ name: 'refresh_token' })
   refreshToken: string;
+
+  @ApiProperty({ name: 'expires_in' })
+  @Expose({ name: 'expires_in' })
+  expiresIn: number;
 
   constructor(args: RefreshTokenResponseDto) {
     Object.assign(this, args);
@@ -61,8 +69,8 @@ export class RefreshTokenResponseDto {
 }
 
 export class RefreshTokenWithPlatformResponseDto extends RefreshTokenResponseDto {
-  @ApiProperty({ name: 'platformId', example: 1 })
-  @Expose()
+  @ApiProperty({ name: 'platform_id', example: 1 })
+  @Expose({ name: 'platform_id' })
   platformId: number;
 
   @ApiProperty({ name: 'roles', example: [UserRole.Admin, UserRole.Member] })

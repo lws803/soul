@@ -2,6 +2,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Repository, Connection } from 'typeorm';
 import * as sha256 from 'crypto-js/sha256';
+import base64url from 'base64url';
 
 import { User } from 'src/users/entities/user.entity';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
@@ -24,7 +25,7 @@ describe('AuthController (e2e)', () => {
   let platformCategoryRepository: Repository<PlatformCategory>;
 
   const codeVerifier = 'CODE_VERIFIER';
-  const codeChallenge = sha256(codeVerifier).toString();
+  const codeChallenge = base64url(sha256(codeVerifier).toString(), 'hex');
 
   beforeAll(async () => {
     app = await createAppFixture({});
@@ -87,8 +88,9 @@ describe('AuthController (e2e)', () => {
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
-            accessToken: expect.any(String),
-            refreshToken: expect.any(String),
+            access_token: expect.any(String),
+            refresh_token: expect.any(String),
+            expires_in: 900,
           });
         });
       const user = await userRepository.findOne({
@@ -100,23 +102,31 @@ describe('AuthController (e2e)', () => {
     });
 
     it('logs in successfully for platform', async () => {
+      const params = new URLSearchParams({
+        code_challenge: codeChallenge,
+        state: 'TEST_STATE',
+        redirect_uri: 'https://www.example.com',
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       await request(app.getHttpServer())
-        .post(
-          `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-        )
-        .expect(HttpStatus.CREATED)
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        })
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
-            accessToken: expect.any(String),
-            refreshToken: expect.any(String),
-            platformId: 1,
+            access_token: expect.any(String),
+            refresh_token: expect.any(String),
+            platform_id: 1,
             roles: [UserRole.Admin, UserRole.Member],
+            expires_in: 900,
           });
         });
     });
@@ -135,17 +145,23 @@ describe('AuthController (e2e)', () => {
     });
 
     it('fails to login with platform due to PKCE mismatch', async () => {
+      const params = new URLSearchParams({
+        code_challenge: 'UNKNOWN_CODE',
+        state: 'TEST_STATE',
+        redirect_uri: 'https://www.example.com',
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          '/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE' +
-            '&codeChallenge=UNKNOWN_CODE',
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+
       await request(app.getHttpServer())
-        .post(
-          `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&` +
-            `codeVerifier=${codeVerifier}`,
-        )
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        })
         .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
@@ -190,59 +206,77 @@ describe('AuthController (e2e)', () => {
     it('refreshes token successfully', async () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
-        .send({ refreshToken: userAccount.refreshToken })
-        .expect(HttpStatus.CREATED)
+        .send({ refresh_token: userAccount.refreshToken })
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
-            accessToken: expect.any(String),
-            refreshToken: expect.any(String),
+            access_token: expect.any(String),
+            refresh_token: expect.any(String),
+            expires_in: 900,
           });
         });
     });
 
     it('refreshes token for platform', async () => {
+      const params = new URLSearchParams({
+        code_challenge: codeChallenge,
+        state: 'TEST_STATE',
+        redirect_uri: 'https://www.example.com',
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const resp = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const resp = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
-      const { refreshToken } = resp.body;
+      const { refresh_token } = resp.body;
 
       await request(app.getHttpServer())
-        .post('/auth/refresh?platformId=1')
-        .send({ refreshToken })
-        .expect(HttpStatus.CREATED)
+        .post('/auth/refresh')
+        .send({ refresh_token, client_id: 1 })
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
-            accessToken: expect.any(String),
-            refreshToken: expect.any(String),
-            platformId: 1,
+            access_token: expect.any(String),
+            refresh_token: expect.any(String),
+            platform_id: 1,
             roles: [UserRole.Admin, UserRole.Member],
+            expires_in: 900,
           });
         });
     });
 
     it('refreshes token for platform without specifying platform id', async () => {
+      const params = new URLSearchParams({
+        code_challenge: codeChallenge,
+        state: 'TEST_STATE',
+        redirect_uri: 'https://www.example.com',
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const resp = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const resp = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
-      const { refreshToken } = resp.body;
+      const { refresh_token } = resp.body;
 
       await request(app.getHttpServer())
         .post('/auth/refresh')
-        .send({ refreshToken })
+        .send({ refresh_token })
         .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -255,7 +289,7 @@ describe('AuthController (e2e)', () => {
     it('fails when refreshing with access token', async () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
-        .send({ refreshToken: userAccount.accessToken })
+        .send({ refresh_token: userAccount.accessToken })
         .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -269,7 +303,7 @@ describe('AuthController (e2e)', () => {
     it('fails when refresh token is invalid or corrupted', async () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
-        .send({ refreshToken: userAccount.refreshToken + 'INVALID' })
+        .send({ refresh_token: userAccount.refreshToken + 'INVALID' })
         .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({

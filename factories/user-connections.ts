@@ -40,3 +40,24 @@ export const postPlatformToUserConnectionDto = Factory.define<PostPlatformDto>(
     platformId: onePlatform.build().id,
   }),
 );
+
+type CreateUserConnectionRequestDto = {
+  from_user_id: number;
+  to_user_id: number;
+  platform_id?: number;
+};
+
+export const createUserConnectionRequestDto =
+  Factory.define<CreateUserConnectionRequestDto>(() => ({
+    from_user_id: oneUser.build().id,
+    to_user_id: oneUser.build({ id: 2 }).id,
+  }));
+
+type PostPlatformToUserConnectionRequestDto = {
+  platform_id: number;
+};
+
+export const postPlatformToUserConnectionRequestDto =
+  Factory.define<PostPlatformToUserConnectionRequestDto>(() => ({
+    platform_id: onePlatform.build().id,
+  }));

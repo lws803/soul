@@ -7,6 +7,7 @@ import {
   Body,
   Header,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -21,10 +22,9 @@ import {
   RefreshTokenWithPlatformResponseDto,
 } from './dto/api-responses.dto';
 import {
-  PlatformIdQueryDto,
   RefreshTokenBodyDto,
   CodeQueryParamDto,
-  ValidateQueryParamDto,
+  ValidateBodyDto,
 } from './dto/api.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
@@ -68,19 +68,20 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.CREATED, type: PlatformLoginResponseDto })
   @Post('verify')
+  @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   async verify(
-    @Query() queryArgs: ValidateQueryParamDto,
+    @Body() args: ValidateBodyDto,
   ): Promise<PlatformLoginResponseDto> {
     return new PlatformLoginResponseDto(
-      await this.authService.exchangeCodeForToken(queryArgs),
+      await this.authService.exchangeCodeForToken(args),
     );
   }
 
   @ApiOperation({
     description:
       'Refresh access token, returns new access token and a new refresh token. ' +
-      'If platformId is provided, returns new access token for that platform. ' +
+      'If client_id is provided, returns new access token for that platform. ' +
       'Note that the existing refresh token will no longer be usable.',
   })
   @ApiResponse({
@@ -88,10 +89,10 @@ export class AuthController {
     type: RefreshTokenWithPlatformResponseDto,
   })
   @Post('refresh')
+  @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   async refresh(
-    @Query() { platformId }: PlatformIdQueryDto,
-    @Body() { refreshToken }: RefreshTokenBodyDto,
+    @Body() { refreshToken, platformId }: RefreshTokenBodyDto,
   ): Promise<RefreshTokenWithPlatformResponseDto | RefreshTokenResponseDto> {
     if (platformId) {
       return new RefreshTokenWithPlatformResponseDto(

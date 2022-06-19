@@ -97,7 +97,7 @@ describe('ReputationController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
-            userId: userAccount.user.id,
+            user_id: userAccount.user.id,
             reputation: 1,
           });
         });

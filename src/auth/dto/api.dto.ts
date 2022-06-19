@@ -1,34 +1,46 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { IsOptional, IsString, IsInt } from 'class-validator';
 
 import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.validator';
 
-export class PlatformIdQueryDto {
-  @ApiProperty({ name: 'platformId', required: false, type: Number })
+export class RefreshTokenBodyDto {
+  @ApiProperty({ name: 'refresh_token' })
+  @Expose({ name: 'refresh_token' })
+  @IsString()
+  refreshToken: string;
+
+  @ApiProperty({
+    name: 'client_id',
+    required: false,
+    type: Number,
+    description: 'Platform id of a platform.',
+  })
+  @Expose({ name: 'client_id' })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   platformId?: number;
 }
 
-export class RefreshTokenBodyDto {
-  @ApiProperty({ name: 'refreshToken' })
-  @IsString()
-  refreshToken: string;
-}
-
 export class CodeQueryParamDto {
-  @ApiProperty({ name: 'platformId', example: 1, type: Number })
+  @ApiProperty({
+    name: 'client_id',
+    example: 1,
+    type: Number,
+    description: 'Platform id of a platform.',
+  })
+  @Expose({ name: 'client_id' })
   @Type(() => Number)
   @IsInt()
   platformId: number;
 
   @ApiProperty({
-    name: 'callback',
+    name: 'redirect_uri',
     example: 'http://localhost:3000',
     type: String,
   })
+  @Expose({ name: 'redirect_uri' })
   @IsString()
   @IsValidRedirectUri()
   callback: string;
@@ -45,35 +57,43 @@ export class CodeQueryParamDto {
   state: string;
 
   @ApiProperty({
-    name: 'codeChallenge',
+    name: 'code_challenge',
     type: String,
     description:
       'Code challenge for PKCE flow. See https://tools.ietf.org/html/rfc7636',
   })
+  @Expose({ name: 'code_challenge' })
   @IsString()
   codeChallenge: string;
 }
 
-export class ValidateQueryParamDto {
+export class ValidateBodyDto {
   @ApiProperty({ name: 'code', type: String })
   @IsString()
   code: string;
 
   @ApiProperty({
-    name: 'callback',
+    name: 'redirect_uri',
     example: 'http://localhost:3000',
     type: String,
   })
+  @Expose({ name: 'redirect_uri' })
   @IsString()
   @IsValidRedirectUri()
   callback: string;
 
   @ApiProperty({
-    name: 'codeVerifier',
+    name: 'code_verifier',
     type: String,
     description:
       'Code verifier for PKCE flow. See https://tools.ietf.org/html/rfc7636',
   })
+  @Expose({ name: 'code_verifier' })
   @IsString()
   codeVerifier: string;
+
+  @Expose({ name: 'grant_type' })
+  @IsOptional()
+  @IsString()
+  grantType?: string;
 }

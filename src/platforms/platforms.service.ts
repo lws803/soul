@@ -121,25 +121,19 @@ export class PlatformsService {
     const platform = await this.findPlatformOrThrow({ id });
     const updatedPlatform: Partial<Platform> = {};
 
-    const {
-      category,
-      name: platformName,
-      ...updatePlatform
-    } = updatePlatformDto;
+    const { category, name: platformName, redirectUris } = updatePlatformDto;
 
     if (platformName) {
       updatedPlatform.nameHandle = `${platformName}#${platform.id}`;
-      updatedPlatform.name = platformName;
     }
-
     if (category) {
       updatedPlatform.category = await this.findOneCategoryOrThrow(category);
     }
 
-    await this.platformRepository.update(
-      { id: platform.id },
-      { ...updatedPlatform, ...updatePlatform },
-    );
+    updatedPlatform.redirectUris = redirectUris ?? platform.redirectUris;
+    updatedPlatform.name = platformName ?? platform.name;
+
+    await this.platformRepository.update({ id: platform.id }, updatedPlatform);
     return await this.platformRepository.findOne(id);
   }
 

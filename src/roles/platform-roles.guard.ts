@@ -20,13 +20,13 @@ export class PlatformRolesGuard implements CanActivate {
       return true;
     }
     const { user, params } = context.switchToHttp().getRequest();
-    const { platformId } = params;
+    const { platform_id } = params;
     const userJwt = new JWTPayload(user);
 
     // Ensures that the user has the required role within the platform
     const canAccess =
       requiredRoles.some((role) => userJwt.roles?.includes(role)) &&
-      userJwt.platformId === parseInt(platformId, 10);
+      userJwt.platformId === Number(platform_id);
     if (!canAccess) {
       throw new NoPermissionException();
     }

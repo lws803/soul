@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
-class FullUserResponseDto {
+import { CreatedAtUpdatedAtDto } from 'src/common/dto/created-at-updated-at.dto';
+
+class FullUserResponseDto extends CreatedAtUpdatedAtDto {
   @ApiProperty({ name: 'id', example: 1234 })
   @Expose()
   id: number;
@@ -10,27 +12,20 @@ class FullUserResponseDto {
   @Expose()
   username: string;
 
-  @ApiProperty({ name: 'userHandle', example: 'johndoe#1234' })
-  @Expose()
+  @ApiProperty({ name: 'user_handle', example: 'johndoe#1234' })
+  @Expose({ name: 'user_handle' })
   userHandle: string;
 
   @ApiProperty({ name: 'email', example: 'john@email.com' })
   @Expose()
   email: string;
 
-  @ApiProperty({ name: 'isActive', example: false })
-  @Expose()
+  @ApiProperty({ name: 'is_active', example: false })
+  @Expose({ name: 'is_active' })
   isActive: boolean;
 
-  @ApiProperty({ name: 'createdAt', type: Date })
-  @Expose()
-  createdAt: Date;
-
-  @ApiProperty({ name: 'updatedAt', type: Date })
-  @Expose()
-  updatedAt: Date;
-
   constructor(args: FullUserResponseDto) {
+    super(args);
     Object.assign(this, args);
   }
 }
@@ -62,8 +57,8 @@ export class FindOneUserResponseDto {
   @Expose()
   username: string;
 
-  @ApiProperty({ name: 'userHandle', example: 'johndoe#1234' })
-  @Expose()
+  @ApiProperty({ name: 'user_handle', example: 'johndoe#1234' })
+  @Expose({ name: 'user_handle' })
   userHandle: string;
 
   constructor(args: FindOneUserResponseDto) {
@@ -80,8 +75,8 @@ export class FindAllUserResponseDto {
   @Type(() => FindOneUserResponseDto)
   users: FindOneUserResponseDto[];
 
-  @ApiProperty({ name: 'totalCount', example: 10 })
-  @Expose()
+  @ApiProperty({ name: 'total_count', example: 10 })
+  @Expose({ name: 'total_count' })
   totalCount: number;
 
   constructor(args: FindAllUserResponseDto) {

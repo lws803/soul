@@ -139,7 +139,7 @@ export class UserConnectionsController {
   })
   @ApiResponse({ status: HttpStatus.OK })
   @UseGuards(JwtAuthGuard)
-  @Delete(':id/platforms/:platformId')
+  @Delete(':id/platforms/:platform_id')
   async removePlatformFromUserConnection(
     @Request() { user }: { user: JWTPayload },
     @Param() { id, platformId }: RemovePlatformFromUserConnectionParamsDto,

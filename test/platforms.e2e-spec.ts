@@ -2,6 +2,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Repository, Connection } from 'typeorm';
 import * as sha256 from 'crypto-js/sha256';
+import base64url from 'base64url';
 
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
@@ -27,7 +28,7 @@ describe('PlatformsController (e2e)', () => {
   let thirdUserAccount: UserAccount;
 
   const codeVerifier = 'CODE_VERIFIER';
-  const codeChallenge = sha256(codeVerifier).toString();
+  const codeChallenge = base64url(sha256(codeVerifier).toString(), 'hex');
 
   beforeAll(async () => {
     app = await createAppFixture({});
@@ -64,8 +65,8 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('creates a new platform', async () => {
-      const createPlatformDto = factories.createPlatformDto.build({
-        redirectUris: ['https://example.com/redirect'],
+      const createPlatformDto = factories.createPlatformRequestDto.build({
+        redirect_uris: ['https://example.com/redirect'],
       });
 
       await request(app.getHttpServer())
@@ -75,13 +76,13 @@ describe('PlatformsController (e2e)', () => {
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: expect.any(Number),
-            nameHandle: expect.any(String),
-            redirectUris: ['https://example.com/redirect'],
+            name_handle: expect.any(String),
+            redirect_uris: ['https://example.com/redirect'],
             name: 'TEST_PLATFORM',
-            isVerified: false,
+            is_verified: false,
           }),
         );
 
@@ -93,7 +94,7 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('throws when user is not logged in', async () => {
-      const createPlatformDto = factories.createPlatformDto.build();
+      const createPlatformDto = factories.createPlatformRequestDto.build();
 
       await request(app.getHttpServer())
         .post('/platforms')
@@ -136,78 +137,78 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
-                isVerified: true,
-                nameHandle: 'TEST_PLATFORM#1',
+                is_verified: true,
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
                 },
               },
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
-                isVerified: false,
-                nameHandle: 'TEST_PLATFORM_2#2',
+                is_verified: false,
+                name_handle: 'TEST_PLATFORM_2#2',
                 category: null,
               },
             ],
-            totalCount: 2,
+            total_count: 2,
           }),
         );
     });
 
     it('paginates correctly', async () => {
       await request(app.getHttpServer())
-        .get('/platforms?numItemsPerPage=1&page=1')
+        .get('/platforms?num_items_per_page=1&page=1')
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
-                nameHandle: 'TEST_PLATFORM#1',
-                isVerified: true,
+                name_handle: 'TEST_PLATFORM#1',
+                is_verified: true,
                 category: {
                   id: 1,
                   name: 'CATEGORY',
                 },
               },
             ],
-            totalCount: 2,
+            total_count: 2,
           }),
         );
     });
 
-    it('fetches all platforms with isVerified filter', async () => {
+    it('fetches all platforms with is_verified filter', async () => {
       await request(app.getHttpServer())
-        .get('/platforms?isVerified=true')
+        .get('/platforms?is_verified=true')
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
-                isVerified: true,
-                nameHandle: 'TEST_PLATFORM#1',
+                is_verified: true,
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
                 },
               },
             ],
-            totalCount: 1,
+            total_count: 1,
           }),
         );
     });
@@ -220,19 +221,19 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
-                isVerified: true,
-                nameHandle: 'TEST_PLATFORM#1',
+                is_verified: true,
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
                 },
               },
             ],
-            totalCount: 1,
+            total_count: 1,
           }),
         );
     });
@@ -258,16 +259,16 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
-                isVerified: false,
-                nameHandle: 'TEST_PLATFORM_2#2',
+                is_verified: false,
+                name_handle: 'TEST_PLATFORM_2#2',
                 category: null,
               },
             ],
-            totalCount: 1,
+            total_count: 1,
           }),
         );
     });
@@ -292,12 +293,12 @@ describe('PlatformsController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: expect.any(Number),
             name: 'TEST_PLATFORM',
-            nameHandle: 'TEST_PLATFORM#1',
-            isVerified: true,
+            name_handle: 'TEST_PLATFORM#1',
+            is_verified: true,
             category: {
               id: 1,
               name: 'CATEGORY',
@@ -340,29 +341,37 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('updates existing platform', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .patch('/platforms/1')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .send({ name: 'TEST_PLATFORM_2' })
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: 1,
             name: 'TEST_PLATFORM_2',
-            nameHandle: 'TEST_PLATFORM_2#1',
-            isVerified: true,
-            redirectUris: ['https://www.example.com'],
+            name_handle: 'TEST_PLATFORM_2#1',
+            is_verified: true,
+            redirect_uris: ['https://www.example.com'],
           }),
         );
     });
@@ -399,18 +408,26 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('deletes existing platform', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .delete('/platforms/1')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -448,29 +465,37 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('fetches all users within a platform', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .get('/platforms/1/users')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
-            totalCount: 1,
-            platformUsers: [
+            total_count: 1,
+            platform_users: [
               {
                 id: 1,
                 roles: [UserRole.Admin, UserRole.Member],
                 user: {
                   id: 1,
-                  userHandle: 'TEST_USER#1',
+                  user_handle: 'TEST_USER#1',
                   username: 'TEST_USER',
                 },
               },
@@ -504,29 +529,37 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('sets user role', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=admin,member')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
             platform: {
-              createdAt: expect.any(String),
-              updatedAt: expect.any(String),
+              created_at: expect.any(String),
+              updated_at: expect.any(String),
               id: 1,
               name: 'TEST_PLATFORM',
-              isVerified: true,
-              nameHandle: 'TEST_PLATFORM#1',
+              is_verified: true,
+              name_handle: 'TEST_PLATFORM#1',
               category: {
                 id: 1,
                 name: 'CATEGORY',
@@ -535,7 +568,7 @@ describe('PlatformsController (e2e)', () => {
             roles: [UserRole.Admin, UserRole.Member],
             user: {
               id: 2,
-              userHandle: 'TEST_USER_2#2',
+              user_handle: 'TEST_USER_2#2',
               username: 'TEST_USER_2',
             },
           }),
@@ -543,29 +576,37 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('bans a user', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .put('/platforms/1/users/2?roles=banned')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
             platform: {
-              createdAt: expect.any(String),
-              updatedAt: expect.any(String),
+              created_at: expect.any(String),
+              updated_at: expect.any(String),
               id: 1,
-              isVerified: true,
+              is_verified: true,
               name: 'TEST_PLATFORM',
-              nameHandle: 'TEST_PLATFORM#1',
+              name_handle: 'TEST_PLATFORM#1',
               category: {
                 id: 1,
                 name: 'CATEGORY',
@@ -574,7 +615,7 @@ describe('PlatformsController (e2e)', () => {
             roles: [UserRole.Banned],
             user: {
               id: 2,
-              userHandle: 'TEST_USER_2#2',
+              user_handle: 'TEST_USER_2#2',
               username: 'TEST_USER_2',
             },
           }),
@@ -582,17 +623,26 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('throws an error when trying to set only remaining admin to member', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
+
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=member')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -605,18 +655,26 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('throws with insufficient permissions', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .put('/platforms/1/users/1?roles=admin,member')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -652,30 +710,38 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('deletes a platform user', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/users/2')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toEqual({}));
     });
 
     it('throws due to insufficient permissions', async () => {
       const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+        .post('/auth/login')
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/users/1')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -728,35 +794,52 @@ describe('PlatformsController (e2e)', () => {
           roles: [UserRole.Admin, UserRole.Member],
         }),
       );
+
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toEqual({}));
     });
 
     it('quits existing platform (MEMBER)', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toEqual({}));
     });
@@ -764,12 +847,12 @@ describe('PlatformsController (e2e)', () => {
     // Banned users cannot quit a platform to prevent them from joining again
     it('quits existing platform (BANNED)', async () => {
       const response = await request(app.getHttpServer())
-        .post('/auth/login?platformId=1')
+        .post('/auth/login')
         .send({ email: 'TEST_USER_3@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -781,18 +864,26 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('only remaining admin cant quit', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
       const codeResp = await request(app.getHttpServer())
-        .post(
-          `/auth/code?platformId=1&callback=https://www.example.com&state=TEST_STATE&codeChallenge=${codeChallenge}`,
-        )
+        .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer()).post(
-        `/auth/verify?code=${codeResp.body.code}&callback=https://www.example.com&codeVerifier=${codeVerifier}`,
-      );
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
 
       await request(app.getHttpServer())
         .delete('/platforms/1/quit')
-        .set('Authorization', `Bearer ${response.body.accessToken}`)
+        .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -828,12 +919,12 @@ describe('PlatformsController (e2e)', () => {
           expect(res.body).toEqual({
             id: expect.any(Number),
             platform: {
-              createdAt: expect.any(String),
+              created_at: expect.any(String),
               id: 1,
-              isVerified: true,
+              is_verified: true,
               name: 'TEST_PLATFORM',
-              nameHandle: 'TEST_PLATFORM#1',
-              updatedAt: expect.any(String),
+              name_handle: 'TEST_PLATFORM#1',
+              updated_at: expect.any(String),
               category: {
                 id: 1,
                 name: 'CATEGORY',
@@ -842,7 +933,7 @@ describe('PlatformsController (e2e)', () => {
             roles: [UserRole.Member],
             user: {
               id: 1,
-              userHandle: 'TEST_USER#1',
+              user_handle: 'TEST_USER#1',
               username: 'TEST_USER',
             },
           }),

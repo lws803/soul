@@ -341,6 +341,7 @@ describe('PlatformsService', () => {
         name: 'TEST_PLATFORM_UPDATE',
         nameHandle: 'TEST_PLATFORM_UPDATE#1',
         category: updatedCategory,
+        redirectUris: ['TEST_REDIRECT_URI'],
       };
       const updatedPlatform = factories.onePlatform.build(updates);
 

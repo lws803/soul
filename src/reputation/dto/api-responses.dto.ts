@@ -6,8 +6,8 @@ export class ReputationResponseDto {
   @Expose()
   reputation: number;
 
-  @ApiProperty({ name: 'userId', example: 1234 })
-  @Expose()
+  @ApiProperty({ name: 'user_id', example: 1234 })
+  @Expose({ name: 'user_id' })
   userId: number;
 
   constructor(args: ReputationResponseDto) {

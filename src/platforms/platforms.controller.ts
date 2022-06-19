@@ -71,7 +71,7 @@ export class PlatformsController {
 
   @ApiOperation({ description: 'Find one platform from a given platformId' })
   @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseDto })
-  @Get(':platformId')
+  @Get(':platform_id')
   async findOne(
     @Param() { platformId }: PlatformIdParamDto,
   ): Promise<FindOnePlatformResponseDto> {
@@ -87,7 +87,7 @@ export class PlatformsController {
   @ApiResponse({ status: HttpStatus.OK, type: UpdatePlatformResponseDto })
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
-  @Patch(':platformId')
+  @Patch(':platform_id')
   async update(
     @Param() { platformId }: PlatformIdParamDto,
     @Body() updatePlatformDto: UpdatePlatformDto,
@@ -104,7 +104,7 @@ export class PlatformsController {
   @ApiResponse({ status: HttpStatus.OK })
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
-  @Delete(':platformId')
+  @Delete(':platform_id')
   async remove(@Param() { platformId }: PlatformIdParamDto) {
     await this.platformsService.remove(platformId);
   }
@@ -115,7 +115,7 @@ export class PlatformsController {
   @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformUsersResponseDto })
   @Roles(UserRole.Member)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
-  @Get(':platformId/users')
+  @Get(':platform_id/users')
   async findAllPlatformUsers(
     @Param() { platformId }: PlatformIdParamDto,
     @Query() paginationParams: PaginationParamsDto,
@@ -134,7 +134,7 @@ export class PlatformsController {
   @ApiResponse({ status: HttpStatus.OK, type: SetPlatformUserRoleResponseDto })
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
-  @Put(':platformId/users/:userId')
+  @Put(':platform_id/users/:user_id')
   async setPlatformUserRole(
     @Param() { platformId, userId }: SetUserPlatformRoleParamsDto,
     @Query() { roles }: SetUserPlatformRoleQueryParamsDto,
@@ -150,7 +150,7 @@ export class PlatformsController {
   @ApiResponse({ status: HttpStatus.OK })
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
-  @Delete(':platformId/users/:userId')
+  @Delete(':platform_id/users/:user_id')
   async removePlatformUser(
     @Param() { platformId, userId }: RemovePlatformUserParamsDto,
   ) {
@@ -163,7 +163,7 @@ export class PlatformsController {
   @ApiResponse({ status: HttpStatus.OK })
   @Roles(UserRole.Member)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
-  @Delete(':platformId/quit')
+  @Delete(':platform_id/quit')
   async removeMyself(
     @Request() { user }: { user: JWTPayload },
     @Param() { platformId }: PlatformIdParamDto,
@@ -179,7 +179,7 @@ export class PlatformsController {
     type: CreatePlatformUserResponseDto,
   })
   @UseGuards(JwtAuthGuard)
-  @Post(':platformId/join')
+  @Post(':platform_id/join')
   async joinPlatform(
     @Request() { user }: { user: JWTPayload },
     @Param() { platformId }: PlatformIdParamDto,

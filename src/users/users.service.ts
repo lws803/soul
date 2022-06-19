@@ -100,10 +100,10 @@ export class UsersService {
     if (updateUserDto.username) {
       updatedUser.userHandle = `${updateUserDto.username}#${user.id}`;
     }
-    await this.usersRepository.update(
-      { id: user.id },
-      { ...updatedUser, ...updateUserDto },
-    );
+    updatedUser.username = updateUserDto.username ?? user.username;
+    updatedUser.email = updateUserDto.email ?? user.email;
+
+    await this.usersRepository.update({ id: user.id }, updatedUser);
     return await this.usersRepository.findOne(id);
   }
 

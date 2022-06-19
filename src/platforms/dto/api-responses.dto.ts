@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
+import { CreatedAtUpdatedAtDto } from 'src/common/dto/created-at-updated-at.dto';
 import { UserRole } from 'src/roles/role.enum';
 import { FindOneUserResponseDto } from 'src/users/dto/api-responses.dto';
 
@@ -22,7 +23,7 @@ export class PlatformCategoryResponseDto {
   }
 }
 
-class FullPlatformResponseDto {
+class FullPlatformResponseDto extends CreatedAtUpdatedAtDto {
   @ApiProperty({ name: 'id', example: 1 })
   @Expose()
   id: number;
@@ -36,37 +37,29 @@ class FullPlatformResponseDto {
   name: string;
 
   @ApiProperty({
-    name: 'nameHandle',
+    name: 'name_handle',
     example: 'soul#1',
     description: 'Includes the id number after the # symbol',
   })
-  @Expose()
+  @Expose({ name: 'name_handle' })
   nameHandle: string;
 
   @ApiProperty({
-    name: 'isVerified',
+    name: 'is_verified',
     example: true,
     description: 'Is the platform verified, used only for official platforms',
   })
-  @Expose()
+  @Expose({ name: 'is_verified' })
   isVerified: boolean;
 
-  @ApiProperty({ name: 'createdAt', type: Date })
-  @Expose()
-  createdAt: Date;
-
-  @ApiProperty({ name: 'updatedAt', type: Date })
-  @Expose()
-  updatedAt: Date;
-
   @ApiProperty({
-    name: 'redirectUris',
+    name: 'redirect_uris',
     example: ['https://example.com', 'http://localhost:3000'],
     description:
       'List of redirect uris for the platform, they must follow the following restrictions ' +
       'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
   })
-  @Expose()
+  @Expose({ name: 'redirect_uris' })
   redirectUris: string[];
 
   @ApiProperty({ name: 'category', type: PlatformCategoryResponseDto })
@@ -75,6 +68,7 @@ class FullPlatformResponseDto {
   category?: PlatformCategoryResponseDto;
 
   constructor(args: FullPlatformResponseDto) {
+    super(args);
     Object.assign(this, args);
   }
 }
@@ -91,7 +85,7 @@ export class UpdatePlatformResponseDto extends FullPlatformResponseDto {
   }
 }
 
-export class FindOnePlatformResponseDto {
+export class FindOnePlatformResponseDto extends CreatedAtUpdatedAtDto {
   @ApiProperty({ name: 'id', example: 1 })
   @Expose()
   id: number;
@@ -105,28 +99,20 @@ export class FindOnePlatformResponseDto {
   name: string;
 
   @ApiProperty({
-    name: 'nameHandle',
+    name: 'name_handle',
     example: 'soul#1',
     description: 'Includes the id number after the # symbol',
   })
-  @Expose()
+  @Expose({ name: 'name_handle' })
   nameHandle: string;
 
   @ApiProperty({
-    name: 'isVerified',
+    name: 'is_verified',
     example: true,
     description: 'Is the platform verified, used only for official platforms',
   })
-  @Expose()
+  @Expose({ name: 'is_verified' })
   isVerified: boolean;
-
-  @ApiProperty({ name: 'createdAt', type: Date })
-  @Expose()
-  createdAt: Date;
-
-  @ApiProperty({ name: 'updatedAt', type: Date })
-  @Expose()
-  updatedAt: Date;
 
   @ApiProperty({ name: 'category', type: PlatformCategoryResponseDto })
   @Expose()
@@ -134,6 +120,7 @@ export class FindOnePlatformResponseDto {
   category?: PlatformCategoryResponseDto;
 
   constructor(args: FindOnePlatformResponseDto) {
+    super(args);
     Object.assign(this, args);
   }
 }
@@ -147,8 +134,8 @@ export class FindAllPlatformResponseDto {
   @Type(() => FindOnePlatformResponseDto)
   platforms: FindOnePlatformResponseDto[];
 
-  @ApiProperty({ name: 'totalCount', example: 100 })
-  @Expose()
+  @ApiProperty({ name: 'total_count', example: 100 })
+  @Expose({ name: 'total_count' })
   totalCount: number;
 
   constructor(args: FindAllPlatformResponseDto) {
@@ -182,15 +169,15 @@ class FindOnePlatformUserResponseDto {
 
 export class FindAllPlatformUsersResponseDto {
   @ApiProperty({
-    name: 'platformUsers',
+    name: 'platform_users',
     type: [FindOnePlatformUserResponseDto],
   })
-  @Expose()
+  @Expose({ name: 'platform_users' })
   @Type(() => FindOnePlatformUserResponseDto)
   platformUsers: FindOnePlatformUserResponseDto[];
 
-  @ApiProperty({ name: 'totalCount', example: 100 })
-  @Expose()
+  @ApiProperty({ name: 'total_count', example: 100 })
+  @Expose({ name: 'total_count' })
   totalCount: number;
 
   constructor(args: FindAllPlatformUsersResponseDto) {

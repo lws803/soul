@@ -61,25 +61,25 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.createUserConnectionDto.build())
+        .send(factories.createUserConnectionRequestDto.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: expect.any(Number),
-            fromUser: {
+            from_user: {
               id: 1,
-              userHandle: 'TEST_USER#1',
+              user_handle: 'TEST_USER#1',
               username: 'TEST_USER',
             },
-            toUser: {
+            to_user: {
               id: 2,
-              userHandle: 'TEST_USER_2#2',
+              user_handle: 'TEST_USER_2#2',
               username: 'TEST_USER_2',
             },
             platforms: [],
-            isMutual: false,
+            is_mutual: false,
           }),
         );
     });
@@ -91,38 +91,40 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.createUserConnectionDto.build({ platformId: 1 }))
+        .send(
+          factories.createUserConnectionRequestDto.build({ platform_id: 1 }),
+        )
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: expect.any(Number),
-            fromUser: {
+            from_user: {
               id: 1,
-              userHandle: 'TEST_USER#1',
+              user_handle: 'TEST_USER#1',
               username: 'TEST_USER',
             },
-            toUser: {
+            to_user: {
               id: 2,
-              userHandle: 'TEST_USER_2#2',
+              user_handle: 'TEST_USER_2#2',
               username: 'TEST_USER_2',
             },
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: expect.any(Number),
-                isVerified: true,
+                is_verified: true,
                 name: 'TEST_PLATFORM',
-                nameHandle: 'TEST_PLATFORM#1',
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
                 },
               },
             ],
-            isMutual: false,
+            is_mutual: false,
           }),
         );
     });
@@ -145,25 +147,25 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.createUserConnectionDto.build())
+        .send(factories.createUserConnectionRequestDto.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             id: expect.any(Number),
-            fromUser: {
+            from_user: {
               id: 1,
-              userHandle: 'TEST_USER#1',
+              user_handle: 'TEST_USER#1',
               username: 'TEST_USER',
             },
-            toUser: {
+            to_user: {
               id: 2,
-              userHandle: 'TEST_USER_2#2',
+              user_handle: 'TEST_USER_2#2',
               username: 'TEST_USER_2',
             },
             platforms: [],
-            isMutual: true,
+            is_mutual: true,
           }),
         );
     });
@@ -195,22 +197,22 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('fetches user connection by users', async () => {
       return request(app.getHttpServer())
-        .get('/user-connections/by-users?fromUserId=1&toUserId=2')
+        .get('/user-connections/by-users?from_user_id=1&to_user_id=2')
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-            fromUser: {
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
+            from_user: {
               id: 1,
-              userHandle: 'TEST_USER#1',
+              user_handle: 'TEST_USER#1',
               username: 'TEST_USER',
             },
             id: 1,
             platforms: [],
-            toUser: {
+            to_user: {
               id: 2,
-              userHandle: 'TEST_USER_2#2',
+              user_handle: 'TEST_USER_2#2',
               username: 'TEST_USER_2',
             },
           }),
@@ -231,7 +233,7 @@ describe('UserConnectionsController (e2e)', () => {
         }),
       ]);
       return request(app.getHttpServer())
-        .get('/user-connections/by-users?fromUserId=999&toUserId=998')
+        .get('/user-connections/by-users?from_user_id=999&to_user_id=998')
         .expect(404)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -272,18 +274,18 @@ describe('UserConnectionsController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-            fromUser: {
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
+            from_user: {
               id: 1,
-              userHandle: 'TEST_USER#1',
+              user_handle: 'TEST_USER#1',
               username: 'TEST_USER',
             },
             id: 1,
             platforms: [],
-            toUser: {
+            to_user: {
               id: 2,
-              userHandle: 'TEST_USER_2#2',
+              user_handle: 'TEST_USER_2#2',
               username: 'TEST_USER_2',
             },
           }),
@@ -350,18 +352,18 @@ describe('UserConnectionsController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-            fromUser: {
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
+            from_user: {
               id: 2,
-              userHandle: 'TEST_USER_2#2',
+              user_handle: 'TEST_USER_2#2',
               username: 'TEST_USER_2',
             },
             id: 2,
             platforms: [],
-            toUser: {
+            to_user: {
               id: 1,
-              userHandle: 'TEST_USER#1',
+              user_handle: 'TEST_USER#1',
               username: 'TEST_USER',
             },
           }),
@@ -387,31 +389,31 @@ describe('UserConnectionsController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/user-connections/1/platforms')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.postPlatformToUserConnectionDto.build())
+        .send(factories.postPlatformToUserConnectionRequestDto.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
             id: 1,
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-            fromUser: {
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
+            from_user: {
               id: 1,
-              userHandle: 'TEST_USER#1',
+              user_handle: 'TEST_USER#1',
               username: 'TEST_USER',
             },
-            toUser: {
+            to_user: {
               id: 2,
-              userHandle: 'TEST_USER_2#2',
+              user_handle: 'TEST_USER_2#2',
               username: 'TEST_USER_2',
             },
             platforms: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
                 id: 1,
-                isVerified: true,
+                is_verified: true,
                 name: 'TEST_PLATFORM',
-                nameHandle: 'TEST_PLATFORM#1',
+                name_handle: 'TEST_PLATFORM#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -471,26 +473,26 @@ describe('UserConnectionsController (e2e)', () => {
       ]);
 
       return request(app.getHttpServer())
-        .get('/user-connections/my-connections?connectionType=mutual')
+        .get('/user-connections/my-connections?connection_type=mutual')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            totalCount: 1,
-            userConnections: [
+            total_count: 1,
+            user_connections: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
-                fromUser: {
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
+                from_user: {
                   id: 1,
-                  userHandle: 'TEST_USER#1',
+                  user_handle: 'TEST_USER#1',
                   username: 'TEST_USER',
                 },
                 id: expect.any(Number),
                 platforms: [],
-                toUser: {
+                to_user: {
                   id: 2,
-                  userHandle: 'TEST_USER_2#2',
+                  user_handle: 'TEST_USER_2#2',
                   username: 'TEST_USER_2',
                 },
               },
@@ -511,26 +513,26 @@ describe('UserConnectionsController (e2e)', () => {
       await userConnectionRepository.save(secondUserConnection);
 
       return request(app.getHttpServer())
-        .get('/user-connections/my-connections?connectionType=follower')
+        .get('/user-connections/my-connections?connection_type=follower')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            totalCount: 1,
-            userConnections: [
+            total_count: 1,
+            user_connections: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
-                toUser: {
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
+                to_user: {
                   id: 1,
-                  userHandle: 'TEST_USER#1',
+                  user_handle: 'TEST_USER#1',
                   username: 'TEST_USER',
                 },
                 id: expect.any(Number),
                 platforms: [],
-                fromUser: {
+                from_user: {
                   id: 2,
-                  userHandle: 'TEST_USER_2#2',
+                  user_handle: 'TEST_USER_2#2',
                   username: 'TEST_USER_2',
                 },
               },
@@ -544,26 +546,26 @@ describe('UserConnectionsController (e2e)', () => {
       await userConnectionRepository.save(firstUserConnection);
 
       return request(app.getHttpServer())
-        .get('/user-connections/my-connections?connectionType=follow')
+        .get('/user-connections/my-connections?connection_type=follow')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            totalCount: 1,
-            userConnections: [
+            total_count: 1,
+            user_connections: [
               {
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
-                fromUser: {
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
+                from_user: {
                   id: 1,
-                  userHandle: 'TEST_USER#1',
+                  user_handle: 'TEST_USER#1',
                   username: 'TEST_USER',
                 },
                 id: expect.any(Number),
                 platforms: [],
-                toUser: {
+                to_user: {
                   id: 2,
-                  userHandle: 'TEST_USER_2#2',
+                  user_handle: 'TEST_USER_2#2',
                   username: 'TEST_USER_2',
                 },
               },
@@ -597,36 +599,36 @@ describe('UserConnectionsController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get(
-          '/user-connections/my-connections?connectionType=follow&platformId=1',
+          '/user-connections/my-connections?connection_type=follow&platform_id=1',
         )
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
-            totalCount: 1,
-            userConnections: [
+            total_count: 1,
+            user_connections: [
               {
                 id: expect.any(Number),
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
-                fromUser: {
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
+                from_user: {
                   id: 1,
-                  userHandle: 'TEST_USER#1',
+                  user_handle: 'TEST_USER#1',
                   username: 'TEST_USER',
                 },
                 platforms: [
                   {
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String),
+                    created_at: expect.any(String),
+                    updated_at: expect.any(String),
                     id: 1,
-                    isVerified: true,
+                    is_verified: true,
                     name: 'TEST_PLATFORM',
-                    nameHandle: 'TEST_PLATFORM#1',
+                    name_handle: 'TEST_PLATFORM#1',
                   },
                 ],
-                toUser: {
+                to_user: {
                   id: 3,
-                  userHandle: 'TEST_USER_3#3',
+                  user_handle: 'TEST_USER_3#3',
                   username: 'TEST_USER_3',
                 },
               },

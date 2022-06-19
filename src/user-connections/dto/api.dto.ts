@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional } from 'class-validator';
 
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
@@ -7,21 +7,25 @@ import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { ConnectionType } from '../enums/connection-type.enum';
 
 export class PostPlatformDto {
-  @ApiProperty({ name: 'platformId', example: 1 })
+  @ApiProperty({ name: 'platform_id', example: 1 })
+  @Expose({ name: 'platform_id' })
   @IsInt()
   platformId: number;
 }
 
 export class CreateUserConnectionDto {
-  @ApiProperty({ name: 'fromUserId', example: 1234 })
+  @ApiProperty({ name: 'from_user_id', example: 1234 })
+  @Expose({ name: 'from_user_id' })
   @IsInt()
   fromUserId: number;
 
-  @ApiProperty({ name: 'toUserId', example: 12345 })
+  @ApiProperty({ name: 'to_user_id', example: 12345 })
+  @Expose({ name: 'to_user_id' })
   @IsInt()
   toUserId: number;
 
-  @ApiProperty({ name: 'platformId', example: 1, required: false })
+  @ApiProperty({ name: 'platform_id', example: 1, required: false })
+  @Expose({ name: 'platform_id' })
   @IsOptional()
   @IsInt()
   platformId?: number;
@@ -41,21 +45,23 @@ export class UserConnectionParamsDto {
 
 export class ByUserIdsParamsDto {
   @ApiProperty({
-    name: 'fromUserId',
+    name: 'from_user_id',
     required: false,
     example: 1234,
     type: Number,
   })
+  @Expose({ name: 'from_user_id' })
   @Type(() => Number)
   @IsInt()
   fromUserId: number;
 
   @ApiProperty({
-    name: 'toUserId',
+    name: 'to_user_id',
     required: false,
     example: 12345,
     type: Number,
   })
+  @Expose({ name: 'to_user_id' })
   @Type(() => Number)
   @IsInt()
   toUserId: number;
@@ -63,19 +69,21 @@ export class ByUserIdsParamsDto {
 
 export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
   @ApiProperty({
-    name: 'connectionType',
+    name: 'connection_type',
     example: ConnectionType.Mutual,
     type: String,
   })
+  @Expose({ name: 'connection_type' })
   @IsEnum(ConnectionType)
   connectionType: ConnectionType;
 
   @ApiProperty({
-    name: 'platformId',
+    name: 'platform_id',
     example: 1,
     type: Number,
     required: false,
   })
+  @Expose({ name: 'platform_id' })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
@@ -94,12 +102,13 @@ export class RemovePlatformFromUserConnectionParamsDto {
   id: number;
 
   @ApiProperty({
-    name: 'platformId',
+    name: 'platform_id',
     type: Number,
     description: 'Platform id',
     example: 1,
     required: false,
   })
+  @Expose({ name: 'platform_id' })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
