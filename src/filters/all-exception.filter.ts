@@ -28,6 +28,11 @@ export class AllExceptionFilter implements ExceptionFilter {
       }
       if (exception instanceof GenericException) {
         errorType = exception.error;
+        return response.status(exception.getStatus()).json({
+          message: exception.message,
+          error: errorType,
+          ...(exception.constraints && { constraints: exception.constraints }),
+        });
       }
 
       response.status(exception.getStatus()).json({

@@ -23,8 +23,8 @@ export class PaginationParamsDto {
   @Transform((value) =>
     value.value ? Number(value.value) : DEFAULT_NUM_ITEMS_PER_PAGE,
   )
-  @IsInt()
-  @Max(100)
-  @Min(1)
+  @IsInt({ message: 'num_items_per_page must be an integer' })
+  @Max(100, { message: 'num_items_per_page must be less than 100' })
+  @Min(1, { message: 'num_items_per_page must be greater than 0' })
   numItemsPerPage = DEFAULT_NUM_ITEMS_PER_PAGE;
 }

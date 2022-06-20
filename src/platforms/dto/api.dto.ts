@@ -21,7 +21,7 @@ export class PlatformIdParamDto {
   @ApiProperty({ name: 'platform_id', example: 1, type: Number })
   @Expose({ name: 'platform_id' })
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'platform_id must be an integer' })
   platformId: number;
 }
 
@@ -42,13 +42,13 @@ export class SetUserPlatformRoleParamsDto {
   @ApiProperty({ name: 'platform_id', example: 1, type: Number })
   @Expose({ name: 'platform_id' })
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'platform_id must be an integer' })
   platformId: number;
 
   @ApiProperty({ name: 'user_id', example: 1234, type: Number })
   @Expose({ name: 'user_id' })
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'user_id must be an integer' })
   userId: number;
 }
 
@@ -56,13 +56,13 @@ export class RemovePlatformUserParamsDto {
   @ApiProperty({ name: 'platform_id', example: 1, type: Number })
   @Expose({ name: 'platform_id' })
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'platform_id must be an integer' })
   platformId: number;
 
   @ApiProperty({ name: 'user_id', example: 1234, type: Number })
   @Expose({ name: 'user_id' })
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'user_id must be an integer' })
   userId: number;
 }
 
@@ -83,9 +83,9 @@ export class CreatePlatformDto {
       'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
   })
   @Expose({ name: 'redirect_uris' })
-  @IsArray()
-  @ArrayMaxSize(10)
-  @ArrayMinSize(1)
+  @IsArray({ message: 'redirect_uris must be an array of urls' })
+  @ArrayMaxSize(10, { message: 'redirect_uris must have at most 10 urls' })
+  @ArrayMinSize(1, { message: 'redirect_uris must have at least 1 url' })
   @IsValidRedirectUri({ each: true })
   redirectUris: string[];
 
@@ -112,7 +112,7 @@ export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
   @Expose({ name: 'is_verified' })
   @IsOptional()
   @Type(() => Boolean)
-  @IsBoolean()
+  @IsBoolean({ message: 'is_verified must be a boolean' })
   isVerified?: boolean;
 
   @ApiProperty({
