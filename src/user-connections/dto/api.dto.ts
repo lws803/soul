@@ -9,25 +9,25 @@ import { ConnectionType } from '../enums/connection-type.enum';
 export class PostPlatformDto {
   @ApiProperty({ name: 'platform_id', example: 1 })
   @Expose({ name: 'platform_id' })
-  @IsInt()
+  @IsInt({ message: 'platform_id must be an integer' })
   platformId: number;
 }
 
 export class CreateUserConnectionDto {
   @ApiProperty({ name: 'from_user_id', example: 1234 })
   @Expose({ name: 'from_user_id' })
-  @IsInt()
+  @IsInt({ message: 'from_user_id must be an integer' })
   fromUserId: number;
 
   @ApiProperty({ name: 'to_user_id', example: 12345 })
   @Expose({ name: 'to_user_id' })
-  @IsInt()
+  @IsInt({ message: 'to_user_id must be an integer' })
   toUserId: number;
 
   @ApiProperty({ name: 'platform_id', example: 1, required: false })
   @Expose({ name: 'platform_id' })
   @IsOptional()
-  @IsInt()
+  @IsInt({ message: 'platform_id must be an integer' })
   platformId?: number;
 }
 
@@ -52,7 +52,7 @@ export class ByUserIdsParamsDto {
   })
   @Expose({ name: 'from_user_id' })
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'from_user_id must be an integer' })
   fromUserId: number;
 
   @ApiProperty({
@@ -63,7 +63,7 @@ export class ByUserIdsParamsDto {
   })
   @Expose({ name: 'to_user_id' })
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'to_user_id must be an integer' })
   toUserId: number;
 }
 
@@ -74,7 +74,11 @@ export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
     type: String,
   })
   @Expose({ name: 'connection_type' })
-  @IsEnum(ConnectionType)
+  @IsEnum(ConnectionType, {
+    message:
+      'connection_type must be a valid connection type: ' +
+      `${ConnectionType.Follow}, ${ConnectionType.Follower}, ${ConnectionType.Mutual}`,
+  })
   connectionType: ConnectionType;
 
   @ApiProperty({
@@ -86,7 +90,7 @@ export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
   @Expose({ name: 'platform_id' })
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'platform_id must be an integer' })
   platformId?: number;
 }
 
@@ -111,6 +115,6 @@ export class RemovePlatformFromUserConnectionParamsDto {
   @Expose({ name: 'platform_id' })
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'platform_id must be an integer' })
   platformId?: number;
 }

@@ -7,7 +7,7 @@ import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.
 export class RefreshTokenBodyDto {
   @ApiProperty({ name: 'refresh_token' })
   @Expose({ name: 'refresh_token' })
-  @IsString()
+  @IsString({ message: 'refresh_token must be a string' })
   refreshToken: string;
 
   @ApiProperty({
@@ -19,7 +19,7 @@ export class RefreshTokenBodyDto {
   @Expose({ name: 'client_id' })
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'client_id must be an integer' })
   platformId?: number;
 }
 
@@ -32,7 +32,7 @@ export class CodeQueryParamDto {
   })
   @Expose({ name: 'client_id' })
   @Type(() => Number)
-  @IsInt()
+  @IsInt({ message: 'client_id must be an integer' })
   platformId: number;
 
   @ApiProperty({
@@ -41,7 +41,7 @@ export class CodeQueryParamDto {
     type: String,
   })
   @Expose({ name: 'redirect_uri' })
-  @IsString()
+  @IsString({ message: 'redirect_uri must be a string' })
   @IsValidRedirectUri()
   callback: string;
 
@@ -53,7 +53,7 @@ export class CodeQueryParamDto {
       'Use this state param to mitigate CSRF attacks and point your platform to the ' +
       'correct state upon successful login.',
   })
-  @IsString()
+  @IsString({ message: 'state must be a string' })
   state: string;
 
   @ApiProperty({
@@ -63,7 +63,7 @@ export class CodeQueryParamDto {
       'Code challenge for PKCE flow. See https://tools.ietf.org/html/rfc7636',
   })
   @Expose({ name: 'code_challenge' })
-  @IsString()
+  @IsString({ message: 'code_challenge must be a string' })
   codeChallenge: string;
 }
 
@@ -78,7 +78,7 @@ export class ValidateBodyDto {
     type: String,
   })
   @Expose({ name: 'redirect_uri' })
-  @IsString()
+  @IsString({ message: 'redirect_uri must be a string' })
   @IsValidRedirectUri()
   callback: string;
 
@@ -89,11 +89,11 @@ export class ValidateBodyDto {
       'Code verifier for PKCE flow. See https://tools.ietf.org/html/rfc7636',
   })
   @Expose({ name: 'code_verifier' })
-  @IsString()
+  @IsString({ message: 'code_verifier must be a string' })
   codeVerifier: string;
 
   @Expose({ name: 'grant_type' })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'grant_type must be a string' })
   grantType?: string;
 }
