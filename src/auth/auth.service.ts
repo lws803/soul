@@ -83,7 +83,7 @@ export class AuthService {
     };
   }
 
-  async getCodeForPlatformAndCallback({
+  async findCodeForPlatformAndCallback({
     user,
     platformId,
     callback,
@@ -334,7 +334,7 @@ export class AuthService {
       );
     }
 
-    const token = await this.getStoredTokenFromRefreshTokenPayload(payload);
+    const token = await this.findStoredTokenFromRefreshTokenPayload(payload);
     if (!token) {
       throw new InvalidTokenException('Refresh token not found');
     }
@@ -352,7 +352,7 @@ export class AuthService {
       throw new InvalidTokenException('Refresh token revoked');
     }
 
-    const user = await this.getUserFromRefreshTokenPayload(payload);
+    const user = await this.findUserFromRefreshTokenPayload(payload);
 
     if (!user) {
       throw new InvalidTokenException('Refresh token malformed');
@@ -382,7 +382,7 @@ export class AuthService {
     }
   }
 
-  private async getUserFromRefreshTokenPayload(payload: JWTRefreshPayload) {
+  private async findUserFromRefreshTokenPayload(payload: JWTRefreshPayload) {
     const userId = payload.userId;
 
     if (!userId) {
@@ -392,7 +392,7 @@ export class AuthService {
     return this.usersService.findOne(userId);
   }
 
-  private async getStoredTokenFromRefreshTokenPayload(
+  private async findStoredTokenFromRefreshTokenPayload(
     payload: JWTRefreshPayload,
   ) {
     const tokenId = payload.tokenId;

@@ -7,7 +7,7 @@ import { BadHealthcheckException } from './common/exceptions/bad-healthcheck.exc
 export class AppService {
   constructor(private dbSession: Connection) {}
 
-  async getHealthcheck(): Promise<{ status: 'OK' }> {
+  async healthcheck(): Promise<{ status: 'OK' }> {
     if (!this.dbSession.isConnected) {
       throw new BadHealthcheckException();
     }

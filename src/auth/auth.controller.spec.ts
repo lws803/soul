@@ -22,7 +22,7 @@ describe('AuthService', () => {
               accessToken: 'ACCESS_TOKEN',
               refreshToken: 'REFRESH_TOKEN',
             }),
-            getCodeForPlatformAndCallback: jest.fn().mockResolvedValue({
+            findCodeForPlatformAndCallback: jest.fn().mockResolvedValue({
               code: 'CODE',
             }),
             exchangeCodeForToken: jest.fn().mockReturnValue({
@@ -110,7 +110,7 @@ describe('AuthService', () => {
       expect(result).toEqual({
         code: 'CODE',
       });
-      expect(service.getCodeForPlatformAndCallback).toHaveBeenCalledWith({
+      expect(service.findCodeForPlatformAndCallback).toHaveBeenCalledWith({
         user,
         platformId,
         callback: 'TEST_REDIRECT_URI',

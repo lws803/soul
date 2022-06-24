@@ -189,11 +189,11 @@ describe('UsersController', () => {
     });
   });
 
-  describe('getMe()', () => {
+  describe('findMe()', () => {
     it('gets the right user', async () => {
       const user = factories.oneUser.build();
       const jwtPayload = factories.jwtPayload.build();
-      expect(await controller.getMe({ user: jwtPayload })).toEqual(user);
+      expect(await controller.findMe({ user: jwtPayload })).toEqual(user);
     });
   });
 

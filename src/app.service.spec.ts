@@ -24,7 +24,7 @@ describe(AppService, () => {
 
   describe('getHealthcheck()', () => {
     it('returns healthy', async () => {
-      const result = await service.getHealthcheck();
+      const result = await service.healthcheck();
       expect(result).toStrictEqual({ status: 'OK' });
     });
 
@@ -43,7 +43,7 @@ describe(AppService, () => {
 
       const service = module.get<AppService>(AppService);
 
-      await expect(service.getHealthcheck()).rejects.toThrow(
+      await expect(service.healthcheck()).rejects.toThrow(
         'Service is in an unhealthy state. Please contact the service owner.',
       );
     });

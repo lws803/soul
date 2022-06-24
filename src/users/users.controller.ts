@@ -31,7 +31,7 @@ import {
   CreateUserResponseDto,
   FindAllUserResponseDto,
   FindOneUserResponseDto,
-  GetMeUserResponseDto,
+  FindMeUserResponseDto,
   UpdateUserResponseDto,
 } from './dto/api-responses.dto';
 
@@ -62,13 +62,13 @@ export class UsersController {
   }
 
   @ApiOperation({ description: 'Retrieve myself (requires auth bearer token)' })
-  @ApiResponse({ status: HttpStatus.OK, type: GetMeUserResponseDto })
+  @ApiResponse({ status: HttpStatus.OK, type: FindMeUserResponseDto })
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getMe(
+  async findMe(
     @Request() { user }: { user: JWTPayload },
-  ): Promise<GetMeUserResponseDto> {
-    return new GetMeUserResponseDto(
+  ): Promise<FindMeUserResponseDto> {
+    return new FindMeUserResponseDto(
       await this.usersService.findOne(user.userId),
     );
   }
@@ -109,12 +109,12 @@ export class UsersController {
     description:
       'Verifies confirmation token which is used to log a user into an external platform',
   })
-  @ApiResponse({ status: HttpStatus.CREATED, type: GetMeUserResponseDto })
+  @ApiResponse({ status: HttpStatus.CREATED, type: FindMeUserResponseDto })
   @Post('verify-confirmation-token')
   async verifyConfirmationToken(
     @Query() { token }: TokenQueryParamDto,
-  ): Promise<GetMeUserResponseDto> {
-    return new GetMeUserResponseDto(
+  ): Promise<FindMeUserResponseDto> {
+    return new FindMeUserResponseDto(
       await this.usersService.verifyConfirmationToken(token),
     );
   }
@@ -143,13 +143,13 @@ export class UsersController {
   @ApiOperation({
     description: 'Reset password from a valid request password reset token',
   })
-  @ApiResponse({ status: HttpStatus.CREATED, type: GetMeUserResponseDto })
+  @ApiResponse({ status: HttpStatus.CREATED, type: FindMeUserResponseDto })
   @Post('password-reset')
   async passwordReset(
     @Query() { token }: TokenQueryParamDto,
     @Body() { password }: PasswordResetDto,
-  ): Promise<GetMeUserResponseDto> {
-    return new GetMeUserResponseDto(
+  ): Promise<FindMeUserResponseDto> {
+    return new FindMeUserResponseDto(
       await this.usersService.passwordReset(token, password),
     );
   }

@@ -55,7 +55,7 @@ export class AuthController {
     @Query() queryArgs: CodeQueryParamDto,
   ): Promise<CodeResponseDto> {
     return new CodeResponseDto(
-      await this.authService.getCodeForPlatformAndCallback({
+      await this.authService.findCodeForPlatformAndCallback({
         user,
         ...queryArgs,
       }),
