@@ -26,7 +26,7 @@ describe('AppController', () => {
 
   describe('healthcheck', () => {
     it('should return healthy', async () => {
-      expect(await appController.getHealthcheck()).toEqual({ status: 'OK' });
+      expect(await appController.healthcheck()).toEqual({ status: 'OK' });
     });
   });
 });

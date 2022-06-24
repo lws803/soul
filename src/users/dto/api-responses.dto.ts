@@ -36,8 +36,8 @@ export class CreateUserResponseDto extends FullUserResponseDto {
   }
 }
 
-export class GetMeUserResponseDto extends FullUserResponseDto {
-  constructor(args: GetMeUserResponseDto) {
+export class FindMeUserResponseDto extends FullUserResponseDto {
+  constructor(args: FindMeUserResponseDto) {
     super(args);
   }
 }

@@ -198,7 +198,7 @@ describe('AuthService', () => {
       const platformUser = factories.onePlatformUser.build();
       const codeChallenge = 'CODE_CHALLENGE';
 
-      const response = await service.getCodeForPlatformAndCallback({
+      const response = await service.findCodeForPlatformAndCallback({
         user,
         platformId: platformUser.platform.id,
         callback: 'TEST_REDIRECT_URI',
@@ -235,7 +235,7 @@ describe('AuthService', () => {
       const platformUser = factories.onePlatformUser.build();
 
       await expect(
-        service.getCodeForPlatformAndCallback({
+        service.findCodeForPlatformAndCallback({
           user,
           platformId: platformUser.platform.id,
           callback: 'INVALID_URI',
@@ -250,7 +250,7 @@ describe('AuthService', () => {
       const platformUser = factories.onePlatformUser.build();
 
       await expect(
-        service.getCodeForPlatformAndCallback({
+        service.findCodeForPlatformAndCallback({
           user,
           platformId: platformUser.platform.id,
           callback: 'TEST_REDIRECT_URI',

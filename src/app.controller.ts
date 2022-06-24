@@ -11,7 +11,7 @@ export class AppController {
 
   @ApiExcludeEndpoint()
   @Get('healthcheck')
-  async getHealthcheck(): Promise<{ status: 'OK' }> {
-    return await this.appService.getHealthcheck();
+  async healthcheck(): Promise<{ status: 'OK' }> {
+    return await this.appService.healthcheck();
   }
 }
