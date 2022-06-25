@@ -75,6 +75,11 @@ const schema = Joi.object({
   PKCE_CODE_CHALLENGE_TTL: Joi.number()
     .required()
     .description('PKCE code challenge TTL (in seconds)'),
+  REFRESH_TOKEN_ROTATION: Joi.boolean()
+    .optional()
+    .allow('')
+    .default(false)
+    .description('Refresh token rotation on'),
 });
 
 const config: ConfigModuleOptions = {
