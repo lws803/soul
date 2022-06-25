@@ -20,20 +20,8 @@ import { JWTPayload } from './entities/jwt-payload.entity';
 import { JWTRefreshPayload } from './entities/jwt-refresh-payload.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { TokenType } from './enums/token-type.enum';
-import {
-  InvalidTokenException,
-  UserNotVerifiedException,
-  InvalidCallbackException,
-  PKCENotMatchException,
-  InvalidCodeException,
-} from './exceptions';
-import {
-  CodeResponseDto,
-  LoginResponseDto,
-  PlatformLoginResponseDto,
-  RefreshTokenResponseDto,
-  RefreshTokenWithPlatformResponseDto,
-} from './dto/api-responses.dto';
+import * as exceptions from './exceptions';
+import * as apiResponses from './dto/api-responses.dto';
 import { CodeQueryParamDto, ValidateBodyDto } from './dto/api.dto';
 import { DecodedCode } from './types';
 
@@ -58,11 +46,11 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User): Promise<LoginResponseDto> {
+  async login(user: User): Promise<apiResponses.LoginResponseDto> {
     await this.deleteExpiredRefreshTokens({ userId: user.id });
 
     if (!user.isActive) {
-      throw new UserNotVerifiedException();
+      throw new exceptions.UserNotVerifiedException();
     }
 
     return {
@@ -83,15 +71,15 @@ export class AuthService {
     codeChallenge,
   }: {
     user: User;
-  } & CodeQueryParamDto): Promise<CodeResponseDto> {
+  } & CodeQueryParamDto): Promise<apiResponses.CodeResponseDto> {
     if (!user.isActive) {
-      throw new UserNotVerifiedException();
+      throw new exceptions.UserNotVerifiedException();
     }
 
     const platform = await this.platformService.findOne(platformId);
 
     if (!platform.redirectUris.includes(callback)) {
-      throw new InvalidCallbackException();
+      throw new exceptions.InvalidCallbackException();
     }
 
     await this.deleteExpiredRefreshTokens({
@@ -125,16 +113,16 @@ export class AuthService {
     code,
     callback,
     codeVerifier,
-  }: ValidateBodyDto): Promise<PlatformLoginResponseDto> {
+  }: ValidateBodyDto): Promise<apiResponses.PlatformLoginResponseDto> {
     let decodedToken: DecodedCode;
     try {
       decodedToken = this.jwtService.verify<DecodedCode>(code);
     } catch (Error) {
-      throw new InvalidCodeException();
+      throw new exceptions.InvalidCodeException();
     }
 
     if (decodedToken.callback !== callback) {
-      throw new InvalidCallbackException();
+      throw new exceptions.InvalidCallbackException();
     }
 
     const challengeCode = await this.cacheManager.get(
@@ -149,7 +137,7 @@ export class AuthService {
           decodedToken.codeChallengeKey
         }`,
       );
-      throw new PKCENotMatchException();
+      throw new exceptions.PKCENotMatchException();
     }
 
     this.cacheManager.del(
@@ -182,7 +170,9 @@ export class AuthService {
     };
   }
 
-  async refresh(encodedRefreshToken: string): Promise<RefreshTokenResponseDto> {
+  async refresh(
+    encodedRefreshToken: string,
+  ): Promise<apiResponses.RefreshTokenResponseDto> {
     const { token, user } = await this.createAccessTokenFromRefreshToken({
       encodedRefreshToken,
       revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
@@ -203,7 +193,7 @@ export class AuthService {
   async refreshWithPlatform(
     encodedRefreshToken: string,
     platformId: number,
-  ): Promise<RefreshTokenWithPlatformResponseDto> {
+  ): Promise<apiResponses.RefreshTokenWithPlatformResponseDto> {
     const { token, roles, user } = await this.createAccessTokenFromRefreshToken(
       {
         encodedRefreshToken,
@@ -327,14 +317,14 @@ export class AuthService {
     const payload = await this.decodeRefreshToken(encoded);
 
     if (payload.tokenType === TokenType.Access) {
-      throw new InvalidTokenException(
+      throw new exceptions.InvalidTokenException(
         'Access token used in place of refresh token, please try again.',
       );
     }
 
     const token = await this.findStoredTokenFromRefreshTokenPayload(payload);
     if (!token) {
-      throw new InvalidTokenException('Refresh token not found');
+      throw new exceptions.InvalidTokenException('Refresh token not found');
     }
 
     if (token.isRevoked) {
@@ -347,21 +337,21 @@ export class AuthService {
         { isRevoked: true },
       );
 
-      throw new InvalidTokenException('Refresh token revoked');
+      throw new exceptions.InvalidTokenException('Refresh token revoked');
     }
 
     const user = await this.findUserFromRefreshTokenPayload(payload);
 
     if (!user) {
-      throw new InvalidTokenException('Refresh token malformed');
+      throw new exceptions.InvalidTokenException('Refresh token malformed');
     }
 
     if (platformId && payload.platformId !== platformId) {
-      throw new InvalidTokenException('Invalid token for platform');
+      throw new exceptions.InvalidTokenException('Invalid token for platform');
     }
 
     if (!platformId && payload.platformId) {
-      throw new InvalidTokenException(
+      throw new exceptions.InvalidTokenException(
         `Refresh token is for a platform with id: ${payload.platformId}.`,
       );
     }
@@ -374,9 +364,9 @@ export class AuthService {
       return await this.jwtService.verifyAsync(token);
     } catch (error) {
       if (error instanceof TokenExpiredError)
-        throw new InvalidTokenException('Refresh token expired');
+        throw new exceptions.InvalidTokenException('Refresh token expired');
 
-      throw new InvalidTokenException();
+      throw new exceptions.InvalidTokenException();
     }
   }
 
@@ -384,7 +374,7 @@ export class AuthService {
     const userId = payload.userId;
 
     if (!userId) {
-      throw new InvalidTokenException('Refresh token malformed');
+      throw new exceptions.InvalidTokenException('Refresh token malformed');
     }
 
     return this.usersService.findOne(userId);
@@ -396,7 +386,7 @@ export class AuthService {
     const tokenId = payload.tokenId;
 
     if (!tokenId) {
-      throw new InvalidTokenException('Refresh token malformed');
+      throw new exceptions.InvalidTokenException('Refresh token malformed');
     }
 
     return this.findTokenById(tokenId);
