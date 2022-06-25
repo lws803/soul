@@ -59,15 +59,7 @@ export class AuthService {
   }
 
   async login(user: User): Promise<LoginResponseDto> {
-    await this.refreshTokenRepository
-      .createQueryBuilder('refresh_tokens')
-      .delete()
-      .where('refresh_tokens.expires <= :currentDate', {
-        currentDate: new Date(),
-      })
-      .andWhere('refresh_tokens.user_id = :userId', { userId: user.id })
-      .andWhere('refresh_tokens.platform_user_id is NULL')
-      .execute();
+    await this.deleteExpiredRefreshTokens({ userId: user.id });
 
     if (!user.isActive) {
       throw new UserNotVerifiedException();
@@ -96,28 +88,16 @@ export class AuthService {
       throw new UserNotVerifiedException();
     }
 
-    const platformUser = await this.platformService.findOnePlatformUser(
-      platformId,
-      user.id,
-    );
-
     const platform = await this.platformService.findOne(platformId);
 
     if (!platform.redirectUris.includes(callback)) {
       throw new InvalidCallbackException();
     }
 
-    await this.refreshTokenRepository
-      .createQueryBuilder('refresh_tokens')
-      .delete()
-      .where('refresh_tokens.expires <= :currentDate', {
-        currentDate: new Date(),
-      })
-      .andWhere('refresh_tokens.user_id = :userId', { userId: user.id })
-      .andWhere('refresh_tokens.platform_user_id = :platformUserId', {
-        platformUserId: platformUser.id,
-      })
-      .execute();
+    await this.deleteExpiredRefreshTokens({
+      userId: user.id,
+      platformId,
+    });
 
     const codeChallengeKey = uuidv4();
     await this.cacheManager.set(
@@ -207,6 +187,9 @@ export class AuthService {
       encodedRefreshToken,
       revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
     });
+
+    await this.deleteExpiredRefreshTokens({ userId: user.id });
+
     return {
       accessToken: token,
       refreshToken: await this.generateRefreshToken(
@@ -228,6 +211,12 @@ export class AuthService {
         revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
       },
     );
+
+    await this.deleteExpiredRefreshTokens({
+      userId: user.id,
+      platformId,
+    });
+
     return {
       accessToken: token,
       platformId,
@@ -411,5 +400,39 @@ export class AuthService {
     }
 
     return this.findTokenById(tokenId);
+  }
+
+  private async deleteExpiredRefreshTokens({
+    userId,
+    platformId,
+  }: {
+    userId: number;
+    platformId?: number;
+  }) {
+    const platformUser = await this.platformService.findOnePlatformUser(
+      platformId,
+      userId,
+    );
+
+    let baseQuery = this.refreshTokenRepository
+      .createQueryBuilder('refresh_tokens')
+      .delete()
+      .where('refresh_tokens.expires <= :currentDate', {
+        currentDate: new Date(),
+      })
+      .andWhere('refresh_tokens.user_id = :userId', { userId });
+
+    if (platformId) {
+      baseQuery = baseQuery.andWhere(
+        'refresh_tokens.platform_user_id = :platformUserId',
+        {
+          platformUserId: platformUser.id,
+        },
+      );
+    } else {
+      baseQuery = baseQuery.andWhere('refresh_tokens.platform_user_id is NULL');
+    }
+
+    await baseQuery.execute();
   }
 }
