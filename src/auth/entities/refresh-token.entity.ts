@@ -20,7 +20,7 @@ export class RefreshToken {
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
   user: User;
 
-  @Column()
+  @Column({ name: 'is_revoked' })
   isRevoked: boolean;
 
   @ManyToOne(() => PlatformUser, {
