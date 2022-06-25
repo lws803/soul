@@ -32,4 +32,5 @@ export type ConfigProperties = {
   SENTRY_ENVIRONMENT: string;
   // PKCE auth
   PKCE_CODE_CHALLENGE_TTL: number;
+  REFRESH_TOKEN_ROTATION: boolean;
 };

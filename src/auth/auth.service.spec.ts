@@ -25,6 +25,7 @@ describe('AuthService', () => {
   let refreshTokenRepository: Repository<RefreshToken>;
   let refreshTokenCreateQueryBuilder: any;
   let cacheManager: Cache;
+  let configService: ConfigService;
 
   beforeEach(async () => {
     refreshTokenCreateQueryBuilder = {
@@ -65,6 +66,7 @@ describe('AuthService', () => {
             get: jest.fn().mockImplementation((arg) => {
               if (arg === 'JWT_REFRESH_TOKEN_TTL') return 3600;
               if (arg === 'HOST_URL') return 'localhost:3000';
+              if (arg === 'REFRESH_TOKEN_ROTATION') return false;
               return arg;
             }),
           },
@@ -120,6 +122,7 @@ describe('AuthService', () => {
       getRepositoryToken(RefreshToken),
     );
     cacheManager = module.get<Cache>(CACHE_MANAGER);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   describe('validateUser()', () => {
@@ -370,7 +373,7 @@ describe('AuthService', () => {
         { secret: 'JWT_SECRET_KEY' },
       );
 
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+      expect(refreshTokenRepository.update).not.toHaveBeenCalledWith(
         factories.refreshToken.build().id,
         { isRevoked: true },
       );
@@ -380,6 +383,20 @@ describe('AuthService', () => {
         refreshToken: 'SIGNED_TOKEN',
         expiresIn: 'JWT_ACCESS_TOKEN_TTL',
       });
+    });
+
+    it('should revoke previous token if REFRESH_TOKEN_ROTATION is true', async () => {
+      jest.spyOn(configService, 'get').mockImplementation((arg) => {
+        if (arg === 'JWT_REFRESH_TOKEN_TTL') return 3600;
+        if (arg === 'HOST_URL') return 'localhost:3000';
+        if (arg === 'REFRESH_TOKEN_ROTATION') return true;
+      });
+      await service.refresh('REFRESH_TOKEN');
+
+      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+        factories.refreshToken.build().id,
+        { isRevoked: true },
+      );
     });
 
     it('should throw when refresh token does not exist', async () => {
@@ -447,7 +464,7 @@ describe('AuthService', () => {
         factories.jwtPayloadWithPlatform.build(),
         { secret: 'JWT_SECRET_KEY' },
       );
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+      expect(refreshTokenRepository.update).not.toHaveBeenCalledWith(
         factories.refreshToken.build().id,
         { isRevoked: true },
       );
@@ -459,6 +476,31 @@ describe('AuthService', () => {
         roles: platformUser.roles,
         expiresIn: 'JWT_ACCESS_TOKEN_TTL',
       });
+    });
+
+    it('should revoke previous token if REFRESH_TOKEN_ROTATION is true', async () => {
+      jest.spyOn(configService, 'get').mockImplementation((arg) => {
+        if (arg === 'JWT_REFRESH_TOKEN_TTL') return 3600;
+        if (arg === 'HOST_URL') return 'localhost:3000';
+        if (arg === 'REFRESH_TOKEN_ROTATION') return true;
+      });
+
+      jest
+        .spyOn(jwtService, 'verifyAsync')
+        .mockImplementation(() =>
+          Promise.resolve(factories.jwtRefreshPayloadWithPlatform.build()),
+        );
+
+      const platformUser = factories.onePlatformUser.build();
+
+      await service.refreshWithPlatform(
+        'REFRESH_TOKEN',
+        platformUser.platform.id,
+      );
+      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+        factories.refreshToken.build().id,
+        { isRevoked: true },
+      );
     });
 
     it('should throw when refresh token does not exist', async () => {

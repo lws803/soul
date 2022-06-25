@@ -203,10 +203,10 @@ export class AuthService {
   }
 
   async refresh(encodedRefreshToken: string): Promise<RefreshTokenResponseDto> {
-    const { token, user } =
-      await this.createAccessTokenFromRefreshTokenAndRemoveExisting(
-        encodedRefreshToken,
-      );
+    const { token, user } = await this.createAccessTokenFromRefreshToken({
+      encodedRefreshToken,
+      revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
+    });
     return {
       accessToken: token,
       refreshToken: await this.generateRefreshToken(
@@ -221,11 +221,13 @@ export class AuthService {
     encodedRefreshToken: string,
     platformId: number,
   ): Promise<RefreshTokenWithPlatformResponseDto> {
-    const { token, roles, user } =
-      await this.createAccessTokenFromRefreshTokenAndRemoveExisting(
+    const { token, roles, user } = await this.createAccessTokenFromRefreshToken(
+      {
         encodedRefreshToken,
         platformId,
-      );
+        revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
+      },
+    );
     return {
       accessToken: token,
       platformId,
@@ -240,10 +242,15 @@ export class AuthService {
     };
   }
 
-  private async createAccessTokenFromRefreshTokenAndRemoveExisting(
-    encodedRefreshToken: string,
-    platformId?: number,
-  ) {
+  private async createAccessTokenFromRefreshToken({
+    encodedRefreshToken,
+    platformId,
+    revokeExistingToken,
+  }: {
+    encodedRefreshToken: string;
+    platformId?: number;
+    revokeExistingToken?: boolean;
+  }) {
     const {
       user,
       roles,
@@ -252,10 +259,12 @@ export class AuthService {
 
     const token = await this.generateAccessToken(user, platformId, roles);
 
-    // For refresh token reuse detection
-    await this.refreshTokenRepository.update(refreshToken.id, {
-      isRevoked: true,
-    });
+    if (!!revokeExistingToken) {
+      // For refresh token reuse detection
+      await this.refreshTokenRepository.update(refreshToken.id, {
+        isRevoked: true,
+      });
+    }
 
     return { user, token, roles };
   }
@@ -341,7 +350,7 @@ export class AuthService {
 
     if (token.isRevoked) {
       // Revokes all existing tokens for this platform and user
-      this.refreshTokenRepository.update(
+      await this.refreshTokenRepository.update(
         {
           user: token.user,
           platformUser: token.platformUser || null,
