@@ -399,11 +399,6 @@ export class AuthService {
     userId: number;
     platformId?: number;
   }) {
-    const platformUser = await this.platformService.findOnePlatformUser(
-      platformId,
-      userId,
-    );
-
     let baseQuery = this.refreshTokenRepository
       .createQueryBuilder('refresh_tokens')
       .delete()
@@ -413,6 +408,10 @@ export class AuthService {
       .andWhere('refresh_tokens.user_id = :userId', { userId });
 
     if (platformId) {
+      const platformUser = await this.platformService.findOnePlatformUser(
+        platformId,
+        userId,
+      );
       baseQuery = baseQuery.andWhere(
         'refresh_tokens.platform_user_id = :platformUserId',
         {
