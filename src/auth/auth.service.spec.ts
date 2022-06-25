@@ -378,6 +378,22 @@ describe('AuthService', () => {
         { isRevoked: true },
       );
 
+      // Should also delete expired tokens
+      expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
+      expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'refresh_tokens.expires <= :currentDate',
+        { currentDate: expect.any(Date) },
+      );
+      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
+        1,
+        'refresh_tokens.user_id = :userId',
+        { userId: 1 },
+      );
+      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
+        2,
+        'refresh_tokens.platform_user_id is NULL',
+      );
+
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
         refreshToken: 'SIGNED_TOKEN',
@@ -467,6 +483,23 @@ describe('AuthService', () => {
       expect(refreshTokenRepository.update).not.toHaveBeenCalledWith(
         factories.refreshToken.build().id,
         { isRevoked: true },
+      );
+
+      // Should also delete expired tokens
+      expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
+      expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
+        'refresh_tokens.expires <= :currentDate',
+        { currentDate: expect.any(Date) },
+      );
+      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
+        1,
+        'refresh_tokens.user_id = :userId',
+        { userId: 1 },
+      );
+      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
+        2,
+        'refresh_tokens.platform_user_id = :platformUserId',
+        { platformUserId: 1 },
       );
 
       expect(response).toStrictEqual({
