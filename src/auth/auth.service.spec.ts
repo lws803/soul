@@ -23,22 +23,10 @@ describe('AuthService', () => {
   let service: AuthService;
   let jwtService: JwtService;
   let refreshTokenRepository: Repository<RefreshToken>;
-  let refreshTokenCreateQueryBuilder: any;
   let cacheManager: Cache;
   let configService: ConfigService;
 
   beforeEach(async () => {
-    refreshTokenCreateQueryBuilder = {
-      delete: jest
-        .fn()
-        .mockImplementation(() => refreshTokenCreateQueryBuilder),
-      where: jest.fn().mockImplementation(() => refreshTokenCreateQueryBuilder),
-      andWhere: jest
-        .fn()
-        .mockImplementation(() => refreshTokenCreateQueryBuilder),
-      execute: jest.fn(),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -79,9 +67,6 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.refreshToken.build()),
             save: jest.fn().mockResolvedValue(factories.refreshToken.build()),
             delete: jest.fn(),
-            createQueryBuilder: jest
-              .fn()
-              .mockImplementation(() => refreshTokenCreateQueryBuilder),
             update: jest.fn().mockResolvedValue(factories.refreshToken.build()),
           },
         },
@@ -172,21 +157,6 @@ describe('AuthService', () => {
         expires: expect.any(Date),
       });
 
-      expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
-      expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
-        'refresh_tokens.expires <= :currentDate',
-        { currentDate: expect.any(Date) },
-      );
-      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
-        1,
-        'refresh_tokens.user_id = :userId',
-        { userId: 1 },
-      );
-      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
-        2,
-        'refresh_tokens.platform_user_id is NULL',
-      );
-
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
         refreshToken: 'SIGNED_TOKEN',
@@ -209,21 +179,6 @@ describe('AuthService', () => {
         codeChallenge,
       });
 
-      expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
-      expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
-        'refresh_tokens.expires <= :currentDate',
-        { currentDate: expect.any(Date) },
-      );
-      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
-        1,
-        'refresh_tokens.user_id = :userId',
-        { userId: 1 },
-      );
-      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
-        2,
-        'refresh_tokens.platform_user_id = :platformUserId',
-        { platformUserId: 1 },
-      );
       expect(cacheManager.set).toHaveBeenCalledWith(
         expect.stringContaining('REDIS_DB_KEY_PREFIX:'),
         codeChallenge,
@@ -378,22 +333,6 @@ describe('AuthService', () => {
         { isRevoked: true },
       );
 
-      // Should also delete expired tokens
-      expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
-      expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
-        'refresh_tokens.expires <= :currentDate',
-        { currentDate: expect.any(Date) },
-      );
-      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
-        1,
-        'refresh_tokens.user_id = :userId',
-        { userId: 1 },
-      );
-      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
-        2,
-        'refresh_tokens.platform_user_id is NULL',
-      );
-
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
         refreshToken: 'SIGNED_TOKEN',
@@ -483,23 +422,6 @@ describe('AuthService', () => {
       expect(refreshTokenRepository.update).not.toHaveBeenCalledWith(
         factories.refreshToken.build().id,
         { isRevoked: true },
-      );
-
-      // Should also delete expired tokens
-      expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
-      expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
-        'refresh_tokens.expires <= :currentDate',
-        { currentDate: expect.any(Date) },
-      );
-      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
-        1,
-        'refresh_tokens.user_id = :userId',
-        { userId: 1 },
-      );
-      expect(refreshTokenCreateQueryBuilder.andWhere).toHaveBeenNthCalledWith(
-        2,
-        'refresh_tokens.platform_user_id = :platformUserId',
-        { platformUserId: 1 },
       );
 
       expect(response).toStrictEqual({

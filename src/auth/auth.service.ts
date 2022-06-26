@@ -47,8 +47,6 @@ export class AuthService {
   }
 
   async login(user: User): Promise<apiResponses.LoginResponseDto> {
-    await this.deleteExpiredRefreshTokens({ userId: user.id });
-
     if (!user.isActive) {
       throw new exceptions.UserNotVerifiedException();
     }
@@ -81,11 +79,6 @@ export class AuthService {
     if (!platform.redirectUris.includes(callback)) {
       throw new exceptions.InvalidCallbackException();
     }
-
-    await this.deleteExpiredRefreshTokens({
-      userId: user.id,
-      platformId,
-    });
 
     const codeChallengeKey = uuidv4();
     await this.cacheManager.set(
@@ -178,8 +171,6 @@ export class AuthService {
       revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
     });
 
-    await this.deleteExpiredRefreshTokens({ userId: user.id });
-
     return {
       accessToken: token,
       refreshToken: await this.generateRefreshToken(
@@ -201,11 +192,6 @@ export class AuthService {
         revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
       },
     );
-
-    await this.deleteExpiredRefreshTokens({
-      userId: user.id,
-      platformId,
-    });
 
     return {
       accessToken: token,
@@ -390,38 +376,5 @@ export class AuthService {
     }
 
     return this.findTokenById(tokenId);
-  }
-
-  private async deleteExpiredRefreshTokens({
-    userId,
-    platformId,
-  }: {
-    userId: number;
-    platformId?: number;
-  }) {
-    let baseQuery = this.refreshTokenRepository
-      .createQueryBuilder('refresh_tokens')
-      .delete()
-      .where('refresh_tokens.expires <= :currentDate', {
-        currentDate: new Date(),
-      })
-      .andWhere('refresh_tokens.user_id = :userId', { userId });
-
-    if (platformId) {
-      const platformUser = await this.platformService.findOnePlatformUser(
-        platformId,
-        userId,
-      );
-      baseQuery = baseQuery.andWhere(
-        'refresh_tokens.platform_user_id = :platformUserId',
-        {
-          platformUserId: platformUser.id,
-        },
-      );
-    } else {
-      baseQuery = baseQuery.andWhere('refresh_tokens.platform_user_id is NULL');
-    }
-
-    await baseQuery.execute();
   }
 }
