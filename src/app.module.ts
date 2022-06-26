@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { RavenInterceptor, RavenModule } from 'nest-raven';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import config from '../config';
 
@@ -22,10 +23,12 @@ import { AllExceptionFilter } from './filters/all-exception.filter';
 import { MailModule } from './mail/mail.module';
 import { ReputationModule } from './reputation/reputation.module';
 import { PlatformCategory } from './platforms/entities/platform-category.entity';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(config),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
@@ -55,6 +58,7 @@ import { PlatformCategory } from './platforms/entities/platform-category.entity'
     MailModule,
     RavenModule,
     ReputationModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [
