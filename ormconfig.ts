@@ -1,6 +1,8 @@
-import { ConnectionOptions } from 'typeorm';
-import { config } from 'dotenv';
 import fs = require('fs');
+
+import { ConnectionOptions } from 'typeorm';
+
+import { config } from 'dotenv';
 
 const LOCAL_ENV_PATH = './config/env/.env.development.local';
 const ENV_PATH = './config/env/.env.development';
