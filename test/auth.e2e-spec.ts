@@ -171,6 +171,35 @@ describe('AuthController (e2e)', () => {
           });
         });
     });
+
+    it('fails to login with platform due to not being a member', async () => {
+      await platformRepository.save(
+        factories.onePlatform.build({
+          redirectUris: ['https://www.example.com'],
+          id: 2,
+          name: 'TEST_PLATFORM_2',
+          nameHandle: 'TEST_PLATFORM_2#2',
+        }),
+      );
+      const params = new URLSearchParams({
+        code_challenge: codeChallenge,
+        state: 'TEST_STATE',
+        redirect_uri: 'https://www.example.com',
+        client_id: String(2),
+      });
+      await request(app.getHttpServer())
+        .post(`/auth/code?${params.toString()}`)
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' })
+        .expect(HttpStatus.NOT_FOUND)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            error: 'PLATFORM_USER_NOT_FOUND',
+            message:
+              'The user with username: TEST_USER#1 was not found on ' +
+              'platform: TEST_PLATFORM_2#2, please try again.',
+          });
+        });
+    });
   });
 
   describe('/auth/refresh', () => {

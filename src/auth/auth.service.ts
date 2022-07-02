@@ -75,6 +75,7 @@ export class AuthService {
     }
 
     const platform = await this.platformService.findOne(platformId);
+    await this.platformService.findOnePlatformUser(platformId, user.id);
 
     if (!platform.redirectUris.includes(callback)) {
       throw new exceptions.InvalidCallbackException();
