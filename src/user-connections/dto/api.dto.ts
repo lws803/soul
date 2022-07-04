@@ -46,7 +46,6 @@ export class UserConnectionParamsDto {
 export class ByUserIdsParamsDto {
   @ApiProperty({
     name: 'from_user_id',
-    required: false,
     example: 1234,
     type: Number,
   })
@@ -57,7 +56,6 @@ export class ByUserIdsParamsDto {
 
   @ApiProperty({
     name: 'to_user_id',
-    required: false,
     example: 12345,
     type: Number,
   })
