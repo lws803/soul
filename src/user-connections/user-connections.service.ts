@@ -192,7 +192,7 @@ export class UserConnectionsService {
       skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
       relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'],
     };
-    let where: any = { mutualConnection: IsNull(), fromUser };
+    let where: any = { fromUser };
 
     if (platformId) {
       const platform = await this.platformService.findOne(platformId);
@@ -205,7 +205,7 @@ export class UserConnectionsService {
     if (connectionType === ConnectionType.Mutual) {
       where = { mutualConnection: Not(IsNull()), fromUser };
     } else if (connectionType === ConnectionType.Follower) {
-      where = { mutualConnection: IsNull(), toUser: fromUser };
+      where = { toUser: fromUser };
     }
     const [userConnections, totalCount] =
       await this.userConnectionRepository.findAndCount({
