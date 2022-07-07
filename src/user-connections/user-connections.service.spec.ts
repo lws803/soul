@@ -388,10 +388,7 @@ describe('ConnectionsService', () => {
       });
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
-        where: {
-          fromUser: factories.oneUser.build(),
-          mutualConnection: IsNull(),
-        },
+        where: { fromUser: factories.oneUser.build() },
         ...defaultQueryParameters,
       });
     });
@@ -412,10 +409,7 @@ describe('ConnectionsService', () => {
       });
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
-        where: {
-          toUser: factories.oneUser.build(),
-          mutualConnection: IsNull(),
-        },
+        where: { toUser: factories.oneUser.build() },
         ...defaultQueryParameters,
       });
     });
