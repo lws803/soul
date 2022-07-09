@@ -1,8 +1,7 @@
 import { Reflector } from '@nestjs/core';
-import { Repository } from 'typeorm';
 
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import * as factories from 'factories';
+import { PlatformsService } from 'src/platforms/platforms.service';
 
 import { PlatformRolesGuard } from './platform-roles.guard';
 import { UserRole } from './role.enum';
@@ -25,17 +24,17 @@ describe(PlatformRolesGuard, () => {
       getClass: jest.fn(),
     };
 
-    const mockPlatformUserRepository = {
-      findOne: jest.fn(),
-    } as unknown as Repository<PlatformUser>;
+    const mockPlatformUserService = {
+      findOnePlatformUser: jest.fn(),
+    } as unknown as PlatformsService;
 
     const guard = new PlatformRolesGuard(
       mockReflector,
-      mockPlatformUserRepository,
+      mockPlatformUserService,
     );
 
     expect(await guard.canActivate(mockContext)).toBeTruthy();
-    expect(mockPlatformUserRepository.findOne).not.toHaveBeenCalled();
+    expect(mockPlatformUserService.findOnePlatformUser).not.toHaveBeenCalled();
   });
 
   it('throws when user is not logged in to the correct platform', async () => {
@@ -49,19 +48,19 @@ describe(PlatformRolesGuard, () => {
       getClass: jest.fn(),
     };
 
-    const mockPlatformUserRepository = {
-      findOne: jest.fn(),
-    } as unknown as Repository<PlatformUser>;
+    const mockPlatformUserService = {
+      findOnePlatformUser: jest.fn(),
+    } as unknown as PlatformsService;
 
     const guard = new PlatformRolesGuard(
       mockReflector,
-      mockPlatformUserRepository,
+      mockPlatformUserService,
     );
 
     await expect(guard.canActivate(mockContext)).rejects.toThrow(
       new NoPermissionException(),
     );
-    expect(mockPlatformUserRepository.findOne).not.toHaveBeenCalled();
+    expect(mockPlatformUserService.findOnePlatformUser).not.toHaveBeenCalled();
   });
 
   it('throws when user is logged in to the correct platform but does not have permissions', async () => {
@@ -77,19 +76,19 @@ describe(PlatformRolesGuard, () => {
       getClass: jest.fn(),
     };
 
-    const mockPlatformUserRepository = {
-      findOne: jest.fn(),
-    } as unknown as Repository<PlatformUser>;
+    const mockPlatformUserService = {
+      findOnePlatformUser: jest.fn(),
+    } as unknown as PlatformsService;
 
     const guard = new PlatformRolesGuard(
       mockReflector,
-      mockPlatformUserRepository,
+      mockPlatformUserService,
     );
 
     await expect(guard.canActivate(mockContext)).rejects.toThrow(
       new NoPermissionException(),
     );
-    expect(mockPlatformUserRepository.findOne).not.toHaveBeenCalled();
+    expect(mockPlatformUserService.findOnePlatformUser).not.toHaveBeenCalled();
   });
 
   it('accepts when user is logged in to soul landing but is the admin of the requested platform', async () => {
@@ -103,30 +102,23 @@ describe(PlatformRolesGuard, () => {
       getClass: jest.fn(),
     };
 
-    const mockPlatformUserRepository = {
-      findOne: jest.fn().mockImplementation(() => {
+    const mockPlatformUserService = {
+      findOnePlatformUser: jest.fn().mockImplementation(() => {
         return {
           roles: [UserRole.Admin],
         };
       }),
-    } as unknown as Repository<PlatformUser>;
+    } as unknown as PlatformsService;
 
     const guard = new PlatformRolesGuard(
       mockReflector,
-      mockPlatformUserRepository,
+      mockPlatformUserService,
     );
 
     expect(await guard.canActivate(mockContext)).toBeTruthy();
-    expect(mockPlatformUserRepository.findOne).toHaveBeenCalledWith(
-      {
-        platform: {
-          id: 1,
-        },
-        user: {
-          id: 1,
-        },
-      },
-      { relations: ['user'] },
+    expect(mockPlatformUserService.findOnePlatformUser).toHaveBeenCalledWith(
+      1,
+      1,
     );
   });
 
@@ -144,25 +136,25 @@ describe(PlatformRolesGuard, () => {
       getClass: jest.fn(),
     };
 
-    const mockPlatformUserRepository = {
-      findOne: jest.fn().mockImplementation(() => {
+    const mockPlatformUserService = {
+      findOnePlatformUser: jest.fn().mockImplementation(() => {
         return {
           roles: [UserRole.Member],
         };
       }),
-    } as unknown as Repository<PlatformUser>;
+    } as unknown as PlatformsService;
 
     const guard = new PlatformRolesGuard(
       mockReflector,
-      mockPlatformUserRepository,
+      mockPlatformUserService,
     );
 
     await expect(guard.canActivate(mockContext)).rejects.toThrow(
       new NoPermissionException(),
     );
-    expect(mockPlatformUserRepository.findOne).toHaveBeenCalledWith(
-      { platform: { id: 1 }, user: { id: 1 } },
-      { relations: ['user'] },
+    expect(mockPlatformUserService.findOnePlatformUser).toHaveBeenCalledWith(
+      1,
+      1,
     );
   });
 });

@@ -43,6 +43,9 @@ describe('PlatformsController', () => {
               platformUsers: factories.platformUserArray.build(),
               totalCount: factories.platformUserArray.build().length,
             }),
+            findOnePlatformUser: jest
+              .fn()
+              .mockResolvedValue(factories.onePlatformUser.build()),
           },
         },
       ],

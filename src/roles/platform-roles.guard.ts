@@ -1,10 +1,8 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
+import { PlatformsService } from 'src/platforms/platforms.service';
 
 import { NoPermissionException } from './exceptions/no-permission.exception';
 import { UserRole } from './role.enum';
@@ -16,8 +14,7 @@ const SOUL_PLATFORM_ID = 2;
 export class PlatformRolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    @InjectRepository(PlatformUser)
-    private platformUserRepository: Repository<PlatformUser>,
+    private readonly platformsService: PlatformsService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -36,12 +33,9 @@ export class PlatformRolesGuard implements CanActivate {
     if (userJwt.platformId === SOUL_PLATFORM_ID) {
       // If user logged in from platform 2 (soul landing page) we want to check if the user is
       // an admin of the platform he's trying to access.
-      const platformUser = await this.platformUserRepository.findOne(
-        {
-          platform: { id: Number(platform_id) },
-          user: { id: userJwt.userId },
-        },
-        { relations: ['user'] },
+      const platformUser = await this.platformsService.findOnePlatformUser(
+        Number(platform_id),
+        userJwt.userId,
       );
 
       const canAccess = requiredRoles.some((role) =>
