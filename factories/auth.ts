@@ -1,11 +1,11 @@
 import { Factory } from 'fishery';
 
-import * as factories from './index';
-
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { JWTRefreshPayload } from 'src/auth/entities/jwt-refresh-payload.entity';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { TokenType } from 'src/auth/enums/token-type.enum';
+
+import * as factories from './index';
 
 export const refreshToken = Factory.define<RefreshToken>(() => ({
   id: 1,
