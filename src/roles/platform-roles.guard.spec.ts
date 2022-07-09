@@ -12,21 +12,25 @@ describe(PlatformRolesGuard, () => {
   const mockReflector = {
     getAllAndOverride: jest.fn().mockImplementation(() => [UserRole.Admin]),
   } as unknown as Reflector;
+  const mockPlatformUserService = {
+    findOnePlatformUser: jest.fn(),
+  } as unknown as PlatformsService;
 
-  it('accepts when user is admin of the platform', async () => {
+  beforeEach(() => {
+    jest.spyOn(mockPlatformUserService, 'findOnePlatformUser');
     mockContext = {
       switchToHttp: jest.fn().mockImplementation(() => mockContext),
-      getRequest: jest.fn().mockReturnValue({
-        user: factories.jwtPayloadWithPlatform.build(),
-        params: { platform_id: String(factories.onePlatform.build().id) },
-      }),
+      getRequest: jest.fn(),
       getHandler: jest.fn(),
       getClass: jest.fn(),
     };
+  });
 
-    const mockPlatformUserService = {
-      findOnePlatformUser: jest.fn(),
-    } as unknown as PlatformsService;
+  it('accepts when user is admin of the platform', async () => {
+    jest.spyOn(mockContext, 'getRequest').mockReturnValue({
+      user: factories.jwtPayloadWithPlatform.build(),
+      params: { platform_id: String(factories.onePlatform.build().id) },
+    });
 
     const guard = new PlatformRolesGuard(
       mockReflector,
@@ -38,19 +42,10 @@ describe(PlatformRolesGuard, () => {
   });
 
   it('throws when user is not logged in to the correct platform', async () => {
-    mockContext = {
-      switchToHttp: jest.fn().mockImplementation(() => mockContext),
-      getRequest: jest.fn().mockReturnValue({
-        user: factories.jwtPayloadWithPlatform.build({ platformId: 3 }),
-        params: { platform_id: String(factories.onePlatform.build().id) },
-      }),
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-    };
-
-    const mockPlatformUserService = {
-      findOnePlatformUser: jest.fn(),
-    } as unknown as PlatformsService;
+    jest.spyOn(mockContext, 'getRequest').mockReturnValue({
+      user: factories.jwtPayloadWithPlatform.build({ platformId: 3 }),
+      params: { platform_id: String(factories.onePlatform.build().id) },
+    });
 
     const guard = new PlatformRolesGuard(
       mockReflector,
@@ -64,21 +59,12 @@ describe(PlatformRolesGuard, () => {
   });
 
   it('throws when user is logged in to the correct platform but does not have permissions', async () => {
-    mockContext = {
-      switchToHttp: jest.fn().mockImplementation(() => mockContext),
-      getRequest: jest.fn().mockReturnValue({
-        user: factories.jwtPayloadWithPlatform.build({
-          roles: [UserRole.Member],
-        }),
-        params: { platform_id: String(factories.onePlatform.build().id) },
+    jest.spyOn(mockContext, 'getRequest').mockReturnValue({
+      user: factories.jwtPayloadWithPlatform.build({
+        roles: [UserRole.Member],
       }),
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-    };
-
-    const mockPlatformUserService = {
-      findOnePlatformUser: jest.fn(),
-    } as unknown as PlatformsService;
+      params: { platform_id: String(factories.onePlatform.build().id) },
+    });
 
     const guard = new PlatformRolesGuard(
       mockReflector,
@@ -92,23 +78,14 @@ describe(PlatformRolesGuard, () => {
   });
 
   it('accepts when user is logged in to soul landing but is the admin of the requested platform', async () => {
-    mockContext = {
-      switchToHttp: jest.fn().mockImplementation(() => mockContext),
-      getRequest: jest.fn().mockReturnValue({
-        user: factories.jwtPayloadWithPlatform.build({ platformId: 2 }),
-        params: { platform_id: String(factories.onePlatform.build().id) },
-      }),
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-    };
+    jest.spyOn(mockContext, 'getRequest').mockReturnValue({
+      user: factories.jwtPayloadWithPlatform.build({ platformId: 2 }),
+      params: { platform_id: String(factories.onePlatform.build().id) },
+    });
 
-    const mockPlatformUserService = {
-      findOnePlatformUser: jest.fn().mockImplementation(() => {
-        return {
-          roles: [UserRole.Admin],
-        };
-      }),
-    } as unknown as PlatformsService;
+    jest
+      .spyOn(mockPlatformUserService, 'findOnePlatformUser')
+      .mockResolvedValue(factories.onePlatformUser.build());
 
     const guard = new PlatformRolesGuard(
       mockReflector,
@@ -123,26 +100,19 @@ describe(PlatformRolesGuard, () => {
   });
 
   it('throws when user is logged in to soul landing but does not have permissions for the requested platform', async () => {
-    mockContext = {
-      switchToHttp: jest.fn().mockImplementation(() => mockContext),
-      getRequest: jest.fn().mockReturnValue({
-        user: factories.jwtPayloadWithPlatform.build({
-          platformId: 2,
-          roles: [UserRole.Member],
-        }),
-        params: { platform_id: String(factories.onePlatform.build().id) },
+    jest.spyOn(mockContext, 'getRequest').mockReturnValue({
+      user: factories.jwtPayloadWithPlatform.build({
+        platformId: 2,
+        roles: [UserRole.Member],
       }),
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-    };
+      params: { platform_id: String(factories.onePlatform.build().id) },
+    });
 
-    const mockPlatformUserService = {
-      findOnePlatformUser: jest.fn().mockImplementation(() => {
-        return {
-          roles: [UserRole.Member],
-        };
-      }),
-    } as unknown as PlatformsService;
+    jest
+      .spyOn(mockPlatformUserService, 'findOnePlatformUser')
+      .mockResolvedValue(
+        factories.onePlatformUser.build({ roles: [UserRole.Member] }),
+      );
 
     const guard = new PlatformRolesGuard(
       mockReflector,
