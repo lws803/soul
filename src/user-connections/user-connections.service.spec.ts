@@ -376,7 +376,7 @@ describe('ConnectionsService', () => {
       expect(
         await service.findMyUserConnections({
           userId: 1,
-          connectionType: ConnectionType.Follow,
+          connectionType: ConnectionType.Following,
           paginationParams: {
             numItemsPerPage: 10,
             page: 1,
