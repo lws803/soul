@@ -102,13 +102,13 @@ describe('UsersController (e2e)', () => {
             users: [
               {
                 id: expect.any(Number),
-                user_handle: 'TEST_USER#1',
-                username: 'TEST_USER',
+                user_handle: 'TEST_USER_2#2',
+                username: 'TEST_USER_2',
               },
               {
                 id: expect.any(Number),
-                user_handle: 'TEST_USER_2#2',
-                username: 'TEST_USER_2',
+                user_handle: 'TEST_USER#1',
+                username: 'TEST_USER',
               },
             ],
           });
@@ -125,8 +125,8 @@ describe('UsersController (e2e)', () => {
             users: [
               {
                 id: expect.any(Number),
-                user_handle: 'TEST_USER#1',
-                username: 'TEST_USER',
+                user_handle: 'TEST_USER_2#2',
+                username: 'TEST_USER_2',
               },
             ],
           });

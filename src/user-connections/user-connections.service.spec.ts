@@ -222,7 +222,8 @@ describe('ConnectionsService', () => {
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
         order: {
-          id: 'ASC',
+          createdAt: 'DESC',
+          id: 'DESC',
         },
         relations: ['platforms', 'fromUser', 'toUser'],
         skip: 0,
@@ -241,7 +242,8 @@ describe('ConnectionsService', () => {
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
         order: {
-          id: 'ASC',
+          createdAt: 'DESC',
+          id: 'DESC',
         },
         relations: ['platforms', 'fromUser', 'toUser'],
         skip: 0,
@@ -365,7 +367,8 @@ describe('ConnectionsService', () => {
   describe('findMyUserConnections()', () => {
     const defaultQueryParameters = {
       order: {
-        id: 'ASC',
+        createdAt: 'DESC',
+        id: 'DESC',
       },
       relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'],
       skip: 0,

@@ -104,7 +104,7 @@ export class UserConnectionsService {
   ): Promise<FindAllUserConnectionResponseDto> {
     const [userConnections, totalCount] =
       await this.userConnectionRepository.findAndCount({
-        order: { id: 'ASC' },
+        order: { createdAt: 'DESC', id: 'DESC' },
         take: paginationParams.numItemsPerPage,
         skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
         relations: ['platforms', 'fromUser', 'toUser'],
@@ -185,7 +185,7 @@ export class UserConnectionsService {
     platformId?: number;
   }) {
     const fromUser = await this.usersService.findOne(userId);
-    const order: OrderByCondition = { id: 'ASC' };
+    const order: OrderByCondition = { createdAt: 'DESC', id: 'DESC' };
     const defaultArgs = {
       order,
       take: paginationParams.numItemsPerPage,
