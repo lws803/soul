@@ -77,8 +77,7 @@ export class UsersService {
       });
     }
     baseQuery = baseQuery
-      .orderBy('user.createdAt', 'DESC')
-      .orderBy('user.id', 'DESC')
+      .orderBy({ 'user.createdAt': 'DESC', 'user.id': 'DESC' })
       .take(queryParams.numItemsPerPage)
       .skip((queryParams.page - 1) * queryParams.numItemsPerPage);
 

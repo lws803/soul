@@ -97,8 +97,7 @@ export class PlatformsService {
     }
 
     baseQuery = baseQuery
-      .orderBy('platform.createdAt', 'DESC')
-      .orderBy('platform.id', 'DESC')
+      .orderBy({ 'platform.createdAt': 'DESC', 'platform.id': 'DESC' })
       .take(queryParams.numItemsPerPage)
       .skip((queryParams.page - 1) * queryParams.numItemsPerPage);
 
