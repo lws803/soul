@@ -75,7 +75,7 @@ export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
   @IsEnum(ConnectionType, {
     message:
       'connection_type must be a valid connection type: ' +
-      `${ConnectionType.Follow}, ${ConnectionType.Follower}, ${ConnectionType.Mutual}`,
+      `${ConnectionType.Following}, ${ConnectionType.Follower}, ${ConnectionType.Mutual}`,
   })
   connectionType: ConnectionType;
 

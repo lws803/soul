@@ -118,7 +118,7 @@ describe('ConnectionsController', () => {
     it('should find my follow connections', async () => {
       expect(
         await controller.findMyConnections(userJwt, {
-          connectionType: ConnectionType.Follow,
+          connectionType: ConnectionType.Following,
           page: 1,
           numItemsPerPage: 10,
         }),
@@ -128,7 +128,7 @@ describe('ConnectionsController', () => {
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
-        connectionType: ConnectionType.Follow,
+        connectionType: ConnectionType.Following,
         paginationParams: { numItemsPerPage: 10, page: 1 },
         platformId: undefined,
         userId: 1,

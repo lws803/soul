@@ -546,7 +546,7 @@ describe('UserConnectionsController (e2e)', () => {
       await userConnectionRepository.save(firstUserConnection);
 
       return request(app.getHttpServer())
-        .get('/user-connections/my-connections?connection_type=follow')
+        .get('/user-connections/my-connections?connection_type=following')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
@@ -599,7 +599,7 @@ describe('UserConnectionsController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get(
-          '/user-connections/my-connections?connection_type=follow&platform_id=1',
+          '/user-connections/my-connections?connection_type=following&platform_id=1',
         )
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
