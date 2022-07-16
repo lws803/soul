@@ -22,7 +22,10 @@ import {
   NoAdminsRemainingException,
   DuplicatePlatformUserException,
   PlatformCategoryNotFoundException,
+  MaxAdminRolesPerUserException,
 } from './exceptions';
+
+const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
 
 @Injectable()
 export class PlatformsService {
@@ -39,6 +42,7 @@ export class PlatformsService {
   ) {}
 
   async create(createPlatformDto: CreatePlatformDto, userId: number) {
+    await this.isNewAdminPermittedOrThrow(userId);
     const platform = new Platform();
     platform.name = createPlatformDto.name;
     platform.redirectUris = createPlatformDto.redirectUris;
@@ -154,6 +158,9 @@ export class PlatformsService {
       await this.findAnotherAdminOrThrow(platformId, userId);
     }
 
+    if (roles.includes(UserRole.Admin))
+      await this.isNewAdminPermittedOrThrow(userId);
+
     platformUser.user = user;
     platformUser.platform = platform;
     platformUser.roles = [...new Set(roles)];
@@ -236,16 +243,27 @@ export class PlatformsService {
   private async findAnotherAdminOrThrow(platformId: number, userId: number) {
     const adminPlatformUser = await this.platformUserRepository
       .createQueryBuilder('platform_user')
-      .where(
-        'JSON_CONTAINS(roles, \'"admin"\') AND platform_id = :platformId ' +
-          'AND user_id != :userId',
-        { platformId, userId },
-      )
+      .where('JSON_CONTAINS(roles, \'"admin"\')', { platformId, userId })
+      .andWhere('platform_id = :platformId', { platformId })
+      .andWhere('user_id != :userId', { userId })
       .getOne();
 
     if (!adminPlatformUser) {
       throw new NoAdminsRemainingException();
     }
+  }
+
+  private async isNewAdminPermittedOrThrow(userId: number) {
+    const adminCount = await this.platformUserRepository
+      .createQueryBuilder('platform_user')
+      .where('JSON_CONTAINS(roles, \'"admin"\')')
+      .andWhere('user_id = :userId', { userId })
+      .getCount();
+
+    if (adminCount >= NUM_ADMIN_ROLES_ALLOWED_PER_USER)
+      throw new MaxAdminRolesPerUserException({
+        max: NUM_ADMIN_ROLES_ALLOWED_PER_USER,
+      });
   }
 
   private async revokePlatformUserRefreshToken(platformUser: PlatformUser) {

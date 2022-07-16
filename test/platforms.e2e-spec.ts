@@ -107,6 +107,32 @@ describe('PlatformsController (e2e)', () => {
           }),
         );
     });
+
+    it('throws when user has created too many platforms', async () => {
+      const createPlatformDto = factories.createPlatformRequestDto.build({
+        redirect_uris: ['https://example.com/redirect'],
+      });
+
+      for (let i = 0; i < 5; i++) {
+        await request(app.getHttpServer())
+          .post('/platforms')
+          .set('Authorization', `Bearer ${userAccount.accessToken}`)
+          .send(createPlatformDto)
+          .expect(HttpStatus.CREATED);
+      }
+
+      await request(app.getHttpServer())
+        .post('/platforms')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .send(createPlatformDto)
+        .expect(HttpStatus.FORBIDDEN)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            error: 'MAX_ADMIN_ROLES_EXCEEDED_PER_USER',
+            message: "Users can't hold more than 5 admin roles",
+          }),
+        );
+    });
   });
 
   describe('/platforms (GET)', () => {
