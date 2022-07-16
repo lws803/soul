@@ -6,7 +6,7 @@ export class MaxAdminRolesPerUserException extends GenericException {
   constructor({ max }: { max: number }) {
     super(
       {
-        message: `You can't hold more than ${max} admin roles`,
+        message: `Users can't hold more than ${max} admin roles`,
         error: 'MAX_ADMIN_ROLES_EXCEEDED_PER_USER',
       },
       HttpStatus.FORBIDDEN,

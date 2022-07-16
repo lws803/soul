@@ -129,7 +129,7 @@ describe('PlatformsController (e2e)', () => {
         .expect((res) =>
           expect(res.body).toEqual({
             error: 'MAX_ADMIN_ROLES_EXCEEDED_PER_USER',
-            message: "You can't hold more than 5 admin roles",
+            message: "Users can't hold more than 5 admin roles",
           }),
         );
     });
