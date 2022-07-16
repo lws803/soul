@@ -23,6 +23,7 @@ describe('PlatformsService', () => {
   let refreshTokenRepository: Repository<RefreshToken>;
   let platformCategoryRepository: Repository<PlatformCategory>;
   let platformCreateQueryBuilder: any;
+  let platformUserCreateQueryBuilder: any;
 
   beforeEach(async () => {
     platformCreateQueryBuilder = {
@@ -40,6 +41,15 @@ describe('PlatformsService', () => {
           factories.platformArray.build(),
           factories.platformArray.build().length,
         ]),
+    };
+
+    platformUserCreateQueryBuilder = {
+      where: jest.fn().mockImplementation(() => platformUserCreateQueryBuilder),
+      andWhere: jest
+        .fn()
+        .mockImplementation(() => platformUserCreateQueryBuilder),
+      getOne: jest.fn().mockResolvedValue(factories.onePlatformUser.build()),
+      getCount: jest.fn().mockResolvedValue(1),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -85,13 +95,9 @@ describe('PlatformsService', () => {
               ),
             update: jest.fn(),
             delete: jest.fn(),
-            createQueryBuilder: jest.fn().mockReturnValue({
-              where: jest.fn().mockReturnValue({
-                getOne: jest
-                  .fn()
-                  .mockResolvedValue(factories.onePlatformUser.build()),
-              }),
-            }),
+            createQueryBuilder: jest
+              .fn()
+              .mockImplementation(() => platformUserCreateQueryBuilder),
           },
         },
         {
