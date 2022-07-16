@@ -1,4 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
@@ -8,13 +9,12 @@ import { NoPermissionException } from './exceptions/no-permission.exception';
 import { UserRole } from './role.enum';
 import { ROLES_KEY } from './roles.decorator';
 
-const SOUL_PLATFORM_ID = 2;
-
 @Injectable()
 export class PlatformRolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private readonly platformsService: PlatformsService,
+    private readonly configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -30,7 +30,9 @@ export class PlatformRolesGuard implements CanActivate {
     const { platform_id }: { platform_id: string } = params;
     const userJwt = new JWTPayload(user);
 
-    if (userJwt.platformId === SOUL_PLATFORM_ID) {
+    if (
+      userJwt.platformId === this.configService.get('SOUL_DEFAULT_PLATFORM_ID')
+    ) {
       // If user logged in from platform 2 (soul landing page) we want to check if the user is
       // an admin of the platform he's trying to access.
       const platformUser = await this.platformsService.findOnePlatformUser(

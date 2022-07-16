@@ -33,4 +33,6 @@ export type ConfigProperties = {
   SENTRY_ENVIRONMENT: string;
   // PKCE auth
   PKCE_CODE_CHALLENGE_TTL: number;
+
+  SOUL_DEFAULT_PLATFORM_ID: number;
 };

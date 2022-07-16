@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import * as factories from 'factories';
@@ -46,6 +47,12 @@ describe('PlatformsController', () => {
             findOnePlatformUser: jest
               .fn()
               .mockResolvedValue(factories.onePlatformUser.build()),
+          },
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockImplementation(() => 2),
           },
         },
       ],
