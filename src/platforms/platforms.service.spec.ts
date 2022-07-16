@@ -13,6 +13,7 @@ import { PlatformCategory } from './entities/platform-category.entity';
 import { PlatformsService } from './platforms.service';
 import {
   DuplicatePlatformUserException,
+  MaxAdminRolesPerUserException,
   PlatformCategoryNotFoundException,
 } from './exceptions';
 
@@ -175,8 +176,20 @@ describe('PlatformsService', () => {
           user.id,
         ),
       ).rejects.toThrow(
-        'The category with name: UNKNOWN_CATEGORY was not found, please try again.',
+        new PlatformCategoryNotFoundException({ name: 'UNKNOWN_CATEGORY' }),
       );
+      expect(platformRepository.save).not.toHaveBeenCalled();
+      expect(platformRepository.update).not.toHaveBeenCalled();
+    });
+
+    it('should throw an error when user has too many admin roles', async () => {
+      jest
+        .spyOn(platformUserCreateQueryBuilder, 'getCount')
+        .mockResolvedValue(6);
+      const user = factories.oneUser.build();
+      await expect(
+        service.create(factories.createPlatformDto.build(), user.id),
+      ).rejects.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
       expect(platformRepository.save).not.toHaveBeenCalled();
       expect(platformRepository.update).not.toHaveBeenCalled();
     });
@@ -415,6 +428,35 @@ describe('PlatformsService', () => {
         { platformUser },
         { isRevoked: true },
       );
+    });
+
+    it('should throw an error when user has too many admin roles', async () => {
+      jest
+        .spyOn(platformUserCreateQueryBuilder, 'getCount')
+        .mockResolvedValue(6);
+      const platform = factories.onePlatform.build();
+      const user = factories.oneUser.build();
+
+      await expect(
+        service.setUserRole(platform.id, user.id, [
+          UserRole.Admin,
+          UserRole.Member,
+        ]),
+      ).rejects.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
+      expect(platformUserRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should not throw an error when setting user to member', async () => {
+      jest
+        .spyOn(platformUserCreateQueryBuilder, 'getCount')
+        .mockResolvedValue(6);
+      const platform = factories.onePlatform.build();
+      const user = factories.oneUser.build();
+
+      await expect(
+        service.setUserRole(platform.id, user.id, [UserRole.Member]),
+      ).resolves.not.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
+      expect(platformUserRepository.save).toHaveBeenCalled();
     });
   });
 

@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common';
 import { GenericException } from 'src/common/exceptions/generic.exception';
 
 export class MaxAdminRolesPerUserException extends GenericException {
-  constructor(max: number) {
+  constructor({ max }: { max: number }) {
     super(
       {
         message: `You can't hold more than ${max} admin roles`,

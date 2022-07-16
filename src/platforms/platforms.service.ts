@@ -158,7 +158,8 @@ export class PlatformsService {
       await this.findAnotherAdminOrThrow(platformId, userId);
     }
 
-    await this.isNewAdminPermittedOrThrow(userId);
+    if (roles.includes(UserRole.Admin))
+      await this.isNewAdminPermittedOrThrow(userId);
 
     platformUser.user = user;
     platformUser.platform = platform;
@@ -259,9 +260,10 @@ export class PlatformsService {
       .andWhere('user_id = :userId', { userId })
       .getCount();
 
-    // TODO: Add unit test for this and e2e test
     if (adminCount >= NUM_ADMIN_ROLES_ALLOWED_PER_USER)
-      throw new MaxAdminRolesPerUserException(NUM_ADMIN_ROLES_ALLOWED_PER_USER);
+      throw new MaxAdminRolesPerUserException({
+        max: NUM_ADMIN_ROLES_ALLOWED_PER_USER,
+      });
   }
 
   private async revokePlatformUserRefreshToken(platformUser: PlatformUser) {
