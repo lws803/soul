@@ -80,6 +80,11 @@ const schema = Joi.object({
     .allow('')
     .default(false)
     .description('Refresh token rotation on'),
+  SOUL_DEFAULT_PLATFORM_ID: Joi.number()
+    .required()
+    .description(
+      'Soul default platform id, used as the primary hub for soul services',
+    ),
 });
 
 const config: ConfigModuleOptions = {

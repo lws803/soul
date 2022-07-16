@@ -58,7 +58,7 @@ describe('UsersService', () => {
             get: jest.fn().mockImplementation((arg) => {
               const keys = {
                 MAIL_TOKEN_SECRET: 'MAIL_TOKEN_SECRET',
-                MAIL_TOKEN_EXPIRATION_TIME: '3600',
+                MAIL_TOKEN_EXPIRATION_TIME: 3600,
               };
               return keys[arg];
             }),
@@ -77,10 +77,6 @@ describe('UsersService', () => {
     service = module.get<UsersService>(UsersService);
     mailService = module.get<MailService>(MailService);
     repository = module.get<Repository<User>>(getRepositoryToken(User));
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
   });
 
   describe('create()', () => {

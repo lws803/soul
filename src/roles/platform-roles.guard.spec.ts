@@ -1,4 +1,5 @@
 import { Reflector } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 
 import * as factories from 'factories';
 import { PlatformsService } from 'src/platforms/platforms.service';
@@ -15,6 +16,9 @@ describe(PlatformRolesGuard, () => {
   const mockPlatformUserService = {
     findOnePlatformUser: jest.fn(),
   } as unknown as PlatformsService;
+  const mockConfigService = {
+    get: jest.fn().mockImplementation(() => 2),
+  } as unknown as ConfigService;
 
   beforeEach(() => {
     jest.spyOn(mockPlatformUserService, 'findOnePlatformUser');
@@ -36,6 +40,7 @@ describe(PlatformRolesGuard, () => {
       const guard = new PlatformRolesGuard(
         mockReflector,
         mockPlatformUserService,
+        mockConfigService,
       );
 
       expect(await guard.canActivate(mockContext)).toBeTruthy();
@@ -53,6 +58,7 @@ describe(PlatformRolesGuard, () => {
       const guard = new PlatformRolesGuard(
         mockReflector,
         mockPlatformUserService,
+        mockConfigService,
       );
 
       await expect(guard.canActivate(mockContext)).rejects.toThrow(
@@ -74,6 +80,7 @@ describe(PlatformRolesGuard, () => {
       const guard = new PlatformRolesGuard(
         mockReflector,
         mockPlatformUserService,
+        mockConfigService,
       );
 
       await expect(guard.canActivate(mockContext)).rejects.toThrow(
@@ -99,6 +106,7 @@ describe(PlatformRolesGuard, () => {
       const guard = new PlatformRolesGuard(
         mockReflector,
         mockPlatformUserService,
+        mockConfigService,
       );
 
       expect(await guard.canActivate(mockContext)).toBeTruthy();
@@ -126,6 +134,7 @@ describe(PlatformRolesGuard, () => {
       const guard = new PlatformRolesGuard(
         mockReflector,
         mockPlatformUserService,
+        mockConfigService,
       );
 
       await expect(guard.canActivate(mockContext)).rejects.toThrow(
