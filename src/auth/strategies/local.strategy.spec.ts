@@ -19,7 +19,7 @@ describe(LocalStrategy, () => {
     const localStrategy = new LocalStrategy(mockAuthService);
 
     await expect(localStrategy.validate('EMAIL', 'PASSWORD')).rejects.toThrow(
-      'Incorrect username or password.',
+      'Incorrect email and password combination.',
     );
   });
 });
