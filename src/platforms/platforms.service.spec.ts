@@ -30,6 +30,7 @@ describe('PlatformsService', () => {
     platformCreateQueryBuilder = {
       select: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       where: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      andWhere: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       orderBy: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       skip: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       take: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
@@ -234,7 +235,7 @@ describe('PlatformsService', () => {
         totalCount: platforms.length,
       });
 
-      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+      expect(platformCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
         'platform.isVerified = :isVerified',
         { isVerified: true },
       );
@@ -254,7 +255,7 @@ describe('PlatformsService', () => {
         totalCount: platforms.length,
       });
 
-      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+      expect(platformCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
         'platform.name like :query',
         { query: 'TEST_PLATFORM%' },
       );
@@ -277,7 +278,7 @@ describe('PlatformsService', () => {
       expect(platformCategoryRepository.findOne).toHaveBeenCalledWith({
         name: 'CATEGORY',
       });
-      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+      expect(platformCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
         'platform.category = :categoryId',
         { categoryId: factories.onePlatformCategory.build().id },
       );

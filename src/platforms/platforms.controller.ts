@@ -30,6 +30,7 @@ import {
   SetUserPlatformRoleParamsDto,
   SetUserPlatformRoleQueryParamsDto,
   FindAllPlatformsQueryParamDto,
+  FindMyPlatformsQueryParamDto,
 } from './dto/api.dto';
 import {
   CreatePlatformResponseDto,
@@ -66,6 +67,22 @@ export class PlatformsController {
   ): Promise<FindAllPlatformResponseDto> {
     return new FindAllPlatformResponseDto(
       await this.platformsService.findAll(params),
+    );
+  }
+
+  @ApiOperation({
+    description: 'List my platforms with pagination support',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseDto })
+  @UseGuards(JwtAuthGuard)
+  @Get('/my-platforms')
+  async findMyPlatforms(
+    @Request() { user }: { user: JWTPayload },
+    @Query() params: FindMyPlatformsQueryParamDto,
+  ): Promise<FindAllPlatformResponseDto> {
+    // TODO: Add e2e and unit tests
+    return new FindAllPlatformResponseDto(
+      await this.platformsService.findMyPlatforms(params, user.userId),
     );
   }
 

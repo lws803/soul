@@ -135,3 +135,19 @@ export class FindAllPlatformsQueryParamDto extends PaginationParamsDto {
   @MaxLength(32)
   category?: string;
 }
+
+export class FindMyPlatformsQueryParamDto extends PaginationParamsDto {
+  @ApiProperty({
+    name: 'role',
+    example: 'member',
+    type: String,
+    description: 'Role of the user',
+  })
+  @IsOptional()
+  @IsEnum(UserRole, {
+    message:
+      'role must be a valid user role type: ' +
+      `${UserRole.Admin}, ${UserRole.Member}, ${UserRole.Banned}`,
+  })
+  role?: UserRole;
+}
