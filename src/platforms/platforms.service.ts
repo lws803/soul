@@ -119,9 +119,10 @@ export class PlatformsService {
     let baseQuery = this.platformUserRepository
       .createQueryBuilder('platformUser')
       .leftJoinAndSelect('platformUser.platform', 'platform')
+      .leftJoinAndSelect('platform.category', 'category')
       .select();
 
-    baseQuery = baseQuery.where('platformUser.userId = :userId', {
+    baseQuery = baseQuery.where('platformUser.user = :userId', {
       userId: userId,
     });
 
