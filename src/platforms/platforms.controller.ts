@@ -80,7 +80,6 @@ export class PlatformsController {
     @Request() { user }: { user: JWTPayload },
     @Query() params: FindMyPlatformsQueryParamDto,
   ): Promise<FindAllPlatformResponseDto> {
-    // TODO: Add unit tests
     return new FindAllPlatformResponseDto(
       await this.platformsService.findMyPlatforms(params, user.userId),
     );
