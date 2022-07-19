@@ -344,13 +344,13 @@ describe('PlatformsService', () => {
       const user = factories.oneUser.build();
 
       expect(
-        await service.findMyPlatforms({ page: 1, numItemsPerPage: 1 }, user.id),
+        await service.findMyPlatforms({ page: 2, numItemsPerPage: 1 }, user.id),
       ).toEqual({
         platforms: [factories.onePlatform.build()],
         totalCount: 1,
       });
 
-      expect(platformUserCreateQueryBuilder.skip).toHaveBeenCalledWith(0);
+      expect(platformUserCreateQueryBuilder.skip).toHaveBeenCalledWith(1);
       expect(platformUserCreateQueryBuilder.take).toHaveBeenCalledWith(1);
     });
 
@@ -362,7 +362,7 @@ describe('PlatformsService', () => {
           {
             page: 1,
             numItemsPerPage: 10,
-            role: UserRole.Admin,
+            role: UserRole.Member,
           },
           user.id,
         ),
@@ -372,27 +372,7 @@ describe('PlatformsService', () => {
       });
 
       expect(platformUserCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'JSON_CONTAINS(roles, \'"admin"\')',
-      );
-    });
-
-    it('should query for platforms with the given full text query', async () => {
-      const platforms = factories.platformArray.build();
-
-      expect(
-        await service.findAll({
-          page: 1,
-          numItemsPerPage: 10,
-          q: 'TEST_PLATFORM',
-        }),
-      ).toEqual({
-        platforms,
-        totalCount: platforms.length,
-      });
-
-      expect(platformCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'platform.name like :query',
-        { query: 'TEST_PLATFORM%' },
+        'JSON_CONTAINS(roles, \'"member"\')',
       );
     });
   });
