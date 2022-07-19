@@ -309,8 +309,15 @@ describe('PlatformsController (e2e)', () => {
         isVerified: false,
         category: null,
       });
+      const platformThree = factories.onePlatform.build({
+        id: 3,
+        name: 'TEST_PLATFORM_3',
+        nameHandle: 'TEST_PLATFORM_3#3',
+        isVerified: false,
+        category: null,
+      });
 
-      await platformRepository.save([platformOne, platformTwo]);
+      await platformRepository.save([platformOne, platformTwo, platformThree]);
 
       await platformUserRepository.save([
         factories.onePlatformUser.build({
@@ -324,6 +331,12 @@ describe('PlatformsController (e2e)', () => {
           user: userAccount.user,
           roles: [UserRole.Member],
           platform: platformTwo,
+        }),
+        factories.onePlatformUser.build({
+          id: 3,
+          user: secondUserAccount.user,
+          roles: [UserRole.Member],
+          platform: platformThree,
         }),
       ]);
     });
