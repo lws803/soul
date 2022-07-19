@@ -11,6 +11,7 @@ import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import {
   CreatePlatformDto,
   FindAllPlatformsQueryParamDto,
+  FindMyPlatformsQueryParamDto,
   UpdatePlatformDto,
 } from './dto/api.dto';
 import { Platform } from './entities/platform.entity';
@@ -24,6 +25,7 @@ import {
   PlatformCategoryNotFoundException,
   MaxAdminRolesPerUserException,
 } from './exceptions';
+import { FindAllPlatformResponseDto } from './dto/api-responses.dto';
 
 const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
 
@@ -82,20 +84,20 @@ export class PlatformsService {
 
     const query = queryParams.q;
     if (query) {
-      baseQuery = baseQuery.where('platform.name like :query', {
+      baseQuery = baseQuery.andWhere('platform.name like :query', {
         query: `${query}%`,
       });
     }
     const isVerified = queryParams.isVerified;
     if (isVerified) {
-      baseQuery = baseQuery.where('platform.isVerified = :isVerified', {
+      baseQuery = baseQuery.andWhere('platform.isVerified = :isVerified', {
         isVerified,
       });
     }
     const categoryNameFilter = queryParams.category;
     if (categoryNameFilter) {
       const category = await this.findOneCategoryOrThrow(categoryNameFilter);
-      baseQuery = baseQuery.where('platform.category = :categoryId', {
+      baseQuery = baseQuery.andWhere('platform.category = :categoryId', {
         categoryId: category.id,
       });
     }
@@ -108,6 +110,38 @@ export class PlatformsService {
     const [platforms, totalCount] = await baseQuery.getManyAndCount();
 
     return { platforms, totalCount };
+  }
+
+  async findMyPlatforms(
+    queryParams: FindMyPlatformsQueryParamDto,
+    userId: number,
+  ): Promise<FindAllPlatformResponseDto> {
+    let baseQuery = this.platformUserRepository
+      .createQueryBuilder('platformUser')
+      .leftJoinAndSelect('platformUser.platform', 'platform')
+      .leftJoinAndSelect('platform.category', 'category')
+      .select();
+
+    baseQuery = baseQuery.where('platformUser.user = :userId', {
+      userId: userId,
+    });
+
+    const role = queryParams.role;
+    if (role) {
+      baseQuery = baseQuery.andWhere(`JSON_CONTAINS(roles, \'"${role}"\')`);
+    }
+
+    baseQuery = baseQuery
+      .orderBy({ 'platformUser.createdAt': 'DESC', 'platformUser.id': 'DESC' })
+      .take(queryParams.numItemsPerPage)
+      .skip((queryParams.page - 1) * queryParams.numItemsPerPage);
+
+    const [platformUsers, totalCount] = await baseQuery.getManyAndCount();
+
+    return {
+      platforms: platformUsers.map((platformUser) => platformUser.platform),
+      totalCount,
+    };
   }
 
   findOne(id: number) {

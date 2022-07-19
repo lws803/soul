@@ -23,6 +23,10 @@ describe('PlatformsController', () => {
               platforms: factories.platformArray.build(),
               totalCount: factories.platformArray.build().length,
             }),
+            findMyPlatforms: jest.fn().mockResolvedValue({
+              platforms: factories.platformArray.build(),
+              totalCount: factories.platformArray.build().length,
+            }),
             findOne: jest.fn().mockResolvedValue(factories.onePlatform.build()),
             update: jest.fn().mockResolvedValue(
               factories.onePlatform.build({
@@ -62,10 +66,6 @@ describe('PlatformsController', () => {
     platformsService = module.get<PlatformsService>(PlatformsService);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-
   it('create()', async () => {
     const createPlatformDto = factories.createPlatformDto.build();
     const jwtPayload = factories.jwtPayload.build();
@@ -88,6 +88,24 @@ describe('PlatformsController', () => {
     });
 
     expect(platformsService.findAll).toHaveBeenCalledWith(paginationParams);
+  });
+
+  it('findMyPlatforms()', async () => {
+    const platformsArray = factories.platformArray.build();
+    const paginationParams = { page: 1, numItemsPerPage: 10 };
+    const queryParams = { ...paginationParams, role: UserRole.Member };
+    const userJwt = factories.jwtPayload.build();
+    expect(
+      await controller.findMyPlatforms({ user: userJwt }, queryParams),
+    ).toEqual({
+      platforms: platformsArray,
+      totalCount: platformsArray.length,
+    });
+
+    expect(platformsService.findMyPlatforms).toHaveBeenCalledWith(
+      queryParams,
+      userJwt.userId,
+    );
   });
 
   it('findOne()', async () => {
@@ -163,6 +181,19 @@ describe('PlatformsController', () => {
     expect(platformsService.removeUser).toHaveBeenCalledWith(
       platform.id,
       user.id,
+    );
+  });
+
+  it('removeMyself()', async () => {
+    const platform = factories.onePlatform.build();
+    const user = factories.jwtPayload.build();
+    expect(
+      await controller.removeMyself({ user }, { platformId: platform.id }),
+    ).toBeUndefined();
+
+    expect(platformsService.removeUser).toHaveBeenCalledWith(
+      platform.id,
+      user.userId,
     );
   });
 

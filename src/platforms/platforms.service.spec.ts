@@ -30,6 +30,7 @@ describe('PlatformsService', () => {
     platformCreateQueryBuilder = {
       select: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       where: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
+      andWhere: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       orderBy: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       skip: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
       take: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
@@ -45,12 +46,26 @@ describe('PlatformsService', () => {
     };
 
     platformUserCreateQueryBuilder = {
+      select: jest
+        .fn()
+        .mockImplementation(() => platformUserCreateQueryBuilder),
       where: jest.fn().mockImplementation(() => platformUserCreateQueryBuilder),
       andWhere: jest
         .fn()
         .mockImplementation(() => platformUserCreateQueryBuilder),
+      leftJoinAndSelect: jest
+        .fn()
+        .mockImplementation(() => platformUserCreateQueryBuilder),
+      skip: jest.fn().mockImplementation(() => platformUserCreateQueryBuilder),
+      take: jest.fn().mockImplementation(() => platformUserCreateQueryBuilder),
+      orderBy: jest
+        .fn()
+        .mockImplementation(() => platformUserCreateQueryBuilder),
       getOne: jest.fn().mockResolvedValue(factories.onePlatformUser.build()),
       getCount: jest.fn().mockResolvedValue(1),
+      getManyAndCount: jest
+        .fn()
+        .mockResolvedValue([[factories.onePlatformUser.build()], 1]),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -234,7 +249,7 @@ describe('PlatformsService', () => {
         totalCount: platforms.length,
       });
 
-      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+      expect(platformCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
         'platform.isVerified = :isVerified',
         { isVerified: true },
       );
@@ -254,7 +269,7 @@ describe('PlatformsService', () => {
         totalCount: platforms.length,
       });
 
-      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+      expect(platformCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
         'platform.name like :query',
         { query: 'TEST_PLATFORM%' },
       );
@@ -277,7 +292,7 @@ describe('PlatformsService', () => {
       expect(platformCategoryRepository.findOne).toHaveBeenCalledWith({
         name: 'CATEGORY',
       });
-      expect(platformCreateQueryBuilder.where).toHaveBeenCalledWith(
+      expect(platformCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
         'platform.category = :categoryId',
         { categoryId: factories.onePlatformCategory.build().id },
       );
@@ -294,6 +309,70 @@ describe('PlatformsService', () => {
         }),
       ).rejects.toThrow(
         new PlatformCategoryNotFoundException({ name: categoryName }),
+      );
+    });
+  });
+
+  describe('findMyPlatforms()', () => {
+    it('should find my platforms', async () => {
+      const user = factories.oneUser.build();
+
+      expect(
+        await service.findMyPlatforms(
+          { page: 1, numItemsPerPage: 10 },
+          user.id,
+        ),
+      ).toEqual({
+        platforms: [factories.onePlatform.build()],
+        totalCount: 1,
+      });
+
+      expect(
+        platformUserCreateQueryBuilder.leftJoinAndSelect,
+      ).toHaveBeenNthCalledWith(1, 'platformUser.platform', 'platform');
+      expect(
+        platformUserCreateQueryBuilder.leftJoinAndSelect,
+      ).toHaveBeenNthCalledWith(2, 'platform.category', 'category');
+
+      expect(platformUserCreateQueryBuilder.orderBy).toHaveBeenCalledWith({
+        'platformUser.createdAt': 'DESC',
+        'platformUser.id': 'DESC',
+      });
+    });
+
+    it('should find my platforms with pagination', async () => {
+      const user = factories.oneUser.build();
+
+      expect(
+        await service.findMyPlatforms({ page: 2, numItemsPerPage: 1 }, user.id),
+      ).toEqual({
+        platforms: [factories.onePlatform.build()],
+        totalCount: 1,
+      });
+
+      expect(platformUserCreateQueryBuilder.skip).toHaveBeenCalledWith(1);
+      expect(platformUserCreateQueryBuilder.take).toHaveBeenCalledWith(1);
+    });
+
+    it('should find my platforms with role filter', async () => {
+      const user = factories.oneUser.build();
+
+      expect(
+        await service.findMyPlatforms(
+          {
+            page: 1,
+            numItemsPerPage: 10,
+            role: UserRole.Member,
+          },
+          user.id,
+        ),
+      ).toEqual({
+        platforms: [factories.onePlatform.build()],
+        totalCount: 1,
+      });
+
+      expect(platformUserCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'JSON_CONTAINS(roles, \'"member"\')',
       );
     });
   });

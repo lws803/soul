@@ -297,6 +297,134 @@ describe('PlatformsController (e2e)', () => {
     });
   });
 
+  describe('/platforms/my-platforms (GET)', () => {
+    beforeAll(async () => {
+      const platformOne = factories.onePlatform.build({
+        redirectUris: ['https://www.example.com'],
+      });
+      const platformTwo = factories.onePlatform.build({
+        id: 2,
+        name: 'TEST_PLATFORM_2',
+        nameHandle: 'TEST_PLATFORM_2#2',
+        isVerified: false,
+        category: null,
+      });
+      const platformThree = factories.onePlatform.build({
+        id: 3,
+        name: 'TEST_PLATFORM_3',
+        nameHandle: 'TEST_PLATFORM_3#3',
+        isVerified: false,
+        category: null,
+      });
+
+      await platformRepository.save([platformOne, platformTwo, platformThree]);
+
+      await platformUserRepository.save([
+        factories.onePlatformUser.build({
+          id: 1,
+          user: userAccount.user,
+          roles: [UserRole.Admin, UserRole.Member],
+          platform: platformOne,
+        }),
+        factories.onePlatformUser.build({
+          id: 2,
+          user: userAccount.user,
+          roles: [UserRole.Member],
+          platform: platformTwo,
+        }),
+        factories.onePlatformUser.build({
+          id: 3,
+          user: secondUserAccount.user,
+          roles: [UserRole.Member],
+          platform: platformThree,
+        }),
+      ]);
+    });
+
+    afterAll(async () => {
+      await platformUserRepository.delete({});
+      await platformRepository.delete({});
+    });
+
+    it('fetches my platforms', async () => {
+      await request(app.getHttpServer())
+        .get('/platforms/my-platforms')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            platforms: [
+              {
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
+                id: expect.any(Number),
+                name: 'TEST_PLATFORM_2',
+                is_verified: false,
+                name_handle: 'TEST_PLATFORM_2#2',
+                category: null,
+              },
+              {
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
+                id: expect.any(Number),
+                name: 'TEST_PLATFORM',
+                is_verified: true,
+                name_handle: 'TEST_PLATFORM#1',
+                category: { id: 1, name: 'CATEGORY' },
+              },
+            ],
+            total_count: 2,
+          }),
+        );
+    });
+
+    it('paginates correctly', async () => {
+      await request(app.getHttpServer())
+        .get('/platforms/my-platforms/?num_items_per_page=1&page=1')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            platforms: [
+              {
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
+                id: expect.any(Number),
+                name: 'TEST_PLATFORM_2',
+                is_verified: false,
+                name_handle: 'TEST_PLATFORM_2#2',
+                category: null,
+              },
+            ],
+            total_count: 2,
+          }),
+        );
+    });
+
+    it('fetches my platforms with roles filter', async () => {
+      await request(app.getHttpServer())
+        .get('/platforms/my-platforms/?role=admin')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            platforms: [
+              {
+                created_at: expect.any(String),
+                updated_at: expect.any(String),
+                id: 1,
+                name: 'TEST_PLATFORM',
+                is_verified: true,
+                name_handle: 'TEST_PLATFORM#1',
+                category: { id: 1, name: 'CATEGORY' },
+              },
+            ],
+            total_count: 1,
+          }),
+        );
+    });
+  });
+
   describe('/platforms/:platformId (GET)', () => {
     beforeAll(async () => {
       await platformRepository.save(
