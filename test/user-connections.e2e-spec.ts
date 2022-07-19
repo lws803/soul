@@ -70,12 +70,12 @@ describe('UserConnectionsController (e2e)', () => {
             id: expect.any(Number),
             from_user: {
               id: 1,
-              user_handle: 'TEST_USER#1',
+              user_handle: 'test_user#1',
               username: 'TEST_USER',
             },
             to_user: {
               id: 2,
-              user_handle: 'TEST_USER_2#2',
+              user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
             platforms: [],
@@ -102,12 +102,12 @@ describe('UserConnectionsController (e2e)', () => {
             id: expect.any(Number),
             from_user: {
               id: 1,
-              user_handle: 'TEST_USER#1',
+              user_handle: 'test_user#1',
               username: 'TEST_USER',
             },
             to_user: {
               id: 2,
-              user_handle: 'TEST_USER_2#2',
+              user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
             platforms: [
@@ -117,7 +117,7 @@ describe('UserConnectionsController (e2e)', () => {
                 id: expect.any(Number),
                 is_verified: true,
                 name: 'TEST_PLATFORM',
-                name_handle: 'TEST_PLATFORM#1',
+                name_handle: 'test_platform#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -156,12 +156,12 @@ describe('UserConnectionsController (e2e)', () => {
             id: expect.any(Number),
             from_user: {
               id: 1,
-              user_handle: 'TEST_USER#1',
+              user_handle: 'test_user#1',
               username: 'TEST_USER',
             },
             to_user: {
               id: 2,
-              user_handle: 'TEST_USER_2#2',
+              user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
             platforms: [],
@@ -205,14 +205,14 @@ describe('UserConnectionsController (e2e)', () => {
             updated_at: expect.any(String),
             from_user: {
               id: 1,
-              user_handle: 'TEST_USER#1',
+              user_handle: 'test_user#1',
               username: 'TEST_USER',
             },
             id: 1,
             platforms: [],
             to_user: {
               id: 2,
-              user_handle: 'TEST_USER_2#2',
+              user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
           }),
@@ -278,14 +278,14 @@ describe('UserConnectionsController (e2e)', () => {
             updated_at: expect.any(String),
             from_user: {
               id: 1,
-              user_handle: 'TEST_USER#1',
+              user_handle: 'test_user#1',
               username: 'TEST_USER',
             },
             id: 1,
             platforms: [],
             to_user: {
               id: 2,
-              user_handle: 'TEST_USER_2#2',
+              user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
           }),
@@ -356,14 +356,14 @@ describe('UserConnectionsController (e2e)', () => {
             updated_at: expect.any(String),
             from_user: {
               id: 2,
-              user_handle: 'TEST_USER_2#2',
+              user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
             id: 2,
             platforms: [],
             to_user: {
               id: 1,
-              user_handle: 'TEST_USER#1',
+              user_handle: 'test_user#1',
               username: 'TEST_USER',
             },
           }),
@@ -398,12 +398,12 @@ describe('UserConnectionsController (e2e)', () => {
             updated_at: expect.any(String),
             from_user: {
               id: 1,
-              user_handle: 'TEST_USER#1',
+              user_handle: 'test_user#1',
               username: 'TEST_USER',
             },
             to_user: {
               id: 2,
-              user_handle: 'TEST_USER_2#2',
+              user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
             platforms: [
@@ -413,7 +413,7 @@ describe('UserConnectionsController (e2e)', () => {
                 id: 1,
                 is_verified: true,
                 name: 'TEST_PLATFORM',
-                name_handle: 'TEST_PLATFORM#1',
+                name_handle: 'test_platform#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -485,14 +485,14 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 from_user: {
                   id: 1,
-                  user_handle: 'TEST_USER#1',
+                  user_handle: 'test_user#1',
                   username: 'TEST_USER',
                 },
                 id: expect.any(Number),
                 platforms: [],
                 to_user: {
                   id: 2,
-                  user_handle: 'TEST_USER_2#2',
+                  user_handle: 'test_user_2#2',
                   username: 'TEST_USER_2',
                 },
               },
@@ -525,14 +525,14 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 to_user: {
                   id: 1,
-                  user_handle: 'TEST_USER#1',
+                  user_handle: 'test_user#1',
                   username: 'TEST_USER',
                 },
                 id: expect.any(Number),
                 platforms: [],
                 from_user: {
                   id: 2,
-                  user_handle: 'TEST_USER_2#2',
+                  user_handle: 'test_user_2#2',
                   username: 'TEST_USER_2',
                 },
               },
@@ -558,14 +558,14 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 from_user: {
                   id: 1,
-                  user_handle: 'TEST_USER#1',
+                  user_handle: 'test_user#1',
                   username: 'TEST_USER',
                 },
                 id: expect.any(Number),
                 platforms: [],
                 to_user: {
                   id: 2,
-                  user_handle: 'TEST_USER_2#2',
+                  user_handle: 'test_user_2#2',
                   username: 'TEST_USER_2',
                 },
               },
@@ -613,7 +613,7 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 from_user: {
                   id: 1,
-                  user_handle: 'TEST_USER#1',
+                  user_handle: 'test_user#1',
                   username: 'TEST_USER',
                 },
                 platforms: [
@@ -623,7 +623,7 @@ describe('UserConnectionsController (e2e)', () => {
                     id: 1,
                     is_verified: true,
                     name: 'TEST_PLATFORM',
-                    name_handle: 'TEST_PLATFORM#1',
+                    name_handle: 'test_platform#1',
                   },
                 ],
                 to_user: {

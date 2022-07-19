@@ -178,7 +178,7 @@ describe('AuthController (e2e)', () => {
           redirectUris: ['https://www.example.com'],
           id: 2,
           name: 'TEST_PLATFORM_2',
-          nameHandle: 'TEST_PLATFORM_2#2',
+          nameHandle: 'test_platform_2#2',
         }),
       );
       const params = new URLSearchParams({
@@ -195,8 +195,8 @@ describe('AuthController (e2e)', () => {
           expect(res.body).toEqual({
             error: 'PLATFORM_USER_NOT_FOUND',
             message:
-              'The user with username: TEST_USER#1 was not found on ' +
-              'platform: TEST_PLATFORM_2#2, please try again.',
+              'The user with username: test_user#1 was not found on ' +
+              'platform: test_platform_2#2, please try again.',
           });
         });
     });

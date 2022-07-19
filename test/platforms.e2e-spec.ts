@@ -144,7 +144,7 @@ describe('PlatformsController (e2e)', () => {
         factories.onePlatform.build({
           id: 2,
           name: 'TEST_PLATFORM_2',
-          nameHandle: 'TEST_PLATFORM_2#2',
+          nameHandle: 'test_platform_2#2',
           isVerified: false,
           category: null,
         }),
@@ -168,7 +168,7 @@ describe('PlatformsController (e2e)', () => {
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
                 is_verified: false,
-                name_handle: 'TEST_PLATFORM_2#2',
+                name_handle: 'test_platform_2#2',
                 category: null,
               },
               {
@@ -177,7 +177,7 @@ describe('PlatformsController (e2e)', () => {
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
                 is_verified: true,
-                name_handle: 'TEST_PLATFORM#1',
+                name_handle: 'test_platform#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -201,7 +201,7 @@ describe('PlatformsController (e2e)', () => {
                 updated_at: expect.any(String),
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
-                name_handle: 'TEST_PLATFORM_2#2',
+                name_handle: 'test_platform_2#2',
                 is_verified: false,
                 category: null,
               },
@@ -224,7 +224,7 @@ describe('PlatformsController (e2e)', () => {
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
                 is_verified: true,
-                name_handle: 'TEST_PLATFORM#1',
+                name_handle: 'test_platform#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -249,7 +249,7 @@ describe('PlatformsController (e2e)', () => {
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
                 is_verified: true,
-                name_handle: 'TEST_PLATFORM#1',
+                name_handle: 'test_platform#1',
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -287,7 +287,7 @@ describe('PlatformsController (e2e)', () => {
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
                 is_verified: false,
-                name_handle: 'TEST_PLATFORM_2#2',
+                name_handle: 'test_platform_2#2',
                 category: null,
               },
             ],
@@ -305,7 +305,7 @@ describe('PlatformsController (e2e)', () => {
       const platformTwo = factories.onePlatform.build({
         id: 2,
         name: 'TEST_PLATFORM_2',
-        nameHandle: 'TEST_PLATFORM_2#2',
+        nameHandle: 'test_platform_2#2',
         isVerified: false,
         category: null,
       });
@@ -360,7 +360,7 @@ describe('PlatformsController (e2e)', () => {
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
                 is_verified: false,
-                name_handle: 'TEST_PLATFORM_2#2',
+                name_handle: 'test_platform_2#2',
                 category: null,
               },
               {
@@ -369,7 +369,7 @@ describe('PlatformsController (e2e)', () => {
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM',
                 is_verified: true,
-                name_handle: 'TEST_PLATFORM#1',
+                name_handle: 'test_platform#1',
                 category: { id: 1, name: 'CATEGORY' },
               },
             ],
@@ -392,7 +392,7 @@ describe('PlatformsController (e2e)', () => {
                 id: expect.any(Number),
                 name: 'TEST_PLATFORM_2',
                 is_verified: false,
-                name_handle: 'TEST_PLATFORM_2#2',
+                name_handle: 'test_platform_2#2',
                 category: null,
               },
             ],
@@ -415,7 +415,7 @@ describe('PlatformsController (e2e)', () => {
                 id: 1,
                 name: 'TEST_PLATFORM',
                 is_verified: true,
-                name_handle: 'TEST_PLATFORM#1',
+                name_handle: 'test_platform#1',
                 category: { id: 1, name: 'CATEGORY' },
               },
             ],
@@ -448,7 +448,7 @@ describe('PlatformsController (e2e)', () => {
             updated_at: expect.any(String),
             id: expect.any(Number),
             name: 'TEST_PLATFORM',
-            name_handle: 'TEST_PLATFORM#1',
+            name_handle: 'test_platform#1',
             is_verified: true,
             category: {
               id: 1,
@@ -520,7 +520,7 @@ describe('PlatformsController (e2e)', () => {
             updated_at: expect.any(String),
             id: 1,
             name: 'TEST_PLATFORM_2',
-            name_handle: 'TEST_PLATFORM_2#1',
+            name_handle: 'test_platform_2#1',
             is_verified: true,
             redirect_uris: ['https://www.example.com'],
           }),
@@ -646,7 +646,7 @@ describe('PlatformsController (e2e)', () => {
                 roles: [UserRole.Admin, UserRole.Member],
                 user: {
                   id: 1,
-                  user_handle: 'TEST_USER#1',
+                  user_handle: 'test_user#1',
                   username: 'TEST_USER',
                 },
               },
@@ -710,7 +710,7 @@ describe('PlatformsController (e2e)', () => {
               id: 1,
               name: 'TEST_PLATFORM',
               is_verified: true,
-              name_handle: 'TEST_PLATFORM#1',
+              name_handle: 'test_platform#1',
               category: {
                 id: 1,
                 name: 'CATEGORY',
@@ -719,7 +719,7 @@ describe('PlatformsController (e2e)', () => {
             roles: [UserRole.Admin, UserRole.Member],
             user: {
               id: 2,
-              user_handle: 'TEST_USER_2#2',
+              user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
           }),
@@ -757,7 +757,7 @@ describe('PlatformsController (e2e)', () => {
               id: 1,
               is_verified: true,
               name: 'TEST_PLATFORM',
-              name_handle: 'TEST_PLATFORM#1',
+              name_handle: 'test_platform#1',
               category: {
                 id: 1,
                 name: 'CATEGORY',
@@ -766,7 +766,7 @@ describe('PlatformsController (e2e)', () => {
             roles: [UserRole.Banned],
             user: {
               id: 2,
-              user_handle: 'TEST_USER_2#2',
+              user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
           }),
@@ -1074,7 +1074,7 @@ describe('PlatformsController (e2e)', () => {
               id: 1,
               is_verified: true,
               name: 'TEST_PLATFORM',
-              name_handle: 'TEST_PLATFORM#1',
+              name_handle: 'test_platform#1',
               updated_at: expect.any(String),
               category: {
                 id: 1,
@@ -1084,7 +1084,7 @@ describe('PlatformsController (e2e)', () => {
             roles: [UserRole.Member],
             user: {
               id: 1,
-              user_handle: 'TEST_USER#1',
+              user_handle: 'test_user#1',
               username: 'TEST_USER',
             },
           }),

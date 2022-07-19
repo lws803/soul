@@ -60,7 +60,10 @@ export class PlatformsService {
     await this.platformRepository.update(
       { id: savedPlatform.id },
       {
-        nameHandle: `${createPlatformDto.name}#${savedPlatform.id}`,
+        nameHandle: this.getPlatformHandle(
+          createPlatformDto.name,
+          savedPlatform.id,
+        ),
       },
     );
     const updatedPlatform = await this.platformRepository.findOne(
@@ -162,7 +165,10 @@ export class PlatformsService {
     const { category, name: platformName, redirectUris } = updatePlatformDto;
 
     if (platformName) {
-      updatedPlatform.nameHandle = `${platformName}#${platform.id}`;
+      updatedPlatform.nameHandle = this.getPlatformHandle(
+        platformName,
+        platform.id,
+      );
     }
     if (category) {
       updatedPlatform.category = await this.findOneCategoryOrThrow(category);
@@ -313,5 +319,9 @@ export class PlatformsService {
     const category = await this.platformCategoryRepository.findOne({ name });
     if (!category) throw new PlatformCategoryNotFoundException({ name });
     return category;
+  }
+
+  private getPlatformHandle(platformName: string, platformId: number) {
+    return `${platformName.toLowerCase().replace(/\s+/g, '-')}#${platformId}`;
   }
 }

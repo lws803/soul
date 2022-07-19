@@ -6,7 +6,7 @@ import { User } from 'src/users/entities/user.entity';
 export const oneUser = Factory.define<User>(() => ({
   id: 1,
   username: 'TEST_USER',
-  userHandle: 'TEST_USER#1',
+  userHandle: 'test_user#1',
   email: 'TEST_USER@EMAIL.COM',
   isActive: true,
   createdAt: new Date('1995-12-17T03:24:00'),
@@ -18,13 +18,13 @@ export const userArray = Factory.define<User[]>(() => [
   oneUser.build({
     id: 1,
     username: 'TEST_USER',
-    userHandle: 'TEST_USER#1',
+    userHandle: 'test_user#1',
     email: 'TEST_USER@EMAIL.COM',
   }),
   oneUser.build({
     id: 2,
     username: 'TEST_USER_2',
-    userHandle: 'TEST_USER_2#2',
+    userHandle: 'test_user_2#2',
     email: 'TEST_USER_2@EMAIL.COM',
   }),
 ]);

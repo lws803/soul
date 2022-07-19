@@ -15,6 +15,7 @@ import {
   DuplicatePlatformUserException,
   MaxAdminRolesPerUserException,
   PlatformCategoryNotFoundException,
+  PlatformUserNotFoundException,
 } from './exceptions';
 
 describe('PlatformsService', () => {
@@ -173,7 +174,7 @@ describe('PlatformsService', () => {
       });
       expect(platformRepository.update).toHaveBeenCalledWith(
         { id: platform.id },
-        { nameHandle: 'TEST_PLATFORM#1' },
+        { nameHandle: 'test_platform#1' },
       );
       expect(platformUserRepository.save).toHaveBeenCalledWith({
         platform,
@@ -424,7 +425,10 @@ describe('PlatformsService', () => {
       await expect(
         async () => await service.findOnePlatformUser(platform.id, user.id),
       ).rejects.toThrow(
-        'The user with username: TEST_USER#1 was not found on platform: TEST_PLATFORM#1, please try again.',
+        new PlatformUserNotFoundException({
+          username: user.userHandle,
+          platformName: platform.nameHandle,
+        }),
       );
     });
   });
@@ -437,7 +441,7 @@ describe('PlatformsService', () => {
       const platform = factories.onePlatform.build();
       const updates = {
         name: 'TEST_PLATFORM_UPDATE',
-        nameHandle: 'TEST_PLATFORM_UPDATE#1',
+        nameHandle: 'test_platform_update#1',
         category: updatedCategory,
         redirectUris: ['TEST_REDIRECT_URI'],
       };

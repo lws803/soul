@@ -51,7 +51,7 @@ export class UsersService {
       await this.usersRepository.update(
         { id: savedUser.id },
         {
-          userHandle: `${createUserDto.username}#${savedUser.id}`,
+          userHandle: this.getUserHandle(createUserDto.username, savedUser.id),
         },
       );
 
@@ -98,7 +98,10 @@ export class UsersService {
     const updatedUser: Partial<User> = {};
 
     if (updateUserDto.username) {
-      updatedUser.userHandle = `${updateUserDto.username}#${user.id}`;
+      updatedUser.userHandle = this.getUserHandle(
+        updateUserDto.username,
+        user.id,
+      );
     }
     updatedUser.username = updateUserDto.username ?? user.username;
     updatedUser.email = updateUserDto.email ?? user.email;
@@ -220,6 +223,10 @@ export class UsersService {
     } else {
       this.mailService.sendPasswordResetEmail(user, token);
     }
+  }
+
+  private getUserHandle(username: string, userId: number) {
+    return `${username.toLowerCase().replace(/\s+/g, '-')}#${userId}`;
   }
 }
 
