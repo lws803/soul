@@ -50,7 +50,7 @@ describe('UsersController (e2e)', () => {
             id: 1,
             email: 'TEST_USER@EMAIL.COM',
             username: 'TEST_USER',
-            user_handle: 'TEST_USER#1',
+            user_handle: 'test_user#1',
             is_active: false,
             created_at: expect.any(String),
             updated_at: expect.any(String),
@@ -82,7 +82,7 @@ describe('UsersController (e2e)', () => {
         factories.oneUser.build({
           id: undefined,
           username: 'TEST_USER_2',
-          userHandle: 'TEST_USER_2#2',
+          userHandle: 'test_user_2#2',
           email: 'TEST_USER_2@EMAIL.COM',
         }),
       ]);
@@ -102,12 +102,12 @@ describe('UsersController (e2e)', () => {
             users: [
               {
                 id: expect.any(Number),
-                user_handle: 'TEST_USER_2#2',
+                user_handle: 'test_user_2#2',
                 username: 'TEST_USER_2',
               },
               {
                 id: expect.any(Number),
-                user_handle: 'TEST_USER#1',
+                user_handle: 'test_user#1',
                 username: 'TEST_USER',
               },
             ],
@@ -125,7 +125,7 @@ describe('UsersController (e2e)', () => {
             users: [
               {
                 id: expect.any(Number),
-                user_handle: 'TEST_USER_2#2',
+                user_handle: 'test_user_2#2',
                 username: 'TEST_USER_2',
               },
             ],
@@ -143,7 +143,7 @@ describe('UsersController (e2e)', () => {
             users: [
               {
                 id: expect.any(Number),
-                user_handle: 'TEST_USER_2#2',
+                user_handle: 'test_user_2#2',
                 username: 'TEST_USER_2',
               },
             ],
@@ -168,7 +168,7 @@ describe('UsersController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: expect.any(Number),
-            user_handle: 'TEST_USER#1',
+            user_handle: 'test_user#1',
             username: 'TEST_USER',
           });
         });
@@ -209,7 +209,7 @@ describe('UsersController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: userAccount.user.id,
-            user_handle: `UPDATED_USER#${userAccount.user.id}`,
+            user_handle: `updated_user#${userAccount.user.id}`,
             username: 'UPDATED_USER',
             email: 'UPDATED_EMAIL@EMAIL.COM',
             is_active: true,
