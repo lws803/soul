@@ -18,7 +18,7 @@ export const onePlatformCategory = Factory.define<PlatformCategory>(() => ({
 export const onePlatform = Factory.define<Platform>(() => ({
   id: 1,
   name: 'TEST_PLATFORM',
-  nameHandle: 'TEST_PLATFORM#1',
+  nameHandle: 'test_platform#1',
   createdAt: new Date('1995-12-17T03:24:00'),
   updatedAt: new Date('1995-12-18T03:24:00'),
   userConnections: [],

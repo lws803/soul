@@ -95,7 +95,7 @@ describe('UsersService', () => {
       expect(repository.update).toHaveBeenCalledWith(
         { id: oneUser.id },
         {
-          userHandle: 'TEST_USER#1',
+          userHandle: 'test_user#1',
         },
       );
     });
@@ -182,7 +182,7 @@ describe('UsersService', () => {
         factories.oneUser.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'UPDATED_USER',
-          userHandle: 'UPDATED_USER#1',
+          userHandle: 'updated_user#1',
         }),
       );
 
@@ -190,7 +190,7 @@ describe('UsersService', () => {
         factories.oneUser.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'UPDATED_USER',
-          userHandle: 'UPDATED_USER#1',
+          userHandle: 'updated_user#1',
         }),
       );
 
@@ -198,7 +198,7 @@ describe('UsersService', () => {
         { id: user.id },
         {
           ...updatedUserDto,
-          userHandle: 'UPDATED_USER#1',
+          userHandle: 'updated_user#1',
         },
       );
     });
