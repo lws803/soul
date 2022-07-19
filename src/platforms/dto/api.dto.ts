@@ -142,6 +142,7 @@ export class FindMyPlatformsQueryParamDto extends PaginationParamsDto {
     example: 'member',
     type: String,
     description: 'Role of the user',
+    required: false,
   })
   @IsOptional()
   @IsEnum(UserRole, {
