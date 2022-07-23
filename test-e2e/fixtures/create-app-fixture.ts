@@ -5,7 +5,7 @@ import { ValidationError } from 'class-validator';
 
 import { ValidationException } from 'src/common/exceptions/validation.exception';
 
-import { AppModule } from './../../src/app.module';
+import { AppModule } from '../../src/app.module';
 
 export default async function createAppFixture({
   imports = [],
