@@ -1,73 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
 import { UserRole } from 'src/roles/role.enum';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
-import { Platform } from './entities/platform.entity';
-import { PlatformUser } from './entities/platform-user.entity';
-import { PlatformCategory } from './entities/platform-category.entity';
-import { PlatformsService } from './platforms.service';
+import { Platform } from '../entities/platform.entity';
+import { PlatformUser } from '../entities/platform-user.entity';
+import { PlatformCategory } from '../entities/platform-category.entity';
+import { PlatformsService } from '../platforms.service';
 import {
-  DuplicatePlatformUserException,
   MaxAdminRolesPerUserException,
   PlatformCategoryNotFoundException,
-  PlatformUserNotFoundException,
-} from './exceptions';
+} from '../exceptions';
+
+import {
+  platformCreateQueryBuilderObject,
+  platformUserCreateQueryBuilderObject,
+} from './utils';
 
 describe('PlatformsService', () => {
   let service: PlatformsService;
   let platformRepository: Repository<Platform>;
   let platformUserRepository: Repository<PlatformUser>;
-  let refreshTokenRepository: Repository<RefreshToken>;
   let platformCategoryRepository: Repository<PlatformCategory>;
   let platformCreateQueryBuilder: any;
   let platformUserCreateQueryBuilder: any;
 
   beforeEach(async () => {
-    platformCreateQueryBuilder = {
-      select: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
-      where: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
-      andWhere: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
-      orderBy: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
-      skip: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
-      take: jest.fn().mockImplementation(() => platformCreateQueryBuilder),
-      leftJoinAndSelect: jest
-        .fn()
-        .mockImplementation(() => platformCreateQueryBuilder),
-      getManyAndCount: jest
-        .fn()
-        .mockResolvedValue([
-          factories.platformArray.build(),
-          factories.platformArray.build().length,
-        ]),
-    };
-
-    platformUserCreateQueryBuilder = {
-      select: jest
-        .fn()
-        .mockImplementation(() => platformUserCreateQueryBuilder),
-      where: jest.fn().mockImplementation(() => platformUserCreateQueryBuilder),
-      andWhere: jest
-        .fn()
-        .mockImplementation(() => platformUserCreateQueryBuilder),
-      leftJoinAndSelect: jest
-        .fn()
-        .mockImplementation(() => platformUserCreateQueryBuilder),
-      skip: jest.fn().mockImplementation(() => platformUserCreateQueryBuilder),
-      take: jest.fn().mockImplementation(() => platformUserCreateQueryBuilder),
-      orderBy: jest
-        .fn()
-        .mockImplementation(() => platformUserCreateQueryBuilder),
-      getOne: jest.fn().mockResolvedValue(factories.onePlatformUser.build()),
-      getCount: jest.fn().mockResolvedValue(1),
-      getManyAndCount: jest
-        .fn()
-        .mockResolvedValue([[factories.onePlatformUser.build()], 1]),
-    };
+    platformCreateQueryBuilder = platformCreateQueryBuilderObject;
+    platformUserCreateQueryBuilder = platformUserCreateQueryBuilderObject;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -143,16 +107,9 @@ describe('PlatformsService', () => {
     platformUserRepository = module.get<Repository<PlatformUser>>(
       getRepositoryToken(PlatformUser),
     );
-    refreshTokenRepository = module.get<Repository<RefreshToken>>(
-      getRepositoryToken(RefreshToken),
-    );
     platformCategoryRepository = module.get<Repository<PlatformCategory>>(
       getRepositoryToken(PlatformCategory),
     );
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
   });
 
   describe('create()', () => {
@@ -401,38 +358,6 @@ describe('PlatformsService', () => {
     });
   });
 
-  describe('findOnePlatformUser()', () => {
-    it('should return one platform user successfully', async () => {
-      const platformUser = factories.onePlatformUser.build();
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-
-      expect(await service.findOnePlatformUser(platform.id, user.id)).toEqual(
-        platformUser,
-      );
-
-      expect(platformUserRepository.findOne).toHaveBeenCalledWith({
-        user,
-        platform,
-      });
-    });
-
-    it('should throw not found error', async () => {
-      jest.spyOn(platformUserRepository, 'findOne').mockResolvedValue(null);
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-
-      await expect(
-        async () => await service.findOnePlatformUser(platform.id, user.id),
-      ).rejects.toThrow(
-        new PlatformUserNotFoundException({
-          username: user.userHandle,
-          platformName: platform.nameHandle,
-        }),
-      );
-    });
-  });
-
   describe('update()', () => {
     it('should update platform successfully', async () => {
       const updatedCategory = factories.onePlatformCategory.build({
@@ -489,175 +414,6 @@ describe('PlatformsService', () => {
       expect(platformRepository.delete).toHaveBeenCalledWith({
         id: platform.id,
       });
-    });
-  });
-
-  describe('setUserRole()', () => {
-    it('should set platform user role successfully', async () => {
-      const platformUser = factories.onePlatformUser.build();
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-
-      await service.setUserRole(platform.id, user.id, [
-        UserRole.Admin,
-        UserRole.Member,
-      ]);
-
-      expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
-      expect(refreshTokenRepository.findOne).toHaveBeenCalledWith({
-        platformUser,
-      });
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
-        { platformUser },
-        { isRevoked: true },
-      );
-    });
-
-    it('should throw an error when user has too many admin roles', async () => {
-      jest
-        .spyOn(platformUserCreateQueryBuilder, 'getCount')
-        .mockResolvedValue(6);
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-
-      await expect(
-        service.setUserRole(platform.id, user.id, [
-          UserRole.Admin,
-          UserRole.Member,
-        ]),
-      ).rejects.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
-      expect(platformUserRepository.save).not.toHaveBeenCalled();
-    });
-
-    it('should not throw an error when setting user to member', async () => {
-      jest
-        .spyOn(platformUserCreateQueryBuilder, 'getCount')
-        .mockResolvedValue(6);
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-
-      await expect(
-        service.setUserRole(platform.id, user.id, [UserRole.Member]),
-      ).resolves.not.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
-      expect(platformUserRepository.save).toHaveBeenCalled();
-    });
-  });
-
-  describe('removeUser()', () => {
-    it('should delete user successfully', async () => {
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-      const platformUser = factories.onePlatformUser.build();
-      jest
-        .spyOn(service, 'findOnePlatformUser')
-        .mockResolvedValue(platformUser);
-
-      await service.removeUser(platform.id, user.id);
-
-      expect(service.findOnePlatformUser).toHaveBeenCalledWith(
-        platform.id,
-        user.id,
-      );
-      expect(platformUserRepository.delete).toHaveBeenCalledWith({
-        id: platformUser.id,
-      });
-    });
-  });
-
-  describe('findAllPlatformUsers()', () => {
-    it('should return all platform users successfully', async () => {
-      const platform = factories.onePlatform.build();
-      const platformUsers = factories.platformUserArray.build();
-      jest
-        .spyOn(platformUserRepository, 'findAndCount')
-        .mockResolvedValue([platformUsers, platformUsers.length]);
-
-      expect(
-        await service.findAllPlatformUsers(platform.id, {
-          page: 1,
-          numItemsPerPage: 10,
-        }),
-      ).toEqual({ platformUsers, totalCount: platformUsers.length });
-
-      expect(platformUserRepository.findAndCount).toHaveBeenCalledWith({
-        order: {
-          id: 'ASC',
-        },
-        relations: ['user'],
-        skip: 0,
-        take: 10,
-        where: {
-          platform,
-        },
-      });
-    });
-
-    it('should return all platform users with pagination successfully', async () => {
-      const platform = factories.onePlatform.build();
-      const platformUsers = factories.platformUserArray.build();
-      jest
-        .spyOn(platformUserRepository, 'findAndCount')
-        .mockResolvedValue([[platformUsers[0]], platformUsers.length]);
-
-      expect(
-        await service.findAllPlatformUsers(platform.id, {
-          page: 1,
-          numItemsPerPage: 1,
-        }),
-      ).toEqual({
-        platformUsers: [platformUsers[0]],
-        totalCount: platformUsers.length,
-      });
-
-      expect(platformUserRepository.findAndCount).toHaveBeenCalledWith({
-        order: {
-          id: 'ASC',
-        },
-        relations: ['user'],
-        skip: 0,
-        take: 1,
-        where: {
-          platform,
-        },
-      });
-    });
-  });
-
-  describe('addUser()', () => {
-    it('should add user successfully', async () => {
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-      const platformUser = factories.onePlatformUser.build();
-      jest
-        .spyOn(service, 'findOnePlatformUser')
-        .mockResolvedValue(platformUser);
-
-      expect(await service.addUser(platform.id, user.id)).toEqual(
-        factories.onePlatformUser.build({
-          roles: [UserRole.Member],
-        }),
-      );
-
-      expect(platformUserRepository.save).toHaveBeenCalledWith({
-        platform: factories.onePlatform.build(),
-        roles: [UserRole.Member],
-        user: factories.oneUser.build(),
-      });
-    });
-
-    it('should raise duplicate error', async () => {
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-
-      jest
-        .spyOn(platformUserRepository, 'save')
-        .mockRejectedValue(
-          new QueryFailedError('', [], { code: 'ER_DUP_ENTRY' }),
-        );
-
-      await expect(service.addUser(platform.id, user.id)).rejects.toThrow(
-        new DuplicatePlatformUserException(),
-      );
     });
   });
 });
