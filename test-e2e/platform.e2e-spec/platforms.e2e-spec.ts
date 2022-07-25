@@ -466,6 +466,83 @@ describe('PlatformsController (e2e)', () => {
     });
   });
 
+  describe('/platforms/:platformId/full (GET)', () => {
+    beforeAll(async () => {
+      const platformOne = factories.onePlatform.build({
+        redirectUris: ['https://www.example.com'],
+      });
+      const adminPlatform = factories.onePlatform.build({
+        id: 2,
+        name: 'ADMIN_PLATFORM',
+        nameHandle: 'admin_platform#2',
+        isVerified: false,
+        category: null,
+        redirectUris: ['https://www.example.com'],
+      });
+
+      await platformRepository.save([platformOne, adminPlatform]);
+
+      await platformUserRepository.save([
+        factories.onePlatformUser.build({
+          id: 1,
+          user: userAccount.user,
+          roles: [UserRole.Admin, UserRole.Member],
+          platform: platformOne,
+        }),
+        factories.onePlatformUser.build({
+          id: 2,
+          user: userAccount.user,
+          roles: [UserRole.Member],
+          platform: adminPlatform,
+        }),
+      ]);
+    });
+
+    afterAll(async () => {
+      await platformUserRepository.delete({});
+      await platformRepository.delete({});
+    });
+
+    it('fetches a full platform by id', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(2),
+      });
+      const codeResp = await request(app.getHttpServer())
+        .post(`/auth/code?${params.toString()}`)
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
+
+      await request(app.getHttpServer())
+        .get('/platforms/1/full')
+        .set('Authorization', `Bearer ${response.body.access_token}`)
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
+            id: expect.any(Number),
+            name: 'TEST_PLATFORM',
+            name_handle: 'test_platform#1',
+            is_verified: true,
+            category: {
+              id: 1,
+              name: 'CATEGORY',
+            },
+            redirect_uris: ['https://www.example.com'],
+          }),
+        );
+    });
+  });
+
   describe('/platforms/:platformId (PATCH)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(

@@ -23,7 +23,7 @@ export class PlatformCategoryResponseDto {
   }
 }
 
-class FullPlatformResponseDto extends CreatedAtUpdatedAtDto {
+export class FullPlatformResponseDto extends CreatedAtUpdatedAtDto {
   @ApiProperty({ name: 'id', example: 1 })
   @Expose()
   id: number;

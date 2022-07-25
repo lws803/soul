@@ -117,6 +117,15 @@ describe('PlatformsController', () => {
     expect(platformsService.findOne).toHaveBeenCalledWith(platform.id);
   });
 
+  it('findOneFull()', async () => {
+    const platform = factories.onePlatform.build();
+    expect(await controller.findOneFull({ platformId: platform.id })).toEqual(
+      platform,
+    );
+
+    expect(platformsService.findOne).toHaveBeenCalledWith(platform.id);
+  });
+
   it('update()', async () => {
     const updatePlatformDto = factories.updatePlatformDto.build();
     const platform = factories.onePlatform.build();

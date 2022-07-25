@@ -38,6 +38,7 @@ import {
   FindAllPlatformResponseDto,
   FindAllPlatformUsersResponseDto,
   FindOnePlatformResponseDto,
+  FullPlatformResponseDto,
   SetPlatformUserRoleResponseDto,
   UpdatePlatformResponseDto,
 } from './dto/api-responses.dto';
@@ -92,6 +93,21 @@ export class PlatformsController {
     @Param() { platformId }: PlatformIdParamDto,
   ): Promise<FindOnePlatformResponseDto> {
     return new FindOnePlatformResponseDto(
+      await this.platformsService.findOne(platformId),
+    );
+  }
+
+  @ApiOperation({
+    description: 'Find one platform with full details from a given platformId',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseDto })
+  @Roles(UserRole.Admin)
+  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @Get(':platform_id/full')
+  async findOneFull(
+    @Param() { platformId }: PlatformIdParamDto,
+  ): Promise<FullPlatformResponseDto> {
+    return new FullPlatformResponseDto(
       await this.platformsService.findOne(platformId),
     );
   }
