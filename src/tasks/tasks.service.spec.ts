@@ -17,7 +17,7 @@ describe(TasksService, () => {
         .fn()
         .mockImplementation(() => refreshTokenCreateQueryBuilder),
       where: jest.fn().mockImplementation(() => refreshTokenCreateQueryBuilder),
-      andWhere: jest
+      orWhere: jest
         .fn()
         .mockImplementation(() => refreshTokenCreateQueryBuilder),
       execute: jest.fn(),
@@ -52,6 +52,10 @@ describe(TasksService, () => {
       expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
         'refresh_tokens.expires <= :currentDate',
         { currentDate: expect.any(Date) },
+      );
+      expect(refreshTokenCreateQueryBuilder.orWhere).toHaveBeenCalledWith(
+        'refresh_tokens.is_revoked = :isRevoked',
+        { isRevoked: true },
       );
       expect(refreshTokenCreateQueryBuilder.execute).toHaveBeenCalled();
     });
