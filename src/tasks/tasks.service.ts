@@ -22,6 +22,7 @@ export class TasksService {
       .where('refresh_tokens.expires <= :currentDate', {
         currentDate: new Date(),
       })
+      .orWhere('refresh_tokens.is_revoked = :isRevoked', { isRevoked: true })
       .execute();
 
     this.logger.debug('Deleted all expired refresh tokens');
