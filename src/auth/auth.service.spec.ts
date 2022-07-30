@@ -67,7 +67,6 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.refreshToken.build()),
             save: jest.fn().mockResolvedValue(factories.refreshToken.build()),
             delete: jest.fn(),
-            remove: jest.fn(),
             update: jest.fn().mockResolvedValue(factories.refreshToken.build()),
           },
         },
@@ -354,7 +353,7 @@ describe('AuthService', () => {
         { isRevoked: true },
       );
 
-      expect(refreshTokenRepository.remove).not.toHaveBeenCalled();
+      expect(refreshTokenRepository.delete).not.toHaveBeenCalled();
     });
 
     it('should delete previous token if REFRESH_TOKEN_ROTATION is false', async () => {
@@ -366,9 +365,9 @@ describe('AuthService', () => {
       await service.refresh('REFRESH_TOKEN');
 
       expect(refreshTokenRepository.update).not.toHaveBeenCalled();
-      expect(refreshTokenRepository.remove).toHaveBeenCalledWith(
-        factories.refreshToken.build(),
-      );
+      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
+        id: factories.refreshToken.build().id,
+      });
     });
 
     it('should throw when refresh token does not exist', async () => {
