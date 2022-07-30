@@ -517,5 +517,59 @@ describe('AuthService', () => {
         { isRevoked: true },
       );
     });
+
+    it('should revoke previous token if REFRESH_TOKEN_ROTATION is true', async () => {
+      jest.spyOn(configService, 'get').mockImplementation((arg) => {
+        if (arg === 'JWT_REFRESH_TOKEN_TTL') return 3600;
+        if (arg === 'HOST_URL') return 'localhost:3000';
+        if (arg === 'REFRESH_TOKEN_ROTATION') return true;
+      });
+
+      jest
+        .spyOn(jwtService, 'verifyAsync')
+        .mockImplementation(() =>
+          Promise.resolve(factories.jwtRefreshPayloadWithPlatform.build()),
+        );
+
+      const platformUser = factories.onePlatformUser.build();
+
+      await service.refreshWithPlatform(
+        'REFRESH_TOKEN',
+        platformUser.platform.id,
+      );
+
+      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
+        factories.refreshToken.build().id,
+        { isRevoked: true },
+      );
+
+      expect(refreshTokenRepository.delete).not.toHaveBeenCalled();
+    });
+
+    it('should delete previous token if REFRESH_TOKEN_ROTATION is false', async () => {
+      jest.spyOn(configService, 'get').mockImplementation((arg) => {
+        if (arg === 'JWT_REFRESH_TOKEN_TTL') return 3600;
+        if (arg === 'HOST_URL') return 'localhost:3000';
+        if (arg === 'REFRESH_TOKEN_ROTATION') return false;
+      });
+
+      jest
+        .spyOn(jwtService, 'verifyAsync')
+        .mockImplementation(() =>
+          Promise.resolve(factories.jwtRefreshPayloadWithPlatform.build()),
+        );
+
+      const platformUser = factories.onePlatformUser.build();
+
+      await service.refreshWithPlatform(
+        'REFRESH_TOKEN',
+        platformUser.platform.id,
+      );
+
+      expect(refreshTokenRepository.update).not.toHaveBeenCalled();
+      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
+        id: factories.refreshToken.build().id,
+      });
+    });
   });
 });
