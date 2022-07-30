@@ -170,6 +170,7 @@ export class AuthService {
     const { token, user } = await this.createAccessTokenFromRefreshToken({
       encodedRefreshToken,
       revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
+      deleteExistingToken: !this.configService.get('REFRESH_TOKEN_ROTATION'),
     });
 
     return {
@@ -191,6 +192,7 @@ export class AuthService {
         encodedRefreshToken,
         platformId,
         revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
+        deleteExistingToken: !!this.configService.get('REFRESH_TOKEN_ROTATION'),
       },
     );
 
@@ -212,10 +214,12 @@ export class AuthService {
     encodedRefreshToken,
     platformId,
     revokeExistingToken,
+    deleteExistingToken,
   }: {
     encodedRefreshToken: string;
     platformId?: number;
     revokeExistingToken?: boolean;
+    deleteExistingToken?: boolean;
   }) {
     const {
       user,
@@ -230,6 +234,10 @@ export class AuthService {
       await this.refreshTokenRepository.update(refreshToken.id, {
         isRevoked: true,
       });
+    }
+
+    if (!!deleteExistingToken) {
+      await this.refreshTokenRepository.remove(refreshToken);
     }
 
     return { user, token, roles };
