@@ -237,7 +237,7 @@ export class AuthService {
     }
 
     if (!!deleteExistingToken) {
-      await this.refreshTokenRepository.remove(refreshToken);
+      await this.refreshTokenRepository.delete({ id: refreshToken.id });
     }
 
     return { user, token, roles };
