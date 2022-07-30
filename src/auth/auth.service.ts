@@ -192,7 +192,7 @@ export class AuthService {
         encodedRefreshToken,
         platformId,
         revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
-        deleteExistingToken: !!this.configService.get('REFRESH_TOKEN_ROTATION'),
+        deleteExistingToken: !this.configService.get('REFRESH_TOKEN_ROTATION'),
       },
     );
 
