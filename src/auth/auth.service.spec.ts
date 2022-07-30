@@ -67,6 +67,7 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.refreshToken.build()),
             save: jest.fn().mockResolvedValue(factories.refreshToken.build()),
             delete: jest.fn(),
+            remove: jest.fn(),
             update: jest.fn().mockResolvedValue(factories.refreshToken.build()),
           },
         },
@@ -351,6 +352,22 @@ describe('AuthService', () => {
       expect(refreshTokenRepository.update).toHaveBeenCalledWith(
         factories.refreshToken.build().id,
         { isRevoked: true },
+      );
+
+      expect(refreshTokenRepository.remove).not.toHaveBeenCalled();
+    });
+
+    it('should delete previous token if REFRESH_TOKEN_ROTATION is false', async () => {
+      jest.spyOn(configService, 'get').mockImplementation((arg) => {
+        if (arg === 'JWT_REFRESH_TOKEN_TTL') return 3600;
+        if (arg === 'HOST_URL') return 'localhost:3000';
+        if (arg === 'REFRESH_TOKEN_ROTATION') return false;
+      });
+      await service.refresh('REFRESH_TOKEN');
+
+      expect(refreshTokenRepository.update).not.toHaveBeenCalled();
+      expect(refreshTokenRepository.remove).toHaveBeenCalledWith(
+        factories.refreshToken.build(),
       );
     });
 
