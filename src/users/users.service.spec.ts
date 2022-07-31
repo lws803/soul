@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 
 import * as factories from 'factories';
 import { MailService } from 'src/mail/mail.service';
+import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -17,6 +18,7 @@ describe('UsersService', () => {
   let service: UsersService;
   let mailService: MailService;
   let repository: Repository<User>;
+  let refreshTokensRepository: Repository<RefreshToken>;
 
   let userCreateQueryBuilder: any;
 
@@ -53,6 +55,10 @@ describe('UsersService', () => {
           },
         },
         {
+          provide: getRepositoryToken(RefreshToken),
+          useValue: { delete: jest.fn() },
+        },
+        {
           provide: ConfigService,
           useValue: {
             get: jest.fn().mockImplementation((arg) => {
@@ -77,6 +83,9 @@ describe('UsersService', () => {
     service = module.get<UsersService>(UsersService);
     mailService = module.get<MailService>(MailService);
     repository = module.get<Repository<User>>(getRepositoryToken(User));
+    refreshTokensRepository = module.get<Repository<RefreshToken>>(
+      getRepositoryToken(RefreshToken),
+    );
   });
 
   describe('create()', () => {
@@ -357,7 +366,7 @@ describe('UsersService', () => {
         .mockImplementation(() => 'NEW_HASHED_PASSWORD');
     });
 
-    it('sends password reset email to user', async () => {
+    it('resets password from user', async () => {
       const savedUser = factories.oneUser.build({
         hashedPassword: 'NEW_HASHED_PASSWORD',
       });
@@ -366,6 +375,9 @@ describe('UsersService', () => {
         savedUser,
       );
       expect(repository.save).toHaveBeenCalledWith(savedUser);
+      expect(refreshTokensRepository.delete).toHaveBeenCalledWith({
+        user: savedUser,
+      });
     });
   });
 });
