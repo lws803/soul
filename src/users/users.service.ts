@@ -11,6 +11,7 @@ import {
 } from 'jsonwebtoken';
 
 import { MailService } from 'src/mail/mail.service';
+import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import {
   UpdateUserDto,
@@ -29,6 +30,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(RefreshToken)
+    private refreshTokensRepository: Repository<RefreshToken>,
     private configService: ConfigService,
     private mailService: MailService,
   ) {}
@@ -181,7 +184,10 @@ export class UsersService {
         newPassword,
         await bcrypt.genSalt(),
       );
+
       await this.usersRepository.save(user);
+      await this.refreshTokensRepository.delete({ user: user });
+
       return user;
     } catch (exception) {
       if (
