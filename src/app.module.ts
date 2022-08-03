@@ -24,6 +24,7 @@ import { MailModule } from './mail/mail.module';
 import { ReputationModule } from './reputation/reputation.module';
 import { PlatformCategory } from './platforms/entities/platform-category.entity';
 import { TasksModule } from './tasks/tasks.module';
+import { RequestLoggingInterceptor } from './common/interceptors/request-logging.interceptor';
 
 @Module({
   imports: [
@@ -63,10 +64,7 @@ import { TasksModule } from './tasks/tasks.module';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_FILTER,
-      useClass: AllExceptionFilter,
-    },
+    { provide: APP_FILTER, useClass: AllExceptionFilter },
     {
       provide: APP_INTERCEPTOR,
       useValue: new RavenInterceptor({
@@ -78,6 +76,7 @@ import { TasksModule } from './tasks/tasks.module';
         ],
       }),
     },
+    { provide: APP_INTERCEPTOR, useValue: new RequestLoggingInterceptor() },
   ],
 })
 export class AppModule {}
