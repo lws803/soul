@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 
 @Injectable()
-export class RequestLoggingInterceptor implements NestInterceptor {
-  private readonly logger = new Logger(RequestLoggingInterceptor.name);
+export class RequestLogInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(RequestLogInterceptor.name);
 
   intercept(context: ExecutionContext, next: CallHandler) {
     const httpContext = context.switchToHttp();

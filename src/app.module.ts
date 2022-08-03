@@ -24,7 +24,7 @@ import { MailModule } from './mail/mail.module';
 import { ReputationModule } from './reputation/reputation.module';
 import { PlatformCategory } from './platforms/entities/platform-category.entity';
 import { TasksModule } from './tasks/tasks.module';
-import { RequestLoggingInterceptor } from './common/interceptors/request-logging.interceptor';
+import { RequestLogInterceptor } from './common/interceptors/request-log.interceptor';
 
 @Module({
   imports: [
@@ -76,7 +76,7 @@ import { RequestLoggingInterceptor } from './common/interceptors/request-logging
         ],
       }),
     },
-    { provide: APP_INTERCEPTOR, useValue: new RequestLoggingInterceptor() },
+    { provide: APP_INTERCEPTOR, useValue: new RequestLogInterceptor() },
   ],
 })
 export class AppModule {}
