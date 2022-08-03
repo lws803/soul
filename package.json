@@ -136,7 +136,8 @@
       ".exception.ts",
       ".dto.ts",
       ".entity.ts",
-      "main.ts"
+      "main.ts",
+      "request-log.interceptor.ts"
     ]
   }
 }
