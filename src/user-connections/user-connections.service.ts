@@ -87,13 +87,14 @@ export class UserConnectionsService {
       }
       return { ...currentConnection, isMutual: !!oppositeConnection };
     } catch (exception) {
-      if (exception instanceof QueryFailedError) {
-        if (exception.driverError.code === 'ER_DUP_ENTRY') {
-          throw new DuplicateUserConnectionException(
-            createUserConnectionDto.fromUserId,
-            createUserConnectionDto.toUserId,
-          );
-        }
+      if (
+        exception instanceof QueryFailedError &&
+        exception.driverError.code === 'ER_DUP_ENTRY'
+      ) {
+        throw new DuplicateUserConnectionException(
+          createUserConnectionDto.fromUserId,
+          createUserConnectionDto.toUserId,
+        );
         throw exception;
       }
     }

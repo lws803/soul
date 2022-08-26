@@ -36,15 +36,16 @@ export class PlatformActivitiesService {
         await this.platformActivitySubscriptionRepository.save(newSubscription);
       return savedSubscription;
     } catch (exception) {
-      if (exception instanceof QueryFailedError) {
-        if (exception.driverError.code === 'ER_DUP_ENTRY') {
-          throw new DuplicatePlatformActivitySubscriptionException(
-            fromPlatformId,
-            platformId,
-          );
-        }
-        throw exception;
+      if (
+        exception instanceof QueryFailedError &&
+        exception.driverError.code === 'ER_DUP_ENTRY'
+      ) {
+        throw new DuplicatePlatformActivitySubscriptionException(
+          fromPlatformId,
+          platformId,
+        );
       }
+      throw exception;
     }
   }
 }
