@@ -97,6 +97,8 @@ export class CreatePlatformDto {
   @IsOptional()
   @MaxLength(32)
   category?: string;
+
+  // TODO: add activityWebhookUri field
 }
 
 export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {}
