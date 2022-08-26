@@ -12,8 +12,8 @@ import {
 import { Platform } from '../../platforms/entities/platform.entity';
 
 @Unique(['fromPlatform', 'toPlatform'])
-@Entity({ name: 'platform_activity_subscribers' })
-export class PlatformActivityConnection {
+@Entity({ name: 'platform_activity_subscription' })
+export class PlatformActivitySubscription {
   @PrimaryGeneratedColumn()
   id: number;
 

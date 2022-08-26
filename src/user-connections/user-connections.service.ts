@@ -133,6 +133,7 @@ export class UserConnectionsService {
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
     }
+    // TODO: unset isMutual as well
     await this.userConnectionRepository.delete({ id });
   }
 
