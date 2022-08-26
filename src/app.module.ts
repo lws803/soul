@@ -25,8 +25,6 @@ import { ReputationModule } from './reputation/reputation.module';
 import { PlatformCategory } from './platforms/entities/platform-category.entity';
 import { TasksModule } from './tasks/tasks.module';
 import { RequestLogInterceptor } from './common/interceptors/request-log.interceptor';
-import { PlatformActivitiesModule } from './platform-activities/platform-activities.module';
-import { PlatformActivitySubscription } from './platform-activities/entities/platform-activity-subscription.entity';
 
 @Module({
   imports: [
@@ -50,7 +48,6 @@ import { PlatformActivitySubscription } from './platform-activities/entities/pla
           PlatformUser,
           UserConnection,
           PlatformCategory,
-          PlatformActivitySubscription,
         ],
       }),
       inject: [ConfigService],
@@ -63,7 +60,6 @@ import { PlatformActivitySubscription } from './platform-activities/entities/pla
     RavenModule,
     ReputationModule,
     TasksModule,
-    PlatformActivitiesModule,
   ],
   controllers: [AppController],
   providers: [
