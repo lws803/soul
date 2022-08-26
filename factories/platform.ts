@@ -25,6 +25,7 @@ export const onePlatform = Factory.define<Platform>(() => ({
   isVerified: true,
   redirectUris: ['TEST_REDIRECT_URI'],
   category: onePlatformCategory.build(),
+  activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
 }));
 
 export const platformArray = Factory.define<Platform[]>(() => [

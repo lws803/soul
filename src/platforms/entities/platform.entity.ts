@@ -34,7 +34,7 @@ export class Platform {
   isVerified: boolean;
 
   @Column({ name: 'activity_webhook_uri', nullable: true })
-  activityWebhookUri: string;
+  activityWebhookUri?: string;
 
   @ManyToMany(
     () => UserConnection,
