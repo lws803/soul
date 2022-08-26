@@ -33,6 +33,9 @@ export class Platform {
   @Column({ name: 'is_verified', default: false })
   isVerified: boolean;
 
+  @Column({ name: 'activity_webhook_uri', nullable: true })
+  activityWebhookUri: string;
+
   @ManyToMany(
     () => UserConnection,
     (userConnection) => userConnection.platforms,
