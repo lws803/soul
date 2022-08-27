@@ -220,21 +220,15 @@ export class PlatformsService {
 
   async findAllPlatformUsers({
     platformId,
-    userId,
     paginationParams,
   }: {
     platformId?: number;
-    userId?: number;
     paginationParams: PaginationParamsDto;
   }) {
     let where: { platform?: Platform; user?: User } | undefined = undefined;
     if (platformId) {
       const platform = await this.findOne(platformId);
       where = { platform };
-    }
-    if (userId) {
-      const user = await this.usersService.findOne(userId);
-      where = { user };
     }
 
     const [platformUsers, totalCount] =
