@@ -50,13 +50,12 @@ export class ActivityProcessor {
 
   @Process('activity')
   async processActivity(job: Job<ActivityJobPayload>) {
-    this.logger.log(`Sending activity of type ${job.data.type}...'`);
-
-    const { fromUser, toUser } = job.data;
+    const { fromUser, toUser, type: activityType } = job.data;
+    this.logger.log(`Sending activity of type ${activityType}...'`);
     try {
       const [platformUsers] = await this.platformUserRepository.findAndCount({
         where: {
-          user: job.data.toUser,
+          user: toUser,
           platform: { activityWebhookUri: Not(IsNull()) },
         },
         relations: ['user', 'platform'],
@@ -85,7 +84,7 @@ export class ActivityProcessor {
         }
       }
     } catch (error) {
-      this.logger.error(`Failed to send activity of type ${job.data.type}'`);
+      this.logger.error(`Failed to send activity of type ${activityType}'`);
       throw error;
     }
   }
