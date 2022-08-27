@@ -115,7 +115,12 @@ export class UserConnectionsService {
 
   async findOne(id: number): Promise<FindOneUserConnectionResponseDto> {
     const userConnection = await this.findUserConnectionOrThrow({ id });
-    return userConnection;
+    const oppositeConnection = await this.userConnectionRepository.findOne({
+      fromUser: userConnection.toUser,
+      toUser: userConnection.fromUser,
+    });
+
+    return { ...userConnection, isMutual: !!oppositeConnection };
   }
 
   async findOneByUserIds(
@@ -126,7 +131,12 @@ export class UserConnectionsService {
       fromUserId,
       toUserId,
     });
-    return userConnection;
+    const oppositeConnection = await this.userConnectionRepository.findOne({
+      fromUser: userConnection.toUser,
+      toUser: userConnection.fromUser,
+    });
+
+    return { ...userConnection, isMutual: !!oppositeConnection };
   }
 
   async remove(id: number, currentUserId: number) {

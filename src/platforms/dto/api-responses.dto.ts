@@ -53,6 +53,15 @@ export class FullPlatformResponseDto extends CreatedAtUpdatedAtDto {
   isVerified: boolean;
 
   @ApiProperty({
+    name: 'activity_webhook_uri',
+    example: 'https://example.com',
+    description: 'Webhook URI for Soul to broadcast user activity.',
+    required: false,
+  })
+  @Expose({ name: 'activity_webhook_uri' })
+  activityWebhookUri?: string;
+
+  @ApiProperty({
     name: 'redirect_uris',
     example: ['https://example.com', 'http://localhost:3000'],
     description:

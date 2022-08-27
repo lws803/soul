@@ -255,7 +255,7 @@ describe('ConnectionsService', () => {
   describe('findOne()', () => {
     it('should return one user connection successfully', async () => {
       expect(await service.findOne(1)).toEqual(
-        factories.oneUserConnection.build(),
+        factories.oneUserConnectionResponse.build({ isMutual: true }),
       );
       expect(userConnectionRepository.findOne).toHaveBeenCalledWith(
         { id: 1 },
@@ -281,7 +281,9 @@ describe('ConnectionsService', () => {
         .spyOn(userService, 'findOne')
         .mockResolvedValueOnce(userConnection.toUser);
 
-      expect(await service.findOneByUserIds(1, 2)).toEqual(userConnection);
+      expect(await service.findOneByUserIds(1, 2)).toEqual(
+        factories.oneUserConnectionResponse.build({ isMutual: true }),
+      );
       expect(userConnectionRepository.findOne).toHaveBeenCalledWith(
         { fromUser: userConnection.fromUser, toUser: userConnection.toUser },
         { relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'] },

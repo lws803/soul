@@ -75,6 +75,15 @@ export class CreatePlatformDto {
   name: string;
 
   @ApiProperty({
+    name: 'activity_webhook_uri',
+    example: 'https://www.example.com',
+    description: 'Webhook URI for Soul to broadcast user activity.',
+    required: false,
+  })
+  @IsOptional()
+  activityWebhookUri?: string;
+
+  @ApiProperty({
     name: 'redirect_uris',
     example: ['https://example.com', 'http://localhost:3000'],
     description:
@@ -97,8 +106,6 @@ export class CreatePlatformDto {
   @IsOptional()
   @MaxLength(32)
   category?: string;
-
-  // TODO: add activityWebhookUri field
 }
 
 export class UpdatePlatformDto extends PartialType(CreatePlatformDto) {}
