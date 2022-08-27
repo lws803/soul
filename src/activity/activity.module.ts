@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { PlatformsModule } from 'src/platforms/platforms.module';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 
 import { ActivityService } from './activity.service';
@@ -26,7 +25,6 @@ import { ActivityProcessor } from './activity.processor';
       }),
       inject: [ConfigService],
     }),
-    PlatformsModule,
   ],
   controllers: [],
   providers: [ActivityService, ActivityProcessor],
