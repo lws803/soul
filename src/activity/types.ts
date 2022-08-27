@@ -16,6 +16,6 @@ type SanitizedUser = {
 
 export type FollowActivityWebhookPayload = {
   type: 'FOLLOW';
-  fromUser: SanitizedUser;
-  toUser: SanitizedUser;
+  sender: SanitizedUser;
+  recipient: SanitizedUser;
 };
