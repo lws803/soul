@@ -251,12 +251,13 @@ export class PlatformsService {
     try {
       return await this.platformUserRepository.save(newPlatformUser);
     } catch (exception) {
-      if (exception instanceof QueryFailedError) {
-        if (exception.driverError.code === 'ER_DUP_ENTRY') {
-          throw new DuplicatePlatformUserException();
-        }
-        throw exception;
+      if (
+        exception instanceof QueryFailedError &&
+        exception.driverError.code === 'ER_DUP_ENTRY'
+      ) {
+        throw new DuplicatePlatformUserException();
       }
+      throw exception;
     }
   }
 

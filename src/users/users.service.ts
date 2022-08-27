@@ -62,12 +62,13 @@ export class UsersService {
 
       return this.usersRepository.findOne(savedUser.id);
     } catch (exception) {
-      if (exception instanceof QueryFailedError) {
-        if (exception.driverError.code === 'ER_DUP_ENTRY') {
-          throw new DuplicateUserExistException(createUserDto.email);
-        }
-        throw exception;
+      if (
+        exception instanceof QueryFailedError &&
+        exception.driverError.code === 'ER_DUP_ENTRY'
+      ) {
+        throw new DuplicateUserExistException(createUserDto.email);
       }
+      throw exception;
     }
   }
 
