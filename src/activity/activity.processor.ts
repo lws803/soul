@@ -71,12 +71,12 @@ export class ActivityProcessor {
             platformUser.platform.activityWebhookUri,
             {
               type: 'FOLLOW',
-              sender: {
+              fromUser: {
                 id: fromUser.id,
                 userHandle: fromUser.userHandle,
                 username: fromUser.username,
               },
-              recipient: {
+              toUser: {
                 id: toUser.id,
                 userHandle: toUser.userHandle,
                 username: toUser.username,
