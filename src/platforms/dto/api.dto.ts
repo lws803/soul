@@ -80,6 +80,7 @@ export class CreatePlatformDto {
     description: 'Webhook URI for Soul to broadcast user activity.',
     required: false,
   })
+  @Expose({ name: 'activity_webhook_uri' })
   @IsOptional()
   activityWebhookUri?: string;
 
