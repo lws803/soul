@@ -119,10 +119,13 @@ describe('PlatformsService - Users', () => {
         platformUser,
       );
 
-      expect(platformUserRepository.findOne).toHaveBeenCalledWith({
-        user,
-        platform,
-      });
+      expect(platformUserRepository.findOne).toHaveBeenCalledWith(
+        {
+          user,
+          platform,
+        },
+        { relations: ['user', 'platform', 'platform.category'] },
+      );
     });
 
     it('should throw not found error', async () => {
@@ -222,9 +225,12 @@ describe('PlatformsService - Users', () => {
         .mockResolvedValue([platformUsers, platformUsers.length]);
 
       expect(
-        await service.findAllPlatformUsers(platform.id, {
-          page: 1,
-          numItemsPerPage: 10,
+        await service.findAllPlatformUsers({
+          platformId: platform.id,
+          paginationParams: {
+            page: 1,
+            numItemsPerPage: 10,
+          },
         }),
       ).toEqual({ platformUsers, totalCount: platformUsers.length });
 
@@ -232,7 +238,7 @@ describe('PlatformsService - Users', () => {
         order: {
           id: 'ASC',
         },
-        relations: ['user'],
+        relations: ['user', 'platform'],
         skip: 0,
         take: 10,
         where: {
@@ -249,9 +255,12 @@ describe('PlatformsService - Users', () => {
         .mockResolvedValue([[platformUsers[0]], platformUsers.length]);
 
       expect(
-        await service.findAllPlatformUsers(platform.id, {
-          page: 1,
-          numItemsPerPage: 1,
+        await service.findAllPlatformUsers({
+          platformId: platform.id,
+          paginationParams: {
+            page: 1,
+            numItemsPerPage: 1,
+          },
         }),
       ).toEqual({
         platformUsers: [platformUsers[0]],
@@ -262,7 +271,7 @@ describe('PlatformsService - Users', () => {
         order: {
           id: 'ASC',
         },
-        relations: ['user'],
+        relations: ['user', 'platform'],
         skip: 0,
         take: 1,
         where: {

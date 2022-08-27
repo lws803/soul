@@ -153,10 +153,10 @@ export class PlatformsController {
     @Query() paginationParams: PaginationParamsDto,
   ): Promise<FindAllPlatformUsersResponseDto> {
     return new FindAllPlatformUsersResponseDto(
-      await this.platformsService.findAllPlatformUsers(
+      await this.platformsService.findAllPlatformUsers({
         platformId,
         paginationParams,
-      ),
+      }),
     );
   }
 

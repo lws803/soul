@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import * as Sentry from '@sentry/node';
 
 import * as factories from 'factories';
 
@@ -25,6 +26,7 @@ describe(MailService, () => {
     module.useLogger(false);
 
     service = module.get<MailService>(MailService);
+    jest.spyOn(Sentry, 'captureException');
   });
 
   describe('sendConfirmationEmail()', () => {
@@ -42,12 +44,17 @@ describe(MailService, () => {
     });
 
     it('fails to send confirmation email', async () => {
+      const mockedSentryCaptureException = jest.spyOn(
+        Sentry,
+        'captureException',
+      );
       addToQueue.mockRejectedValueOnce(new Error('TEST_ERROR'));
       const result = await service.sendConfirmationEmail(
         factories.oneUser.build(),
         'TEST_CODE',
       );
       expect(result).toBe(false);
+      expect(mockedSentryCaptureException).toHaveBeenCalled();
     });
   });
 
@@ -66,12 +73,17 @@ describe(MailService, () => {
     });
 
     it('fails to send password reset email', async () => {
+      const mockedSentryCaptureException = jest.spyOn(
+        Sentry,
+        'captureException',
+      );
       addToQueue.mockRejectedValueOnce(new Error('TEST_ERROR'));
       const result = await service.sendConfirmationEmail(
         factories.oneUser.build(),
         'TEST_CODE',
       );
       expect(result).toBe(false);
+      expect(mockedSentryCaptureException).toHaveBeenCalled();
     });
   });
 });

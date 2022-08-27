@@ -12,6 +12,7 @@ import {
 import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { ActivityService } from 'src/activity/activity.service';
 
 import { CreateUserConnectionDto } from './dto/api.dto';
 import { UserConnection } from './entities/user-connection.entity';
@@ -36,6 +37,7 @@ export class UserConnectionsService {
     private userConnectionRepository: Repository<UserConnection>,
     private usersService: UsersService,
     private platformService: PlatformsService,
+    private activityService: ActivityService,
   ) {}
 
   async create(
@@ -85,6 +87,7 @@ export class UserConnectionsService {
           { mutualConnection: currentConnection },
         );
       }
+      await this.activityService.sendFollowActivity({ fromUser, toUser });
       return { ...currentConnection, isMutual: !!oppositeConnection };
     } catch (exception) {
       if (
@@ -140,7 +143,7 @@ export class UserConnectionsService {
   }
 
   async remove(id: number, currentUserId: number) {
-    const userConnection = await this.findUserConnectionOrThrow({ id });
+    const userConnection = await this.findOne(id);
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
     }
@@ -152,9 +155,7 @@ export class UserConnectionsService {
     platformId: number,
     currentUserId: number,
   ): Promise<AddNewPlatformToUserConnectionResponseDto> {
-    const userConnection = await this.findUserConnectionOrThrow({
-      id,
-    });
+    const { isMutual: _isMutual, ...userConnection } = await this.findOne(id);
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
     }
@@ -170,9 +171,7 @@ export class UserConnectionsService {
     platformId: number,
     currentUserId: number,
   ) {
-    const userConnection = await this.findUserConnectionOrThrow({
-      id,
-    });
+    const { isMutual: _isMutual, ...userConnection } = await this.findOne(id);
     const platform = await this.platformService.findOne(platformId);
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
