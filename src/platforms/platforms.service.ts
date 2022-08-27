@@ -160,7 +160,7 @@ export class PlatformsService {
   }
 
   async update(id: number, updatePlatformDto: UpdatePlatformDto) {
-    const platform = await this.findPlatformOrThrow({ id });
+    const platform = await this.findOne(id);
     const updatedPlatform: Partial<Platform> = {};
 
     const {
@@ -190,12 +190,12 @@ export class PlatformsService {
   }
 
   async remove(id: number) {
-    const platform = await this.findPlatformOrThrow({ id });
+    const platform = await this.findOne(id);
     await this.platformRepository.delete({ id: platform.id });
   }
 
   async setUserRole(platformId: number, userId: number, roles: UserRole[]) {
-    const platform = await this.findPlatformOrThrow({ id: platformId });
+    const platform = await this.findOne(platformId);
     const user = await this.usersService.findOne(userId);
     const platformUser = await this.findPlatformUserOrThrow({ user, platform });
     if (
@@ -218,18 +218,33 @@ export class PlatformsService {
     return await this.platformUserRepository.save(platformUser);
   }
 
-  async findAllPlatformUsers(
-    platformId: number,
-    paginationParams: PaginationParamsDto,
-  ) {
-    const platform = await this.findPlatformOrThrow({ id: platformId });
+  async findAllPlatformUsers({
+    platformId,
+    userId,
+    paginationParams,
+  }: {
+    platformId?: number;
+    userId?: number;
+    paginationParams: PaginationParamsDto;
+  }) {
+    let where: { platform?: Platform; user?: User } | undefined = undefined;
+    if (platformId) {
+      const platform = await this.findOne(platformId);
+      where = { platform };
+    }
+    if (userId) {
+      // TODO: Add tests for this
+      const user = await this.usersService.findOne(userId);
+      where = { user };
+    }
+
     const [platformUsers, totalCount] =
       await this.platformUserRepository.findAndCount({
         order: { id: 'ASC' },
         take: paginationParams.numItemsPerPage,
         skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
-        where: { platform },
-        relations: ['user'],
+        where,
+        relations: ['user', 'platform'],
       });
 
     return { platformUsers, totalCount };

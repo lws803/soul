@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import * as Sentry from '@sentry/node';
 
 import { User } from 'src/users/entities/user.entity';
 
@@ -24,6 +25,7 @@ export class MailService {
       this.logger.error(
         `Error queueing confirmation email to user ${user.email}`,
       );
+      Sentry.captureException(error);
       return false;
     }
   }
@@ -39,6 +41,7 @@ export class MailService {
       this.logger.error(
         `Error queueing password reset email to user ${user.email}`,
       );
+      Sentry.captureException(error);
       return false;
     }
   }

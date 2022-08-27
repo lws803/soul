@@ -236,9 +236,9 @@ describe('PlatformsController', () => {
       ),
     ).toEqual({ platformUsers, totalCount: platformUsers.length });
 
-    expect(platformsService.findAllPlatformUsers).toHaveBeenCalledWith(
-      platform.id,
-      { numItemsPerPage: 10, page: 1 },
-    );
+    expect(platformsService.findAllPlatformUsers).toHaveBeenCalledWith({
+      platformId: platform.id,
+      paginationParams: { numItemsPerPage: 10, page: 1 },
+    });
   });
 });
