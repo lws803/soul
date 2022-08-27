@@ -124,7 +124,7 @@ describe('PlatformsService - Users', () => {
           user,
           platform,
         },
-        { relations: ['user', 'platform'] },
+        { relations: ['user', 'platform', 'platform.category'] },
       );
     });
 

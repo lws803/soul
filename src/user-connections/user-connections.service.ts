@@ -143,7 +143,7 @@ export class UserConnectionsService {
   }
 
   async remove(id: number, currentUserId: number) {
-    const userConnection = await this.findUserConnectionOrThrow({ id });
+    const userConnection = await this.findOne(id);
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
     }
@@ -155,9 +155,7 @@ export class UserConnectionsService {
     platformId: number,
     currentUserId: number,
   ): Promise<AddNewPlatformToUserConnectionResponseDto> {
-    const userConnection = await this.findUserConnectionOrThrow({
-      id,
-    });
+    const { isMutual: _isMutual, ...userConnection } = await this.findOne(id);
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
     }
@@ -173,9 +171,7 @@ export class UserConnectionsService {
     platformId: number,
     currentUserId: number,
   ) {
-    const userConnection = await this.findUserConnectionOrThrow({
-      id,
-    });
+    const { isMutual: _isMutual, ...userConnection } = await this.findOne(id);
     const platform = await this.platformService.findOne(platformId);
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();

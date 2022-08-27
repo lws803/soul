@@ -98,7 +98,7 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.findUserOrThrow({ id });
+    const user = await this.findOne(id);
     const updatedUser: Partial<User> = {};
 
     if (updateUserDto.username) {
@@ -115,8 +115,7 @@ export class UsersService {
   }
 
   async remove(id: number) {
-    const user = await this.findUserOrThrow({ id });
-
+    const user = await this.findOne(id);
     await this.usersRepository.delete({ id: user.id });
   }
 

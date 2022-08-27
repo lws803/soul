@@ -195,9 +195,7 @@ export class PlatformsService {
   }
 
   async setUserRole(platformId: number, userId: number, roles: UserRole[]) {
-    const platform = await this.findOne(platformId);
-    const user = await this.usersService.findOne(userId);
-    const platformUser = await this.findPlatformUserOrThrow({ user, platform });
+    const platformUser = await this.findOnePlatformUser(platformId, userId);
     if (
       platformUser.roles.includes(UserRole.Admin) &&
       !roles.includes(UserRole.Admin)
@@ -209,8 +207,6 @@ export class PlatformsService {
     if (roles.includes(UserRole.Admin))
       await this.isNewAdminPermittedOrThrow(userId);
 
-    platformUser.user = user;
-    platformUser.platform = platform;
     platformUser.roles = [...new Set(roles)];
 
     await this.revokePlatformUserRefreshToken(platformUser);
@@ -289,7 +285,7 @@ export class PlatformsService {
         user,
         platform,
       },
-      { relations: ['user', 'platform'] },
+      { relations: ['user', 'platform', 'platform.category'] },
     );
     if (!platformUser)
       throw new PlatformUserNotFoundException({
