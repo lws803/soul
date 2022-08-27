@@ -48,13 +48,13 @@ describe(ActivityProcessor, () => {
 
   describe('processActivity()', () => {
     it('sends follow activity successfully', async () => {
+      const postAction = jest.spyOn(axios, 'post');
       const response = await processor.processActivity({
         data: { fromUser, toUser, type: 'FOLLOW' },
       } as Job<FollowActivityJobPayload>);
 
       expect(response).toBeUndefined();
 
-      const postAction = jest.spyOn(axios, 'post');
       expect(postAction).toHaveBeenCalledWith('ACTIVITY_WEBHOOK_URI', {
         fromUser: {
           id: fromUser.id,
@@ -68,6 +68,15 @@ describe(ActivityProcessor, () => {
         },
         type: 'FOLLOW',
       });
+    });
+
+    it('post webhook error does not terminate process', async () => {
+      jest.spyOn(axios, 'post').mockRejectedValue(new Error('API ERROR'));
+      const response = await processor.processActivity({
+        data: { fromUser, toUser, type: 'FOLLOW' },
+      } as Job<FollowActivityJobPayload>);
+
+      expect(response).toBeUndefined();
     });
   });
 });
