@@ -75,6 +75,17 @@ export class CreatePlatformDto {
   name: string;
 
   @ApiProperty({
+    name: 'activity_webhook_uri',
+    example: 'https://www.example.com',
+    description: 'Webhook URI for Soul to broadcast user activity.',
+    required: false,
+  })
+  @Expose({ name: 'activity_webhook_uri' })
+  @IsOptional()
+  @MaxLength(255)
+  activityWebhookUri?: string;
+
+  @ApiProperty({
     name: 'redirect_uris',
     example: ['https://example.com', 'http://localhost:3000'],
     description:

@@ -25,6 +25,7 @@ export const onePlatform = Factory.define<Platform>(() => ({
   isVerified: true,
   redirectUris: ['TEST_REDIRECT_URI'],
   category: onePlatformCategory.build(),
+  activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
 }));
 
 export const platformArray = Factory.define<Platform[]>(() => [
@@ -61,6 +62,7 @@ type CreatePlatformRequest = {
   name: string;
   redirect_uris: string[];
   category: string;
+  activity_webhook_uri?: string;
 };
 
 export const createPlatformRequestDto = Factory.define<CreatePlatformRequest>(
@@ -68,5 +70,6 @@ export const createPlatformRequestDto = Factory.define<CreatePlatformRequest>(
     name: 'TEST_PLATFORM',
     redirect_uris: ['TEST_REDIRECT_URI'],
     category: onePlatformCategory.build().name,
+    activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
   }),
 );

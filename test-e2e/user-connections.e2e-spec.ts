@@ -215,6 +215,7 @@ describe('UserConnectionsController (e2e)', () => {
               user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
+            is_mutual: true,
           }),
         );
     });
@@ -288,6 +289,7 @@ describe('UserConnectionsController (e2e)', () => {
               user_handle: 'test_user_2#2',
               username: 'TEST_USER_2',
             },
+            is_mutual: true,
           }),
         );
     });
@@ -366,6 +368,7 @@ describe('UserConnectionsController (e2e)', () => {
               user_handle: 'test_user#1',
               username: 'TEST_USER',
             },
+            is_mutual: false,
           }),
         );
     });

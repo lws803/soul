@@ -87,13 +87,14 @@ export class UserConnectionsService {
       }
       return { ...currentConnection, isMutual: !!oppositeConnection };
     } catch (exception) {
-      if (exception instanceof QueryFailedError) {
-        if (exception.driverError.code === 'ER_DUP_ENTRY') {
-          throw new DuplicateUserConnectionException(
-            createUserConnectionDto.fromUserId,
-            createUserConnectionDto.toUserId,
-          );
-        }
+      if (
+        exception instanceof QueryFailedError &&
+        exception.driverError.code === 'ER_DUP_ENTRY'
+      ) {
+        throw new DuplicateUserConnectionException(
+          createUserConnectionDto.fromUserId,
+          createUserConnectionDto.toUserId,
+        );
         throw exception;
       }
     }
@@ -114,7 +115,12 @@ export class UserConnectionsService {
 
   async findOne(id: number): Promise<FindOneUserConnectionResponseDto> {
     const userConnection = await this.findUserConnectionOrThrow({ id });
-    return userConnection;
+    const oppositeConnection = await this.userConnectionRepository.findOne({
+      fromUser: userConnection.toUser,
+      toUser: userConnection.fromUser,
+    });
+
+    return { ...userConnection, isMutual: !!oppositeConnection };
   }
 
   async findOneByUserIds(
@@ -125,7 +131,12 @@ export class UserConnectionsService {
       fromUserId,
       toUserId,
     });
-    return userConnection;
+    const oppositeConnection = await this.userConnectionRepository.findOne({
+      fromUser: userConnection.toUser,
+      toUser: userConnection.fromUser,
+    });
+
+    return { ...userConnection, isMutual: !!oppositeConnection };
   }
 
   async remove(id: number, currentUserId: number) {

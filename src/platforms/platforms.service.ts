@@ -48,6 +48,7 @@ export class PlatformsService {
     const platform = new Platform();
     platform.name = createPlatformDto.name;
     platform.redirectUris = createPlatformDto.redirectUris;
+    platform.activityWebhookUri = createPlatformDto.activityWebhookUri;
 
     if (createPlatformDto.category) {
       const category = await this.findOneCategoryOrThrow(
@@ -162,7 +163,12 @@ export class PlatformsService {
     const platform = await this.findPlatformOrThrow({ id });
     const updatedPlatform: Partial<Platform> = {};
 
-    const { category, name: platformName, redirectUris } = updatePlatformDto;
+    const {
+      category,
+      name: platformName,
+      redirectUris,
+      activityWebhookUri,
+    } = updatePlatformDto;
 
     if (platformName) {
       updatedPlatform.nameHandle = this.getPlatformHandle(
@@ -176,6 +182,8 @@ export class PlatformsService {
 
     updatedPlatform.redirectUris = redirectUris ?? platform.redirectUris;
     updatedPlatform.name = platformName ?? platform.name;
+    updatedPlatform.activityWebhookUri =
+      activityWebhookUri ?? platform.activityWebhookUri;
 
     await this.platformRepository.update({ id: platform.id }, updatedPlatform);
     return await this.platformRepository.findOne(id);
@@ -243,12 +251,13 @@ export class PlatformsService {
     try {
       return await this.platformUserRepository.save(newPlatformUser);
     } catch (exception) {
-      if (exception instanceof QueryFailedError) {
-        if (exception.driverError.code === 'ER_DUP_ENTRY') {
-          throw new DuplicatePlatformUserException();
-        }
-        throw exception;
+      if (
+        exception instanceof QueryFailedError &&
+        exception.driverError.code === 'ER_DUP_ENTRY'
+      ) {
+        throw new DuplicatePlatformUserException();
       }
+      throw exception;
     }
   }
 

@@ -1,5 +1,7 @@
 import { Factory } from 'fishery';
 
+import { FindOneUserConnectionResponseDto } from 'src/user-connections/dto/api-responses.dto';
+
 import {
   CreateUserConnectionDto,
   PostPlatformDto,
@@ -18,6 +20,18 @@ export const oneUserConnection = Factory.define<UserConnection>(() => ({
   updatedAt: new Date('1995-12-18T03:24:00'),
   mutualConnection: null,
 }));
+
+export const oneUserConnectionResponse =
+  Factory.define<FindOneUserConnectionResponseDto>(() => ({
+    id: 1,
+    fromUser: oneUser.build(),
+    toUser: oneUser.build({ id: 2, email: 'TEST_USER_2@EMAIL.COM' }),
+    platforms: [],
+    createdAt: new Date('1995-12-17T03:24:00'),
+    updatedAt: new Date('1995-12-18T03:24:00'),
+    mutualConnection: null,
+    isMutual: false,
+  }));
 
 export const userConnectionArray = Factory.define<UserConnection[]>(() => [
   oneUserConnection.build({ id: 1 }),

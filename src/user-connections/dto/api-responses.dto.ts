@@ -43,6 +43,10 @@ export class CreateUserConnectionResponseDto extends FullUserConnectionResponseD
 }
 
 export class FindOneUserConnectionResponseDto extends FullUserConnectionResponseDto {
+  @ApiProperty({ name: 'is_mutual' })
+  @Expose({ name: 'is_mutual' })
+  isMutual: boolean;
+
   constructor(args: FindOneUserConnectionResponseDto) {
     super(args);
   }
