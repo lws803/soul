@@ -50,7 +50,6 @@ export class ActivityProcessor {
 
   @Process('activity')
   async processActivity(job: Job<ActivityJobPayload>) {
-    // TODO: Add tests
     this.logger.log(`Sending activity of type ${job.data.type}...'`);
 
     const { fromUser, toUser } = job.data;
