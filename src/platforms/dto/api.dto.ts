@@ -82,6 +82,7 @@ export class CreatePlatformDto {
   })
   @Expose({ name: 'activity_webhook_uri' })
   @IsOptional()
+  @MaxLength(255)
   activityWebhookUri?: string;
 
   @ApiProperty({
