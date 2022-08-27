@@ -3,7 +3,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import * as Sentry from '@sentry/node';
 
-import { FollowActivityPayload } from './types';
+import { FollowActivityJobPayload } from './types';
 
 @Injectable()
 export class ActivityService {
@@ -17,8 +17,8 @@ export class ActivityService {
   async sendFollowActivity({
     fromUser,
     toUser,
-  }: Omit<FollowActivityPayload, 'type'>) {
-    const payload: FollowActivityPayload = {
+  }: Omit<FollowActivityJobPayload, 'type'>) {
+    const payload: FollowActivityJobPayload = {
       type: 'FOLLOW',
       fromUser,
       toUser,

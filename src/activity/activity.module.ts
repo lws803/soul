@@ -1,14 +1,17 @@
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { PlatformsModule } from 'src/platforms/platforms.module';
+import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 
 import { ActivityService } from './activity.service';
 import { ActivityProcessor } from './activity.processor';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([PlatformUser]),
     BullModule.registerQueueAsync({
       name: 'mail_queue',
       useFactory: (configService: ConfigService) => ({

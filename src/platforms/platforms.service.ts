@@ -233,7 +233,6 @@ export class PlatformsService {
       where = { platform };
     }
     if (userId) {
-      // TODO: Add tests for this
       const user = await this.usersService.findOne(userId);
       where = { user };
     }
