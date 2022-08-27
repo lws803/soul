@@ -6,7 +6,6 @@ import {
   Processor,
 } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Job } from 'bull';
 import * as Sentry from '@sentry/node';
 import { Repository, Not, IsNull } from 'typeorm';
@@ -22,7 +21,6 @@ export class ActivityProcessor {
   private readonly logger = new Logger(ActivityProcessor.name);
 
   constructor(
-    private configService: ConfigService,
     @InjectRepository(PlatformUser)
     private platformUserRepository: Repository<PlatformUser>,
   ) {}

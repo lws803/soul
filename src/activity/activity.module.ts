@@ -13,7 +13,7 @@ import { ActivityProcessor } from './activity.processor';
   imports: [
     TypeOrmModule.forFeature([PlatformUser]),
     BullModule.registerQueueAsync({
-      name: 'mail_queue',
+      name: 'activity_queue',
       useFactory: (configService: ConfigService) => ({
         redis: {
           host: configService.get('REDIS_DB_HOST'),
