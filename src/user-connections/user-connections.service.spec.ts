@@ -5,6 +5,7 @@ import { Repository, Not, IsNull, QueryFailedError } from 'typeorm';
 import * as factories from 'factories';
 import { PlatformsService } from 'src/platforms/platforms.service';
 import { UsersService } from 'src/users/users.service';
+import { ActivityService } from 'src/activity/activity.service';
 
 import { UserConnection } from './entities/user-connection.entity';
 import { ConnectionType } from './enums/connection-type.enum';
@@ -15,6 +16,7 @@ describe('ConnectionsService', () => {
   let userConnectionRepository: Repository<UserConnection>;
   let userService: UsersService;
   let platformService: PlatformsService;
+  let activityService: ActivityService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -52,6 +54,10 @@ describe('ConnectionsService', () => {
             findOne: jest.fn().mockResolvedValue(factories.onePlatform.build()),
           },
         },
+        {
+          provide: ActivityService,
+          useValue: { sendFollowActivity: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -61,6 +67,7 @@ describe('ConnectionsService', () => {
     userConnectionRepository = module.get<Repository<UserConnection>>(
       getRepositoryToken(UserConnection),
     );
+    activityService = module.get<ActivityService>(ActivityService);
   });
 
   it('should be defined', () => {
@@ -179,6 +186,16 @@ describe('ConnectionsService', () => {
       );
     });
 
+    it('should send follow activity when inserting a new user connection', async () => {
+      const createUserConnectionDto = factories.createUserConnectionDto.build();
+      await service.create(1, createUserConnectionDto);
+
+      expect(activityService.sendFollowActivity).toHaveBeenCalledWith({
+        fromUser: firstUser,
+        toUser: secondUser,
+      });
+    });
+
     it('should throw error when an existing connection exists', async () => {
       const createUserConnectionDto = factories.createUserConnectionDto.build();
       jest
@@ -210,6 +227,20 @@ describe('ConnectionsService', () => {
       await expect(service.create(1, createUserConnectionDto)).rejects.toThrow(
         'You have no permissions to update this connection.',
       );
+    });
+
+    it('does not send follow activity when error is thrown', async () => {
+      const createUserConnectionDto = factories.createUserConnectionDto.build();
+      jest
+        .spyOn(userConnectionRepository, 'save')
+        .mockRejectedValue(
+          new QueryFailedError('', [], { code: 'ER_DUP_ENTRY' }),
+        );
+      await expect(service.create(1, createUserConnectionDto)).rejects.toThrow(
+        'A user connection from id: 1 to id: 2 already exists',
+      );
+
+      expect(activityService.sendFollowActivity).not.toHaveBeenCalled();
     });
   });
 
