@@ -290,10 +290,13 @@ export class PlatformsService {
     user: User;
     platform: Platform;
   }): Promise<PlatformUser> {
-    const platformUser = await this.platformUserRepository.findOne({
-      user,
-      platform,
-    });
+    const platformUser = await this.platformUserRepository.findOne(
+      {
+        user,
+        platform,
+      },
+      { relations: ['user', 'platform'] },
+    );
     if (!platformUser)
       throw new PlatformUserNotFoundException({
         platformName: platform.nameHandle,

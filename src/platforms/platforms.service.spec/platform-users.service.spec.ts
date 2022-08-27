@@ -119,10 +119,13 @@ describe('PlatformsService - Users', () => {
         platformUser,
       );
 
-      expect(platformUserRepository.findOne).toHaveBeenCalledWith({
-        user,
-        platform,
-      });
+      expect(platformUserRepository.findOne).toHaveBeenCalledWith(
+        {
+          user,
+          platform,
+        },
+        { relations: ['user', 'platform'] },
+      );
     });
 
     it('should throw not found error', async () => {
