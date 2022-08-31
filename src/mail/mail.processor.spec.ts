@@ -38,9 +38,10 @@ describe(MailProcessor, () => {
 
   describe('sendConfirmationEmail()', () => {
     it('sends welcome email successfully', async () => {
+      const user = factories.user.build();
       const response = await processor.sendConfirmationEmail({
         data: {
-          user: factories.oneUser.build(),
+          user,
           code: 'TEST_CODE',
         },
       } as Job<{ user: User; code: string }>);
@@ -49,21 +50,22 @@ describe(MailProcessor, () => {
 
       expect(sendMail).toHaveBeenCalledWith({
         context: {
-          ...factories.oneUser.build({ hashedPassword: undefined }),
+          ...factories.user.build({ hashedPassword: undefined }),
           url: 'BASE_URL?token=TEST_CODE',
         },
         subject: 'Complete your soul profile',
         template: 'confirmation',
-        to: 'TEST_USER@EMAIL.COM',
+        to: user.email,
       });
     });
   });
 
   describe('sendPasswordResetEmail()', () => {
     it('sends password reset email successfully', async () => {
+      const user = factories.user.build();
       const response = await processor.sendPasswordResetEmail({
         data: {
-          user: factories.oneUser.build(),
+          user,
           code: 'TEST_CODE',
         },
       } as Job<{ user: User; code: string }>);
@@ -72,12 +74,12 @@ describe(MailProcessor, () => {
 
       expect(sendMail).toHaveBeenCalledWith({
         context: {
-          ...factories.oneUser.build({ hashedPassword: undefined }),
+          ...factories.user.build({ hashedPassword: undefined }),
           url: 'BASE_URL?token=TEST_CODE',
         },
         subject: 'Reset password',
         template: 'password-reset',
-        to: 'TEST_USER@EMAIL.COM',
+        to: user.email,
       });
     });
   });

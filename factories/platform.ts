@@ -15,37 +15,34 @@ export const onePlatformCategory = Factory.define<PlatformCategory>(() => ({
   name: 'CATEGORY',
 }));
 
-export const onePlatform = Factory.define<Platform>(() => ({
-  id: 1,
-  name: 'TEST_PLATFORM',
-  nameHandle: 'test_platform#1',
-  createdAt: new Date('1995-12-17T03:24:00'),
-  updatedAt: new Date('1995-12-18T03:24:00'),
-  userConnections: [],
-  isVerified: true,
-  redirectUris: ['TEST_REDIRECT_URI'],
-  category: onePlatformCategory.build(),
-  activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
-}));
+export const platform = Factory.define<Platform>(({ sequence }) => {
+  platform.rewindSequence();
+  return {
+    id: sequence,
+    name: `TEST_PLATFORM_${sequence}`,
+    nameHandle: `test_platform_${sequence}#${sequence}`,
+    createdAt: new Date('1995-12-17T03:24:00'),
+    updatedAt: new Date('1995-12-18T03:24:00'),
+    userConnections: [],
+    isVerified: true,
+    redirectUris: ['TEST_REDIRECT_URI'],
+    category: onePlatformCategory.build(),
+    activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
+  };
+});
 
-export const platformArray = Factory.define<Platform[]>(() => [
-  onePlatform.build(),
-  onePlatform.build({ id: 2, name: 'TEST_PLATFORM_2' }),
-]);
+export const platformUser = Factory.define<PlatformUser>(({ sequence }) => {
+  platformUser.rewindSequence();
 
-export const onePlatformUser = Factory.define<PlatformUser>(() => ({
-  id: 1,
-  user: factories.oneUser.build(),
-  platform: factories.onePlatform.build(),
-  roles: [UserRole.Admin, UserRole.Member],
-  createdAt: new Date('1995-12-17T03:24:00'),
-  updatedAt: new Date('1995-12-18T03:24:00'),
-}));
-
-export const platformUserArray = Factory.define<PlatformUser[]>(() => [
-  onePlatformUser.build(),
-  onePlatformUser.build({ id: 2 }),
-]);
+  return {
+    id: sequence,
+    user: factories.user.build(),
+    platform: factories.platform.build(),
+    roles: [UserRole.Admin, UserRole.Member],
+    createdAt: new Date('1995-12-17T03:24:00'),
+    updatedAt: new Date('1995-12-18T03:24:00'),
+  };
+});
 
 export const updatePlatformDto = Factory.define<UpdatePlatformDto>(() => ({
   name: 'TEST_PLATFORM_UPDATE',
@@ -65,7 +62,7 @@ type CreatePlatformRequest = {
   activity_webhook_uri?: string;
 };
 
-export const createPlatformRequestDto = Factory.define<CreatePlatformRequest>(
+export const createPlatformRequest = Factory.define<CreatePlatformRequest>(
   () => ({
     name: 'TEST_PLATFORM',
     redirect_uris: ['TEST_REDIRECT_URI'],

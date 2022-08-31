@@ -59,16 +59,23 @@ describe('UsersController (e2e)', () => {
     });
 
     it('throws user duplicate error', async () => {
-      await userRepository.save(factories.oneUser.build());
+      const existingUser = factories.user.build();
+      await userRepository.save(existingUser);
       return request(app.getHttpServer())
         .post('/users')
-        .send(factories.createUserDto.build({ password: '3Yarw#Nm%cpY9QV&' }))
+        .send(
+          factories.createUserDto.build({
+            email: existingUser.email,
+            username: existingUser.username,
+            password: '3Yarw#Nm%cpY9QV&',
+          }),
+        )
         .expect(HttpStatus.CONFLICT)
         .expect((res) => {
           expect(res.body).toStrictEqual({
             error: 'DUPLICATE_USER_EXISTS',
             message:
-              'A user with the email address: TEST_USER@EMAIL.COM already exists. ' +
+              'A user with the email address: TEST_USER_1@EMAIL.COM already exists. ' +
               'Please login or use a different email address.',
           });
         });
@@ -78,8 +85,8 @@ describe('UsersController (e2e)', () => {
   describe('/users (GET)', () => {
     beforeAll(async () => {
       await userRepository.save([
-        factories.oneUser.build({ id: undefined }),
-        factories.oneUser.build({
+        factories.user.build({ id: undefined }),
+        factories.user.build({
           id: undefined,
           username: 'TEST_USER_2',
           userHandle: 'test_user_2#2',
@@ -107,8 +114,8 @@ describe('UsersController (e2e)', () => {
               },
               {
                 id: expect.any(Number),
-                user_handle: 'test_user#1',
-                username: 'TEST_USER',
+                user_handle: 'test_user_1#1',
+                username: 'TEST_USER_1',
               },
             ],
           });
@@ -154,7 +161,7 @@ describe('UsersController (e2e)', () => {
 
   describe('/users/:id (GET)', () => {
     beforeAll(async () => {
-      await userRepository.save(factories.oneUser.build());
+      await userRepository.save(factories.user.build());
     });
 
     afterAll(async () => {
@@ -168,8 +175,8 @@ describe('UsersController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: expect.any(Number),
-            user_handle: 'test_user#1',
-            username: 'TEST_USER',
+            user_handle: 'test_user_1#1',
+            username: 'TEST_USER_1',
           });
         });
     });

@@ -1,5 +1,7 @@
 import * as factories from 'factories';
 
+const platformsList = factories.platform.buildList(2);
+
 export const platformCreateQueryBuilderObject = {
   select: jest.fn().mockImplementation(() => platformCreateQueryBuilderObject),
   where: jest.fn().mockImplementation(() => platformCreateQueryBuilderObject),
@@ -14,10 +16,7 @@ export const platformCreateQueryBuilderObject = {
     .mockImplementation(() => platformCreateQueryBuilderObject),
   getManyAndCount: jest
     .fn()
-    .mockResolvedValue([
-      factories.platformArray.build(),
-      factories.platformArray.build().length,
-    ]),
+    .mockResolvedValue([platformsList, platformsList.length]),
 };
 
 export const platformUserCreateQueryBuilderObject = {
@@ -42,9 +41,9 @@ export const platformUserCreateQueryBuilderObject = {
   orderBy: jest
     .fn()
     .mockImplementation(() => platformUserCreateQueryBuilderObject),
-  getOne: jest.fn().mockResolvedValue(factories.onePlatformUser.build()),
+  getOne: jest.fn().mockResolvedValue(factories.platformUser.build()),
   getCount: jest.fn().mockResolvedValue(1),
   getManyAndCount: jest
     .fn()
-    .mockResolvedValue([[factories.onePlatformUser.build()], 1]),
+    .mockResolvedValue([factories.platformUser.buildList(1), 1]),
 };

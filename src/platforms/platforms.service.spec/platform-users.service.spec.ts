@@ -33,20 +33,19 @@ describe('PlatformsService - Users', () => {
     platformCreateQueryBuilder = platformCreateQueryBuilderObject;
     platformUserCreateQueryBuilder = platformUserCreateQueryBuilderObject;
 
+    const platforms = factories.platform.buildList(2);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PlatformsService,
         {
           provide: getRepositoryToken(Platform),
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.onePlatform.build()),
+            findOne: jest.fn().mockResolvedValue(factories.platform.build()),
             findAndCount: jest
               .fn()
-              .mockResolvedValue([
-                factories.platformArray.build(),
-                factories.platformArray.build().length,
-              ]),
-            save: jest.fn().mockResolvedValue(factories.onePlatform.build()),
+              .mockResolvedValue([platforms, platforms.length]),
+            save: jest.fn().mockResolvedValue(factories.platform.build()),
             update: jest.fn(),
             delete: jest.fn(),
             createQueryBuilder: jest
@@ -67,12 +66,12 @@ describe('PlatformsService - Users', () => {
           useValue: {
             findOne: jest
               .fn()
-              .mockResolvedValue(factories.onePlatformUser.build()),
+              .mockResolvedValue(factories.platformUser.build()),
             findAndCount: jest.fn(),
             save: jest
               .fn()
               .mockResolvedValue(
-                factories.onePlatformUser.build({ roles: [UserRole.Member] }),
+                factories.platformUser.build({ roles: [UserRole.Member] }),
               ),
             update: jest.fn(),
             delete: jest.fn(),
@@ -94,7 +93,7 @@ describe('PlatformsService - Users', () => {
         {
           provide: UsersService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.oneUser.build()),
+            findOne: jest.fn().mockResolvedValue(factories.user.build()),
           },
         },
       ],
@@ -111,9 +110,9 @@ describe('PlatformsService - Users', () => {
 
   describe('findOnePlatformUser()', () => {
     it('should return one platform user successfully', async () => {
-      const platformUser = factories.onePlatformUser.build();
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
+      const platformUser = factories.platformUser.build();
+      const platform = factories.platform.build();
+      const user = factories.user.build();
 
       expect(await service.findOnePlatformUser(platform.id, user.id)).toEqual(
         platformUser,
@@ -130,8 +129,8 @@ describe('PlatformsService - Users', () => {
 
     it('should throw not found error', async () => {
       jest.spyOn(platformUserRepository, 'findOne').mockResolvedValue(null);
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
+      const platform = factories.platform.build();
+      const user = factories.user.build();
 
       await expect(
         async () => await service.findOnePlatformUser(platform.id, user.id),
@@ -146,9 +145,9 @@ describe('PlatformsService - Users', () => {
 
   describe('setUserRole()', () => {
     it('should set platform user role successfully', async () => {
-      const platformUser = factories.onePlatformUser.build();
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
+      const platformUser = factories.platformUser.build();
+      const platform = factories.platform.build();
+      const user = factories.user.build();
 
       await service.setUserRole(platform.id, user.id, [
         UserRole.Admin,
@@ -169,8 +168,8 @@ describe('PlatformsService - Users', () => {
       jest
         .spyOn(platformUserCreateQueryBuilder, 'getCount')
         .mockResolvedValue(6);
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
+      const platform = factories.platform.build();
+      const user = factories.user.build();
 
       await expect(
         service.setUserRole(platform.id, user.id, [
@@ -185,8 +184,8 @@ describe('PlatformsService - Users', () => {
       jest
         .spyOn(platformUserCreateQueryBuilder, 'getCount')
         .mockResolvedValue(6);
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
+      const platform = factories.platform.build();
+      const user = factories.user.build();
 
       await expect(
         service.setUserRole(platform.id, user.id, [UserRole.Member]),
@@ -197,9 +196,9 @@ describe('PlatformsService - Users', () => {
 
   describe('removeUser()', () => {
     it('should delete user successfully', async () => {
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-      const platformUser = factories.onePlatformUser.build();
+      const platform = factories.platform.build();
+      const user = factories.user.build();
+      const platformUser = factories.platformUser.build();
       jest
         .spyOn(service, 'findOnePlatformUser')
         .mockResolvedValue(platformUser);
@@ -218,8 +217,8 @@ describe('PlatformsService - Users', () => {
 
   describe('findAllPlatformUsers()', () => {
     it('should return all platform users successfully', async () => {
-      const platform = factories.onePlatform.build();
-      const platformUsers = factories.platformUserArray.build();
+      const platform = factories.platform.build();
+      const platformUsers = factories.platformUser.buildList(2);
       jest
         .spyOn(platformUserRepository, 'findAndCount')
         .mockResolvedValue([platformUsers, platformUsers.length]);
@@ -248,8 +247,8 @@ describe('PlatformsService - Users', () => {
     });
 
     it('should return all platform users with pagination successfully', async () => {
-      const platform = factories.onePlatform.build();
-      const platformUsers = factories.platformUserArray.build();
+      const platform = factories.platform.build();
+      const platformUsers = factories.platformUser.buildList(2, { platform });
       jest
         .spyOn(platformUserRepository, 'findAndCount')
         .mockResolvedValue([[platformUsers[0]], platformUsers.length]);
@@ -283,29 +282,29 @@ describe('PlatformsService - Users', () => {
 
   describe('addUser()', () => {
     it('should add user successfully', async () => {
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
-      const platformUser = factories.onePlatformUser.build();
+      const platform = factories.platform.build();
+      const user = factories.user.build();
+      const platformUser = factories.platformUser.build();
       jest
         .spyOn(service, 'findOnePlatformUser')
         .mockResolvedValue(platformUser);
 
       expect(await service.addUser(platform.id, user.id)).toEqual(
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           roles: [UserRole.Member],
         }),
       );
 
       expect(platformUserRepository.save).toHaveBeenCalledWith({
-        platform: factories.onePlatform.build(),
+        platform: factories.platform.build(),
         roles: [UserRole.Member],
-        user: factories.oneUser.build(),
+        user: factories.user.build(),
       });
     });
 
     it('should raise duplicate error', async () => {
-      const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
+      const platform = factories.platform.build();
+      const user = factories.user.build();
 
       jest
         .spyOn(platformUserRepository, 'save')

@@ -33,19 +33,17 @@ describe('AuthService', () => {
         {
           provide: UsersService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.oneUser.build()),
-            findOneByEmail: jest
-              .fn()
-              .mockResolvedValue(factories.oneUser.build()),
+            findOne: jest.fn().mockResolvedValue(factories.user.build()),
+            findOneByEmail: jest.fn().mockResolvedValue(factories.user.build()),
           },
         },
         {
           provide: PlatformsService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.onePlatform.build()),
+            findOne: jest.fn().mockResolvedValue(factories.platform.build()),
             findOnePlatformUser: jest
               .fn()
-              .mockResolvedValue(factories.onePlatformUser.build()),
+              .mockResolvedValue(factories.platformUser.build()),
           },
         },
         {
@@ -79,8 +77,8 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.jwtRefreshPayload.build()),
             sign: jest.fn().mockReturnValue('SIGNED_TOKEN'),
             verify: jest.fn().mockReturnValue({
-              userId: factories.oneUser.build().id,
-              platformId: factories.onePlatform.build().id,
+              userId: factories.user.build().id,
+              platformId: factories.platform.build().id,
               callback: 'TEST_REDIRECT_URI',
               codeChallengeKey: 'CODE_CHALLENGE_KEY',
             }),
@@ -122,7 +120,7 @@ describe('AuthService', () => {
         'TEST_HASHED_PASSWORD',
       );
 
-      expect(response).toStrictEqual(factories.oneUser.build());
+      expect(response).toStrictEqual(factories.user.build());
     });
 
     it('should return null if email and password are invalid', async () => {
@@ -137,7 +135,7 @@ describe('AuthService', () => {
 
   describe('login()', () => {
     it('should generate access and refresh token on successful login', async () => {
-      const user = factories.oneUser.build();
+      const user = factories.user.build();
       const response = await service.login(user);
       expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
@@ -167,8 +165,8 @@ describe('AuthService', () => {
 
   describe('getCodeForPlatformAndCallback()', () => {
     it('should generate access and refresh token on successful login', async () => {
-      const user = factories.oneUser.build();
-      const platformUser = factories.onePlatformUser.build();
+      const user = factories.user.build();
+      const platformUser = factories.platformUser.build();
       const codeChallenge = 'CODE_CHALLENGE';
 
       const response = await service.findCodeForPlatformAndCallback({
@@ -189,8 +187,8 @@ describe('AuthService', () => {
     });
 
     it('denies access when callback uri is not registered', async () => {
-      const user = factories.oneUser.build();
-      const platformUser = factories.onePlatformUser.build();
+      const user = factories.user.build();
+      const platformUser = factories.platformUser.build();
 
       await expect(
         service.findCodeForPlatformAndCallback({
@@ -204,8 +202,8 @@ describe('AuthService', () => {
     });
 
     it('denies access to inactive users', async () => {
-      const user = factories.oneUser.build({ isActive: false });
-      const platformUser = factories.onePlatformUser.build();
+      const user = factories.user.build({ isActive: false });
+      const platformUser = factories.platformUser.build();
 
       await expect(
         service.findCodeForPlatformAndCallback({
@@ -229,8 +227,8 @@ describe('AuthService', () => {
         callback: 'TEST_REDIRECT_URI',
         codeVerifier: 'CODE_VERIFIER',
       });
-      const user = factories.oneUser.build();
-      const platformUser = factories.onePlatformUser.build();
+      const user = factories.user.build();
+      const platformUser = factories.platformUser.build();
 
       expect(jwtService.verify).toHaveBeenCalledWith(code);
 
@@ -416,7 +414,7 @@ describe('AuthService', () => {
 
   describe('refreshWithPlatform()', () => {
     it('should refresh successfully with valid refresh token', async () => {
-      const platformUser = factories.onePlatformUser.build();
+      const platformUser = factories.platformUser.build();
       jest
         .spyOn(jwtService, 'verifyAsync')
         .mockImplementation(() =>
@@ -462,7 +460,7 @@ describe('AuthService', () => {
           Promise.resolve(factories.jwtRefreshPayloadWithPlatform.build()),
         );
 
-      const platformUser = factories.onePlatformUser.build();
+      const platformUser = factories.platformUser.build();
 
       await service.refreshWithPlatform(
         'REFRESH_TOKEN',
@@ -478,7 +476,7 @@ describe('AuthService', () => {
       jest
         .spyOn(refreshTokenRepository, 'findOne')
         .mockImplementation(() => Promise.resolve(null));
-      const platformUser = factories.onePlatformUser.build();
+      const platformUser = factories.platformUser.build();
 
       await expect(
         service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
@@ -491,7 +489,7 @@ describe('AuthService', () => {
         .mockImplementation(() =>
           Promise.reject(new TokenExpiredError('expired token', new Date())),
         );
-      const platformUser = factories.onePlatformUser.build();
+      const platformUser = factories.platformUser.build();
 
       await expect(
         service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
@@ -531,7 +529,7 @@ describe('AuthService', () => {
           Promise.resolve(factories.jwtRefreshPayloadWithPlatform.build()),
         );
 
-      const platformUser = factories.onePlatformUser.build();
+      const platformUser = factories.platformUser.build();
 
       await service.refreshWithPlatform(
         'REFRESH_TOKEN',
@@ -559,7 +557,7 @@ describe('AuthService', () => {
           Promise.resolve(factories.jwtRefreshPayloadWithPlatform.build()),
         );
 
-      const platformUser = factories.onePlatformUser.build();
+      const platformUser = factories.platformUser.build();
 
       await service.refreshWithPlatform(
         'REFRESH_TOKEN',

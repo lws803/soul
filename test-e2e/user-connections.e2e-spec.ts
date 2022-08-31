@@ -61,7 +61,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.createUserConnectionRequestDto.build())
+        .send(factories.createUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -85,15 +85,16 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('creates a new connection with platform', async () => {
-      await platformRepository.save(factories.onePlatform.build());
-      await platformUserRepository.save(factories.onePlatformUser.build());
+      const platform = factories.platform.build();
+      await platformRepository.save(platform);
+      await platformUserRepository.save(
+        factories.platformUser.build({ platform }),
+      );
 
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(
-          factories.createUserConnectionRequestDto.build({ platform_id: 1 }),
-        )
+        .send(factories.createUserConnectionRequest.build({ platform_id: 1 }))
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -116,8 +117,8 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 id: expect.any(Number),
                 is_verified: true,
-                name: 'TEST_PLATFORM',
-                name_handle: 'test_platform#1',
+                name: platform.name,
+                name_handle: platform.nameHandle,
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -132,11 +133,11 @@ describe('UserConnectionsController (e2e)', () => {
     it('creates a new connection with opposite becomes mutual', async () => {
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save(secondUserConnection);
       await userConnectionRepository.update(
@@ -147,7 +148,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.createUserConnectionRequestDto.build())
+        .send(factories.createUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -176,11 +177,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -222,12 +223,12 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('returns not found', async () => {
       await userRepository.save([
-        factories.oneUser.build({
+        factories.user.build({
           id: 999,
           email: 'TEST_USER_999@EMAIL.COM',
           userHandle: 'TEST_USER_999#999',
         }),
-        factories.oneUser.build({
+        factories.user.build({
           id: 998,
           email: 'TEST_USER_998@EMAIL.COM',
           userHandle: 'TEST_USER_998#998',
@@ -250,11 +251,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -328,11 +329,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -386,13 +387,14 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('adds a new platform to the existing connection', async () => {
-      await platformRepository.save(factories.onePlatform.build());
-      await platformUserRepository.save(factories.onePlatformUser.build());
+      const platform = factories.platform.build();
+      await platformRepository.save(platform);
+      await platformUserRepository.save(factories.platformUser.build());
 
       await request(app.getHttpServer())
         .post('/user-connections/1/platforms')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.postPlatformToUserConnectionRequestDto.build())
+        .send(factories.postPlatformToUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -415,8 +417,8 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 id: 1,
                 is_verified: true,
-                name: 'TEST_PLATFORM',
-                name_handle: 'test_platform#1',
+                name: platform.name,
+                name_handle: platform.nameHandle,
                 category: {
                   id: 1,
                   name: 'CATEGORY',
@@ -440,8 +442,8 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('deletes a platform from existing connection', async () => {
-      await platformRepository.save(factories.onePlatform.build());
-      await platformUserRepository.save(factories.onePlatformUser.build());
+      await platformRepository.save(factories.platform.build());
+      await platformUserRepository.save(factories.platformUser.build());
 
       return request(app.getHttpServer())
         .delete('/user-connections/1/platforms/1')
@@ -460,11 +462,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -507,11 +509,11 @@ describe('UserConnectionsController (e2e)', () => {
     it('fetches my follower connections', async () => {
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save(secondUserConnection);
 
@@ -578,13 +580,13 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('fetches my follow connections for a platform', async () => {
-      const thirdUser = factories.oneUser.build({
+      const thirdUser = factories.user.build({
         id: 3,
         username: 'TEST_USER_3',
         userHandle: 'TEST_USER_3#3',
         email: 'TEST_USER_3@EMAIL.COM',
       });
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       await userRepository.save(thirdUser);
       await platformRepository.save(onePlatform);
       const firstUserConnection = factories.oneUserConnection.build({
@@ -593,7 +595,7 @@ describe('UserConnectionsController (e2e)', () => {
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
         toUser: thirdUser,
-        platforms: [factories.onePlatform.build()],
+        platforms: factories.platform.buildList(1),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -625,8 +627,8 @@ describe('UserConnectionsController (e2e)', () => {
                     updated_at: expect.any(String),
                     id: 1,
                     is_verified: true,
-                    name: 'TEST_PLATFORM',
-                    name_handle: 'test_platform#1',
+                    name: onePlatform.name,
+                    name_handle: onePlatform.nameHandle,
                   },
                 ],
                 to_user: {

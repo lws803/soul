@@ -45,13 +45,13 @@ describe('ConnectionsService', () => {
         {
           provide: UsersService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.oneUser.build()),
+            findOne: jest.fn().mockResolvedValue(factories.user.build()),
           },
         },
         {
           provide: PlatformsService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.onePlatform.build()),
+            findOne: jest.fn().mockResolvedValue(factories.platform.build()),
           },
         },
         {
@@ -75,8 +75,8 @@ describe('ConnectionsService', () => {
   });
 
   describe('create()', () => {
-    const firstUser = factories.oneUser.build();
-    const secondUser = factories.oneUser.build({
+    const firstUser = factories.user.build();
+    const secondUser = factories.user.build({
       email: 'TEST_USER_2@EMAIL.COM',
       id: 2,
     });
@@ -112,7 +112,7 @@ describe('ConnectionsService', () => {
     });
 
     it('should successfully insert a new user connection with platformId', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       const createUserConnectionDto = factories.createUserConnectionDto.build({
         platformId: onePlatform.id,
       });
@@ -265,10 +265,10 @@ describe('ConnectionsService', () => {
     it('should paginate correctly', async () => {
       jest
         .spyOn(userConnectionRepository, 'findAndCount')
-        .mockResolvedValue([[factories.oneUserConnection.build()], 1]);
+        .mockResolvedValue([factories.oneUserConnection.buildList(1), 1]);
       expect(await service.findAll({ numItemsPerPage: 1, page: 1 })).toEqual({
         totalCount: 1,
-        userConnections: [factories.oneUserConnection.build()],
+        userConnections: factories.oneUserConnection.buildList(1),
       });
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
@@ -337,7 +337,7 @@ describe('ConnectionsService', () => {
 
   describe('addNewPlatformToUserConnection()', () => {
     it('should add a new platform to a user connection successfully', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       const oneUserConnectionWithPlatform = factories.oneUserConnection.build({
         platforms: [onePlatform],
       });
@@ -360,7 +360,7 @@ describe('ConnectionsService', () => {
     });
 
     it('should throw when user is not involved in the connection', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       await expect(
         service.addNewPlatformToUserConnection(1, onePlatform.id, 2),
       ).rejects.toThrow('You have no permissions to update this connection.');
@@ -369,7 +369,7 @@ describe('ConnectionsService', () => {
 
   describe('removePlatformFromUserConnection()', () => {
     it('should remove a platform from a user connection successfully', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       const oneUserConnection = factories.oneUserConnection.build();
       jest
         .spyOn(userConnectionRepository, 'save')
@@ -390,7 +390,7 @@ describe('ConnectionsService', () => {
     });
 
     it('should throw when user is not involved in the connection', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       await expect(
         service.removePlatformFromUserConnection(1, onePlatform.id, 2),
       ).rejects.toThrow('You have no permissions to update this connection.');
@@ -424,7 +424,7 @@ describe('ConnectionsService', () => {
       });
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
-        where: { fromUser: factories.oneUser.build() },
+        where: { fromUser: factories.user.build() },
         ...defaultQueryParameters,
       });
     });
@@ -445,7 +445,7 @@ describe('ConnectionsService', () => {
       });
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
-        where: { toUser: factories.oneUser.build() },
+        where: { toUser: factories.user.build() },
         ...defaultQueryParameters,
       });
     });
@@ -467,7 +467,7 @@ describe('ConnectionsService', () => {
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
         where: {
-          fromUser: factories.oneUser.build(),
+          fromUser: factories.user.build(),
           mutualConnection: Not(IsNull()),
         },
         ...defaultQueryParameters,
