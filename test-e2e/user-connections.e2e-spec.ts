@@ -94,9 +94,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(
-          factories.createUserConnectionRequest.build({ platform_id: 1 }),
-        )
+        .send(factories.createUserConnectionRequest.build({ platform_id: 1 }))
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -597,7 +595,7 @@ describe('UserConnectionsController (e2e)', () => {
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
         toUser: thirdUser,
-        platforms: [factories.platform.build()],
+        platforms: factories.platform.buildList(1),
       });
       await userConnectionRepository.save([
         firstUserConnection,

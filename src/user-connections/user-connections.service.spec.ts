@@ -265,10 +265,10 @@ describe('ConnectionsService', () => {
     it('should paginate correctly', async () => {
       jest
         .spyOn(userConnectionRepository, 'findAndCount')
-        .mockResolvedValue([[factories.oneUserConnection.build()], 1]);
+        .mockResolvedValue([factories.oneUserConnection.buildList(1), 1]);
       expect(await service.findAll({ numItemsPerPage: 1, page: 1 })).toEqual({
         totalCount: 1,
-        userConnections: [factories.oneUserConnection.build()],
+        userConnections: factories.oneUserConnection.buildList(1),
       });
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({

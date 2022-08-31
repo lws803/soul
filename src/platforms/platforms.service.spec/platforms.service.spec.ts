@@ -280,7 +280,7 @@ describe('PlatformsService', () => {
           user.id,
         ),
       ).toEqual({
-        platforms: [factories.platform.build()],
+        platforms: factories.platform.buildList(1),
         totalCount: 1,
       });
 
@@ -303,7 +303,7 @@ describe('PlatformsService', () => {
       expect(
         await service.findMyPlatforms({ page: 2, numItemsPerPage: 1 }, user.id),
       ).toEqual({
-        platforms: [factories.platform.build()],
+        platforms: factories.platform.buildList(1),
         totalCount: 1,
       });
 
@@ -324,7 +324,7 @@ describe('PlatformsService', () => {
           user.id,
         ),
       ).toEqual({
-        platforms: [factories.platform.build()],
+        platforms: factories.platform.buildList(1),
         totalCount: 1,
       });
 

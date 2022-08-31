@@ -45,5 +45,5 @@ export const platformUserCreateQueryBuilderObject = {
   getCount: jest.fn().mockResolvedValue(1),
   getManyAndCount: jest
     .fn()
-    .mockResolvedValue([[factories.platformUser.build()], 1]),
+    .mockResolvedValue([factories.platformUser.buildList(1), 1]),
 };
