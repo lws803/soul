@@ -7,6 +7,7 @@ import { ReputationService } from './reputation.service';
 
 describe('ReputationController', () => {
   let controller: ReputationController;
+  const user = factories.user.build();
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -16,7 +17,7 @@ describe('ReputationController', () => {
           provide: ReputationService,
           useValue: {
             findOneUserReputation: jest.fn().mockResolvedValue({
-              userId: factories.oneUser.build().id,
+              userId: user.id,
               reputation: 2,
             }),
           },
@@ -29,11 +30,10 @@ describe('ReputationController', () => {
 
   describe('findOneUserReputation', () => {
     it('should return reputation', async () => {
-      const oneUser = factories.oneUser.build();
       expect(
-        await controller.findOneUserReputation({ userId: oneUser.id }),
+        await controller.findOneUserReputation({ userId: user.id }),
       ).toEqual({
-        userId: oneUser.id,
+        userId: user.id,
         reputation: 2,
       });
     });

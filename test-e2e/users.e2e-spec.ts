@@ -59,7 +59,7 @@ describe('UsersController (e2e)', () => {
     });
 
     it('throws user duplicate error', async () => {
-      await userRepository.save(factories.oneUser.build());
+      await userRepository.save(factories.user.build());
       return request(app.getHttpServer())
         .post('/users')
         .send(factories.createUserDto.build({ password: '3Yarw#Nm%cpY9QV&' }))
@@ -78,8 +78,8 @@ describe('UsersController (e2e)', () => {
   describe('/users (GET)', () => {
     beforeAll(async () => {
       await userRepository.save([
-        factories.oneUser.build({ id: undefined }),
-        factories.oneUser.build({
+        factories.user.build({ id: undefined }),
+        factories.user.build({
           id: undefined,
           username: 'TEST_USER_2',
           userHandle: 'test_user_2#2',
@@ -154,7 +154,7 @@ describe('UsersController (e2e)', () => {
 
   describe('/users/:id (GET)', () => {
     beforeAll(async () => {
-      await userRepository.save(factories.oneUser.build());
+      await userRepository.save(factories.user.build());
     });
 
     afterAll(async () => {

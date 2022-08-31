@@ -32,14 +32,14 @@ describe(MailService, () => {
   describe('sendConfirmationEmail()', () => {
     it('sends confirmation email', async () => {
       const result = await service.sendConfirmationEmail(
-        factories.oneUser.build(),
+        factories.user.build(),
         'TEST_CODE',
       );
       expect(result).toBe(true);
 
       expect(addToQueue).toHaveBeenCalledWith('confirmation', {
         code: 'TEST_CODE',
-        user: factories.oneUser.build(),
+        user: factories.user.build(),
       });
     });
 
@@ -50,7 +50,7 @@ describe(MailService, () => {
       );
       addToQueue.mockRejectedValueOnce(new Error('TEST_ERROR'));
       const result = await service.sendConfirmationEmail(
-        factories.oneUser.build(),
+        factories.user.build(),
         'TEST_CODE',
       );
       expect(result).toBe(false);
@@ -61,14 +61,14 @@ describe(MailService, () => {
   describe('sendPasswordResetEmail()', () => {
     it('sends password reset email', async () => {
       const result = await service.sendPasswordResetEmail(
-        factories.oneUser.build(),
+        factories.user.build(),
         'TEST_CODE',
       );
       expect(result).toBe(true);
 
       expect(addToQueue).toHaveBeenCalledWith('password_reset', {
         code: 'TEST_CODE',
-        user: factories.oneUser.build(),
+        user: factories.user.build(),
       });
     });
 
@@ -79,7 +79,7 @@ describe(MailService, () => {
       );
       addToQueue.mockRejectedValueOnce(new Error('TEST_ERROR'));
       const result = await service.sendConfirmationEmail(
-        factories.oneUser.build(),
+        factories.user.build(),
         'TEST_CODE',
       );
       expect(result).toBe(false);

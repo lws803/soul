@@ -11,12 +11,12 @@ import { FollowActivityJobPayload } from './types';
 
 describe(ActivityProcessor, () => {
   let processor: ActivityProcessor;
-  const fromUser = factories.oneUser.build({
+  const fromUser = factories.user.build({
     id: 1,
     username: 'FROM_USER',
     userHandle: 'FROM_USER#1',
   });
-  const toUser = factories.oneUser.build({
+  const toUser = factories.user.build({
     id: 2,
     username: 'TO_USER',
     userHandle: 'TO_USER#2',

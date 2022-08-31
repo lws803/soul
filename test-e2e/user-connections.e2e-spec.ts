@@ -132,11 +132,11 @@ describe('UserConnectionsController (e2e)', () => {
     it('creates a new connection with opposite becomes mutual', async () => {
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save(secondUserConnection);
       await userConnectionRepository.update(
@@ -176,11 +176,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -222,12 +222,12 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('returns not found', async () => {
       await userRepository.save([
-        factories.oneUser.build({
+        factories.user.build({
           id: 999,
           email: 'TEST_USER_999@EMAIL.COM',
           userHandle: 'TEST_USER_999#999',
         }),
-        factories.oneUser.build({
+        factories.user.build({
           id: 998,
           email: 'TEST_USER_998@EMAIL.COM',
           userHandle: 'TEST_USER_998#998',
@@ -250,11 +250,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -328,11 +328,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -460,11 +460,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -507,11 +507,11 @@ describe('UserConnectionsController (e2e)', () => {
     it('fetches my follower connections', async () => {
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.oneUser.build({
+        fromUser: factories.user.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.oneUser.build(),
+        toUser: factories.user.build(),
       });
       await userConnectionRepository.save(secondUserConnection);
 
@@ -578,7 +578,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('fetches my follow connections for a platform', async () => {
-      const thirdUser = factories.oneUser.build({
+      const thirdUser = factories.user.build({
         id: 3,
         username: 'TEST_USER_3',
         userHandle: 'TEST_USER_3#3',

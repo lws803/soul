@@ -94,7 +94,7 @@ describe('PlatformsService', () => {
         {
           provide: UsersService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.oneUser.build()),
+            findOne: jest.fn().mockResolvedValue(factories.user.build()),
           },
         },
       ],
@@ -115,7 +115,7 @@ describe('PlatformsService', () => {
   describe('create()', () => {
     it('should create a platform successfully', async () => {
       const platform = factories.onePlatform.build();
-      const user = factories.oneUser.build();
+      const user = factories.user.build();
 
       const newPlatform = await service.create(
         factories.createPlatformDto.build(),
@@ -142,7 +142,7 @@ describe('PlatformsService', () => {
 
     it("should throw an error when category doesn't exist", async () => {
       jest.spyOn(platformCategoryRepository, 'findOne').mockResolvedValue(null);
-      const user = factories.oneUser.build();
+      const user = factories.user.build();
       await expect(
         service.create(
           factories.createPlatformDto.build({ category: 'UNKNOWN_CATEGORY' }),
@@ -159,7 +159,7 @@ describe('PlatformsService', () => {
       jest
         .spyOn(platformUserCreateQueryBuilder, 'getCount')
         .mockResolvedValue(6);
-      const user = factories.oneUser.build();
+      const user = factories.user.build();
       await expect(
         service.create(factories.createPlatformDto.build(), user.id),
       ).rejects.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
@@ -273,7 +273,7 @@ describe('PlatformsService', () => {
 
   describe('findMyPlatforms()', () => {
     it('should find my platforms', async () => {
-      const user = factories.oneUser.build();
+      const user = factories.user.build();
 
       expect(
         await service.findMyPlatforms(
@@ -299,7 +299,7 @@ describe('PlatformsService', () => {
     });
 
     it('should find my platforms with pagination', async () => {
-      const user = factories.oneUser.build();
+      const user = factories.user.build();
 
       expect(
         await service.findMyPlatforms({ page: 2, numItemsPerPage: 1 }, user.id),
@@ -313,7 +313,7 @@ describe('PlatformsService', () => {
     });
 
     it('should find my platforms with role filter', async () => {
-      const user = factories.oneUser.build();
+      const user = factories.user.build();
 
       expect(
         await service.findMyPlatforms(

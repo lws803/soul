@@ -8,7 +8,7 @@ describe(LocalAuthGuard, () => {
     expect(() =>
       authGuard.handleRequest(
         new Error('KNOWN_ERROR'),
-        factories.oneUser.build(),
+        factories.user.build(),
       ),
     ).toThrow('KNOWN_ERROR');
   });

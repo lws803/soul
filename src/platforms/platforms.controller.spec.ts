@@ -157,7 +157,7 @@ describe('PlatformsController', () => {
   });
 
   it('setPlatformUserRole()', async () => {
-    const user = factories.oneUser.build();
+    const user = factories.user.build();
     const platform = factories.onePlatform.build();
 
     expect(
@@ -177,7 +177,7 @@ describe('PlatformsController', () => {
   });
 
   it('removePlatformUser()', async () => {
-    const user = factories.oneUser.build();
+    const user = factories.user.build();
     const platform = factories.onePlatform.build();
 
     expect(
@@ -208,7 +208,7 @@ describe('PlatformsController', () => {
 
   it('joinPlatform()', async () => {
     const platform = factories.onePlatform.build();
-    const oneUser = factories.oneUser.build();
+    const oneUser = factories.user.build();
 
     expect(
       await controller.joinPlatform(

@@ -35,7 +35,7 @@ export const platformArray = Factory.define<Platform[]>(() => [
 
 export const onePlatformUser = Factory.define<PlatformUser>(() => ({
   id: 1,
-  user: factories.oneUser.build(),
+  user: factories.user.build(),
   platform: factories.onePlatform.build(),
   roles: [UserRole.Admin, UserRole.Member],
   createdAt: new Date('1995-12-17T03:24:00'),
