@@ -40,7 +40,7 @@ describe('ConnectionsController', () => {
             remove: jest.fn(),
             addNewPlatformToUserConnection: jest.fn().mockResolvedValue(
               factories.oneUserConnection.build({
-                platforms: [factories.onePlatform.build()],
+                platforms: [factories.platform.build()],
               }),
             ),
             removePlatformFromUserConnection: jest.fn(),
@@ -179,7 +179,7 @@ describe('ConnectionsController', () => {
         ),
       ).toEqual(
         factories.oneUserConnection.build({
-          platforms: [factories.onePlatform.build()],
+          platforms: [factories.platform.build()],
         }),
       );
 

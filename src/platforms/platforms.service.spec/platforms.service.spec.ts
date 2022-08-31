@@ -33,20 +33,19 @@ describe('PlatformsService', () => {
     platformCreateQueryBuilder = platformCreateQueryBuilderObject;
     platformUserCreateQueryBuilder = platformUserCreateQueryBuilderObject;
 
+    const platforms = factories.platform.buildList(2);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PlatformsService,
         {
           provide: getRepositoryToken(Platform),
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.onePlatform.build()),
+            findOne: jest.fn().mockResolvedValue(factories.platform.build()),
             findAndCount: jest
               .fn()
-              .mockResolvedValue([
-                factories.platformArray.build(),
-                factories.platformArray.build().length,
-              ]),
-            save: jest.fn().mockResolvedValue(factories.onePlatform.build()),
+              .mockResolvedValue([platforms, platforms.length]),
+            save: jest.fn().mockResolvedValue(factories.platform.build()),
             update: jest.fn(),
             delete: jest.fn(),
             createQueryBuilder: jest
@@ -114,7 +113,7 @@ describe('PlatformsService', () => {
 
   describe('create()', () => {
     it('should create a platform successfully', async () => {
-      const platform = factories.onePlatform.build();
+      const platform = factories.platform.build();
       const user = factories.user.build();
 
       const newPlatform = await service.create(
@@ -170,7 +169,7 @@ describe('PlatformsService', () => {
 
   describe('findAll()', () => {
     it('should find all platforms', async () => {
-      const platforms = factories.platformArray.build();
+      const platforms = factories.platform.buildList(2);
 
       expect(await service.findAll({ page: 1, numItemsPerPage: 10 })).toEqual({
         platforms,
@@ -179,7 +178,7 @@ describe('PlatformsService', () => {
     });
 
     it('should find all platforms with pagination', async () => {
-      const platforms = factories.platformArray.build();
+      const platforms = factories.platform.buildList(2);
       jest
         .spyOn(platformCreateQueryBuilder, 'getManyAndCount')
         .mockResolvedValueOnce([[platforms[0]], platforms.length]);
@@ -194,7 +193,7 @@ describe('PlatformsService', () => {
     });
 
     it('should find all platforms with isVerified filter', async () => {
-      const platforms = factories.platformArray.build();
+      const platforms = factories.platform.buildList(2);
 
       expect(
         await service.findAll({
@@ -214,7 +213,7 @@ describe('PlatformsService', () => {
     });
 
     it('should query for platforms with the given full text query', async () => {
-      const platforms = factories.platformArray.build();
+      const platforms = factories.platform.buildList(2);
 
       expect(
         await service.findAll({
@@ -234,7 +233,7 @@ describe('PlatformsService', () => {
     });
 
     it('should filter for platforms with the associated category', async () => {
-      const platforms = factories.platformArray.build();
+      const platforms = factories.platform.buildList(2);
 
       expect(
         await service.findAll({
@@ -281,7 +280,7 @@ describe('PlatformsService', () => {
           user.id,
         ),
       ).toEqual({
-        platforms: [factories.onePlatform.build()],
+        platforms: [factories.platform.build()],
         totalCount: 1,
       });
 
@@ -304,7 +303,7 @@ describe('PlatformsService', () => {
       expect(
         await service.findMyPlatforms({ page: 2, numItemsPerPage: 1 }, user.id),
       ).toEqual({
-        platforms: [factories.onePlatform.build()],
+        platforms: [factories.platform.build()],
         totalCount: 1,
       });
 
@@ -325,7 +324,7 @@ describe('PlatformsService', () => {
           user.id,
         ),
       ).toEqual({
-        platforms: [factories.onePlatform.build()],
+        platforms: [factories.platform.build()],
         totalCount: 1,
       });
 
@@ -337,7 +336,7 @@ describe('PlatformsService', () => {
 
   describe('findOne()', () => {
     it('should return one platform successfully', async () => {
-      const platform = factories.onePlatform.build();
+      const platform = factories.platform.build();
 
       expect(await service.findOne(platform.id)).toEqual(platform);
 
@@ -348,7 +347,7 @@ describe('PlatformsService', () => {
 
     it('should throw not found error', async () => {
       jest.spyOn(platformRepository, 'findOne').mockResolvedValue(null);
-      const platform = factories.onePlatform.build();
+      const platform = factories.platform.build();
 
       await expect(
         async () => await service.findOne(platform.id),
@@ -363,7 +362,7 @@ describe('PlatformsService', () => {
       const updatedCategory = factories.onePlatformCategory.build({
         name: 'CATEGORY_UPDATE',
       });
-      const platform = factories.onePlatform.build();
+      const platform = factories.platform.build();
       const updates = {
         name: 'TEST_PLATFORM_UPDATE',
         nameHandle: 'test_platform_update#1',
@@ -371,7 +370,7 @@ describe('PlatformsService', () => {
         redirectUris: ['TEST_REDIRECT_URI'],
         activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
       };
-      const updatedPlatform = factories.onePlatform.build(updates);
+      const updatedPlatform = factories.platform.build(updates);
 
       jest
         .spyOn(platformRepository, 'findOne')
@@ -396,7 +395,7 @@ describe('PlatformsService', () => {
 
     it("should throw an error when category doesn't exist", async () => {
       jest.spyOn(platformCategoryRepository, 'findOne').mockResolvedValue(null);
-      const platform = factories.onePlatform.build();
+      const platform = factories.platform.build();
       await expect(
         service.update(platform.id, factories.updatePlatformDto.build()),
       ).rejects.toThrow(
@@ -408,7 +407,7 @@ describe('PlatformsService', () => {
 
   describe('remove()', () => {
     it('should remove platform successfully', async () => {
-      const platform = factories.onePlatform.build();
+      const platform = factories.platform.build();
 
       await service.remove(platform.id);
 

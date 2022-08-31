@@ -59,7 +59,7 @@ describe('ReputationController (e2e)', () => {
   describe('/:userId (GET)', () => {
     beforeAll(async () => {
       const platform = await platformRepository.save(
-        factories.onePlatform.build({
+        factories.platform.build({
           redirectUris: ['https://www.example.com'],
         }),
       );

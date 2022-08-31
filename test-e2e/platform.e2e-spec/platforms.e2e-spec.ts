@@ -133,10 +133,10 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms (GET)', () => {
     beforeAll(async () => {
       await platformRepository.save([
-        factories.onePlatform.build({
+        factories.platform.build({
           redirectUris: ['https://www.example.com'],
         }),
-        factories.onePlatform.build({
+        factories.platform.build({
           id: 2,
           name: 'TEST_PLATFORM_2',
           nameHandle: 'test_platform_2#2',
@@ -294,17 +294,17 @@ describe('PlatformsController (e2e)', () => {
 
   describe('/platforms/my-platforms (GET)', () => {
     beforeAll(async () => {
-      const platformOne = factories.onePlatform.build({
+      const platformOne = factories.platform.build({
         redirectUris: ['https://www.example.com'],
       });
-      const platformTwo = factories.onePlatform.build({
+      const platformTwo = factories.platform.build({
         id: 2,
         name: 'TEST_PLATFORM_2',
         nameHandle: 'test_platform_2#2',
         isVerified: false,
         category: null,
       });
-      const platformThree = factories.onePlatform.build({
+      const platformThree = factories.platform.build({
         id: 3,
         name: 'TEST_PLATFORM_3',
         nameHandle: 'TEST_PLATFORM_3#3',
@@ -423,7 +423,7 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId (GET)', () => {
     beforeAll(async () => {
       await platformRepository.save(
-        factories.onePlatform.build({
+        factories.platform.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
@@ -469,10 +469,10 @@ describe('PlatformsController (e2e)', () => {
 
   describe('/platforms/:platformId/full (GET)', () => {
     beforeAll(async () => {
-      const platformOne = factories.onePlatform.build({
+      const platformOne = factories.platform.build({
         redirectUris: ['https://www.example.com'],
       });
-      const adminPlatform = factories.onePlatform.build({
+      const adminPlatform = factories.platform.build({
         id: 2,
         name: 'ADMIN_PLATFORM',
         nameHandle: 'admin_platform#2',
@@ -548,7 +548,7 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId (PATCH)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.onePlatform.build({
+        factories.platform.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
@@ -620,7 +620,7 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId (DELETE)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.onePlatform.build({
+        factories.platform.build({
           redirectUris: ['https://www.example.com'],
         }),
       );

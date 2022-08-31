@@ -51,7 +51,7 @@ describe('ConnectionsService', () => {
         {
           provide: PlatformsService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.onePlatform.build()),
+            findOne: jest.fn().mockResolvedValue(factories.platform.build()),
           },
         },
         {
@@ -112,7 +112,7 @@ describe('ConnectionsService', () => {
     });
 
     it('should successfully insert a new user connection with platformId', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       const createUserConnectionDto = factories.createUserConnectionDto.build({
         platformId: onePlatform.id,
       });
@@ -337,7 +337,7 @@ describe('ConnectionsService', () => {
 
   describe('addNewPlatformToUserConnection()', () => {
     it('should add a new platform to a user connection successfully', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       const oneUserConnectionWithPlatform = factories.oneUserConnection.build({
         platforms: [onePlatform],
       });
@@ -360,7 +360,7 @@ describe('ConnectionsService', () => {
     });
 
     it('should throw when user is not involved in the connection', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       await expect(
         service.addNewPlatformToUserConnection(1, onePlatform.id, 2),
       ).rejects.toThrow('You have no permissions to update this connection.');
@@ -369,7 +369,7 @@ describe('ConnectionsService', () => {
 
   describe('removePlatformFromUserConnection()', () => {
     it('should remove a platform from a user connection successfully', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       const oneUserConnection = factories.oneUserConnection.build();
       jest
         .spyOn(userConnectionRepository, 'save')
@@ -390,7 +390,7 @@ describe('ConnectionsService', () => {
     });
 
     it('should throw when user is not involved in the connection', async () => {
-      const onePlatform = factories.onePlatform.build();
+      const onePlatform = factories.platform.build();
       await expect(
         service.removePlatformFromUserConnection(1, onePlatform.id, 2),
       ).rejects.toThrow('You have no permissions to update this connection.');

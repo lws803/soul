@@ -34,7 +34,7 @@ describe(PlatformRolesGuard, () => {
     it('accepts when user is admin of the platform', async () => {
       jest.spyOn(mockContext, 'getRequest').mockReturnValue({
         user: factories.jwtPayloadWithPlatform.build(),
-        params: { platform_id: String(factories.onePlatform.build().id) },
+        params: { platform_id: String(factories.platform.build().id) },
       });
 
       const guard = new PlatformRolesGuard(
@@ -52,7 +52,7 @@ describe(PlatformRolesGuard, () => {
     it('throws when user is not logged in to the correct platform', async () => {
       jest.spyOn(mockContext, 'getRequest').mockReturnValue({
         user: factories.jwtPayloadWithPlatform.build({ platformId: 3 }),
-        params: { platform_id: String(factories.onePlatform.build().id) },
+        params: { platform_id: String(factories.platform.build().id) },
       });
 
       const guard = new PlatformRolesGuard(
@@ -74,7 +74,7 @@ describe(PlatformRolesGuard, () => {
         user: factories.jwtPayloadWithPlatform.build({
           roles: [UserRole.Member],
         }),
-        params: { platform_id: String(factories.onePlatform.build().id) },
+        params: { platform_id: String(factories.platform.build().id) },
       });
 
       const guard = new PlatformRolesGuard(
@@ -96,7 +96,7 @@ describe(PlatformRolesGuard, () => {
     it('accepts when user is the admin of the requested platform', async () => {
       jest.spyOn(mockContext, 'getRequest').mockReturnValue({
         user: factories.jwtPayloadWithPlatform.build({ platformId: 2 }),
-        params: { platform_id: String(factories.onePlatform.build().id) },
+        params: { platform_id: String(factories.platform.build().id) },
       });
 
       jest
@@ -122,7 +122,7 @@ describe(PlatformRolesGuard, () => {
           platformId: 2,
           roles: [UserRole.Member],
         }),
-        params: { platform_id: String(factories.onePlatform.build().id) },
+        params: { platform_id: String(factories.platform.build().id) },
       });
 
       jest

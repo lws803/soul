@@ -62,7 +62,7 @@ describe('AuthController (e2e)', () => {
       userAccount = firstUser;
 
       const platform = await platformRepository.save(
-        factories.onePlatform.build({
+        factories.platform.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
@@ -174,7 +174,7 @@ describe('AuthController (e2e)', () => {
 
     it('fails to login with platform due to not being a member', async () => {
       await platformRepository.save(
-        factories.onePlatform.build({
+        factories.platform.build({
           redirectUris: ['https://www.example.com'],
           id: 2,
           name: 'TEST_PLATFORM_2',
@@ -214,7 +214,7 @@ describe('AuthController (e2e)', () => {
       userAccount = firstUser;
 
       const platform = await platformRepository.save(
-        factories.onePlatform.build({
+        factories.platform.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
