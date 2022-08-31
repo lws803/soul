@@ -34,9 +34,7 @@ describe('AuthService', () => {
           provide: UsersService,
           useValue: {
             findOne: jest.fn().mockResolvedValue(factories.user.build()),
-            findOneByEmail: jest
-              .fn()
-              .mockResolvedValue(factories.user.build()),
+            findOneByEmail: jest.fn().mockResolvedValue(factories.user.build()),
           },
         },
         {
