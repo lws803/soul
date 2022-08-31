@@ -315,19 +315,19 @@ describe('PlatformsController (e2e)', () => {
       await platformRepository.save([platformOne, platformTwo, platformThree]);
 
       await platformUserRepository.save([
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           id: 1,
           user: userAccount.user,
           roles: [UserRole.Admin, UserRole.Member],
           platform: platformOne,
         }),
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           id: 2,
           user: userAccount.user,
           roles: [UserRole.Member],
           platform: platformTwo,
         }),
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           id: 3,
           user: secondUserAccount.user,
           roles: [UserRole.Member],
@@ -484,13 +484,13 @@ describe('PlatformsController (e2e)', () => {
       await platformRepository.save([platformOne, adminPlatform]);
 
       await platformUserRepository.save([
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           id: 1,
           user: userAccount.user,
           roles: [UserRole.Admin, UserRole.Member],
           platform: platformOne,
         }),
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           id: 2,
           user: userAccount.user,
           roles: [UserRole.Member],
@@ -553,7 +553,7 @@ describe('PlatformsController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           user: userAccount.user,
           platform,
         }),
@@ -625,7 +625,7 @@ describe('PlatformsController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           user: userAccount.user,
           platform,
         }),

@@ -67,7 +67,7 @@ describe('AuthController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           platform,
           user: userAccount.user,
         }),
@@ -219,7 +219,7 @@ describe('AuthController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           platform,
           user: userAccount.user,
         }),

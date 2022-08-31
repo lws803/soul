@@ -32,7 +32,7 @@ describe(ActivityProcessor, () => {
             findAndCount: jest
               .fn()
               .mockResolvedValue([
-                [factories.onePlatformUser.build({ user: toUser })],
+                [factories.platformUser.build({ user: toUser })],
                 1,
               ]),
           },

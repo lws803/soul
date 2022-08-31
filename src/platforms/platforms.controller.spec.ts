@@ -13,6 +13,8 @@ describe('PlatformsController', () => {
 
   beforeEach(async () => {
     const platforms = factories.platform.buildList(2);
+    const platformUsers = factories.platformUser.buildList(2);
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PlatformsController],
       providers: [
@@ -40,18 +42,18 @@ describe('PlatformsController', () => {
             remove: jest.fn(),
             setUserRole: jest
               .fn()
-              .mockResolvedValue(factories.onePlatformUser.build()),
+              .mockResolvedValue(factories.platformUser.build()),
             removeUser: jest.fn(),
             addUser: jest
               .fn()
-              .mockResolvedValue(factories.onePlatformUser.build()),
+              .mockResolvedValue(factories.platformUser.build()),
             findAllPlatformUsers: jest.fn().mockResolvedValue({
-              platformUsers: factories.platformUserArray.build(),
-              totalCount: factories.platformUserArray.build().length,
+              platformUsers,
+              totalCount: platformUsers.length,
             }),
             findOnePlatformUser: jest
               .fn()
-              .mockResolvedValue(factories.onePlatformUser.build()),
+              .mockResolvedValue(factories.platformUser.build()),
           },
         },
         {
@@ -168,7 +170,7 @@ describe('PlatformsController', () => {
           roles: [UserRole.Member],
         },
       ),
-    ).toEqual(factories.onePlatformUser.build());
+    ).toEqual(factories.platformUser.build());
 
     expect(platformsService.setUserRole).toHaveBeenCalledWith(
       platform.id,
@@ -218,7 +220,7 @@ describe('PlatformsController', () => {
           platformId: platform.id,
         },
       ),
-    ).toEqual(factories.onePlatformUser.build());
+    ).toEqual(factories.platformUser.build());
 
     expect(platformsService.addUser).toHaveBeenCalledWith(
       platform.id,
@@ -228,7 +230,7 @@ describe('PlatformsController', () => {
 
   it('findAllPlatformUsers()', async () => {
     const platform = factories.platform.build();
-    const platformUsers = factories.platformUserArray.build();
+    const platformUsers = factories.platformUser.buildList(2);
 
     expect(
       await controller.findAllPlatformUsers(

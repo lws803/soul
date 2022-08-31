@@ -41,9 +41,9 @@ export const platformUserCreateQueryBuilderObject = {
   orderBy: jest
     .fn()
     .mockImplementation(() => platformUserCreateQueryBuilderObject),
-  getOne: jest.fn().mockResolvedValue(factories.onePlatformUser.build()),
+  getOne: jest.fn().mockResolvedValue(factories.platformUser.build()),
   getCount: jest.fn().mockResolvedValue(1),
   getManyAndCount: jest
     .fn()
-    .mockResolvedValue([[factories.onePlatformUser.build()], 1]),
+    .mockResolvedValue([[factories.platformUser.build()], 1]),
 };

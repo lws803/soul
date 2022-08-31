@@ -66,12 +66,12 @@ describe('PlatformsService', () => {
           useValue: {
             findOne: jest
               .fn()
-              .mockResolvedValue(factories.onePlatformUser.build()),
+              .mockResolvedValue(factories.platformUser.build()),
             findAndCount: jest.fn(),
             save: jest
               .fn()
               .mockResolvedValue(
-                factories.onePlatformUser.build({ roles: [UserRole.Member] }),
+                factories.platformUser.build({ roles: [UserRole.Member] }),
               ),
             update: jest.fn(),
             delete: jest.fn(),

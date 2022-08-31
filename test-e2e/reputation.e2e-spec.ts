@@ -64,7 +64,7 @@ describe('ReputationController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           user: userAccount.user,
           platform,
           roles: [UserRole.Banned],

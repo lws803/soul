@@ -65,7 +65,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.onePlatformUser.build({ user: userAccount.user, platform }),
+        factories.platformUser.build({ user: userAccount.user, platform }),
       );
     });
 
@@ -131,8 +131,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
       await platformUserRepository.save([
-        factories.onePlatformUser.build({ user: userAccount.user, platform }),
-        factories.onePlatformUser.build({
+        factories.platformUser.build({ user: userAccount.user, platform }),
+        factories.platformUser.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
@@ -312,8 +312,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
       await platformUserRepository.save([
-        factories.onePlatformUser.build({ user: userAccount.user, platform }),
-        factories.onePlatformUser.build({
+        factories.platformUser.build({ user: userAccount.user, platform }),
+        factories.platformUser.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
@@ -382,14 +382,14 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       );
 
       await platformUserRepository.save([
-        factories.onePlatformUser.build({ user: userAccount.user, platform }),
-        factories.onePlatformUser.build({
+        factories.platformUser.build({ user: userAccount.user, platform }),
+        factories.platformUser.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
           roles: [UserRole.Member],
         }),
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           id: 3,
           user: thirdUserAccount.user,
           platform,
@@ -405,7 +405,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     it('quits existing platform (ADMIN)', async () => {
       await platformUserRepository.save(
-        factories.onePlatformUser.build({
+        factories.platformUser.build({
           id: 2,
           user: secondUserAccount.user,
           platform,

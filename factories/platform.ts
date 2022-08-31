@@ -31,19 +31,18 @@ export const platform = Factory.define<Platform>(({ sequence }) => {
   };
 });
 
-export const onePlatformUser = Factory.define<PlatformUser>(() => ({
-  id: 1,
-  user: factories.user.build(),
-  platform: factories.platform.build(),
-  roles: [UserRole.Admin, UserRole.Member],
-  createdAt: new Date('1995-12-17T03:24:00'),
-  updatedAt: new Date('1995-12-18T03:24:00'),
-}));
+export const platformUser = Factory.define<PlatformUser>(({ sequence }) => {
+  platformUser.rewindSequence();
 
-export const platformUserArray = Factory.define<PlatformUser[]>(() => [
-  onePlatformUser.build(),
-  onePlatformUser.build({ id: 2 }),
-]);
+  return {
+    id: sequence,
+    user: factories.user.build(),
+    platform: factories.platform.build(),
+    roles: [UserRole.Admin, UserRole.Member],
+    createdAt: new Date('1995-12-17T03:24:00'),
+    updatedAt: new Date('1995-12-18T03:24:00'),
+  };
+});
 
 export const updatePlatformDto = Factory.define<UpdatePlatformDto>(() => ({
   name: 'TEST_PLATFORM_UPDATE',
