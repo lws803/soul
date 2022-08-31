@@ -62,7 +62,7 @@ type CreatePlatformRequest = {
   activity_webhook_uri?: string;
 };
 
-export const createPlatformRequestDto = Factory.define<CreatePlatformRequest>(
+export const createPlatformRequest = Factory.define<CreatePlatformRequest>(
   () => ({
     name: 'TEST_PLATFORM',
     redirect_uris: ['TEST_REDIRECT_URI'],

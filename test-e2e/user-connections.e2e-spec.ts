@@ -61,7 +61,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.createUserConnectionRequestDto.build())
+        .send(factories.createUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -95,7 +95,7 @@ describe('UserConnectionsController (e2e)', () => {
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .send(
-          factories.createUserConnectionRequestDto.build({ platform_id: 1 }),
+          factories.createUserConnectionRequest.build({ platform_id: 1 }),
         )
         .expect(HttpStatus.CREATED)
         .expect((res) =>
@@ -150,7 +150,7 @@ describe('UserConnectionsController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/user-connections')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.createUserConnectionRequestDto.build())
+        .send(factories.createUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -396,7 +396,7 @@ describe('UserConnectionsController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/user-connections/1/platforms')
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .send(factories.postPlatformToUserConnectionRequestDto.build())
+        .send(factories.postPlatformToUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
           expect(res.body).toStrictEqual({

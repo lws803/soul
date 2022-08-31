@@ -59,7 +59,7 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('creates a new platform', async () => {
-      const createPlatformDto = factories.createPlatformRequestDto.build({
+      const createPlatformDto = factories.createPlatformRequest.build({
         redirect_uris: ['https://example.com/redirect'],
       });
 
@@ -89,7 +89,7 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('throws when user is not logged in', async () => {
-      const createPlatformDto = factories.createPlatformRequestDto.build();
+      const createPlatformDto = factories.createPlatformRequest.build();
 
       await request(app.getHttpServer())
         .post('/platforms')
@@ -104,7 +104,7 @@ describe('PlatformsController (e2e)', () => {
     });
 
     it('throws when user has created too many platforms', async () => {
-      const createPlatformDto = factories.createPlatformRequestDto.build({
+      const createPlatformDto = factories.createPlatformRequest.build({
         redirect_uris: ['https://example.com/redirect'],
       });
 
