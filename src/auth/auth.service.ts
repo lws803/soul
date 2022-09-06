@@ -21,7 +21,7 @@ import { JWTRefreshPayload } from './entities/jwt-refresh-payload.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { TokenType } from './enums/token-type.enum';
 import * as exceptions from './exceptions';
-import * as apiResponses from './dto/api-responses.dto';
+import * as apiResponses from './dto/api-responses.entity';
 import { CodeQueryParamDto, ValidateBodyDto } from './dto/api.dto';
 import { DecodedCode } from './types';
 
@@ -46,7 +46,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User): Promise<apiResponses.LoginResponseDto> {
+  async login(user: User): Promise<apiResponses.LoginResponseEntity> {
     if (!user.isActive) {
       throw new exceptions.UserNotVerifiedException();
     }
@@ -69,7 +69,7 @@ export class AuthService {
     codeChallenge,
   }: {
     user: User;
-  } & CodeQueryParamDto): Promise<apiResponses.CodeResponseDto> {
+  } & CodeQueryParamDto): Promise<apiResponses.CodeResponseEntity> {
     if (!user.isActive) {
       throw new exceptions.UserNotVerifiedException();
     }
@@ -107,7 +107,7 @@ export class AuthService {
     code,
     callback,
     codeVerifier,
-  }: ValidateBodyDto): Promise<apiResponses.PlatformLoginResponseDto> {
+  }: ValidateBodyDto): Promise<apiResponses.PlatformLoginResponseEntity> {
     let decodedToken: DecodedCode;
     try {
       decodedToken = this.jwtService.verify<DecodedCode>(code);
@@ -166,7 +166,7 @@ export class AuthService {
 
   async refresh(
     encodedRefreshToken: string,
-  ): Promise<apiResponses.RefreshTokenResponseDto> {
+  ): Promise<apiResponses.RefreshTokenResponseEntity> {
     const { token, user } = await this.createAccessTokenFromRefreshToken({
       encodedRefreshToken,
       revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
@@ -186,7 +186,7 @@ export class AuthService {
   async refreshWithPlatform(
     encodedRefreshToken: string,
     platformId: number,
-  ): Promise<apiResponses.RefreshTokenWithPlatformResponseDto> {
+  ): Promise<apiResponses.RefreshTokenWithPlatformResponseEntity> {
     const { token, roles, user } = await this.createAccessTokenFromRefreshToken(
       {
         encodedRefreshToken,
