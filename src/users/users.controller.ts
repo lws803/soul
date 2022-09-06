@@ -27,14 +27,14 @@ import {
   TokenQueryParamDto,
   UpdateUserDto,
   UserParamsDto,
-} from './dto/api.dto';
+} from './serializers/api.dto';
 import {
   CreateUserResponseEntity,
   FindAllUserResponseEntity,
   FindOneUserResponseEntity,
   FindMeResponseEntity,
   UpdateUserResponseEntity,
-} from './dto/api-responses.entity';
+} from './serializers/api-responses.entity';
 
 @Controller({ version: '1', path: 'users' })
 export class UsersController {

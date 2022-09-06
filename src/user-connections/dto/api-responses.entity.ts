@@ -3,7 +3,7 @@ import { Expose, Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtEntity } from 'src/common/dto/created-at-updated-at.entity';
 import { FindOnePlatformResponseEntity } from 'src/platforms/dto/api-responses.entity';
-import { FindOneUserResponseEntity } from 'src/users/dto/api-responses.entity';
+import { FindOneUserResponseEntity } from 'src/users/serializers/api-responses.entity';
 
 class FullUserConnectionResponseEntity extends CreatedAtUpdatedAtEntity {
   @ApiProperty({ name: 'id', example: 1 })

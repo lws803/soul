@@ -3,7 +3,7 @@ import { Expose, Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtEntity } from 'src/common/dto/created-at-updated-at.entity';
 import { UserRole } from 'src/roles/role.enum';
-import { FindOneUserResponseEntity } from 'src/users/dto/api-responses.entity';
+import { FindOneUserResponseEntity } from 'src/users/serializers/api-responses.entity';
 
 export class PlatformCategoryResponseEntity {
   @ApiProperty({ name: 'id', example: 1 })

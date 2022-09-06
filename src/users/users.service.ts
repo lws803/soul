@@ -17,7 +17,7 @@ import {
   UpdateUserDto,
   CreateUserDto,
   FindAllUsersQueryParamDto,
-} from './dto/api.dto';
+} from './serializers/api.dto';
 import { User } from './entities/user.entity';
 import {
   DuplicateUserExistException,

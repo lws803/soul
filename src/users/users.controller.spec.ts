@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import * as factories from 'factories';
 
-import { CreateUserDto } from './dto/api.dto';
+import { CreateUserDto } from './serializers/api.dto';
 import { DuplicateUserExistException } from './exceptions/duplicate-user-exists.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UsersController } from './users.controller';

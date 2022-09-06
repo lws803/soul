@@ -1,6 +1,6 @@
 import { Factory } from 'fishery';
 
-import { CreateUserDto, UpdateUserDto } from 'src/users/dto/api.dto';
+import { CreateUserDto, UpdateUserDto } from 'src/users/serializers/api.dto';
 import { User } from 'src/users/entities/user.entity';
 
 export const user = Factory.define<User>(({ sequence }) => {
