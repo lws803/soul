@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
-import { CreatedAtUpdatedAtDto } from 'src/common/dto/created-at-updated-at.dto';
+import { CreatedAtUpdatedAtEntity } from 'src/common/dto/created-at-updated-at.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { FindOneUserResponseEntity } from 'src/users/dto/api-responses.entity';
 
@@ -23,7 +23,7 @@ export class PlatformCategoryResponseDto {
   }
 }
 
-export class FullPlatformResponseDto extends CreatedAtUpdatedAtDto {
+export class FullPlatformResponseDto extends CreatedAtUpdatedAtEntity {
   @ApiProperty({ name: 'id', example: 1 })
   @Expose()
   id: number;
@@ -94,7 +94,7 @@ export class UpdatePlatformResponseDto extends FullPlatformResponseDto {
   }
 }
 
-export class FindOnePlatformResponseDto extends CreatedAtUpdatedAtDto {
+export class FindOnePlatformResponseDto extends CreatedAtUpdatedAtEntity {
   @ApiProperty({ name: 'id', example: 1 })
   @Expose()
   id: number;

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
-import { CreatedAtUpdatedAtDto } from 'src/common/dto/created-at-updated-at.dto';
+import { CreatedAtUpdatedAtEntity } from 'src/common/dto/created-at-updated-at.entity';
 
-class FullUserResponseEntity extends CreatedAtUpdatedAtDto {
+class FullUserResponseEntity extends CreatedAtUpdatedAtEntity {
   @ApiProperty({ name: 'id', example: 1234 })
   @Expose({ toPlainOnly: true })
   id: number;
