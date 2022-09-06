@@ -32,7 +32,7 @@ import {
   SetUserPlatformRoleQueryParamsDto,
   FindAllPlatformsQueryParamDto,
   FindMyPlatformsQueryParamDto,
-} from './dto/api.dto';
+} from './serializers/api.dto';
 import {
   CreatePlatformResponseEntity,
   CreatePlatformUserResponseEntity,
@@ -42,7 +42,7 @@ import {
   FullPlatformResponseEntity,
   SetPlatformUserRoleResponseEntity,
   UpdatePlatformResponseEntity,
-} from './dto/api-responses.entity';
+} from './serializers/api-responses.entity';
 
 @Controller({ path: 'platforms', version: '1' })
 export class PlatformsController {

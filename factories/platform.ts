@@ -6,7 +6,7 @@ import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import {
   UpdatePlatformDto,
   CreatePlatformDto,
-} from 'src/platforms/dto/api.dto';
+} from 'src/platforms/serializers/api.dto';
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 

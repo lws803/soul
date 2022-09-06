@@ -13,7 +13,7 @@ import {
   FindAllPlatformsQueryParamDto,
   FindMyPlatformsQueryParamDto,
   UpdatePlatformDto,
-} from './dto/api.dto';
+} from './serializers/api.dto';
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
 import { PlatformCategory } from './entities/platform-category.entity';
@@ -25,7 +25,7 @@ import {
   PlatformCategoryNotFoundException,
   MaxAdminRolesPerUserException,
 } from './exceptions';
-import { FindAllPlatformResponseEntity } from './dto/api-responses.entity';
+import { FindAllPlatformResponseEntity } from './serializers/api-responses.entity';
 
 const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
 

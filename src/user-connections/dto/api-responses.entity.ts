@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtEntity } from 'src/common/dto/created-at-updated-at.entity';
-import { FindOnePlatformResponseEntity } from 'src/platforms/dto/api-responses.entity';
+import { FindOnePlatformResponseEntity } from 'src/platforms/serializers/api-responses.entity';
 import { FindOneUserResponseEntity } from 'src/users/serializers/api-responses.entity';
 
 class FullUserConnectionResponseEntity extends CreatedAtUpdatedAtEntity {
