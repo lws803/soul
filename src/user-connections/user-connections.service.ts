@@ -14,7 +14,7 @@ import { PlatformsService } from 'src/platforms/platforms.service';
 import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
 import { ActivityService } from 'src/activity/activity.service';
 
-import { CreateUserConnectionDto } from './dto/api.dto';
+import { CreateUserConnectionDto } from './serializers/api.dto';
 import { UserConnection } from './entities/user-connection.entity';
 import {
   UserConnectionNotFoundException,
@@ -27,7 +27,7 @@ import {
   CreateUserConnectionResponseEntity,
   FindAllUserConnectionResponseEntity,
   FindOneUserConnectionResponseEntity,
-} from './dto/api-responses.entity';
+} from './serializers/api-responses.entity';
 import { ConnectionType } from './enums/connection-type.enum';
 
 @Injectable()

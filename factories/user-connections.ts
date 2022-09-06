@@ -1,11 +1,11 @@
 import { Factory } from 'fishery';
 
-import { FindOneUserConnectionResponseEntity } from 'src/user-connections/dto/api-responses.entity';
+import { FindOneUserConnectionResponseEntity } from 'src/user-connections/serializers/api-responses.entity';
 
 import {
   CreateUserConnectionDto,
   PostPlatformDto,
-} from 'src/user-connections/dto/api.dto';
+} from 'src/user-connections/serializers/api.dto';
 import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
 
 import { platform } from './platform';
