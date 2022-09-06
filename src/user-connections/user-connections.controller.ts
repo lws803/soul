@@ -11,6 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -23,13 +24,13 @@ import {
   ByUserIdsParamsDto,
   FindMyUserConnectionsQueryParamsDto,
   RemovePlatformFromUserConnectionParamsDto,
-} from './dto/api.dto';
+} from './serializers/api.dto';
 import {
-  AddNewPlatformToUserConnectionResponseDto,
-  CreateUserConnectionResponseDto,
-  FindAllUserConnectionResponseDto,
-  FindOneUserConnectionResponseDto,
-} from './dto/api-responses.dto';
+  AddNewPlatformToUserConnectionResponseEntity,
+  CreateUserConnectionResponseEntity,
+  FindAllUserConnectionResponseEntity,
+  FindOneUserConnectionResponseEntity,
+} from './serializers/api-responses.entity';
 
 @Controller({ version: '1', path: 'user-connections' })
 export class UserConnectionsController {
@@ -40,15 +41,16 @@ export class UserConnectionsController {
   @ApiOperation({ description: 'Creates a new user connection' })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: CreateUserConnectionResponseDto,
+    type: CreateUserConnectionResponseEntity,
   })
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
     @Request() { user }: { user: JWTPayload },
     @Body() createConnectionDto: CreateUserConnectionDto,
-  ): Promise<CreateUserConnectionResponseDto> {
-    return new CreateUserConnectionResponseDto(
+  ): Promise<CreateUserConnectionResponseEntity> {
+    return plainToClass(
+      CreateUserConnectionResponseEntity,
       await this.userConnectionsService.create(
         user.userId,
         createConnectionDto,
@@ -59,7 +61,7 @@ export class UserConnectionsController {
   @ApiOperation({ description: 'List my connections' })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: FindAllUserConnectionResponseDto,
+    type: FindAllUserConnectionResponseEntity,
   })
   @UseGuards(JwtAuthGuard)
   @Get('/my-connections')
@@ -72,8 +74,9 @@ export class UserConnectionsController {
       page,
       numItemsPerPage,
     }: FindMyUserConnectionsQueryParamsDto,
-  ): Promise<FindAllUserConnectionResponseDto> {
-    return new FindAllUserConnectionResponseDto(
+  ): Promise<FindAllUserConnectionResponseEntity> {
+    return plainToClass(
+      FindAllUserConnectionResponseEntity,
       await this.userConnectionsService.findMyUserConnections({
         userId: user.userId,
         connectionType,
@@ -86,13 +89,14 @@ export class UserConnectionsController {
   @ApiOperation({ description: 'Get connection by users' })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: FindOneUserConnectionResponseDto,
+    type: FindOneUserConnectionResponseEntity,
   })
   @Get('/by-users')
   async findOneByUserIds(
     @Query() { fromUserId, toUserId }: ByUserIdsParamsDto,
-  ): Promise<FindOneUserConnectionResponseDto> {
-    return new FindOneUserConnectionResponseDto(
+  ): Promise<FindOneUserConnectionResponseEntity> {
+    return plainToClass(
+      FindOneUserConnectionResponseEntity,
       await this.userConnectionsService.findOneByUserIds(fromUserId, toUserId),
     );
   }
@@ -100,13 +104,14 @@ export class UserConnectionsController {
   @ApiOperation({ description: 'Get connection by id' })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: FindOneUserConnectionResponseDto,
+    type: FindOneUserConnectionResponseEntity,
   })
   @Get(':id')
   async findOne(
     @Param() { id }: UserConnectionParamsDto,
-  ): Promise<FindOneUserConnectionResponseDto> {
-    return new FindOneUserConnectionResponseDto(
+  ): Promise<FindOneUserConnectionResponseEntity> {
+    return plainToClass(
+      FindOneUserConnectionResponseEntity,
       await this.userConnectionsService.findOne(id),
     );
   }
@@ -116,7 +121,7 @@ export class UserConnectionsController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: AddNewPlatformToUserConnectionResponseDto,
+    type: AddNewPlatformToUserConnectionResponseEntity,
   })
   @UseGuards(JwtAuthGuard)
   @Post(':id/platforms')
@@ -124,8 +129,9 @@ export class UserConnectionsController {
     @Request() { user }: { user: JWTPayload },
     @Param() { id }: UserConnectionParamsDto,
     @Body() { platformId }: PostPlatformDto,
-  ): Promise<AddNewPlatformToUserConnectionResponseDto> {
-    return new AddNewPlatformToUserConnectionResponseDto(
+  ): Promise<AddNewPlatformToUserConnectionResponseEntity> {
+    return plainToClass(
+      AddNewPlatformToUserConnectionResponseEntity,
       await this.userConnectionsService.addNewPlatformToUserConnection(
         id,
         platformId,

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional } from 'class-validator';
 
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 
 import { ConnectionType } from '../enums/connection-type.enum';
 

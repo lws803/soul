@@ -11,10 +11,10 @@ import {
 
 import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { ActivityService } from 'src/activity/activity.service';
 
-import { CreateUserConnectionDto } from './dto/api.dto';
+import { CreateUserConnectionDto } from './serializers/api.dto';
 import { UserConnection } from './entities/user-connection.entity';
 import {
   UserConnectionNotFoundException,
@@ -23,11 +23,11 @@ import {
   DuplicateUserConnectionException,
 } from './exceptions';
 import {
-  AddNewPlatformToUserConnectionResponseDto,
-  CreateUserConnectionResponseDto,
-  FindAllUserConnectionResponseDto,
-  FindOneUserConnectionResponseDto,
-} from './dto/api-responses.dto';
+  AddNewPlatformToUserConnectionResponseEntity,
+  CreateUserConnectionResponseEntity,
+  FindAllUserConnectionResponseEntity,
+  FindOneUserConnectionResponseEntity,
+} from './serializers/api-responses.entity';
 import { ConnectionType } from './enums/connection-type.enum';
 
 @Injectable()
@@ -43,7 +43,7 @@ export class UserConnectionsService {
   async create(
     currentUserId: number,
     createUserConnectionDto: CreateUserConnectionDto,
-  ): Promise<CreateUserConnectionResponseDto> {
+  ): Promise<CreateUserConnectionResponseEntity> {
     if (
       createUserConnectionDto.fromUserId === createUserConnectionDto.toUserId
     ) {
@@ -105,7 +105,7 @@ export class UserConnectionsService {
 
   async findAll(
     paginationParams: PaginationParamsDto,
-  ): Promise<FindAllUserConnectionResponseDto> {
+  ): Promise<FindAllUserConnectionResponseEntity> {
     const [userConnections, totalCount] =
       await this.userConnectionRepository.findAndCount({
         order: { createdAt: 'DESC', id: 'DESC' },
@@ -116,7 +116,7 @@ export class UserConnectionsService {
     return { userConnections, totalCount };
   }
 
-  async findOne(id: number): Promise<FindOneUserConnectionResponseDto> {
+  async findOne(id: number): Promise<FindOneUserConnectionResponseEntity> {
     const userConnection = await this.findUserConnectionOrThrow({ id });
     const oppositeConnection = await this.userConnectionRepository.findOne({
       fromUser: userConnection.toUser,
@@ -129,7 +129,7 @@ export class UserConnectionsService {
   async findOneByUserIds(
     fromUserId: number,
     toUserId: number,
-  ): Promise<FindOneUserConnectionResponseDto> {
+  ): Promise<FindOneUserConnectionResponseEntity> {
     const userConnection = await this.findUserConnectionOrThrow({
       fromUserId,
       toUserId,
@@ -154,7 +154,7 @@ export class UserConnectionsService {
     id: number,
     platformId: number,
     currentUserId: number,
-  ): Promise<AddNewPlatformToUserConnectionResponseDto> {
+  ): Promise<AddNewPlatformToUserConnectionResponseEntity> {
     const { isMutual: _isMutual, ...userConnection } = await this.findOne(id);
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();

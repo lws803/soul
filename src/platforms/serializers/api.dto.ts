@@ -11,7 +11,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.validator';
 
 import { UserRole } from 'src/roles/role.enum';

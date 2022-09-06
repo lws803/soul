@@ -10,22 +10,23 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 
 import { User } from 'src/users/entities/user.entity';
 
 import { AuthService } from './auth.service';
 import {
-  CodeResponseDto,
-  LoginResponseDto,
-  PlatformLoginResponseDto,
-  RefreshTokenResponseDto,
-  RefreshTokenWithPlatformResponseDto,
-} from './dto/api-responses.dto';
+  CodeResponseEntity,
+  LoginResponseEntity,
+  PlatformLoginResponseEntity,
+  RefreshTokenResponseEntity,
+  RefreshTokenWithPlatformResponseEntity,
+} from './serializers/api-responses.entity';
 import {
   RefreshTokenBodyDto,
   CodeQueryParamDto,
   ValidateBodyDto,
-} from './dto/api.dto';
+} from './serializers/api.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller({ version: '1', path: 'auth' })
@@ -34,27 +35,33 @@ export class AuthController {
 
   @ApiExcludeEndpoint()
   @ApiOperation({ description: 'Login with email and password' })
-  @ApiResponse({ status: HttpStatus.CREATED, type: LoginResponseDto })
+  @ApiResponse({ status: HttpStatus.CREATED, type: LoginResponseEntity })
   @UseGuards(LocalAuthGuard)
   @Header('Cache-Control', 'no-store')
   @Post('login')
-  async login(@Request() { user }: { user: User }): Promise<LoginResponseDto> {
-    return new LoginResponseDto(await this.authService.login(user));
+  async login(
+    @Request() { user }: { user: User },
+  ): Promise<LoginResponseEntity> {
+    return plainToClass(
+      LoginResponseEntity,
+      await this.authService.login(user),
+    );
   }
 
   @ApiOperation({
     description:
       'Login with external platform, returns code to be exchanged for a token',
   })
-  @ApiResponse({ status: HttpStatus.CREATED, type: CodeResponseDto })
+  @ApiResponse({ status: HttpStatus.CREATED, type: CodeResponseEntity })
   @UseGuards(LocalAuthGuard)
   @Header('Cache-Control', 'no-store')
   @Post('code')
   async code(
     @Request() { user }: { user: User },
     @Query() queryArgs: CodeQueryParamDto,
-  ): Promise<CodeResponseDto> {
-    return new CodeResponseDto(
+  ): Promise<CodeResponseEntity> {
+    return plainToClass(
+      CodeResponseEntity,
       await this.authService.findCodeForPlatformAndCallback({
         user,
         ...queryArgs,
@@ -66,14 +73,18 @@ export class AuthController {
     description:
       'Verify code returned to external platform and exchange for access tokens',
   })
-  @ApiResponse({ status: HttpStatus.CREATED, type: PlatformLoginResponseDto })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: PlatformLoginResponseEntity,
+  })
   @Post('verify')
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   async verify(
     @Body() args: ValidateBodyDto,
-  ): Promise<PlatformLoginResponseDto> {
-    return new PlatformLoginResponseDto(
+  ): Promise<PlatformLoginResponseEntity> {
+    return plainToClass(
+      PlatformLoginResponseEntity,
       await this.authService.exchangeCodeForToken(args),
     );
   }
@@ -86,20 +97,24 @@ export class AuthController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: RefreshTokenWithPlatformResponseDto,
+    type: RefreshTokenWithPlatformResponseEntity,
   })
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   async refresh(
     @Body() { refreshToken, platformId }: RefreshTokenBodyDto,
-  ): Promise<RefreshTokenWithPlatformResponseDto | RefreshTokenResponseDto> {
+  ): Promise<
+    RefreshTokenWithPlatformResponseEntity | RefreshTokenResponseEntity
+  > {
     if (platformId) {
-      return new RefreshTokenWithPlatformResponseDto(
+      return plainToClass(
+        RefreshTokenWithPlatformResponseEntity,
         await this.authService.refreshWithPlatform(refreshToken, platformId),
       );
     }
-    return new RefreshTokenResponseDto(
+    return plainToClass(
+      RefreshTokenResponseEntity,
       await this.authService.refresh(refreshToken),
     );
   }

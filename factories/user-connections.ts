@@ -1,11 +1,11 @@
 import { Factory } from 'fishery';
 
-import { FindOneUserConnectionResponseDto } from 'src/user-connections/dto/api-responses.dto';
+import { FindOneUserConnectionResponseEntity } from 'src/user-connections/serializers/api-responses.entity';
 
 import {
   CreateUserConnectionDto,
   PostPlatformDto,
-} from 'src/user-connections/dto/api.dto';
+} from 'src/user-connections/serializers/api.dto';
 import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
 
 import { platform } from './platform';
@@ -22,7 +22,7 @@ export const oneUserConnection = Factory.define<UserConnection>(() => ({
 }));
 
 export const oneUserConnectionResponse =
-  Factory.define<FindOneUserConnectionResponseDto>(() => ({
+  Factory.define<FindOneUserConnectionResponseEntity>(() => ({
     id: 1,
     fromUser: user.build(),
     toUser: user.build({ id: 2, email: 'TEST_USER_2@EMAIL.COM' }),

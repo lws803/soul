@@ -4,7 +4,7 @@ import { QueryFailedError, Repository } from 'typeorm';
 
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { UserRole } from 'src/roles/role.enum';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
@@ -13,7 +13,7 @@ import {
   FindAllPlatformsQueryParamDto,
   FindMyPlatformsQueryParamDto,
   UpdatePlatformDto,
-} from './dto/api.dto';
+} from './serializers/api.dto';
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
 import { PlatformCategory } from './entities/platform-category.entity';
@@ -25,7 +25,7 @@ import {
   PlatformCategoryNotFoundException,
   MaxAdminRolesPerUserException,
 } from './exceptions';
-import { FindAllPlatformResponseDto } from './dto/api-responses.dto';
+import { FindAllPlatformResponseEntity } from './serializers/api-responses.entity';
 
 const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
 
@@ -119,7 +119,7 @@ export class PlatformsService {
   async findMyPlatforms(
     queryParams: FindMyPlatformsQueryParamDto,
     userId: number,
-  ): Promise<FindAllPlatformResponseDto> {
+  ): Promise<FindAllPlatformResponseEntity> {
     let baseQuery = this.platformUserRepository
       .createQueryBuilder('platformUser')
       .leftJoinAndSelect('platformUser.platform', 'platform')

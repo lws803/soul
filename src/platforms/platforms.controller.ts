@@ -13,9 +13,10 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { PlatformRolesGuard } from 'src/roles/platform-roles.guard';
@@ -31,42 +32,47 @@ import {
   SetUserPlatformRoleQueryParamsDto,
   FindAllPlatformsQueryParamDto,
   FindMyPlatformsQueryParamDto,
-} from './dto/api.dto';
+} from './serializers/api.dto';
 import {
-  CreatePlatformResponseDto,
-  CreatePlatformUserResponseDto,
-  FindAllPlatformResponseDto,
-  FindAllPlatformUsersResponseDto,
-  FindOnePlatformResponseDto,
-  FullPlatformResponseDto,
-  SetPlatformUserRoleResponseDto,
-  UpdatePlatformResponseDto,
-} from './dto/api-responses.dto';
+  CreatePlatformResponseEntity,
+  CreatePlatformUserResponseEntity,
+  FindAllPlatformResponseEntity,
+  FindAllPlatformUsersResponseEntity,
+  FindOnePlatformResponseEntity,
+  FullPlatformResponseEntity,
+  SetPlatformUserRoleResponseEntity,
+  UpdatePlatformResponseEntity,
+} from './serializers/api-responses.entity';
 
 @Controller({ path: 'platforms', version: '1' })
 export class PlatformsController {
   constructor(private readonly platformsService: PlatformsService) {}
 
   @ApiOperation({ description: 'Create a new platform' })
-  @ApiResponse({ status: HttpStatus.CREATED, type: CreatePlatformResponseDto })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: CreatePlatformResponseEntity,
+  })
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
     @Request() { user }: { user: JWTPayload },
     @Body() createPlatformDto: CreatePlatformDto,
-  ): Promise<CreatePlatformResponseDto> {
-    return new CreatePlatformResponseDto(
+  ): Promise<CreatePlatformResponseEntity> {
+    return plainToClass(
+      CreatePlatformResponseEntity,
       await this.platformsService.create(createPlatformDto, user.userId),
     );
   }
 
   @ApiOperation({ description: 'List all platforms with pagination support' })
-  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseDto })
+  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseEntity })
   @Get()
   async findAll(
     @Query() params: FindAllPlatformsQueryParamDto,
-  ): Promise<FindAllPlatformResponseDto> {
-    return new FindAllPlatformResponseDto(
+  ): Promise<FindAllPlatformResponseEntity> {
+    return plainToClass(
+      FindAllPlatformResponseEntity,
       await this.platformsService.findAll(params),
     );
   }
@@ -74,25 +80,27 @@ export class PlatformsController {
   @ApiOperation({
     description: 'List my platforms with pagination support',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseDto })
+  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseEntity })
   @UseGuards(JwtAuthGuard)
   @Get('/my-platforms')
   async findMyPlatforms(
     @Request() { user }: { user: JWTPayload },
     @Query() params: FindMyPlatformsQueryParamDto,
-  ): Promise<FindAllPlatformResponseDto> {
-    return new FindAllPlatformResponseDto(
+  ): Promise<FindAllPlatformResponseEntity> {
+    return plainToClass(
+      FindAllPlatformResponseEntity,
       await this.platformsService.findMyPlatforms(params, user.userId),
     );
   }
 
   @ApiOperation({ description: 'Find one platform from a given platformId' })
-  @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseDto })
+  @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseEntity })
   @Get(':platform_id')
   async findOne(
     @Param() { platformId }: PlatformIdParamDto,
-  ): Promise<FindOnePlatformResponseDto> {
-    return new FindOnePlatformResponseDto(
+  ): Promise<FindOnePlatformResponseEntity> {
+    return plainToClass(
+      FindOnePlatformResponseEntity,
       await this.platformsService.findOne(platformId),
     );
   }
@@ -100,14 +108,15 @@ export class PlatformsController {
   @ApiOperation({
     description: 'Find one platform with full details from a given platformId',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseDto })
+  @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseEntity })
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Get(':platform_id/full')
   async findOneFull(
     @Param() { platformId }: PlatformIdParamDto,
-  ): Promise<FullPlatformResponseDto> {
-    return new FullPlatformResponseDto(
+  ): Promise<FullPlatformResponseEntity> {
+    return plainToClass(
+      FullPlatformResponseEntity,
       await this.platformsService.findOne(platformId),
     );
   }
@@ -116,15 +125,16 @@ export class PlatformsController {
     description:
       'Updates a platform (only authorized platform owners can update a platform)',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: UpdatePlatformResponseDto })
+  @ApiResponse({ status: HttpStatus.OK, type: UpdatePlatformResponseEntity })
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Patch(':platform_id')
   async update(
     @Param() { platformId }: PlatformIdParamDto,
     @Body() updatePlatformDto: UpdatePlatformDto,
-  ): Promise<UpdatePlatformResponseDto> {
-    return new UpdatePlatformResponseDto(
+  ): Promise<UpdatePlatformResponseEntity> {
+    return plainToClass(
+      UpdatePlatformResponseEntity,
       await this.platformsService.update(platformId, updatePlatformDto),
     );
   }
@@ -144,15 +154,19 @@ export class PlatformsController {
   @ApiOperation({
     description: 'Lists all platform users',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformUsersResponseDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: FindAllPlatformUsersResponseEntity,
+  })
   @Roles(UserRole.Member)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Get(':platform_id/users')
   async findAllPlatformUsers(
     @Param() { platformId }: PlatformIdParamDto,
     @Query() paginationParams: PaginationParamsDto,
-  ): Promise<FindAllPlatformUsersResponseDto> {
-    return new FindAllPlatformUsersResponseDto(
+  ): Promise<FindAllPlatformUsersResponseEntity> {
+    return plainToClass(
+      FindAllPlatformUsersResponseEntity,
       await this.platformsService.findAllPlatformUsers({
         platformId,
         paginationParams,
@@ -163,15 +177,19 @@ export class PlatformsController {
   @ApiOperation({
     description: 'Sets a role for a user on a platform',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: SetPlatformUserRoleResponseDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SetPlatformUserRoleResponseEntity,
+  })
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Put(':platform_id/users/:user_id')
   async setPlatformUserRole(
     @Param() { platformId, userId }: SetUserPlatformRoleParamsDto,
     @Query() { roles }: SetUserPlatformRoleQueryParamsDto,
-  ): Promise<SetPlatformUserRoleResponseDto> {
-    return new SetPlatformUserRoleResponseDto(
+  ): Promise<SetPlatformUserRoleResponseEntity> {
+    return plainToClass(
+      SetPlatformUserRoleResponseEntity,
       await this.platformsService.setUserRole(platformId, userId, roles),
     );
   }
@@ -208,15 +226,16 @@ export class PlatformsController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: CreatePlatformUserResponseDto,
+    type: CreatePlatformUserResponseEntity,
   })
   @UseGuards(JwtAuthGuard)
   @Post(':platform_id/join')
   async joinPlatform(
     @Request() { user }: { user: JWTPayload },
     @Param() { platformId }: PlatformIdParamDto,
-  ): Promise<CreatePlatformUserResponseDto> {
-    return new CreatePlatformUserResponseDto(
+  ): Promise<CreatePlatformUserResponseEntity> {
+    return plainToClass(
+      CreatePlatformUserResponseEntity,
       await this.platformsService.addUser(platformId, user.userId),
     );
   }
