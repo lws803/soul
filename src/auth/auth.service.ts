@@ -21,8 +21,8 @@ import { JWTRefreshPayload } from './entities/jwt-refresh-payload.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { TokenType } from './enums/token-type.enum';
 import * as exceptions from './exceptions';
-import * as apiResponses from './dto/api-responses.entity';
-import { CodeQueryParamDto, ValidateBodyDto } from './dto/api.dto';
+import * as apiResponses from './serializers/api-responses.entity';
+import { CodeQueryParamDto, ValidateBodyDto } from './serializers/api.dto';
 import { DecodedCode } from './types';
 
 @Injectable()

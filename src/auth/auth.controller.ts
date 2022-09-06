@@ -21,12 +21,12 @@ import {
   PlatformLoginResponseEntity,
   RefreshTokenResponseEntity,
   RefreshTokenWithPlatformResponseEntity,
-} from './dto/api-responses.entity';
+} from './serializers/api-responses.entity';
 import {
   RefreshTokenBodyDto,
   CodeQueryParamDto,
   ValidateBodyDto,
-} from './dto/api.dto';
+} from './serializers/api.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller({ version: '1', path: 'auth' })
