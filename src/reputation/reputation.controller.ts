@@ -2,8 +2,8 @@ import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
-import { ReputationResponseEntity } from './dto/api-responses.entity';
-import { ReputationParamDto } from './dto/api.dto';
+import { ReputationResponseEntity } from './serializers/api-responses.entity';
+import { ReputationParamDto } from './serializers/api.dto';
 import { ReputationService } from './reputation.service';
 
 @Controller({ version: '1', path: 'reputation' })
