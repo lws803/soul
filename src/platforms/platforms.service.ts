@@ -4,7 +4,7 @@ import { QueryFailedError, Repository } from 'typeorm';
 
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { UserRole } from 'src/roles/role.enum';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 

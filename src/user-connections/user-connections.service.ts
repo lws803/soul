@@ -11,7 +11,7 @@ import {
 
 import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { ActivityService } from 'src/activity/activity.service';
 
 import { CreateUserConnectionDto } from './serializers/api.dto';

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
-import { CreatedAtUpdatedAtEntity } from 'src/common/dto/created-at-updated-at.entity';
+import { CreatedAtUpdatedAtEntity } from 'src/common/serializers/created-at-updated-at.entity';
 
 class FullUserResponseEntity extends CreatedAtUpdatedAtEntity {
   @ApiProperty({ name: 'id', example: 1234 })

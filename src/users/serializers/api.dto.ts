@@ -9,7 +9,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-import { PaginationParamsDto } from 'src/common/dto/pagination-params.dto';
+import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { IsPasswordValid } from 'src/common/validators/password.validator';
 
 export class CreateUserDto {
