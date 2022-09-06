@@ -3,22 +3,22 @@ import { Expose, Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtDto } from 'src/common/dto/created-at-updated-at.dto';
 import { FindOnePlatformResponseDto } from 'src/platforms/dto/api-responses.dto';
-import { FindOneUserResponseDto } from 'src/users/dto/api-responses.dto';
+import { FindOneUserResponseEntity } from 'src/users/dto/api-responses.entity';
 
 class FullUserConnectionResponseDto extends CreatedAtUpdatedAtDto {
   @ApiProperty({ name: 'id', example: 1 })
   @Expose()
   id: number;
 
-  @ApiProperty({ name: 'from_user', type: FindOneUserResponseDto })
+  @ApiProperty({ name: 'from_user', type: FindOneUserResponseEntity })
   @Expose({ name: 'from_user' })
-  @Type(() => FindOneUserResponseDto)
-  fromUser: FindOneUserResponseDto;
+  @Type(() => FindOneUserResponseEntity)
+  fromUser: FindOneUserResponseEntity;
 
-  @ApiProperty({ name: 'to_user', type: FindOneUserResponseDto })
+  @ApiProperty({ name: 'to_user', type: FindOneUserResponseEntity })
   @Expose({ name: 'to_user' })
-  @Type(() => FindOneUserResponseDto)
-  toUser: FindOneUserResponseDto;
+  @Type(() => FindOneUserResponseEntity)
+  toUser: FindOneUserResponseEntity;
 
   @ApiProperty({ name: 'platforms', type: [FindOnePlatformResponseDto] })
   @Expose()

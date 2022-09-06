@@ -3,7 +3,7 @@ import { Expose, Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtDto } from 'src/common/dto/created-at-updated-at.dto';
 import { UserRole } from 'src/roles/role.enum';
-import { FindOneUserResponseDto } from 'src/users/dto/api-responses.dto';
+import { FindOneUserResponseEntity } from 'src/users/dto/api-responses.entity';
 
 export class PlatformCategoryResponseDto {
   @ApiProperty({ name: 'id', example: 1 })
@@ -157,10 +157,10 @@ class FindOnePlatformUserResponseDto {
   @Expose()
   id: number;
 
-  @ApiProperty({ name: 'user', type: FindOneUserResponseDto })
+  @ApiProperty({ name: 'user', type: FindOneUserResponseEntity })
   @Expose()
-  @Type(() => FindOneUserResponseDto)
-  user: FindOneUserResponseDto;
+  @Type(() => FindOneUserResponseEntity)
+  user: FindOneUserResponseEntity;
 
   @ApiProperty({ name: 'platform', type: FindOnePlatformResponseDto })
   @Expose()
