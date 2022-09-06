@@ -25,7 +25,7 @@ import {
   PlatformCategoryNotFoundException,
   MaxAdminRolesPerUserException,
 } from './exceptions';
-import { FindAllPlatformResponseDto } from './dto/api-responses.dto';
+import { FindAllPlatformResponseEntity } from './dto/api-responses.entity';
 
 const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
 
@@ -119,7 +119,7 @@ export class PlatformsService {
   async findMyPlatforms(
     queryParams: FindMyPlatformsQueryParamDto,
     userId: number,
-  ): Promise<FindAllPlatformResponseDto> {
+  ): Promise<FindAllPlatformResponseEntity> {
     let baseQuery = this.platformUserRepository
       .createQueryBuilder('platformUser')
       .leftJoinAndSelect('platformUser.platform', 'platform')

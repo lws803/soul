@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtEntity } from 'src/common/dto/created-at-updated-at.entity';
-import { FindOnePlatformResponseDto } from 'src/platforms/dto/api-responses.dto';
+import { FindOnePlatformResponseEntity } from 'src/platforms/dto/api-responses.entity';
 import { FindOneUserResponseEntity } from 'src/users/dto/api-responses.entity';
 
 class FullUserConnectionResponseDto extends CreatedAtUpdatedAtEntity {
@@ -20,10 +20,10 @@ class FullUserConnectionResponseDto extends CreatedAtUpdatedAtEntity {
   @Type(() => FindOneUserResponseEntity)
   toUser: FindOneUserResponseEntity;
 
-  @ApiProperty({ name: 'platforms', type: [FindOnePlatformResponseDto] })
+  @ApiProperty({ name: 'platforms', type: [FindOnePlatformResponseEntity] })
   @Expose()
-  @Type(() => FindOnePlatformResponseDto)
-  platforms: FindOnePlatformResponseDto[] = [];
+  @Type(() => FindOnePlatformResponseEntity)
+  platforms: FindOnePlatformResponseEntity[] = [];
 
   constructor(args: FullUserConnectionResponseDto) {
     super(args);
