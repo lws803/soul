@@ -97,22 +97,10 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
-            total_count: 1,
+          expect(res.body).toMatchSnapshot({
             platform_users: [
               {
-                id: 1,
-                roles: [UserRole.Admin, UserRole.Member],
-                user: {
-                  id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
-                },
                 platform: {
-                  id: 1,
-                  is_verified: true,
-                  name: 'TEST_PLATFORM_1',
-                  name_handle: 'test_platform_1#1',
                   created_at: expect.any(String),
                   updated_at: expect.any(String),
                 },
@@ -169,25 +157,10 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
-            id: 2,
+          expect(res.body).toMatchSnapshot({
             platform: {
               created_at: expect.any(String),
               updated_at: expect.any(String),
-              id: 1,
-              name: 'TEST_PLATFORM_1',
-              is_verified: true,
-              name_handle: 'test_platform_1#1',
-              category: {
-                id: 1,
-                name: 'CATEGORY',
-              },
-            },
-            roles: [UserRole.Admin, UserRole.Member],
-            user: {
-              id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
             },
           }),
         );
@@ -216,25 +189,10 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
-            id: 2,
+          expect(res.body).toMatchSnapshot({
             platform: {
               created_at: expect.any(String),
               updated_at: expect.any(String),
-              id: 1,
-              is_verified: true,
-              name: 'TEST_PLATFORM_1',
-              name_handle: 'test_platform_1#1',
-              category: {
-                id: 1,
-                name: 'CATEGORY',
-              },
-            },
-            roles: [UserRole.Banned],
-            user: {
-              id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
             },
           }),
         );
@@ -534,25 +492,11 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .expect(HttpStatus.CREATED)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             id: expect.any(Number),
             platform: {
               created_at: expect.any(String),
-              id: 1,
-              is_verified: true,
-              name: 'TEST_PLATFORM_1',
-              name_handle: 'test_platform_1#1',
               updated_at: expect.any(String),
-              category: {
-                id: 1,
-                name: 'CATEGORY',
-              },
-            },
-            roles: [UserRole.Member],
-            user: {
-              id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
             },
           }),
         );

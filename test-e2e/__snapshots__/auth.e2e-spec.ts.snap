@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AuthController (e2e) /auth/login (POST) logs in successfully 1`] = `
+Object {
+  "access_token": Any<String>,
+  "expires_in": 900,
+  "refresh_token": Any<String>,
+}
+`;
+
+exports[`AuthController (e2e) /auth/login (POST) logs in successfully for platform 1`] = `
+Object {
+  "access_token": Any<String>,
+  "expires_in": 900,
+  "platform_id": 1,
+  "refresh_token": Any<String>,
+  "roles": Array [
+    "admin",
+    "member",
+  ],
+}
+`;
+
+exports[`AuthController (e2e) /auth/refresh refreshes token for platform 1`] = `
+Object {
+  "access_token": Any<String>,
+  "expires_in": 900,
+  "platform_id": 1,
+  "refresh_token": Any<String>,
+  "roles": Array [
+    "admin",
+    "member",
+  ],
+}
+`;
+
+exports[`AuthController (e2e) /auth/refresh refreshes token successfully 1`] = `
+Object {
+  "access_token": Any<String>,
+  "expires_in": 900,
+  "refresh_token": Any<String>,
+}
+`;

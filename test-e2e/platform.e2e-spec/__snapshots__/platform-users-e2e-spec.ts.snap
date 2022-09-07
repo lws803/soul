@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PlatformsController - PlatformUsers (e2e) /platforms/:platformId/join (POST) adds myself as a platform user 1`] = `
+Object {
+  "id": Any<Number>,
+  "platform": Object {
+    "category": Object {
+      "id": 1,
+      "name": "CATEGORY",
+    },
+    "created_at": Any<String>,
+    "id": 1,
+    "is_verified": true,
+    "name": "TEST_PLATFORM_1",
+    "name_handle": "test_platform_1#1",
+    "updated_at": Any<String>,
+  },
+  "roles": Array [
+    "member",
+  ],
+  "user": Object {
+    "id": 1,
+    "user_handle": "test_user#1",
+    "username": "TEST_USER",
+  },
+}
+`;
+
+exports[`PlatformsController - PlatformUsers (e2e) /platforms/:platformId/users (GET) fetches all users within a platform 1`] = `
+Object {
+  "platform_users": Array [
+    Object {
+      "id": 1,
+      "platform": Object {
+        "created_at": Any<String>,
+        "id": 1,
+        "is_verified": true,
+        "name": "TEST_PLATFORM_1",
+        "name_handle": "test_platform_1#1",
+        "updated_at": Any<String>,
+      },
+      "roles": Array [
+        "admin",
+        "member",
+      ],
+      "user": Object {
+        "id": 1,
+        "user_handle": "test_user#1",
+        "username": "TEST_USER",
+      },
+    },
+  ],
+  "total_count": 1,
+}
+`;
+
+exports[`PlatformsController - PlatformUsers (e2e) /platforms/:platformId/users/:userId (PUT) bans a user 1`] = `
+Object {
+  "id": 2,
+  "platform": Object {
+    "category": Object {
+      "id": 1,
+      "name": "CATEGORY",
+    },
+    "created_at": Any<String>,
+    "id": 1,
+    "is_verified": true,
+    "name": "TEST_PLATFORM_1",
+    "name_handle": "test_platform_1#1",
+    "updated_at": Any<String>,
+  },
+  "roles": Array [
+    "banned",
+  ],
+  "user": Object {
+    "id": 2,
+    "user_handle": "test_user_2#2",
+    "username": "TEST_USER_2",
+  },
+}
+`;
+
+exports[`PlatformsController - PlatformUsers (e2e) /platforms/:platformId/users/:userId (PUT) sets user role 1`] = `
+Object {
+  "id": 2,
+  "platform": Object {
+    "category": Object {
+      "id": 1,
+      "name": "CATEGORY",
+    },
+    "created_at": Any<String>,
+    "id": 1,
+    "is_verified": true,
+    "name": "TEST_PLATFORM_1",
+    "name_handle": "test_platform_1#1",
+    "updated_at": Any<String>,
+  },
+  "roles": Array [
+    "admin",
+    "member",
+  ],
+  "user": Object {
+    "id": 2,
+    "user_handle": "test_user_2#2",
+    "username": "TEST_USER_2",
+  },
+}
+`;
