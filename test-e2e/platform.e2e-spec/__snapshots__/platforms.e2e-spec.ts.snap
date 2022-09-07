@@ -1,0 +1,234 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PlatformsController (e2e) /platforms (GET) fetches all platforms 1`] = `
+Object {
+  "platforms": Array [
+    Object {
+      "category": null,
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": false,
+      "name": "TEST_PLATFORM_2",
+      "name_handle": "test_platform_2#2",
+      "updated_at": Any<String>,
+    },
+    Object {
+      "category": Object {
+        "id": 1,
+        "name": "CATEGORY",
+      },
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": true,
+      "name": "TEST_PLATFORM_1",
+      "name_handle": "test_platform_1#1",
+      "updated_at": Any<String>,
+    },
+  ],
+  "total_count": 2,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms (GET) fetches all platforms with category filter 1`] = `
+Object {
+  "platforms": Array [
+    Object {
+      "category": Object {
+        "id": 1,
+        "name": "CATEGORY",
+      },
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": true,
+      "name": "TEST_PLATFORM_1",
+      "name_handle": "test_platform_1#1",
+      "updated_at": Any<String>,
+    },
+  ],
+  "total_count": 1,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms (GET) fetches all platforms with full text search 1`] = `
+Object {
+  "platforms": Array [
+    Object {
+      "category": null,
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": false,
+      "name": "TEST_PLATFORM_2",
+      "name_handle": "test_platform_2#2",
+      "updated_at": Any<String>,
+    },
+  ],
+  "total_count": 1,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms (GET) fetches all platforms with is_verified filter 1`] = `
+Object {
+  "platforms": Array [
+    Object {
+      "category": Object {
+        "id": 1,
+        "name": "CATEGORY",
+      },
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": true,
+      "name": "TEST_PLATFORM_1",
+      "name_handle": "test_platform_1#1",
+      "updated_at": Any<String>,
+    },
+  ],
+  "total_count": 1,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms (GET) paginates correctly 1`] = `
+Object {
+  "platforms": Array [
+    Object {
+      "category": null,
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": false,
+      "name": "TEST_PLATFORM_2",
+      "name_handle": "test_platform_2#2",
+      "updated_at": Any<String>,
+    },
+  ],
+  "total_count": 2,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms (POST) creates a new platform 1`] = `
+Object {
+  "activity_webhook_uri": "ACTIVITY_WEBHOOK_URI",
+  "created_at": Any<String>,
+  "id": Any<Number>,
+  "is_verified": false,
+  "name": "TEST_PLATFORM",
+  "name_handle": Any<String>,
+  "redirect_uris": Array [
+    "https://example.com/redirect",
+  ],
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms/:platformId (GET) fetches a platform by id 1`] = `
+Object {
+  "category": Object {
+    "id": 1,
+    "name": "CATEGORY",
+  },
+  "created_at": Any<String>,
+  "id": Any<Number>,
+  "is_verified": true,
+  "name": "TEST_PLATFORM_1",
+  "name_handle": "test_platform_1#1",
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms/:platformId (PATCH) updates existing platform 1`] = `
+Object {
+  "activity_webhook_uri": "ACTIVITY_WEBHOOK_URI",
+  "created_at": Any<String>,
+  "id": 1,
+  "is_verified": true,
+  "name": "TEST_PLATFORM_2",
+  "name_handle": "test_platform_2#1",
+  "redirect_uris": Array [
+    "https://www.example.com",
+  ],
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms/:platformId/full (GET) fetches a full platform by id 1`] = `
+Object {
+  "activity_webhook_uri": "ACTIVITY_WEBHOOK_URI",
+  "category": Object {
+    "id": 1,
+    "name": "CATEGORY",
+  },
+  "created_at": Any<String>,
+  "id": Any<Number>,
+  "is_verified": true,
+  "name": "TEST_PLATFORM_1",
+  "name_handle": "test_platform_1#1",
+  "redirect_uris": Array [
+    "https://www.example.com",
+  ],
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms/my-platforms (GET) fetches my platforms 1`] = `
+Object {
+  "platforms": Array [
+    Object {
+      "category": null,
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": false,
+      "name": "TEST_PLATFORM_2",
+      "name_handle": "test_platform_2#2",
+      "updated_at": Any<String>,
+    },
+    Object {
+      "category": Object {
+        "id": 1,
+        "name": "CATEGORY",
+      },
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": true,
+      "name": "TEST_PLATFORM_1",
+      "name_handle": "test_platform_1#1",
+      "updated_at": Any<String>,
+    },
+  ],
+  "total_count": 2,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms/my-platforms (GET) fetches my platforms with roles filter 1`] = `
+Object {
+  "platforms": Array [
+    Object {
+      "category": Object {
+        "id": 1,
+        "name": "CATEGORY",
+      },
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": true,
+      "name": "TEST_PLATFORM_1",
+      "name_handle": "test_platform_1#1",
+      "updated_at": Any<String>,
+    },
+  ],
+  "total_count": 1,
+}
+`;
+
+exports[`PlatformsController (e2e) /platforms/my-platforms (GET) paginates correctly 1`] = `
+Object {
+  "platforms": Array [
+    Object {
+      "category": null,
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": false,
+      "name": "TEST_PLATFORM_2",
+      "name_handle": "test_platform_2#2",
+      "updated_at": Any<String>,
+    },
+  ],
+  "total_count": 2,
+}
+`;

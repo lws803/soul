@@ -1,0 +1,271 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserConnectionsController (e2e) /user-connections (POST) creates a new connection 1`] = `
+Object {
+  "created_at": Any<String>,
+  "from_user": Object {
+    "id": 1,
+    "user_handle": "test_user#1",
+    "username": "TEST_USER",
+  },
+  "id": Any<Number>,
+  "is_mutual": false,
+  "platforms": Array [],
+  "to_user": Object {
+    "id": 2,
+    "user_handle": "test_user_2#2",
+    "username": "TEST_USER_2",
+  },
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections (POST) creates a new connection with opposite becomes mutual 1`] = `
+Object {
+  "created_at": Any<String>,
+  "from_user": Object {
+    "id": 1,
+    "user_handle": "test_user#1",
+    "username": "TEST_USER",
+  },
+  "id": Any<Number>,
+  "is_mutual": true,
+  "platforms": Array [],
+  "to_user": Object {
+    "id": 2,
+    "user_handle": "test_user_2#2",
+    "username": "TEST_USER_2",
+  },
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections (POST) creates a new connection with platform 1`] = `
+Object {
+  "created_at": Any<String>,
+  "from_user": Object {
+    "id": 1,
+    "user_handle": "test_user#1",
+    "username": "TEST_USER",
+  },
+  "id": Any<Number>,
+  "is_mutual": false,
+  "platforms": Array [
+    Object {
+      "category": Object {
+        "id": 1,
+        "name": "CATEGORY",
+      },
+      "created_at": Any<String>,
+      "id": Any<Number>,
+      "is_verified": true,
+      "name": "TEST_PLATFORM_1",
+      "name_handle": "test_platform_1#1",
+      "updated_at": Any<String>,
+    },
+  ],
+  "to_user": Object {
+    "id": 2,
+    "user_handle": "test_user_2#2",
+    "username": "TEST_USER_2",
+  },
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections/:id (DELETE) deleting user connection removes mutual status 1`] = `
+Object {
+  "created_at": Any<String>,
+  "from_user": Object {
+    "id": 2,
+    "user_handle": "test_user_2#2",
+    "username": "TEST_USER_2",
+  },
+  "id": 2,
+  "is_mutual": false,
+  "platforms": Array [],
+  "to_user": Object {
+    "id": 1,
+    "user_handle": "test_user#1",
+    "username": "TEST_USER",
+  },
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections/:id (GET) fetches user connection 1`] = `
+Object {
+  "created_at": Any<String>,
+  "from_user": Object {
+    "id": 1,
+    "user_handle": "test_user#1",
+    "username": "TEST_USER",
+  },
+  "id": 1,
+  "is_mutual": true,
+  "platforms": Array [],
+  "to_user": Object {
+    "id": 2,
+    "user_handle": "test_user_2#2",
+    "username": "TEST_USER_2",
+  },
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections/:id/platforms (POST) adds a new platform to the existing connection 1`] = `
+Object {
+  "created_at": Any<String>,
+  "from_user": Object {
+    "id": 1,
+    "user_handle": "test_user#1",
+    "username": "TEST_USER",
+  },
+  "id": 1,
+  "platforms": Array [
+    Object {
+      "category": Object {
+        "id": 1,
+        "name": "CATEGORY",
+      },
+      "created_at": Any<String>,
+      "id": 1,
+      "is_verified": true,
+      "name": "TEST_PLATFORM_1",
+      "name_handle": "test_platform_1#1",
+      "updated_at": Any<String>,
+    },
+  ],
+  "to_user": Object {
+    "id": 2,
+    "user_handle": "test_user_2#2",
+    "username": "TEST_USER_2",
+  },
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections/by-users (GET) fetches user connection by users 1`] = `
+Object {
+  "created_at": Any<String>,
+  "from_user": Object {
+    "id": 1,
+    "user_handle": "test_user#1",
+    "username": "TEST_USER",
+  },
+  "id": 1,
+  "is_mutual": true,
+  "platforms": Array [],
+  "to_user": Object {
+    "id": 2,
+    "user_handle": "test_user_2#2",
+    "username": "TEST_USER_2",
+  },
+  "updated_at": Any<String>,
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections/my-connections (GET) fetches my follow connections 1`] = `
+Object {
+  "total_count": 1,
+  "user_connections": Array [
+    Object {
+      "created_at": Any<String>,
+      "from_user": Object {
+        "id": 1,
+        "user_handle": "test_user#1",
+        "username": "TEST_USER",
+      },
+      "id": Any<Number>,
+      "platforms": Array [],
+      "to_user": Object {
+        "id": 2,
+        "user_handle": "test_user_2#2",
+        "username": "TEST_USER_2",
+      },
+      "updated_at": Any<String>,
+    },
+  ],
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections/my-connections (GET) fetches my follow connections for a platform 1`] = `
+Object {
+  "total_count": 1,
+  "user_connections": Array [
+    Object {
+      "created_at": Any<String>,
+      "from_user": Object {
+        "id": 1,
+        "user_handle": "test_user#1",
+        "username": "TEST_USER",
+      },
+      "id": Any<Number>,
+      "platforms": Array [
+        Object {
+          "created_at": Any<String>,
+          "id": 1,
+          "is_verified": true,
+          "name": "TEST_PLATFORM_1",
+          "name_handle": "test_platform_1#1",
+          "updated_at": Any<String>,
+        },
+      ],
+      "to_user": Object {
+        "id": 3,
+        "user_handle": "TEST_USER_3#3",
+        "username": "TEST_USER_3",
+      },
+      "updated_at": Any<String>,
+    },
+  ],
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections/my-connections (GET) fetches my follower connections 1`] = `
+Object {
+  "total_count": 1,
+  "user_connections": Array [
+    Object {
+      "created_at": Any<String>,
+      "from_user": Object {
+        "id": 2,
+        "user_handle": "test_user_2#2",
+        "username": "TEST_USER_2",
+      },
+      "id": Any<Number>,
+      "platforms": Array [],
+      "to_user": Object {
+        "id": 1,
+        "user_handle": "test_user#1",
+        "username": "TEST_USER",
+      },
+      "updated_at": Any<String>,
+    },
+  ],
+}
+`;
+
+exports[`UserConnectionsController (e2e) /user-connections/my-connections (GET) fetches my mutual connections 1`] = `
+Object {
+  "total_count": 1,
+  "user_connections": Array [
+    Object {
+      "created_at": Any<String>,
+      "from_user": Object {
+        "id": 1,
+        "user_handle": "test_user#1",
+        "username": "TEST_USER",
+      },
+      "id": Any<Number>,
+      "platforms": Array [],
+      "to_user": Object {
+        "id": 2,
+        "user_handle": "test_user_2#2",
+        "username": "TEST_USER_2",
+      },
+      "updated_at": Any<String>,
+    },
+  ],
+}
+`;

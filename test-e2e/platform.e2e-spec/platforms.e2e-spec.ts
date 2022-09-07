@@ -69,15 +69,11 @@ describe('PlatformsController (e2e)', () => {
         .send(createPlatformDto)
         .expect(HttpStatus.CREATED)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
             id: expect.any(Number),
             name_handle: expect.any(String),
-            redirect_uris: ['https://example.com/redirect'],
-            name: 'TEST_PLATFORM',
-            is_verified: false,
-            activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
           }),
         );
 
@@ -155,31 +151,19 @@ describe('PlatformsController (e2e)', () => {
         .get('/platforms')
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM_2',
-                is_verified: false,
-                name_handle: 'test_platform_2#2',
-                category: null,
               },
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM_1',
-                is_verified: true,
-                name_handle: 'test_platform_1#1',
-                category: {
-                  id: 1,
-                  name: 'CATEGORY',
-                },
               },
             ],
-            total_count: 2,
           }),
         );
     });
@@ -189,19 +173,14 @@ describe('PlatformsController (e2e)', () => {
         .get('/platforms?num_items_per_page=1&page=1')
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM_2',
-                name_handle: 'test_platform_2#2',
-                is_verified: false,
-                category: null,
               },
             ],
-            total_count: 2,
           }),
         );
     });
@@ -211,22 +190,14 @@ describe('PlatformsController (e2e)', () => {
         .get('/platforms?is_verified=true')
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM_1',
-                is_verified: true,
-                name_handle: 'test_platform_1#1',
-                category: {
-                  id: 1,
-                  name: 'CATEGORY',
-                },
               },
             ],
-            total_count: 1,
           }),
         );
     });
@@ -236,22 +207,14 @@ describe('PlatformsController (e2e)', () => {
         .get('/platforms?category=CATEGORY')
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM_1',
-                is_verified: true,
-                name_handle: 'test_platform_1#1',
-                category: {
-                  id: 1,
-                  name: 'CATEGORY',
-                },
               },
             ],
-            total_count: 1,
           }),
         );
     });
@@ -274,19 +237,14 @@ describe('PlatformsController (e2e)', () => {
         .get('/platforms?q=TEST_PLATFORM_2')
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM_2',
-                is_verified: false,
-                name_handle: 'test_platform_2#2',
-                category: null,
               },
             ],
-            total_count: 1,
           }),
         );
     });
@@ -347,28 +305,19 @@ describe('PlatformsController (e2e)', () => {
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM_2',
-                is_verified: false,
-                name_handle: 'test_platform_2#2',
-                category: null,
               },
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM_1',
-                is_verified: true,
-                name_handle: 'test_platform_1#1',
-                category: { id: 1, name: 'CATEGORY' },
               },
             ],
-            total_count: 2,
           }),
         );
     });
@@ -379,19 +328,14 @@ describe('PlatformsController (e2e)', () => {
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                name: 'TEST_PLATFORM_2',
-                is_verified: false,
-                name_handle: 'test_platform_2#2',
-                category: null,
               },
             ],
-            total_count: 2,
           }),
         );
     });
@@ -402,19 +346,14 @@ describe('PlatformsController (e2e)', () => {
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
-                id: 1,
-                name: 'TEST_PLATFORM_1',
-                is_verified: true,
-                name_handle: 'test_platform_1#1',
-                category: { id: 1, name: 'CATEGORY' },
+                id: expect.any(Number),
               },
             ],
-            total_count: 1,
           }),
         );
     });
@@ -438,17 +377,10 @@ describe('PlatformsController (e2e)', () => {
         .get('/platforms/1')
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
             id: expect.any(Number),
-            name: 'TEST_PLATFORM_1',
-            name_handle: 'test_platform_1#1',
-            is_verified: true,
-            category: {
-              id: 1,
-              name: 'CATEGORY',
-            },
           }),
         );
     });
@@ -527,19 +459,10 @@ describe('PlatformsController (e2e)', () => {
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
             id: expect.any(Number),
-            name: 'TEST_PLATFORM_1',
-            name_handle: 'test_platform_1#1',
-            is_verified: true,
-            category: {
-              id: 1,
-              name: 'CATEGORY',
-            },
-            redirect_uris: ['https://www.example.com'],
-            activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
           }),
         );
     });
@@ -588,15 +511,9 @@ describe('PlatformsController (e2e)', () => {
         .send({ name: 'TEST_PLATFORM_2' })
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
-            id: 1,
-            name: 'TEST_PLATFORM_2',
-            name_handle: 'test_platform_2#1',
-            is_verified: true,
-            redirect_uris: ['https://www.example.com'],
-            activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
           }),
         );
     });

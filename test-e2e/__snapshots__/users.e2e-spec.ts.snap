@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UsersController (e2e) /users (GET) should return full list of users 1`] = `
+Object {
+  "total_count": 2,
+  "users": Array [
+    Object {
+      "id": 4,
+      "user_handle": "test_user_2#2",
+      "username": "TEST_USER_2",
+    },
+    Object {
+      "id": 3,
+      "user_handle": "test_user_1#1",
+      "username": "TEST_USER_1",
+    },
+  ],
+}
+`;
+
+exports[`UsersController (e2e) /users (GET) should return partial list of users with full text search 1`] = `
+Object {
+  "total_count": 1,
+  "users": Array [
+    Object {
+      "id": 4,
+      "user_handle": "test_user_2#2",
+      "username": "TEST_USER_2",
+    },
+  ],
+}
+`;
+
+exports[`UsersController (e2e) /users (GET) should return partial list of users with pagination 1`] = `
+Object {
+  "total_count": 2,
+  "users": Array [
+    Object {
+      "id": 4,
+      "user_handle": "test_user_2#2",
+      "username": "TEST_USER_2",
+    },
+  ],
+}
+`;
+
+exports[`UsersController (e2e) /users (POST) creates a new user successfully 1`] = `
+Object {
+  "created_at": Any<String>,
+  "email": "TEST_USER@EMAIL.COM",
+  "id": 1,
+  "is_active": false,
+  "updated_at": Any<String>,
+  "user_handle": "test_user#1",
+  "username": "TEST_USER",
+}
+`;
+
+exports[`UsersController (e2e) /users/:id (GET) should return a user 1`] = `
+Object {
+  "id": 1,
+  "user_handle": "test_user_1#1",
+  "username": "TEST_USER_1",
+}
+`;
+
+exports[`UsersController (e2e) /users/:id (PATCH) should update myself 1`] = `
+Object {
+  "created_at": Any<String>,
+  "email": "UPDATED_EMAIL@EMAIL.COM",
+  "id": 5,
+  "is_active": true,
+  "updated_at": Any<String>,
+  "user_handle": "updated_user#5",
+  "username": "UPDATED_USER",
+}
+`;
+
+exports[`UsersController (e2e) /users/me (GET) retrieves me 1`] = `
+Object {
+  "created_at": Any<String>,
+  "email": "TEST_USER@EMAIL.COM",
+  "id": Any<Number>,
+  "is_active": true,
+  "updated_at": Any<String>,
+  "user_handle": Any<String>,
+  "username": "TEST_USER",
+}
+`;

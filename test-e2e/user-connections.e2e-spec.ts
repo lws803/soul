@@ -64,22 +64,10 @@ describe('UserConnectionsController (e2e)', () => {
         .send(factories.createUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
             id: expect.any(Number),
-            from_user: {
-              id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
-            },
-            to_user: {
-              id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
-            },
-            platforms: [],
-            is_mutual: false,
           }),
         );
     });
@@ -97,35 +85,17 @@ describe('UserConnectionsController (e2e)', () => {
         .send(factories.createUserConnectionRequest.build({ platform_id: 1 }))
         .expect(HttpStatus.CREATED)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
             id: expect.any(Number),
-            from_user: {
-              id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
-            },
-            to_user: {
-              id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
-            },
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
                 id: expect.any(Number),
-                is_verified: true,
-                name: platform.name,
-                name_handle: platform.nameHandle,
-                category: {
-                  id: 1,
-                  name: 'CATEGORY',
-                },
               },
             ],
-            is_mutual: false,
           }),
         );
     });
@@ -151,22 +121,10 @@ describe('UserConnectionsController (e2e)', () => {
         .send(factories.createUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
             id: expect.any(Number),
-            from_user: {
-              id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
-            },
-            to_user: {
-              id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
-            },
-            platforms: [],
-            is_mutual: true,
           }),
         );
     });
@@ -201,22 +159,9 @@ describe('UserConnectionsController (e2e)', () => {
         .get('/user-connections/by-users?from_user_id=1&to_user_id=2')
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
-            from_user: {
-              id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
-            },
-            id: 1,
-            platforms: [],
-            to_user: {
-              id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
-            },
-            is_mutual: true,
           }),
         );
     });
@@ -275,22 +220,9 @@ describe('UserConnectionsController (e2e)', () => {
         .get('/user-connections/1')
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
-            from_user: {
-              id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
-            },
-            id: 1,
-            platforms: [],
-            to_user: {
-              id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
-            },
-            is_mutual: true,
           }),
         );
     });
@@ -354,22 +286,9 @@ describe('UserConnectionsController (e2e)', () => {
         .get('/user-connections/2')
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
-            from_user: {
-              id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
-            },
-            id: 2,
-            platforms: [],
-            to_user: {
-              id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
-            },
-            is_mutual: false,
           }),
         );
     });
@@ -397,32 +316,13 @@ describe('UserConnectionsController (e2e)', () => {
         .send(factories.postPlatformToUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
-            id: 1,
+          expect(res.body).toMatchSnapshot({
             created_at: expect.any(String),
             updated_at: expect.any(String),
-            from_user: {
-              id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
-            },
-            to_user: {
-              id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
-            },
             platforms: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
-                id: 1,
-                is_verified: true,
-                name: platform.name,
-                name_handle: platform.nameHandle,
-                category: {
-                  id: 1,
-                  name: 'CATEGORY',
-                },
               },
             ],
           }),
@@ -482,24 +382,12 @@ describe('UserConnectionsController (e2e)', () => {
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
-            total_count: 1,
+          expect(res.body).toMatchSnapshot({
             user_connections: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
-                from_user: {
-                  id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
-                },
                 id: expect.any(Number),
-                platforms: [],
-                to_user: {
-                  id: 2,
-                  user_handle: 'test_user_2#2',
-                  username: 'TEST_USER_2',
-                },
               },
             ],
           }),
@@ -522,24 +410,12 @@ describe('UserConnectionsController (e2e)', () => {
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
-            total_count: 1,
+          expect(res.body).toMatchSnapshot({
             user_connections: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
-                to_user: {
-                  id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
-                },
                 id: expect.any(Number),
-                platforms: [],
-                from_user: {
-                  id: 2,
-                  user_handle: 'test_user_2#2',
-                  username: 'TEST_USER_2',
-                },
               },
             ],
           }),
@@ -555,24 +431,12 @@ describe('UserConnectionsController (e2e)', () => {
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
-            total_count: 1,
+          expect(res.body).toMatchSnapshot({
             user_connections: [
               {
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
-                from_user: {
-                  id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
-                },
                 id: expect.any(Number),
-                platforms: [],
-                to_user: {
-                  id: 2,
-                  user_handle: 'test_user_2#2',
-                  username: 'TEST_USER_2',
-                },
               },
             ],
           }),
@@ -609,33 +473,18 @@ describe('UserConnectionsController (e2e)', () => {
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toStrictEqual({
-            total_count: 1,
+          expect(res.body).toMatchSnapshot({
             user_connections: [
               {
                 id: expect.any(Number),
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
-                from_user: {
-                  id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
-                },
                 platforms: [
                   {
                     created_at: expect.any(String),
                     updated_at: expect.any(String),
-                    id: 1,
-                    is_verified: true,
-                    name: onePlatform.name,
-                    name_handle: onePlatform.nameHandle,
                   },
                 ],
-                to_user: {
-                  id: 3,
-                  user_handle: 'TEST_USER_3#3',
-                  username: 'TEST_USER_3',
-                },
               },
             ],
           }),
