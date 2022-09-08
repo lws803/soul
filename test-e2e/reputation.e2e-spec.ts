@@ -95,7 +95,12 @@ describe('ReputationController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/reputation/1')
         .expect(HttpStatus.OK)
-        .expect((res) => expect(res.body).toMatchSnapshot());
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            user_id: userAccount.user.id,
+            reputation: 1,
+          });
+        });
     });
 
     it('should return 404 when user does not exist', async () => {
