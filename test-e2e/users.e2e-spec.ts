@@ -46,7 +46,12 @@ describe('UsersController (e2e)', () => {
         )
         .expect(HttpStatus.CREATED)
         .expect((res) => {
-          expect(res.body).toMatchSnapshot({
+          expect(res.body).toStrictEqual({
+            id: 1,
+            email: 'TEST_USER@EMAIL.COM',
+            username: 'TEST_USER',
+            user_handle: 'test_user#1',
+            is_active: false,
             created_at: expect.any(String),
             updated_at: expect.any(String),
           });
@@ -98,21 +103,59 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/users')
         .expect(HttpStatus.OK)
-        .expect((res) => expect(res.body).toMatchSnapshot());
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            total_count: 2,
+            users: [
+              {
+                id: expect.any(Number),
+                user_handle: 'test_user_2#2',
+                username: 'TEST_USER_2',
+              },
+              {
+                id: expect.any(Number),
+                user_handle: 'test_user_1#1',
+                username: 'TEST_USER_1',
+              },
+            ],
+          });
+        });
     });
 
     it('should return partial list of users with pagination', async () => {
       return request(app.getHttpServer())
         .get('/users?page=1&num_items_per_page=1')
         .expect(HttpStatus.OK)
-        .expect((res) => expect(res.body).toMatchSnapshot());
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            total_count: 2,
+            users: [
+              {
+                id: expect.any(Number),
+                user_handle: 'test_user_2#2',
+                username: 'TEST_USER_2',
+              },
+            ],
+          });
+        });
     });
 
     it('should return partial list of users with full text search', async () => {
       return request(app.getHttpServer())
         .get('/users?q=TEST_USER_2')
         .expect(HttpStatus.OK)
-        .expect((res) => expect(res.body).toMatchSnapshot());
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            total_count: 1,
+            users: [
+              {
+                id: expect.any(Number),
+                user_handle: 'test_user_2#2',
+                username: 'TEST_USER_2',
+              },
+            ],
+          });
+        });
     });
   });
 
@@ -129,7 +172,13 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .get('/users/1')
         .expect(HttpStatus.OK)
-        .expect((res) => expect(res.body).toMatchSnapshot());
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            id: expect.any(Number),
+            user_handle: 'test_user_1#1',
+            username: 'TEST_USER_1',
+          });
+        });
     });
 
     it('should return user not found', async () => {
@@ -165,9 +214,12 @@ describe('UsersController (e2e)', () => {
         .send(factories.updateUserDto.build())
         .expect(HttpStatus.OK)
         .expect((res) => {
-          expect(res.body).toMatchSnapshot({
+          expect(res.body).toStrictEqual({
             id: userAccount.user.id,
             user_handle: `updated_user#${userAccount.user.id}`,
+            username: 'UPDATED_USER',
+            email: 'UPDATED_EMAIL@EMAIL.COM',
+            is_active: true,
             created_at: expect.any(String),
             updated_at: expect.any(String),
           });
@@ -216,11 +268,14 @@ describe('UsersController (e2e)', () => {
         .set('Authorization', `Bearer ${firstUserAccessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
-          expect(res.body).toMatchSnapshot({
+          expect(res.body).toStrictEqual({
             created_at: expect.any(String),
             updated_at: expect.any(String),
             id: expect.any(Number),
+            email: 'TEST_USER@EMAIL.COM',
+            is_active: true,
             user_handle: expect.any(String),
+            username: 'TEST_USER',
           }),
         );
     });

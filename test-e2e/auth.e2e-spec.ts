@@ -9,6 +9,7 @@ import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
+import { UserRole } from 'src/roles/role.enum';
 
 import * as factories from '../factories';
 
@@ -86,9 +87,10 @@ describe('AuthController (e2e)', () => {
         .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
-          expect(res.body).toMatchSnapshot({
+          expect(res.body).toEqual({
             access_token: expect.any(String),
             refresh_token: expect.any(String),
+            expires_in: 900,
           });
         });
       const user = await userRepository.findOne({
@@ -119,9 +121,12 @@ describe('AuthController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
-          expect(res.body).toMatchSnapshot({
+          expect(res.body).toEqual({
             access_token: expect.any(String),
             refresh_token: expect.any(String),
+            platform_id: 1,
+            roles: [UserRole.Admin, UserRole.Member],
+            expires_in: 900,
           });
         });
     });
@@ -234,9 +239,10 @@ describe('AuthController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
-          expect(res.body).toMatchSnapshot({
+          expect(res.body).toEqual({
             access_token: expect.any(String),
             refresh_token: expect.any(String),
+            expires_in: 900,
           });
         });
     });
@@ -267,9 +273,12 @@ describe('AuthController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
-          expect(res.body).toMatchSnapshot({
+          expect(res.body).toEqual({
             access_token: expect.any(String),
             refresh_token: expect.any(String),
+            platform_id: 1,
+            roles: [UserRole.Admin, UserRole.Member],
+            expires_in: 900,
           });
         });
     });
