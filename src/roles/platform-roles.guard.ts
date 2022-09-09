@@ -29,7 +29,7 @@ export class PlatformRolesGuard implements CanActivate {
 
     const { user, params } = context.switchToHttp().getRequest();
     const { platform_id }: { platform_id: string } = params;
-    const userJwt = plainToClass(JWTPayload, { user });
+    const userJwt = plainToClass(JWTPayload, user);
 
     if (
       userJwt.platformId === this.configService.get('SOUL_DEFAULT_PLATFORM_ID')
