@@ -13,18 +13,14 @@ export class JWTPayload {
   platformId?: number;
 
   roles?: UserRole[];
-
-  constructor(args: JWTArgs | JWTArgsWithPlatform) {
-    Object.assign(this, args);
-  }
 }
 
-type JWTArgs = {
-  username: string;
-  userId: number;
-};
+// type JWTArgs = {
+//   username: string;
+//   userId: number;
+// };
 
-type JWTArgsWithPlatform = JWTArgs & {
-  platformId: number;
-  roles: UserRole[];
-};
+// type JWTArgsWithPlatform = JWTArgs & {
+//   platformId: number;
+//   roles: UserRole[];
+// };

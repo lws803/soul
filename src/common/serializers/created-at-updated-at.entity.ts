@@ -9,8 +9,4 @@ export class CreatedAtUpdatedAtEntity {
   @ApiProperty({ name: 'updated_at', type: Date })
   @Expose({ name: 'updated_at', toPlainOnly: true })
   updatedAt: Date;
-
-  constructor(args: CreatedAtUpdatedAtEntity) {
-    Object.assign(this, args);
-  }
 }

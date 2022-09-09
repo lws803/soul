@@ -1,6 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
+import { plainToClass } from 'class-transformer';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { PlatformsService } from 'src/platforms/platforms.service';
@@ -28,7 +29,7 @@ export class PlatformRolesGuard implements CanActivate {
 
     const { user, params } = context.switchToHttp().getRequest();
     const { platform_id }: { platform_id: string } = params;
-    const userJwt = new JWTPayload(user);
+    const userJwt = plainToClass(JWTPayload, { user });
 
     if (
       userJwt.platformId === this.configService.get('SOUL_DEFAULT_PLATFORM_ID')
