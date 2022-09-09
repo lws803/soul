@@ -8,10 +8,6 @@ export class JWTRefreshPayload {
   tokenType = TokenType.Refresh;
   platformId?: number;
   roles?: UserRole[];
-
-  constructor(args: JWTArgsWithPlatform | JWTArgs) {
-    Object.assign(this, args);
-  }
 }
 
 type JWTArgs = {

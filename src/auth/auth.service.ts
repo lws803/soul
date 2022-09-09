@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { classToPlain } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
@@ -248,7 +248,7 @@ export class AuthService {
     platformId?: number,
     roles?: UserRole[],
   ) {
-    const payload = new JWTPayload({
+    const payload = plainToClass(JWTPayload, {
       username: user.username,
       userId: user.id,
       platformId,
@@ -267,12 +267,13 @@ export class AuthService {
     roles?: UserRole[],
   ) {
     const token = await this.createRefreshToken(user, expiresIn, platformId);
-    const payload = new JWTRefreshPayload({
+    const payload = plainToClass(JWTRefreshPayload, {
       tokenId: token.id,
       userId: user.id,
       platformId,
       roles,
     });
+
     return this.jwtService.signAsync(classToPlain(payload), {
       expiresIn,
       secret: this.configService.get('JWT_SECRET_KEY'),
