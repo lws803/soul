@@ -14,13 +14,3 @@ export class JWTPayload {
 
   roles?: UserRole[];
 }
-
-// type JWTArgs = {
-//   username: string;
-//   userId: number;
-// };
-
-// type JWTArgsWithPlatform = JWTArgs & {
-//   platformId: number;
-//   roles: UserRole[];
-// };
