@@ -89,12 +89,10 @@ const schema = Joi.object({
       'Soul default platform id, used as the primary hub for soul services',
     ),
   THROTTLER_TTL: Joi.number()
-    .optional()
-    .default(60)
+    .required()
     .description('Throttler ttl for resetting rate limiting.'),
   THROTTLER_LIMIT: Joi.number()
-    .optional()
-    .default(10)
+    .required()
     .description('Throttler limit within specified throttler ttl.'),
 });
 
