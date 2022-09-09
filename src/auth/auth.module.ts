@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RedisClientOptions } from 'redis';
+import { RedisOptions } from 'ioredis';
 import * as redisStore from 'cache-manager-redis-store';
 
 import { PlatformsModule } from 'src/platforms/platforms.module';
@@ -28,7 +28,7 @@ import { LocalStrategy } from './strategies/local.strategy';
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([RefreshToken]),
-    CacheModule.registerAsync<RedisClientOptions>({
+    CacheModule.registerAsync<RedisOptions>({
       useFactory: (configService: ConfigService) => ({
         store: redisStore,
         host: configService.get('REDIS_DB_HOST'),

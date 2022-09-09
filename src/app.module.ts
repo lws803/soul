@@ -1,9 +1,13 @@
 import { Module, HttpException } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { RavenInterceptor, RavenModule } from 'nest-raven';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
+// eslint-disable-next-line import/no-named-as-default
+import Redis from 'ioredis';
 
 import config from '../config';
 
@@ -52,6 +56,25 @@ import { RequestLogInterceptor } from './common/interceptors/request-log.interce
       }),
       inject: [ConfigService],
     }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        ttl: configService.get('THROTTLER_TTL'),
+        limit: configService.get('THROTTLER_LIMIT'),
+        storage: new ThrottlerStorageRedisService(
+          new Redis(
+            configService.get('REDIS_DB_PORT'),
+            configService.get('REDIS_DB_HOST'),
+            {
+              db: configService.get('REDIS_DB_INDEX'),
+              password: configService.get('REDIS_DB_PASSWORD'),
+              keyPrefix: configService.get('REDIS_DB_THROTTLER_KEY_PREFIX'),
+            },
+          ),
+        ),
+      }),
+    }),
     UsersModule,
     AuthModule,
     PlatformsModule,
@@ -77,6 +100,7 @@ import { RequestLogInterceptor } from './common/interceptors/request-log.interce
       }),
     },
     { provide: APP_INTERCEPTOR, useValue: new RequestLogInterceptor() },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}

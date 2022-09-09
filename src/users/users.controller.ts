@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
+import { SkipThrottle } from '@nestjs/throttler';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
@@ -67,6 +68,7 @@ export class UsersController {
   @ApiOperation({ description: 'Retrieve myself (requires auth bearer token)' })
   @ApiResponse({ status: HttpStatus.OK, type: FindMeResponseEntity })
   @UseGuards(JwtAuthGuard)
+  @SkipThrottle()
   @Get('me')
   async findMe(
     @Request() { user }: { user: JWTPayload },
@@ -101,6 +103,7 @@ export class UsersController {
 
   @ApiOperation({ description: 'Finds a user from a given id' })
   @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponseEntity })
+  @SkipThrottle()
   @Get(':id')
   async findOne(
     @Param() params: UserParamsDto,
