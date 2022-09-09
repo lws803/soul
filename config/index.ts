@@ -37,6 +37,9 @@ const schema = Joi.object({
   REDIS_DB_KEY_PREFIX: Joi.string()
     .required()
     .description('Redis general use key prefix'),
+  REDIS_DB_THROTTLER_KEY_PREFIX: Joi.string()
+    .required()
+    .description('Redis throttler key prefix'),
   // Mail config
   MAIL_HOST: Joi.string().required().description('Mail provider host'),
   MAIL_PORT: Joi.number().required().description('Mail provider port'),
@@ -85,6 +88,14 @@ const schema = Joi.object({
     .description(
       'Soul default platform id, used as the primary hub for soul services',
     ),
+  THROTTLER_TTL: Joi.number()
+    .optional()
+    .default(60)
+    .description('Throttler ttl for resetting rate limiting.'),
+  THROTTLER_LIMIT: Joi.number()
+    .optional()
+    .default(10)
+    .description('Throttler limit within specified throttler ttl.'),
 });
 
 const config: ConfigModuleOptions = {
