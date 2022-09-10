@@ -10,7 +10,12 @@ import {
   Request,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
@@ -32,6 +37,7 @@ import {
   FindOneUserConnectionResponseEntity,
 } from './serializers/api-responses.entity';
 
+@ApiTags('User connections')
 @Controller({ version: '1', path: 'user-connections' })
 export class UserConnectionsController {
   constructor(

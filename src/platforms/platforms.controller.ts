@@ -12,7 +12,12 @@ import {
   Put,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -44,6 +49,7 @@ import {
   UpdatePlatformResponseEntity,
 } from './serializers/api-responses.entity';
 
+@ApiTags('Platforms')
 @Controller({ path: 'platforms', version: '1' })
 export class PlatformsController {
   constructor(private readonly platformsService: PlatformsService) {}

@@ -11,7 +11,12 @@ import {
   Request,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { SkipThrottle } from '@nestjs/throttler';
 
@@ -37,6 +42,7 @@ import {
   UpdateUserResponseEntity,
 } from './serializers/api-responses.entity';
 
+@ApiTags('Users')
 @Controller({ version: '1', path: 'users' })
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

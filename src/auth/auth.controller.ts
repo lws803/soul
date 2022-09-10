@@ -9,7 +9,12 @@ import {
   HttpStatus,
   HttpCode,
 } from '@nestjs/common';
-import { ApiExcludeEndpoint, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
 import { User } from 'src/users/entities/user.entity';
@@ -29,6 +34,7 @@ import {
 } from './serializers/api.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
+@ApiTags('Auth')
 @Controller({ version: '1', path: 'auth' })
 export class AuthController {
   constructor(private authService: AuthService) {}
