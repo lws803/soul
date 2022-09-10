@@ -11,7 +11,7 @@ import {
   Request,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { SkipThrottle } from '@nestjs/throttler';
 
@@ -65,6 +65,7 @@ export class UsersController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({ description: 'Retrieve myself (requires auth bearer token)' })
   @ApiResponse({ status: HttpStatus.OK, type: FindMeResponseEntity })
   @UseGuards(JwtAuthGuard)
@@ -79,6 +80,7 @@ export class UsersController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({ description: 'Patch myself (requires auth bearer token)' })
   @ApiResponse({ status: HttpStatus.OK, type: UpdateUserResponseEntity })
   @UseGuards(JwtAuthGuard)
@@ -93,6 +95,7 @@ export class UsersController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({ description: 'Deletes myself (requires auth bearer token)' })
   @ApiResponse({ status: HttpStatus.OK })
   @UseGuards(JwtAuthGuard)

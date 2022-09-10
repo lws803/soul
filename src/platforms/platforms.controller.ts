@@ -12,7 +12,7 @@ import {
   Put,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -48,6 +48,7 @@ import {
 export class PlatformsController {
   constructor(private readonly platformsService: PlatformsService) {}
 
+  @ApiBearerAuth()
   @ApiOperation({ description: 'Create a new platform' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -77,6 +78,7 @@ export class PlatformsController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'List my platforms with pagination support',
   })
@@ -104,7 +106,7 @@ export class PlatformsController {
       await this.platformsService.findOne(platformId),
     );
   }
-
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Find one platform with full details from a given platformId',
   })
@@ -121,6 +123,7 @@ export class PlatformsController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description:
       'Updates a platform (only authorized platform owners can update a platform)',
@@ -139,6 +142,7 @@ export class PlatformsController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description:
       'Deletes a platform (only authorized platform owners can delete a platform)',
@@ -151,6 +155,7 @@ export class PlatformsController {
     await this.platformsService.remove(platformId);
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Lists all platform users',
   })
@@ -174,6 +179,7 @@ export class PlatformsController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Sets a role for a user on a platform',
   })
@@ -194,6 +200,7 @@ export class PlatformsController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Deletes a user from a platform',
   })
@@ -207,6 +214,7 @@ export class PlatformsController {
     await this.platformsService.removeUser(platformId, userId);
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Quits a platform by deleting self from it',
   })
@@ -221,6 +229,7 @@ export class PlatformsController {
     await this.platformsService.removeUser(platformId, user.userId);
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Joins a platform by adding self to it',
   })

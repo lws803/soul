@@ -49,6 +49,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addServer('https://api.soul-network.com')
     .addServer('http://localhost:3000')
+    .addSecurity('bearer', { type: 'http', scheme: 'bearer' })
     .build();
   const document = SwaggerModule.createDocument(app, config);
 
