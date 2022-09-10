@@ -1,11 +1,12 @@
 import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
 import { ReputationResponseEntity } from './serializers/api-responses.entity';
 import { ReputationParamDto } from './serializers/api.dto';
 import { ReputationService } from './reputation.service';
 
+@ApiTags('Reputation')
 @Controller({ version: '1', path: 'reputation' })
 export class ReputationController {
   constructor(private readonly reputationService: ReputationService) {}

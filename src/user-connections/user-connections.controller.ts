@@ -10,7 +10,12 @@ import {
   Request,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
@@ -32,12 +37,14 @@ import {
   FindOneUserConnectionResponseEntity,
 } from './serializers/api-responses.entity';
 
+@ApiTags('User connections')
 @Controller({ version: '1', path: 'user-connections' })
 export class UserConnectionsController {
   constructor(
     private readonly userConnectionsService: UserConnectionsService,
   ) {}
 
+  @ApiBearerAuth()
   @ApiOperation({ description: 'Creates a new user connection' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -58,6 +65,7 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({ description: 'List my connections' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -116,6 +124,7 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Add a new platform to an existing user connection',
   })
@@ -140,6 +149,7 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Delete platform from an existing user connection',
   })
@@ -157,6 +167,7 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiBearerAuth()
   @ApiOperation({
     description: 'Delete a user connection',
   })
