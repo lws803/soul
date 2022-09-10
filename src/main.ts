@@ -47,6 +47,8 @@ async function bootstrap() {
     .setTitle('Soul')
     .setDescription('Soul Swagger API documentation')
     .setVersion('1.0')
+    .addServer('https://api.soul-network.com')
+    .addServer('http://localhost:3000')
     .build();
   const document = SwaggerModule.createDocument(app, config);
 
