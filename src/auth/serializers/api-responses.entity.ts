@@ -1,62 +1,69 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
-
+import {
+  ApiResponseProperty,
+  ExposeApiResponseProperty,
+} from 'src/common/serializers/decorators';
 import { UserRole } from 'src/roles/role.enum';
 
 export class LoginResponseEntity {
-  @ApiProperty({ name: 'access_token' })
-  @Expose({ name: 'access_token', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'access_token' })
+  @ExposeApiResponseProperty({ name: 'access_token' })
   accessToken: string;
 
-  @ApiProperty({ name: 'refresh_token' })
-  @Expose({ name: 'refresh_token', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'refresh_token' })
+  @ExposeApiResponseProperty({ name: 'refresh_token' })
   refreshToken: string;
 
-  @ApiProperty({ name: 'expires_in' })
-  @Expose({ name: 'expires_in', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'expires_in' })
+  @ExposeApiResponseProperty({ name: 'expires_in' })
   expiresIn: number;
 }
 
 export class CodeResponseEntity {
-  @ApiProperty({ name: 'code' })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'code' })
+  @ExposeApiResponseProperty()
   code: string;
 
-  @ApiProperty({ name: 'state' })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'state' })
+  @ExposeApiResponseProperty()
   state: string;
 }
 
 export class PlatformLoginResponseEntity extends LoginResponseEntity {
-  @ApiProperty({ name: 'platform_id', example: 1 })
-  @Expose({ name: 'platform_id', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'platform_id', example: 1 })
+  @ExposeApiResponseProperty({ name: 'platform_id' })
   platformId: number;
 
-  @ApiProperty({ name: 'roles', example: [UserRole.Admin, UserRole.Member] })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({
+    name: 'roles',
+    example: [UserRole.Admin, UserRole.Member],
+  })
+  @ExposeApiResponseProperty()
   roles: UserRole[];
 }
 
 export class RefreshTokenResponseEntity {
-  @ApiProperty({ name: 'access_token' })
-  @Expose({ name: 'access_token', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'access_token' })
+  @ExposeApiResponseProperty({ name: 'access_token' })
   accessToken: string;
 
-  @ApiProperty({ name: 'refresh_token' })
-  @Expose({ name: 'refresh_token', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'refresh_token' })
+  @ExposeApiResponseProperty({ name: 'refresh_token' })
   refreshToken: string;
 
-  @ApiProperty({ name: 'expires_in' })
-  @Expose({ name: 'expires_in', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'expires_in' })
+  @ExposeApiResponseProperty({ name: 'expires_in' })
   expiresIn: number;
 }
 
 export class RefreshTokenWithPlatformResponseEntity extends RefreshTokenResponseEntity {
-  @ApiProperty({ name: 'platform_id', example: 1 })
-  @Expose({ name: 'platform_id', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'platform_id', example: 1 })
+  @ExposeApiResponseProperty({ name: 'platform_id' })
   platformId: number;
 
-  @ApiProperty({ name: 'roles', example: [UserRole.Admin, UserRole.Member] })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({
+    name: 'roles',
+    example: [UserRole.Admin, UserRole.Member],
+  })
+  @ExposeApiResponseProperty()
   roles: UserRole[];
 }

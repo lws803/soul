@@ -1,74 +1,79 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtEntity } from 'src/common/serializers/created-at-updated-at.entity';
+import {
+  ApiResponseProperty,
+  ExposeApiResponseProperty,
+} from 'src/common/serializers/decorators';
 import { UserRole } from 'src/roles/role.enum';
 import { FindOneUserResponseEntity } from 'src/users/serializers/api-responses.entity';
 
 export class PlatformCategoryResponseEntity {
-  @ApiProperty({ name: 'id', example: 1 })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'id', example: 1 })
+  @ExposeApiResponseProperty()
   id: number;
 
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'name',
     description: 'One of predefined category names for the platform.',
     example: 'tech',
   })
-  @Expose({ toPlainOnly: true })
+  @ExposeApiResponseProperty()
   name: string;
 }
 
 export class FullPlatformResponseEntity extends CreatedAtUpdatedAtEntity {
-  @ApiProperty({ name: 'id', example: 1 })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'id', example: 1 })
+  @ExposeApiResponseProperty()
   id: number;
 
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'name',
     example: 'soul',
     description: 'Name of the platform',
   })
-  @Expose({ toPlainOnly: true })
+  @ExposeApiResponseProperty()
   name: string;
 
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'name_handle',
     example: 'soul#1',
     description: 'Includes the id number after the # symbol',
   })
-  @Expose({ name: 'name_handle', toPlainOnly: true })
+  @ExposeApiResponseProperty({ name: 'name_handle' })
   nameHandle: string;
 
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'is_verified',
     example: true,
     description: 'Is the platform verified, used only for official platforms',
   })
-  @Expose({ name: 'is_verified', toPlainOnly: true })
+  @ExposeApiResponseProperty({ name: 'is_verified' })
   isVerified: boolean;
 
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'activity_webhook_uri',
     example: 'https://example.com',
     description: 'Webhook URI for Soul to broadcast user activity.',
-    required: false,
   })
-  @Expose({ name: 'activity_webhook_uri', toPlainOnly: true })
+  @ExposeApiResponseProperty({ name: 'activity_webhook_uri' })
   activityWebhookUri?: string;
 
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'redirect_uris',
     example: ['https://example.com', 'http://localhost:3000'],
     description:
       'List of redirect uris for the platform, they must follow the following restrictions ' +
       'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
   })
-  @Expose({ name: 'redirect_uris', toPlainOnly: true })
+  @ExposeApiResponseProperty({ name: 'redirect_uris' })
   redirectUris: string[];
 
-  @ApiProperty({ name: 'category', type: PlatformCategoryResponseEntity })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({
+    name: 'category',
+    type: PlatformCategoryResponseEntity,
+  })
+  @ExposeApiResponseProperty()
   @Type(() => PlatformCategoryResponseEntity)
   category?: PlatformCategoryResponseEntity;
 }
@@ -78,85 +83,91 @@ export class CreatePlatformResponseEntity extends FullPlatformResponseEntity {}
 export class UpdatePlatformResponseEntity extends FullPlatformResponseEntity {}
 
 export class FindOnePlatformResponseEntity extends CreatedAtUpdatedAtEntity {
-  @ApiProperty({ name: 'id', example: 1 })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'id', example: 1 })
+  @ExposeApiResponseProperty()
   id: number;
 
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'name',
     example: 'soul',
     description: 'Name of the platform',
   })
-  @Expose({ toPlainOnly: true })
+  @ExposeApiResponseProperty()
   name: string;
 
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'name_handle',
     example: 'soul#1',
     description: 'Includes the id number after the # symbol',
   })
-  @Expose({ name: 'name_handle', toPlainOnly: true })
+  @ExposeApiResponseProperty({ name: 'name_handle' })
   nameHandle: string;
 
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'is_verified',
     example: true,
     description: 'Is the platform verified, used only for official platforms',
   })
-  @Expose({ name: 'is_verified', toPlainOnly: true })
+  @ExposeApiResponseProperty({ name: 'is_verified' })
   isVerified: boolean;
 
-  @ApiProperty({ name: 'category', type: PlatformCategoryResponseEntity })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({
+    name: 'category',
+    type: PlatformCategoryResponseEntity,
+  })
+  @ExposeApiResponseProperty()
   @Type(() => PlatformCategoryResponseEntity)
   category?: PlatformCategoryResponseEntity;
 }
 
 export class FindAllPlatformResponseEntity {
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'platforms',
     type: [FindOnePlatformResponseEntity],
   })
-  @Expose({ toPlainOnly: true })
+  @ExposeApiResponseProperty()
   @Type(() => FindOnePlatformResponseEntity)
   platforms: FindOnePlatformResponseEntity[];
 
-  @ApiProperty({ name: 'total_count', example: 100 })
-  @Expose({ name: 'total_count', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'total_count', example: 100 })
+  @ExposeApiResponseProperty({ name: 'total_count' })
   totalCount: number;
 }
 
 class FindOnePlatformUserResponseEntity {
-  @ApiProperty({ name: 'id', example: 1 })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'id', example: 1 })
+  @ExposeApiResponseProperty()
   id: number;
 
-  @ApiProperty({ name: 'user', type: FindOneUserResponseEntity })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'user', type: FindOneUserResponseEntity })
+  @ExposeApiResponseProperty()
   @Type(() => FindOneUserResponseEntity)
   user: FindOneUserResponseEntity;
 
-  @ApiProperty({ name: 'platform', type: FindOnePlatformResponseEntity })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({
+    name: 'platform',
+    type: FindOnePlatformResponseEntity,
+  })
+  @ExposeApiResponseProperty()
   @Type(() => FindOnePlatformResponseEntity)
   platform: FindOnePlatformResponseEntity;
 
-  @ApiProperty({ name: 'roles', example: [UserRole.Admin] })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'roles', example: [UserRole.Admin] })
+  @ExposeApiResponseProperty()
   roles: UserRole[];
 }
 
 export class FindAllPlatformUsersResponseEntity {
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'platform_users',
     type: [FindOnePlatformUserResponseEntity],
   })
-  @Expose({ name: 'platform_users', toPlainOnly: true })
+  @ExposeApiResponseProperty({ name: 'platform_users' })
   @Type(() => FindOnePlatformUserResponseEntity)
   platformUsers: FindOnePlatformUserResponseEntity[];
 
-  @ApiProperty({ name: 'total_count', example: 100 })
-  @Expose({ name: 'total_count', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'total_count', example: 100 })
+  @ExposeApiResponseProperty({ name: 'total_count' })
   totalCount: number;
 }
 

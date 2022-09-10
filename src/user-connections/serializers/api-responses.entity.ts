@@ -1,54 +1,60 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtEntity } from 'src/common/serializers/created-at-updated-at.entity';
+import {
+  ApiResponseProperty,
+  ExposeApiResponseProperty,
+} from 'src/common/serializers/decorators';
 import { FindOnePlatformResponseEntity } from 'src/platforms/serializers/api-responses.entity';
 import { FindOneUserResponseEntity } from 'src/users/serializers/api-responses.entity';
 
 class FullUserConnectionResponseEntity extends CreatedAtUpdatedAtEntity {
-  @ApiProperty({ name: 'id', example: 1 })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'id', example: 1 })
+  @ExposeApiResponseProperty()
   id: number;
 
-  @ApiProperty({ name: 'from_user', type: FindOneUserResponseEntity })
-  @Expose({ name: 'from_user', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'from_user', type: FindOneUserResponseEntity })
+  @ExposeApiResponseProperty({ name: 'from_user' })
   @Type(() => FindOneUserResponseEntity)
   fromUser: FindOneUserResponseEntity;
 
-  @ApiProperty({ name: 'to_user', type: FindOneUserResponseEntity })
-  @Expose({ name: 'to_user', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'to_user', type: FindOneUserResponseEntity })
+  @ExposeApiResponseProperty({ name: 'to_user' })
   @Type(() => FindOneUserResponseEntity)
   toUser: FindOneUserResponseEntity;
 
-  @ApiProperty({ name: 'platforms', type: [FindOnePlatformResponseEntity] })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({
+    name: 'platforms',
+    type: [FindOnePlatformResponseEntity],
+  })
+  @ExposeApiResponseProperty()
   @Type(() => FindOnePlatformResponseEntity)
   platforms: FindOnePlatformResponseEntity[] = [];
 }
 
 export class CreateUserConnectionResponseEntity extends FullUserConnectionResponseEntity {
-  @ApiProperty({ name: 'is_mutual' })
-  @Expose({ name: 'is_mutual', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'is_mutual' })
+  @ExposeApiResponseProperty({ name: 'is_mutual' })
   isMutual: boolean;
 }
 
 export class FindOneUserConnectionResponseEntity extends FullUserConnectionResponseEntity {
-  @ApiProperty({ name: 'is_mutual' })
-  @Expose({ name: 'is_mutual', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'is_mutual' })
+  @ExposeApiResponseProperty({ name: 'is_mutual' })
   isMutual: boolean;
 }
 
 export class FindAllUserConnectionResponseEntity {
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'user_connections',
     type: [FullUserConnectionResponseEntity],
   })
-  @Expose({ name: 'user_connections', toPlainOnly: true })
+  @ExposeApiResponseProperty({ name: 'user_connections' })
   @Type(() => FullUserConnectionResponseEntity)
   userConnections: FullUserConnectionResponseEntity[];
 
-  @ApiProperty({ name: 'total_count', example: 100 })
-  @Expose({ name: 'total_count', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'total_count', example: 100 })
+  @ExposeApiResponseProperty({ name: 'total_count' })
   totalCount: number;
 }
 
