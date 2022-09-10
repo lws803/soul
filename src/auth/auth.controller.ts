@@ -18,6 +18,7 @@ import {
 import { plainToClass } from 'class-transformer';
 
 import { User } from 'src/users/entities/user.entity';
+import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 
 import { AuthService } from './auth.service';
 import {
@@ -57,6 +58,7 @@ export class AuthController {
     );
   }
 
+  @ApiExcludeEndpoint()
   @ApiOperation({
     description:
       'Login with external platform, returns code to be exchanged for a token.',
@@ -88,6 +90,12 @@ export class AuthController {
     status: HttpStatus.CREATED,
     type: PlatformLoginResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
   @Post('verify')
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
@@ -111,6 +119,12 @@ export class AuthController {
     status: HttpStatus.CREATED,
     type: RefreshTokenWithPlatformResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
