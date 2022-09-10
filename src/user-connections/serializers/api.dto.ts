@@ -110,7 +110,6 @@ export class RemovePlatformFromUserConnectionParamsDto {
     example: 1,
   })
   @Expose({ name: 'platform_id' })
-  @IsOptional()
   @Type(() => Number)
   @IsInt({ message: 'platform_id must be an integer' })
   platformId?: number;
