@@ -108,7 +108,6 @@ export class RemovePlatformFromUserConnectionParamsDto {
     type: Number,
     description: 'Platform id',
     example: 1,
-    required: false,
   })
   @Expose({ name: 'platform_id' })
   @IsOptional()
