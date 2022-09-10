@@ -40,7 +40,10 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiExcludeEndpoint()
-  @ApiOperation({ description: 'Login with email and password' })
+  @ApiOperation({
+    description: 'Login with email and password.',
+    summary: 'Login',
+  })
   @ApiResponse({ status: HttpStatus.CREATED, type: LoginResponseEntity })
   @UseGuards(LocalAuthGuard)
   @Header('Cache-Control', 'no-store')
@@ -56,7 +59,8 @@ export class AuthController {
 
   @ApiOperation({
     description:
-      'Login with external platform, returns code to be exchanged for a token',
+      'Login with external platform, returns code to be exchanged for a token.',
+    summary: 'Platform login',
   })
   @ApiResponse({ status: HttpStatus.CREATED, type: CodeResponseEntity })
   @UseGuards(LocalAuthGuard)
@@ -77,7 +81,8 @@ export class AuthController {
 
   @ApiOperation({
     description:
-      'Verify code returned to external platform and exchange for access tokens',
+      'Verify code returned to external platform and exchange for access tokens.',
+    summary: 'Verify platform login',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -100,6 +105,7 @@ export class AuthController {
       'Refresh access token, returns new access token and a new refresh token. ' +
       'If client_id is provided, returns new access token for that platform. ' +
       'Note that the existing refresh token will no longer be usable.',
+    summary: 'Refresh access token',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
