@@ -81,7 +81,9 @@ export class UsersController {
     summary: 'Retrieve myself',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindMeResponseEntity })
-  @ApiResponseInvalid([HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED])
+  @ApiResponseInvalid([HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED], {
+    isRateLimited: false,
+  })
   @UseGuards(JwtAuthGuard)
   @SkipThrottle()
   @Get('me')
@@ -131,7 +133,7 @@ export class UsersController {
     summary: 'Find user by id',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponseEntity })
-  @ApiResponseInvalid([HttpStatus.NOT_FOUND])
+  @ApiResponseInvalid([HttpStatus.NOT_FOUND], { isRateLimited: false })
   @SkipThrottle()
   @Get(':id')
   async findOne(
