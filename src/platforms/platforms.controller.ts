@@ -112,6 +112,7 @@ export class PlatformsController {
       await this.platformsService.findOne(platformId),
     );
   }
+
   @ApiBearerAuth()
   @ApiOperation({
     description: 'Find one platform with full details from a given platformId',
