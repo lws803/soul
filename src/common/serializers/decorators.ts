@@ -39,7 +39,10 @@ type InvalidTypes =
   | HttpStatus.UNAUTHORIZED
   | HttpStatus.NOT_FOUND;
 
-export function ApiResponseInvalid(invalidTypes: InvalidTypes[]) {
+export function ApiResponseInvalid(
+  invalidTypes: InvalidTypes[],
+  options: { isRateLimited: boolean } = { isRateLimited: true },
+) {
   const errorMessageSchema = {
     type: 'object',
     properties: {
@@ -54,6 +57,17 @@ export function ApiResponseInvalid(invalidTypes: InvalidTypes[]) {
     },
   };
   const apiResponses: typeof ApiResponse[] = [];
+  if (options.isRateLimited) {
+    apiResponses.push(
+      ApiResponse({
+        status: HttpStatus.TOO_MANY_REQUESTS,
+        schema: errorMessageSchema,
+        description:
+          'Too many requests were sent out to this API in a short period of time. ' +
+          'We recommend using an exponential backoff for your requests.',
+      }),
+    );
+  }
   if (invalidTypes.includes(HttpStatus.UNAUTHORIZED)) {
     apiResponses.push(
       ApiResponse({
