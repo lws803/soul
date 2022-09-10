@@ -1,12 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { ApiResponseProperty } from './decorators';
 
 export class CreatedAtUpdatedAtEntity {
-  @ApiProperty({ name: 'created_at', type: Date })
-  @Expose({ name: 'created_at', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'created_at', type: Date })
   createdAt: Date;
 
-  @ApiProperty({ name: 'updated_at', type: Date })
-  @Expose({ name: 'updated_at', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'updated_at', type: Date })
   updatedAt: Date;
 }

@@ -1,27 +1,22 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtEntity } from 'src/common/serializers/created-at-updated-at.entity';
+import { ApiResponseProperty } from 'src/common/serializers/decorators';
 
 class FullUserResponseEntity extends CreatedAtUpdatedAtEntity {
-  @ApiProperty({ name: 'id', example: 1234 })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'id', example: 1234 })
   id: number;
 
-  @ApiProperty({ name: 'username', example: 'johndoe' })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'username', example: 'johndoe' })
   username: string;
 
-  @ApiProperty({ name: 'user_handle', example: 'johndoe#1234' })
-  @Expose({ name: 'user_handle', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'user_handle', example: 'johndoe#1234' })
   userHandle: string;
 
-  @ApiProperty({ name: 'email', example: 'john@email.com' })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'email', example: 'john@email.com' })
   email: string;
 
-  @ApiProperty({ name: 'is_active', example: false })
-  @Expose({ name: 'is_active', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'is_active', example: false })
   isActive: boolean;
 }
 
@@ -32,29 +27,24 @@ export class FindMeResponseEntity extends FullUserResponseEntity {}
 export class UpdateUserResponseEntity extends FullUserResponseEntity {}
 
 export class FindOneUserResponseEntity {
-  @ApiProperty({ name: 'id', example: 1234 })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'id', example: 1234 })
   id: number;
 
-  @ApiProperty({ name: 'username', example: 'johndoe' })
-  @Expose({ toPlainOnly: true })
+  @ApiResponseProperty({ name: 'username', example: 'johndoe' })
   username: string;
 
-  @ApiProperty({ name: 'user_handle', example: 'johndoe#1234' })
-  @Expose({ name: 'user_handle', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'user_handle', example: 'johndoe#1234' })
   userHandle: string;
 }
 
 export class FindAllUserResponseEntity {
-  @ApiProperty({
+  @ApiResponseProperty({
     name: 'users',
     type: [FindOneUserResponseEntity],
   })
-  @Expose({ toPlainOnly: true })
   @Type(() => FindOneUserResponseEntity)
   users: FindOneUserResponseEntity[];
 
-  @ApiProperty({ name: 'total_count', example: 10 })
-  @Expose({ name: 'total_count', toPlainOnly: true })
+  @ApiResponseProperty({ name: 'total_count', example: 10 })
   totalCount: number;
 }
