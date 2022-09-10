@@ -55,7 +55,10 @@ export class PlatformsController {
   constructor(private readonly platformsService: PlatformsService) {}
 
   @ApiBearerAuth()
-  @ApiOperation({ description: 'Create a new platform' })
+  @ApiOperation({
+    description: 'Create a new platform.',
+    summary: 'Create platform',
+  })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: CreatePlatformResponseEntity,
@@ -72,7 +75,10 @@ export class PlatformsController {
     );
   }
 
-  @ApiOperation({ description: 'List all platforms with pagination support' })
+  @ApiOperation({
+    description: 'List all platforms with pagination.',
+    summary: 'List platforms',
+  })
   @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseEntity })
   @Get()
   async findAll(
@@ -86,7 +92,8 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'List my platforms with pagination support',
+    description: 'List my platforms with pagination.',
+    summary: 'List my platforms',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseEntity })
   @UseGuards(JwtAuthGuard)
@@ -101,7 +108,10 @@ export class PlatformsController {
     );
   }
 
-  @ApiOperation({ description: 'Find one platform from a given platformId' })
+  @ApiOperation({
+    description: 'Find one platform from a given `platform_id`.',
+    summary: 'Find platform by id',
+  })
   @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseEntity })
   @Get(':platform_id')
   async findOne(
@@ -115,7 +125,9 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Find one platform with full details from a given platformId',
+    description:
+      'Find one platform with full details from a given `platform_id`.',
+    summary: 'Find full platform by id',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseEntity })
   @Roles(UserRole.Admin)
@@ -133,7 +145,8 @@ export class PlatformsController {
   @ApiBearerAuth()
   @ApiOperation({
     description:
-      'Updates a platform (only authorized platform owners can update a platform)',
+      'Updates a platform (only authorized platform owners can update a platform).',
+    summary: 'Update platform',
   })
   @ApiResponse({ status: HttpStatus.OK, type: UpdatePlatformResponseEntity })
   @Roles(UserRole.Admin)
@@ -152,7 +165,8 @@ export class PlatformsController {
   @ApiBearerAuth()
   @ApiOperation({
     description:
-      'Deletes a platform (only authorized platform owners can delete a platform)',
+      'Deletes a platform (only authorized platform owners can delete a platform).',
+    summary: 'Delete platform',
   })
   @ApiResponse({ status: HttpStatus.OK })
   @Roles(UserRole.Admin)
@@ -164,7 +178,8 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Lists all platform users',
+    description: 'Lists all platform users.',
+    summary: 'List platform users',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -188,7 +203,8 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Sets a role for a user on a platform',
+    description: 'Sets a role for a user on a platform.',
+    summary: 'Set role for user',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -209,7 +225,8 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Deletes a user from a platform',
+    description: 'Deletes a user from a platform.',
+    summary: 'Delete platform user',
   })
   @ApiResponse({ status: HttpStatus.OK })
   @Roles(UserRole.Admin)
@@ -223,7 +240,8 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Quits a platform by deleting self from it',
+    description: 'Quits a platform by deleting self from it.',
+    summary: 'Quit platform',
   })
   @ApiResponse({ status: HttpStatus.OK })
   @Roles(UserRole.Member)
@@ -238,7 +256,8 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Joins a platform by adding self to it',
+    description: 'Joins a platform by adding self to it.',
+    summary: 'Join platform',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,

@@ -45,7 +45,10 @@ export class UserConnectionsController {
   ) {}
 
   @ApiBearerAuth()
-  @ApiOperation({ description: 'Creates a new user connection' })
+  @ApiOperation({
+    description: 'Creates a new user connection.',
+    summary: 'Create connection',
+  })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: CreateUserConnectionResponseEntity,
@@ -66,7 +69,7 @@ export class UserConnectionsController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ description: 'List my connections' })
+  @ApiOperation({ summary: 'List my connections' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: FindAllUserConnectionResponseEntity,
@@ -94,7 +97,7 @@ export class UserConnectionsController {
     );
   }
 
-  @ApiOperation({ description: 'Get connection by users' })
+  @ApiOperation({ summary: 'Get connection (by users)' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: FindOneUserConnectionResponseEntity,
@@ -109,7 +112,7 @@ export class UserConnectionsController {
     );
   }
 
-  @ApiOperation({ description: 'Get connection by id' })
+  @ApiOperation({ summary: 'Get connection (by id)' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: FindOneUserConnectionResponseEntity,
@@ -126,7 +129,8 @@ export class UserConnectionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Add a new platform to an existing user connection',
+    description: 'Add a new platform to an existing user connection.',
+    summary: 'Add platform to connection',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -151,7 +155,8 @@ export class UserConnectionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Delete platform from an existing user connection',
+    description: 'Delete platform from an existing user connection.',
+    summary: 'Delete platform from connection',
   })
   @ApiResponse({ status: HttpStatus.OK })
   @UseGuards(JwtAuthGuard)
@@ -169,7 +174,8 @@ export class UserConnectionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Delete a user connection',
+    description: 'Delete a user connection.',
+    summary: 'Delete connection',
   })
   @ApiResponse({ status: HttpStatus.OK })
   @UseGuards(JwtAuthGuard)

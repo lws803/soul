@@ -12,7 +12,8 @@ export class ReputationController {
   constructor(private readonly reputationService: ReputationService) {}
 
   @ApiOperation({
-    description: "Find one user's reputation from a given user id",
+    description: "Find one user's reputation from a given user id.",
+    summary: 'Find user reputation',
   })
   @ApiResponse({ status: HttpStatus.OK, type: ReputationResponseEntity })
   @Get(':user_id')

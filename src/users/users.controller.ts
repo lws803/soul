@@ -47,7 +47,7 @@ import {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ description: 'Creates a new user' })
+  @ApiOperation({ description: 'Creates a new user.', summary: 'Create user' })
   @ApiResponse({ status: HttpStatus.CREATED, type: CreateUserResponseEntity })
   @Post()
   async create(
@@ -59,7 +59,7 @@ export class UsersController {
     );
   }
 
-  @ApiOperation({ description: 'Lists all users' })
+  @ApiOperation({ description: 'Lists all users.', summary: 'List users' })
   @ApiResponse({ status: HttpStatus.OK, type: FindAllUserResponseEntity })
   @Get()
   async findAll(
@@ -72,7 +72,11 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ description: 'Retrieve myself (requires auth bearer token)' })
+  @ApiOperation({
+    description:
+      'Retrieves information about myself, requires auth bearer token.',
+    summary: 'Retrieve myself',
+  })
   @ApiResponse({ status: HttpStatus.OK, type: FindMeResponseEntity })
   @UseGuards(JwtAuthGuard)
   @SkipThrottle()
@@ -87,7 +91,10 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ description: 'Patch myself (requires auth bearer token)' })
+  @ApiOperation({
+    description: 'Patches myself, requires auth bearer token.',
+    summary: 'Patch myself',
+  })
   @ApiResponse({ status: HttpStatus.OK, type: UpdateUserResponseEntity })
   @UseGuards(JwtAuthGuard)
   @Patch('me')
@@ -102,7 +109,10 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ description: 'Deletes myself (requires auth bearer token)' })
+  @ApiOperation({
+    description: 'Deletes myself, requires auth bearer token.',
+    summary: 'Delete myself',
+  })
   @ApiResponse({ status: HttpStatus.OK })
   @UseGuards(JwtAuthGuard)
   @Delete('me')
@@ -110,7 +120,10 @@ export class UsersController {
     await this.usersService.remove(user.userId);
   }
 
-  @ApiOperation({ description: 'Finds a user from a given id' })
+  @ApiOperation({
+    description: 'Finds a user from a given id.',
+    summary: 'Find user by id',
+  })
   @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponseEntity })
   @SkipThrottle()
   @Get(':id')
@@ -125,7 +138,8 @@ export class UsersController {
 
   @ApiOperation({
     description:
-      'Verifies confirmation token which is used to log a user into an external platform',
+      'Verifies confirmation token which is used to log a user into an external platform.',
+    summary: 'Verify confirmation token',
   })
   @ApiResponse({ status: HttpStatus.CREATED, type: FindMeResponseEntity })
   @Post('verify-confirmation-token')
@@ -140,7 +154,8 @@ export class UsersController {
 
   @ApiOperation({
     description:
-      'Resend email confirmation token if user has not been validated yet',
+      'Resend email confirmation token if user has not been validated yet.',
+    summary: 'Resend confirmation email',
   })
   @ApiResponse({ status: HttpStatus.CREATED })
   @Post('resend-confirmation-token')
@@ -151,7 +166,8 @@ export class UsersController {
   }
 
   @ApiOperation({
-    description: 'Request password reset email for a specified email',
+    description: 'Request password reset email for a specified email.',
+    summary: 'Request password reset',
   })
   @ApiResponse({ status: HttpStatus.CREATED })
   @Post('request-password-reset-token')
@@ -160,7 +176,8 @@ export class UsersController {
   }
 
   @ApiOperation({
-    description: 'Reset password from a valid request password reset token',
+    description: 'Reset password from a valid request password reset token.',
+    summary: 'Reset password',
   })
   @ApiResponse({ status: HttpStatus.CREATED, type: FindMeResponseEntity })
   @Post('password-reset')
