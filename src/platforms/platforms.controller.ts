@@ -26,6 +26,7 @@ import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { PlatformRolesGuard } from 'src/roles/platform-roles.guard';
 import { UserRole } from 'src/roles/role.enum';
+import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 
 import { PlatformsService } from './platforms.service';
 import {
@@ -63,6 +64,12 @@ export class PlatformsController {
     status: HttpStatus.CREATED,
     type: CreatePlatformResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.CONFLICT,
+  ])
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
@@ -80,6 +87,7 @@ export class PlatformsController {
     summary: 'List platforms',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseEntity })
+  @ApiResponseInvalid([HttpStatus.BAD_REQUEST])
   @Get()
   async findAll(
     @Query() params: FindAllPlatformsQueryParamDto,
@@ -96,6 +104,11 @@ export class PlatformsController {
     summary: 'List my platforms',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseEntity })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+  ])
   @UseGuards(JwtAuthGuard)
   @Get('/my-platforms')
   async findMyPlatforms(
@@ -113,6 +126,12 @@ export class PlatformsController {
     summary: 'Find platform by id',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseEntity })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
   @Get(':platform_id')
   async findOne(
     @Param() { platformId }: PlatformIdParamDto,
@@ -130,6 +149,12 @@ export class PlatformsController {
     summary: 'Find full platform by id',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseEntity })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Get(':platform_id/full')
@@ -149,6 +174,12 @@ export class PlatformsController {
     summary: 'Update platform',
   })
   @ApiResponse({ status: HttpStatus.OK, type: UpdatePlatformResponseEntity })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Patch(':platform_id')
@@ -169,6 +200,12 @@ export class PlatformsController {
     summary: 'Delete platform',
   })
   @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platform_id')
@@ -185,6 +222,12 @@ export class PlatformsController {
     status: HttpStatus.OK,
     type: FindAllPlatformUsersResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
   @Roles(UserRole.Member)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Get(':platform_id/users')
@@ -210,6 +253,12 @@ export class PlatformsController {
     status: HttpStatus.OK,
     type: SetPlatformUserRoleResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Put(':platform_id/users/:user_id')
@@ -229,6 +278,12 @@ export class PlatformsController {
     summary: 'Delete platform user',
   })
   @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platform_id/users/:user_id')
@@ -244,6 +299,12 @@ export class PlatformsController {
     summary: 'Quit platform',
   })
   @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+    HttpStatus.BAD_REQUEST,
+  ])
   @Roles(UserRole.Member)
   @UseGuards(JwtAuthGuard, PlatformRolesGuard)
   @Delete(':platform_id/quit')
@@ -263,6 +324,13 @@ export class PlatformsController {
     status: HttpStatus.CREATED,
     type: CreatePlatformUserResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+    HttpStatus.CONFLICT,
+    HttpStatus.BAD_REQUEST,
+  ])
   @UseGuards(JwtAuthGuard)
   @Post(':platform_id/join')
   async joinPlatform(

@@ -20,6 +20,7 @@ import { plainToClass } from 'class-transformer';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 
 import { UserConnectionsService } from './user-connections.service';
 import {
@@ -53,6 +54,13 @@ export class UserConnectionsController {
     status: HttpStatus.CREATED,
     type: CreateUserConnectionResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+    HttpStatus.CONFLICT,
+    HttpStatus.BAD_REQUEST,
+  ])
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
@@ -74,6 +82,11 @@ export class UserConnectionsController {
     status: HttpStatus.OK,
     type: FindAllUserConnectionResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.BAD_REQUEST,
+  ])
   @UseGuards(JwtAuthGuard)
   @Get('/my-connections')
   async findMyConnections(
@@ -102,6 +115,12 @@ export class UserConnectionsController {
     status: HttpStatus.OK,
     type: FindOneUserConnectionResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+    HttpStatus.BAD_REQUEST,
+  ])
   @Get('/by-users')
   async findOneByUserIds(
     @Query() { fromUserId, toUserId }: ByUserIdsParamsDto,
@@ -117,6 +136,12 @@ export class UserConnectionsController {
     status: HttpStatus.OK,
     type: FindOneUserConnectionResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+    HttpStatus.BAD_REQUEST,
+  ])
   @Get(':id')
   async findOne(
     @Param() { id }: UserConnectionParamsDto,
@@ -136,6 +161,13 @@ export class UserConnectionsController {
     status: HttpStatus.CREATED,
     type: AddNewPlatformToUserConnectionResponseEntity,
   })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+    HttpStatus.CONFLICT,
+    HttpStatus.BAD_REQUEST,
+  ])
   @UseGuards(JwtAuthGuard)
   @Post(':id/platforms')
   async addNewPlatformToUserConnection(
@@ -159,6 +191,12 @@ export class UserConnectionsController {
     summary: 'Delete platform from connection',
   })
   @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+    HttpStatus.BAD_REQUEST,
+  ])
   @UseGuards(JwtAuthGuard)
   @Delete(':id/platforms/:platform_id')
   async removePlatformFromUserConnection(
@@ -178,6 +216,12 @@ export class UserConnectionsController {
     summary: 'Delete connection',
   })
   @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+    HttpStatus.BAD_REQUEST,
+  ])
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(

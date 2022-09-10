@@ -22,6 +22,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
+import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 
 import { UsersService } from './users.service';
 import {
@@ -49,6 +50,7 @@ export class UsersController {
 
   @ApiOperation({ description: 'Creates a new user.', summary: 'Create user' })
   @ApiResponse({ status: HttpStatus.CREATED, type: CreateUserResponseEntity })
+  @ApiResponseInvalid([HttpStatus.CONFLICT, HttpStatus.BAD_REQUEST])
   @Post()
   async create(
     @Body() createUserDto: CreateUserDto,
@@ -61,6 +63,7 @@ export class UsersController {
 
   @ApiOperation({ description: 'Lists all users.', summary: 'List users' })
   @ApiResponse({ status: HttpStatus.OK, type: FindAllUserResponseEntity })
+  @ApiResponseInvalid([HttpStatus.CONFLICT, HttpStatus.BAD_REQUEST])
   @Get()
   async findAll(
     @Query() queryParams: FindAllUsersQueryParamDto,
@@ -78,6 +81,7 @@ export class UsersController {
     summary: 'Retrieve myself',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindMeResponseEntity })
+  @ApiResponseInvalid([HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED])
   @UseGuards(JwtAuthGuard)
   @SkipThrottle()
   @Get('me')
@@ -96,6 +100,7 @@ export class UsersController {
     summary: 'Patch myself',
   })
   @ApiResponse({ status: HttpStatus.OK, type: UpdateUserResponseEntity })
+  @ApiResponseInvalid([HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED])
   @UseGuards(JwtAuthGuard)
   @Patch('me')
   async updateMe(
@@ -114,6 +119,7 @@ export class UsersController {
     summary: 'Delete myself',
   })
   @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponseInvalid([HttpStatus.UNAUTHORIZED])
   @UseGuards(JwtAuthGuard)
   @Delete('me')
   async removeMe(@Request() { user }: { user: JWTPayload }) {
@@ -125,6 +131,7 @@ export class UsersController {
     summary: 'Find user by id',
   })
   @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponseEntity })
+  @ApiResponseInvalid([HttpStatus.NOT_FOUND])
   @SkipThrottle()
   @Get(':id')
   async findOne(
@@ -142,6 +149,7 @@ export class UsersController {
     summary: 'Verify confirmation token',
   })
   @ApiResponse({ status: HttpStatus.CREATED, type: FindMeResponseEntity })
+  @ApiResponseInvalid([HttpStatus.BAD_REQUEST, HttpStatus.FORBIDDEN])
   @Post('verify-confirmation-token')
   async verifyConfirmationToken(
     @Query() { token }: TokenQueryParamDto,
@@ -158,6 +166,7 @@ export class UsersController {
     summary: 'Resend confirmation email',
   })
   @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponseInvalid([HttpStatus.BAD_REQUEST])
   @Post('resend-confirmation-token')
   async resendConfirmationToken(
     @Query() { email }: ResendConfirmationTokenDto,
@@ -170,6 +179,7 @@ export class UsersController {
     summary: 'Request password reset',
   })
   @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponseInvalid([HttpStatus.BAD_REQUEST])
   @Post('request-password-reset-token')
   async requestPasswordResetToken(@Query() { email }: PasswordResetRequestDto) {
     await this.usersService.requestPasswordReset(email);
@@ -180,6 +190,7 @@ export class UsersController {
     summary: 'Reset password',
   })
   @ApiResponse({ status: HttpStatus.CREATED, type: FindMeResponseEntity })
+  @ApiResponseInvalid([HttpStatus.BAD_REQUEST, HttpStatus.FORBIDDEN])
   @Post('password-reset')
   async passwordReset(
     @Query() { token }: TokenQueryParamDto,
