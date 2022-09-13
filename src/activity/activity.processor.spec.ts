@@ -56,15 +56,15 @@ describe(ActivityProcessor, () => {
       expect(response).toBeUndefined();
 
       expect(postAction).toHaveBeenCalledWith('ACTIVITY_WEBHOOK_URI', {
-        fromUser: {
+        from_user: {
           id: fromUser.id,
           username: fromUser.username,
-          userHandle: fromUser.userHandle,
+          user_handle: fromUser.userHandle,
         },
-        toUser: {
+        to_user: {
           id: toUser.id,
           username: toUser.username,
-          userHandle: toUser.userHandle,
+          user_handle: toUser.userHandle,
         },
         type: 'FOLLOW',
       });

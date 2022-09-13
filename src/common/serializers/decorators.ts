@@ -30,6 +30,7 @@ type ApiResponsePropertyArgs = {
   example?: SchemaObjectMetadata['example'];
   type?: SchemaObjectMetadata['type'];
   description?: SchemaObjectMetadata['description'];
+  enum?: SchemaObjectMetadata['enum'];
 };
 
 type InvalidTypes =

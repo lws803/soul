@@ -11,10 +11,12 @@ import * as Sentry from '@sentry/node';
 import { Repository, Not, IsNull } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
+import { classToPlain, plainToClass } from 'class-transformer';
 
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 
-import { ActivityJobPayload, FollowActivityWebhookPayload } from './types';
+import { ActivityJobPayload } from './types';
+import { FollowActivityResponseEntity } from './serializers/api-responses.entity';
 
 @Processor('activity_queue')
 export class ActivityProcessor {
@@ -62,22 +64,17 @@ export class ActivityProcessor {
       });
 
       for (const platformUser of platformUsers) {
+        const followActivityResponse = plainToClass(
+          FollowActivityResponseEntity,
+          { type: 'FOLLOW', fromUser, toUser },
+        );
+
         try {
-          await axios.post<void, void, FollowActivityWebhookPayload>(
+          await axios.post<void, void, any>(
             platformUser.platform.activityWebhookUri,
-            {
-              type: 'FOLLOW',
-              fromUser: {
-                id: fromUser.id,
-                userHandle: fromUser.userHandle,
-                username: fromUser.username,
-              },
-              toUser: {
-                id: toUser.id,
-                userHandle: toUser.userHandle,
-                username: toUser.username,
-              },
-            },
+            classToPlain(followActivityResponse, {
+              excludeExtraneousValues: true,
+            }),
           );
         } catch (error) {
           this.logger.error(error);

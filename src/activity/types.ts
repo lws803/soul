@@ -7,15 +7,3 @@ export type FollowActivityJobPayload = {
 };
 
 export type ActivityJobPayload = FollowActivityJobPayload;
-
-type SanitizedUser = {
-  userHandle: User['userHandle'];
-  username: User['username'];
-  id: User['id'];
-};
-
-export type FollowActivityWebhookPayload = {
-  type: 'FOLLOW';
-  fromUser: SanitizedUser;
-  toUser: SanitizedUser;
-};
