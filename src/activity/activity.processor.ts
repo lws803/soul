@@ -72,7 +72,9 @@ export class ActivityProcessor {
         try {
           await axios.post<void, void, any>(
             platformUser.platform.activityWebhookUri,
-            classToPlain(followActivityResponse),
+            classToPlain(followActivityResponse, {
+              excludeExtraneousValues: true,
+            }),
           );
         } catch (error) {
           this.logger.error(error);
