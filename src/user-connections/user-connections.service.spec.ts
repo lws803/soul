@@ -211,21 +211,10 @@ describe('ConnectionsService', () => {
 
     it('should throw error when trying to create a connection to self', async () => {
       const createUserConnectionDto = factories.createUserConnectionDto.build({
-        fromUserId: 1,
         toUserId: 1,
       });
       await expect(service.create(1, createUserConnectionDto)).rejects.toThrow(
         'You cannot create a connection to yourself. Please try again.',
-      );
-    });
-
-    it('should throw error when user is not authorized', async () => {
-      const createUserConnectionDto = factories.createUserConnectionDto.build({
-        fromUserId: 2,
-        toUserId: 3,
-      });
-      await expect(service.create(1, createUserConnectionDto)).rejects.toThrow(
-        'You have no permissions to update this connection.',
       );
     });
 

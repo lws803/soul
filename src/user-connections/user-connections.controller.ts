@@ -47,8 +47,8 @@ export class UserConnectionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Creates a new user connection.',
     summary: 'Create connection',
+    description: 'Creates a new user connection from currently logged in user.',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,

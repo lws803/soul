@@ -44,18 +44,11 @@ export class UserConnectionsService {
     currentUserId: number,
     createUserConnectionDto: CreateUserConnectionDto,
   ): Promise<CreateUserConnectionResponseEntity> {
-    if (
-      createUserConnectionDto.fromUserId === createUserConnectionDto.toUserId
-    ) {
+    if (currentUserId === createUserConnectionDto.toUserId) {
       throw new UserConnectionToSelfException();
     }
-    if (createUserConnectionDto.fromUserId !== currentUserId) {
-      throw new UserNotInvolvedInConnectionException();
-    }
 
-    const fromUser = await this.usersService.findOne(
-      createUserConnectionDto.fromUserId,
-    );
+    const fromUser = await this.usersService.findOne(currentUserId);
     const toUser = await this.usersService.findOne(
       createUserConnectionDto.toUserId,
     );
@@ -95,7 +88,7 @@ export class UserConnectionsService {
         exception.driverError.code === 'ER_DUP_ENTRY'
       ) {
         throw new DuplicateUserConnectionException(
-          createUserConnectionDto.fromUserId,
+          currentUserId,
           createUserConnectionDto.toUserId,
         );
         throw exception;

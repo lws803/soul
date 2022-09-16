@@ -56,14 +56,12 @@ export const postPlatformToUserConnectionDto = Factory.define<PostPlatformDto>(
 );
 
 type CreateUserConnectionRequest = {
-  from_user_id: number;
   to_user_id: number;
   platform_id?: number;
 };
 
 export const createUserConnectionRequest =
   Factory.define<CreateUserConnectionRequest>(() => ({
-    from_user_id: user.build().id,
     to_user_id: user.build({ id: 2 }).id,
   }));
 

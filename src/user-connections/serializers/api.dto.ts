@@ -14,11 +14,6 @@ export class PostPlatformDto {
 }
 
 export class CreateUserConnectionDto {
-  @ApiProperty({ name: 'from_user_id', example: 1234 })
-  @Expose({ name: 'from_user_id' })
-  @IsInt({ message: 'from_user_id must be an integer' })
-  fromUserId: number;
-
   @ApiProperty({ name: 'to_user_id', example: 12345 })
   @Expose({ name: 'to_user_id' })
   @IsInt({ message: 'to_user_id must be an integer' })
