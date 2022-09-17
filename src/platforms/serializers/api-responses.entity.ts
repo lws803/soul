@@ -49,7 +49,7 @@ export class FullPlatformResponseEntity extends CreatedAtUpdatedAtEntity {
     name: 'is_verified',
     example: true,
     description:
-      'Used to identify verified platforms, used only for official platforms',
+      'Used to identify verified platforms, usually only set for official platforms',
   })
   isVerified: boolean;
 
