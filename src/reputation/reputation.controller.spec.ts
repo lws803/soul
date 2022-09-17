@@ -17,7 +17,7 @@ describe('ReputationController', () => {
           provide: ReputationService,
           useValue: {
             findOneUserReputation: jest.fn().mockResolvedValue({
-              userId: user.id,
+              user,
               reputation: 2,
             }),
           },
@@ -33,7 +33,7 @@ describe('ReputationController', () => {
       expect(
         await controller.findOneUserReputation({ userId: user.id }),
       ).toEqual({
-        userId: user.id,
+        user,
         reputation: 2,
       });
     });
