@@ -6,6 +6,8 @@ import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
 import { UsersService } from 'src/users/users.service';
 
+import { ReputationResponseEntity } from './serializers/api-responses.entity';
+
 @Injectable()
 export class ReputationService {
   constructor(
@@ -18,7 +20,7 @@ export class ReputationService {
 
   async findOneUserReputation(
     userId: number,
-  ): Promise<{ reputation: number; userId: number }> {
+  ): Promise<ReputationResponseEntity> {
     const user = await this.usersService.findOne(userId);
 
     const bannedPlatformsCount = await this.platformUsersRepository
@@ -33,7 +35,7 @@ export class ReputationService {
     });
 
     return {
-      userId: user.id,
+      user,
       reputation: followerCount + -1 * bannedPlatformsCount,
     };
   }

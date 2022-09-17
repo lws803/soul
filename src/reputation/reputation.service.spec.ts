@@ -53,7 +53,7 @@ describe('ReputationService', () => {
 
       expect(await service.findOneUserReputation(oneUser.id)).toEqual({
         reputation: 9,
-        userId: oneUser.id,
+        user: oneUser,
       });
     });
   });
