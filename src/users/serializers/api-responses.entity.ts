@@ -43,7 +43,7 @@ class FullUserResponseEntity extends CreatedAtUpdatedAtEntity {
     description:
       'This field will be set to false if a user has not verified his/her account yet ' +
       'from the email that was sent out during account creation. However, in case it was ' +
-      'lost or expired, it is also possible to request for a verification email again ' +
+      'lost or expired, it is also possible to request for a new verification email ' +
       'here: https://login.soul-network.com/request-email-verification',
   })
   isActive: boolean;
