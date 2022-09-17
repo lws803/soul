@@ -52,7 +52,7 @@ export class PlatformLoginResponseEntity extends LoginResponseEntity {
     name: 'roles',
     example: [UserRole.Admin, UserRole.Member],
     description: 'User roles for a platform.',
-    enum: [UserRole.Admin, UserRole.Member, UserRole.Banned],
+    enum: Object.values(UserRole),
     type: [UserRole],
   })
   roles: UserRole[];
@@ -93,7 +93,7 @@ export class RefreshTokenWithPlatformResponseEntity extends RefreshTokenResponse
     name: 'roles',
     example: [UserRole.Admin, UserRole.Member],
     description: 'User roles for a platform.',
-    enum: [UserRole.Admin, UserRole.Member, UserRole.Banned],
+    enum: Object.values(UserRole),
     type: [UserRole],
   })
   roles: UserRole[];
