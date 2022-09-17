@@ -5,14 +5,13 @@ import { Expose } from 'class-transformer';
 
 function SwaggerApiResponseProperty({
   name,
-  example,
-  type,
+  ...args
 }: ApiResponsePropertyArgs) {
-  return applyDecorators(ApiProperty({ name, example, required: false, type }));
+  return applyDecorators(ApiProperty({ name, required: false, ...args }));
 }
 
-function ExposeApiResponseProperty(args?: { name?: string }) {
-  return applyDecorators(Expose({ toPlainOnly: true, name: args?.name }));
+function ExposeApiResponseProperty(name: string) {
+  return applyDecorators(Expose({ toPlainOnly: true, name }));
 }
 
 export function ApiResponseProperty({
@@ -21,17 +20,11 @@ export function ApiResponseProperty({
 }: ApiResponsePropertyArgs) {
   return applyDecorators(
     SwaggerApiResponseProperty({ name, ...args }),
-    ExposeApiResponseProperty({ name }),
+    ExposeApiResponseProperty(name),
   );
 }
 
-type ApiResponsePropertyArgs = {
-  name: SchemaObjectMetadata['name'];
-  example?: SchemaObjectMetadata['example'];
-  type?: SchemaObjectMetadata['type'];
-  description?: SchemaObjectMetadata['description'];
-  enum?: SchemaObjectMetadata['enum'];
-};
+type ApiResponsePropertyArgs = SchemaObjectMetadata;
 
 type InvalidTypes =
   | HttpStatus.CONFLICT
