@@ -5,6 +5,8 @@
 [![codecov](https://codecov.io/gh/soul-project/soul/branch/main/graph/badge.svg?token=GKWK7V5837)](https://codecov.io/gh/soul-project/soul)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+<a href="https://www.buymeacoffee.com/lws803" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
 ## What is Soul?
 
 Soul is an **authentication** and a **user relationships** service built into one. It is meant to abstract some of the most important parts
