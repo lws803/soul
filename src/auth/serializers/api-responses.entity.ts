@@ -5,15 +5,14 @@ export class LoginResponseEntity {
   @ApiResponseProperty({
     name: 'access_token',
     description:
-      'Token to be used for access to resources that requires authentication. ' +
+      'Token used for access to resources that requires authentication. ' +
       'Use this as a bearer token.',
   })
   accessToken: string;
 
   @ApiResponseProperty({
     name: 'refresh_token',
-    description:
-      'Token to be used for obtaining a new access token after expiry.',
+    description: 'Token used for obtaining a new access token after expiry.',
   })
   refreshToken: string;
 
@@ -62,15 +61,14 @@ export class RefreshTokenResponseEntity {
   @ApiResponseProperty({
     name: 'access_token',
     description:
-      'Token to be used for access to resources that requires authentication. ' +
+      'Token used for access to resources that requires authentication. ' +
       'Use this as a bearer token.',
   })
   accessToken: string;
 
   @ApiResponseProperty({
     name: 'refresh_token',
-    description:
-      'Token to be used for obtaining a new access token after expiry.',
+    description: 'Token used for obtaining a new access token after expiry.',
   })
   refreshToken: string;
 
