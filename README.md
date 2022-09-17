@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/soul-project/soul/branch/main/graph/badge.svg?token=GKWK7V5837)](https://codecov.io/gh/soul-project/soul)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<a href="https://www.buymeacoffee.com/lws803" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/lws803)
 
 ## What is Soul?
 
