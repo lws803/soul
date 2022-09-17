@@ -24,7 +24,10 @@ export function ApiResponseProperty({
   );
 }
 
-type ApiResponsePropertyArgs = SchemaObjectMetadata;
+type ApiResponsePropertyArgs = { name: string } & Omit<
+  SchemaObjectMetadata,
+  'name'
+>;
 
 type InvalidTypes =
   | HttpStatus.CONFLICT
