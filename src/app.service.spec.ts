@@ -27,25 +27,5 @@ describe(AppService, () => {
       const result = await service.healthcheck();
       expect(result).toStrictEqual({ status: 'OK' });
     });
-
-    it('returns unhealthy', async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          AppService,
-          {
-            provide: Connection,
-            useValue: {
-              isConnected: false,
-            },
-          },
-        ],
-      }).compile();
-
-      const service = module.get<AppService>(AppService);
-
-      await expect(service.healthcheck()).rejects.toThrow(
-        'Service is in an unhealthy state. Please contact the service owner.',
-      );
-    });
   });
 });
