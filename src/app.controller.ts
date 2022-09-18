@@ -9,6 +9,7 @@ import { LocalIpWhitelistInterceptor } from './common/interceptors/local-ip-whit
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  // TODO: Maybe re-expose this endpoint again
   @ApiExcludeEndpoint()
   @Get('healthcheck')
   async healthcheck(): Promise<{ status: 'OK' }> {
