@@ -42,7 +42,7 @@ describe('AuthController (e2e)', () => {
     platformCategoryRepository = connection.getRepository(PlatformCategory);
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -67,7 +67,7 @@ describe('AuthController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           platform,
           user: userAccount.user,
         }),
@@ -219,7 +219,7 @@ describe('AuthController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           platform,
           user: userAccount.user,
         }),

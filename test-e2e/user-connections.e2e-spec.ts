@@ -42,7 +42,7 @@ describe('UserConnectionsController (e2e)', () => {
     firstUserAccessToken = accessToken;
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -92,7 +92,7 @@ describe('UserConnectionsController (e2e)', () => {
       const platform = factories.platformEntity.build();
       await platformRepository.save(platform);
       await platformUserRepository.save(
-        factories.platformUser.build({ platform }),
+        factories.platformUserEntity.build({ platform }),
       );
 
       return request(app.getHttpServer())
@@ -415,7 +415,7 @@ describe('UserConnectionsController (e2e)', () => {
     it('adds a new platform to the existing connection', async () => {
       const platform = factories.platformEntity.build();
       await platformRepository.save(platform);
-      await platformUserRepository.save(factories.platformUser.build());
+      await platformUserRepository.save(factories.platformUserEntity.build());
 
       await request(app.getHttpServer())
         .post('/user-connections/1/platforms')
@@ -473,7 +473,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('deletes a platform from existing connection', async () => {
       await platformRepository.save(factories.platformEntity.build());
-      await platformUserRepository.save(factories.platformUser.build());
+      await platformUserRepository.save(factories.platformUserEntity.build());
 
       return request(app.getHttpServer())
         .delete('/user-connections/1/platforms/1')

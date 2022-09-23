@@ -45,7 +45,7 @@ describe('PlatformsController (e2e)', () => {
     secondUserAccount = secondUser;
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -315,19 +315,19 @@ describe('PlatformsController (e2e)', () => {
       await platformRepository.save([platformOne, platformTwo, platformThree]);
 
       await platformUserRepository.save([
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 1,
           user: userAccount.user,
           roles: [UserRole.Admin, UserRole.Member],
           platform: platformOne,
         }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 2,
           user: userAccount.user,
           roles: [UserRole.Member],
           platform: platformTwo,
         }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 3,
           user: secondUserAccount.user,
           roles: [UserRole.Member],
@@ -484,13 +484,13 @@ describe('PlatformsController (e2e)', () => {
       await platformRepository.save([platformOne, adminPlatform]);
 
       await platformUserRepository.save([
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 1,
           user: userAccount.user,
           roles: [UserRole.Admin, UserRole.Member],
           platform: platformOne,
         }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 2,
           user: userAccount.user,
           roles: [UserRole.Member],
@@ -553,7 +553,7 @@ describe('PlatformsController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           user: userAccount.user,
           platform,
         }),
@@ -625,7 +625,7 @@ describe('PlatformsController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           user: userAccount.user,
           platform,
         }),

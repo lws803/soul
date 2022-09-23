@@ -58,7 +58,7 @@ describe('PlatformsService - Users', () => {
         {
           provide: getRepositoryToken(PlatformCategory),
           useValue: {
-            findOne: jest
+            findOne: jestonePlatformCategoryEntity
               .fn()
               .mockResolvedValue(factories.onePlatformCategory.build()),
           },
@@ -68,13 +68,13 @@ describe('PlatformsService - Users', () => {
           useValue: {
             findOne: jest
               .fn()
-              .mockResolvedValue(factories.platformUser.build()),
+              .mockResolvedValue(factories.platformUserEntity.build()),
             findAndCount: jest.fn(),
-            save: jest
-              .fn()
-              .mockResolvedValue(
-                factories.platformUser.build({ roles: [UserRole.Member] }),
-              ),
+            save: jest.fn().mockResolvedValue(
+              factories.platformUserEntity.build({
+                roles: [UserRole.Member],
+              }),
+            ),
             update: jest.fn(),
             delete: jest.fn(),
             createQueryBuilder: jest
@@ -112,7 +112,7 @@ describe('PlatformsService - Users', () => {
 
   describe('findOnePlatformUser()', () => {
     it('should return one platform user successfully', async () => {
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
 
@@ -147,7 +147,7 @@ describe('PlatformsService - Users', () => {
 
   describe('setUserRole()', () => {
     it('should set platform user role successfully', async () => {
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
 
@@ -200,7 +200,7 @@ describe('PlatformsService - Users', () => {
     it('should delete user successfully', async () => {
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
       jest
         .spyOn(service, 'findOnePlatformUser')
         .mockResolvedValue(platformUser);
@@ -220,7 +220,7 @@ describe('PlatformsService - Users', () => {
   describe('findAllPlatformUsers()', () => {
     it('should return all platform users successfully', async () => {
       const platform = factories.platformEntity.build();
-      const platformUsers = factories.platformUser.buildList(2);
+      const platformUsers = factories.platformUserEntity.buildList(2);
       jest
         .spyOn(platformUserRepository, 'findAndCount')
         .mockResolvedValue([platformUsers, platformUsers.length]);
@@ -250,7 +250,9 @@ describe('PlatformsService - Users', () => {
 
     it('should return all platform users with pagination successfully', async () => {
       const platform = factories.platformEntity.build();
-      const platformUsers = factories.platformUser.buildList(2, { platform });
+      const platformUsers = factories.platformUserEntity.buildList(2, {
+        platform,
+      });
       jest
         .spyOn(platformUserRepository, 'findAndCount')
         .mockResolvedValue([[platformUsers[0]], platformUsers.length]);
@@ -286,13 +288,13 @@ describe('PlatformsService - Users', () => {
     it('should add user successfully', async () => {
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
       jest
         .spyOn(service, 'findOnePlatformUser')
         .mockResolvedValue(platformUser);
 
       expect(await service.addUser(platform.id, user.id)).toEqual(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           roles: [UserRole.Member],
         }),
       );

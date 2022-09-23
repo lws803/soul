@@ -13,7 +13,7 @@ describe('PlatformsController', () => {
 
   beforeEach(async () => {
     const platforms = factories.platformEntity.buildList(2);
-    const platformUsers = factories.platformUser.buildList(2);
+    const platformUsers = factories.platformUserEntity.buildList(2);
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PlatformsController],
@@ -38,7 +38,7 @@ describe('PlatformsController', () => {
             update: jest.fn().mockResolvedValue(
               factories.platformEntity.build({
                 ...factories.updatePlatformDto.build(),
-                category: factories.onePlatformCategory.build({
+                category: factories.platformCategoryEntity.build({
                   name: 'CATEGORY_UPDATE',
                 }),
               }),
@@ -46,18 +46,18 @@ describe('PlatformsController', () => {
             remove: jest.fn(),
             setUserRole: jest
               .fn()
-              .mockResolvedValue(factories.platformUser.build()),
+              .mockResolvedValue(factories.platformUserEntity.build()),
             removeUser: jest.fn(),
             addUser: jest
               .fn()
-              .mockResolvedValue(factories.platformUser.build()),
+              .mockResolvedValue(factories.platformUserEntity.build()),
             findAllPlatformUsers: jest.fn().mockResolvedValue({
               platformUsers,
               totalCount: platformUsers.length,
             }),
             findOnePlatformUser: jest
               .fn()
-              .mockResolvedValue(factories.platformUser.build()),
+              .mockResolvedValue(factories.platformUserEntity.build()),
           },
         },
         {
@@ -138,7 +138,7 @@ describe('PlatformsController', () => {
     const platform = factories.platformEntity.build();
     const updatedPlatform = factories.platformEntity.build({
       ...updatePlatformDto,
-      category: factories.onePlatformCategory.build({
+      category: factories.platformCategoryEntity.build({
         name: 'CATEGORY_UPDATE',
       }),
     });
@@ -174,7 +174,7 @@ describe('PlatformsController', () => {
           roles: [UserRole.Member],
         },
       ),
-    ).toEqual(factories.platformUser.build());
+    ).toEqual(factories.platformUserEntity.build());
 
     expect(platformsService.setUserRole).toHaveBeenCalledWith(
       platform.id,
@@ -224,7 +224,7 @@ describe('PlatformsController', () => {
           platformId: platform.id,
         },
       ),
-    ).toEqual(factories.platformUser.build());
+    ).toEqual(factories.platformUserEntity.build());
 
     expect(platformsService.addUser).toHaveBeenCalledWith(
       platform.id,
@@ -234,7 +234,7 @@ describe('PlatformsController', () => {
 
   it('findAllPlatformUsers()', async () => {
     const platform = factories.platformEntity.build();
-    const platformUsers = factories.platformUser.buildList(2);
+    const platformUsers = factories.platformUserEntity.buildList(2);
 
     expect(
       await controller.findAllPlatformUsers(

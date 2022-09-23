@@ -101,7 +101,7 @@ describe(PlatformRolesGuard, () => {
 
       jest
         .spyOn(mockPlatformUserService, 'findOnePlatformUser')
-        .mockResolvedValue(factories.platformUser.build());
+        .mockResolvedValue(factories.platformUserEntity.build());
 
       const guard = new PlatformRolesGuard(
         mockReflector,
@@ -128,7 +128,7 @@ describe(PlatformRolesGuard, () => {
       jest
         .spyOn(mockPlatformUserService, 'findOnePlatformUser')
         .mockResolvedValue(
-          factories.platformUser.build({ roles: [UserRole.Member] }),
+          factories.platformUserEntity.build({ roles: [UserRole.Member] }),
         );
 
       const guard = new PlatformRolesGuard(

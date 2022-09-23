@@ -60,7 +60,7 @@ describe('PlatformsService', () => {
           useValue: {
             findOne: jest
               .fn()
-              .mockResolvedValue(factories.onePlatformCategory.build()),
+              .mockResolvedValue(factories.platformCategoryEntity.build()),
           },
         },
         {
@@ -68,13 +68,13 @@ describe('PlatformsService', () => {
           useValue: {
             findOne: jest
               .fn()
-              .mockResolvedValue(factories.platformUser.build()),
+              .mockResolvedValue(factories.platformUserEntity.build()),
             findAndCount: jest.fn(),
-            save: jest
-              .fn()
-              .mockResolvedValue(
-                factories.platformUser.build({ roles: [UserRole.Member] }),
-              ),
+            save: jest.fn().mockResolvedValue(
+              factories.platformUserEntity.build({
+                roles: [UserRole.Member],
+              }),
+            ),
             update: jest.fn(),
             delete: jest.fn(),
             createQueryBuilder: jest
@@ -128,7 +128,7 @@ describe('PlatformsService', () => {
       expect(platformRepository.save).toHaveBeenCalledWith({
         name: 'TEST_PLATFORM',
         redirectUris: ['TEST_REDIRECT_URI'],
-        category: factories.onePlatformCategory.build(),
+        category: factories.platformCategoryEntity.build(),
       });
       expect(platformRepository.update).toHaveBeenCalledWith(
         { id: platform.id },
@@ -253,7 +253,7 @@ describe('PlatformsService', () => {
       });
       expect(platformCreateQueryBuilder.andWhere).toHaveBeenCalledWith(
         'platform.category = :categoryId',
-        { categoryId: factories.onePlatformCategory.build().id },
+        { categoryId: factories.platformCategoryEntity.build().id },
       );
     });
 
@@ -361,7 +361,7 @@ describe('PlatformsService', () => {
 
   describe('update()', () => {
     it('should update platform successfully', async () => {
-      const updatedCategory = factories.onePlatformCategory.build({
+      const updatedCategory = factories.platformCategoryEntity.build({
         name: 'CATEGORY_UPDATE',
       });
       const platform = factories.platformEntity.build();

@@ -47,7 +47,7 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.platformEntity.build()),
             findOnePlatformUser: jest
               .fn()
-              .mockResolvedValue(factories.platformUser.build()),
+              .mockResolvedValue(factories.platformUserEntity.build()),
           },
         },
         {
@@ -170,7 +170,7 @@ describe('AuthService', () => {
   describe('getCodeForPlatformAndCallback()', () => {
     it('should generate access and refresh token on successful login', async () => {
       const user = factories.userEntity.build();
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
       const codeChallenge = 'CODE_CHALLENGE';
 
       const response = await service.findCodeForPlatformAndCallback({
@@ -192,7 +192,7 @@ describe('AuthService', () => {
 
     it('denies access when callback uri is not registered', async () => {
       const user = factories.userEntity.build();
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
 
       await expect(
         service.findCodeForPlatformAndCallback({
@@ -207,7 +207,7 @@ describe('AuthService', () => {
 
     it('denies access to inactive users', async () => {
       const user = factories.userEntity.build({ isActive: false });
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
 
       await expect(
         service.findCodeForPlatformAndCallback({
@@ -232,7 +232,7 @@ describe('AuthService', () => {
         codeVerifier: 'CODE_VERIFIER',
       });
       const user = factories.userEntity.build();
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
 
       expect(jwtService.verify).toHaveBeenCalledWith(code);
 
@@ -418,7 +418,7 @@ describe('AuthService', () => {
 
   describe('refreshWithPlatform()', () => {
     it('should refresh successfully with valid refresh token', async () => {
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
       jest
         .spyOn(jwtService, 'verifyAsync')
         .mockImplementation(() =>
@@ -464,7 +464,7 @@ describe('AuthService', () => {
           Promise.resolve(factories.jwtRefreshPayloadWithPlatform.build()),
         );
 
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
 
       await service.refreshWithPlatform(
         'REFRESH_TOKEN',
@@ -480,7 +480,7 @@ describe('AuthService', () => {
       jest
         .spyOn(refreshTokenRepository, 'findOne')
         .mockImplementation(() => Promise.resolve(null));
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
 
       await expect(
         service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
@@ -493,7 +493,7 @@ describe('AuthService', () => {
         .mockImplementation(() =>
           Promise.reject(new TokenExpiredError('expired token', new Date())),
         );
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
 
       await expect(
         service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
@@ -533,7 +533,7 @@ describe('AuthService', () => {
           Promise.resolve(factories.jwtRefreshPayloadWithPlatform.build()),
         );
 
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
 
       await service.refreshWithPlatform(
         'REFRESH_TOKEN',
@@ -561,7 +561,7 @@ describe('AuthService', () => {
           Promise.resolve(factories.jwtRefreshPayloadWithPlatform.build()),
         );
 
-      const platformUser = factories.platformUser.build();
+      const platformUser = factories.platformUserEntity.build();
 
       await service.refreshWithPlatform(
         'REFRESH_TOKEN',

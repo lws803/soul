@@ -48,7 +48,7 @@ describe('ReputationController (e2e)', () => {
     thirdUserAccount = thirdUser;
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -64,7 +64,7 @@ describe('ReputationController (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           user: userAccount.user,
           platform,
           roles: [UserRole.Banned],

@@ -14,7 +14,7 @@ export const refreshToken = Factory.define<RefreshToken>(() => ({
   createdAt: new Date('1995-12-17T03:24:00'),
   updatedAt: new Date('1995-12-18T03:24:00'),
   expires: new Date('1995-12-19T03:24:00'),
-  platformUser: factories.platformUser.build(),
+  platformUser: factories.platformUserEntity.build(),
 }));
 
 export const jwtRefreshPayload = Factory.define<JWTRefreshPayload>(() => ({
@@ -34,7 +34,7 @@ export const jwtPayload = Factory.define<JWTPayload>(() => {
 
 export const jwtPayloadWithPlatform = Factory.define<JWTPayload>(() => {
   const oneUser = factories.userEntity.build();
-  const onePlatformUser = factories.platformUser.build({ user: oneUser });
+  const onePlatformUser = factories.platformUserEntity.build({ user: oneUser });
   return {
     userId: oneUser.id,
     username: oneUser.username,
@@ -47,7 +47,7 @@ export const jwtPayloadWithPlatform = Factory.define<JWTPayload>(() => {
 export const jwtRefreshPayloadWithPlatform = Factory.define<JWTRefreshPayload>(
   () => {
     const oneUser = factories.userEntity.build();
-    const onePlatformUser = factories.platformUser.build({ user: oneUser });
+    const onePlatformUser = factories.platformUserEntity.build({ user: oneUser });
     return {
       tokenId: refreshToken.build().id,
       userId: oneUser.id,

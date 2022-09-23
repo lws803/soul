@@ -49,7 +49,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     thirdUserAccount = thirdUser;
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -65,7 +65,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({ user: userAccount.user, platform }),
+        factories.platformUserEntity.build({ user: userAccount.user, platform }),
       );
     });
 
@@ -133,8 +133,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
       await platformUserRepository.save([
-        factories.platformUser.build({ user: userAccount.user, platform }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({ user: userAccount.user, platform }),
+        factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
@@ -318,8 +318,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
       await platformUserRepository.save([
-        factories.platformUser.build({ user: userAccount.user, platform }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({ user: userAccount.user, platform }),
+        factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
@@ -388,14 +388,14 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       );
 
       await platformUserRepository.save([
-        factories.platformUser.build({ user: userAccount.user, platform }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({ user: userAccount.user, platform }),
+        factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
           roles: [UserRole.Member],
         }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 3,
           user: thirdUserAccount.user,
           platform,
@@ -411,7 +411,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     it('quits existing platform (ADMIN)', async () => {
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
