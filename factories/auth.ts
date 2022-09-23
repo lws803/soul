@@ -47,7 +47,9 @@ export const jwtPayloadWithPlatform = Factory.define<JWTPayload>(() => {
 export const jwtRefreshPayloadWithPlatform = Factory.define<JWTRefreshPayload>(
   () => {
     const oneUser = factories.userEntity.build();
-    const onePlatformUser = factories.platformUserEntity.build({ user: oneUser });
+    const onePlatformUser = factories.platformUserEntity.build({
+      user: oneUser,
+    });
     return {
       tokenId: refreshToken.build().id,
       userId: oneUser.id,
