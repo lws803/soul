@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
@@ -11,8 +11,9 @@ import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
-import { DuplicateUserExistException } from './exceptions/duplicate-user-exists.exception';
+import { DuplicateUserEmailException } from './exceptions/duplicate-user-email.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
+import { DuplicateUsernameException } from './exceptions';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -113,16 +114,26 @@ describe('UsersService', () => {
       );
     });
 
-    it('should throw duplicate user error', async () => {
-      const createUserDto = factories.createUserDto.build();
+    it('should throw duplicate user email error', async () => {
       jest
-        .spyOn(repository, 'save')
-        .mockRejectedValue(
-          new QueryFailedError('', [], { code: 'ER_DUP_ENTRY' }),
-        );
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(factories.user.build());
+      const createUserDto = factories.createUserDto.build();
 
       await expect(service.create(createUserDto)).rejects.toThrow(
-        new DuplicateUserExistException({ email: createUserDto.email }),
+        new DuplicateUserEmailException(createUserDto.email),
+      );
+    });
+
+    it('should throw duplicate username error', async () => {
+      jest
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(factories.user.build());
+      const createUserDto = factories.createUserDto.build();
+
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        new DuplicateUsernameException(createUserDto.username),
       );
     });
   });

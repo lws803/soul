@@ -20,9 +20,10 @@ import {
 } from './serializers/api.dto';
 import { User } from './entities/user.entity';
 import {
-  DuplicateUserExistException,
   UserNotFoundException,
   InvalidTokenException,
+  DuplicateUsernameException,
+  DuplicateUserEmailException,
 } from './exceptions';
 
 @Injectable()
@@ -49,12 +50,7 @@ export class UsersService {
     user.username = createUserDto.username;
     user.isActive = false;
 
-    if (await this.usersRepository.findOne({ email: user.email })) {
-      throw new DuplicateUserExistException({ email: user.email });
-    }
-    if (await this.usersRepository.findOne({ username: user.username })) {
-      throw new DuplicateUserExistException({ username: user.username });
-    }
+    await this.throwOnDuplicate({ email: user.email, username: user.username });
 
     const savedUser = await this.usersRepository.save(user);
     await this.usersRepository.update(
@@ -107,20 +103,11 @@ export class UsersService {
     updatedUser.username = updateUserDto.username ?? user.username;
     updatedUser.email = updateUserDto.email ?? user.email;
 
-    if (
-      await this.usersRepository.findOne({
-        where: { email: updatedUser.email, id: Not(user.id) },
-      })
-    ) {
-      throw new DuplicateUserExistException({ email: updatedUser.email });
-    }
-    if (
-      await this.usersRepository.findOne({
-        where: { username: updatedUser.username, id: Not(user.id) },
-      })
-    ) {
-      throw new DuplicateUserExistException({ username: updatedUser.username });
-    }
+    await this.throwOnDuplicate({
+      email: updatedUser.email,
+      username: updatedUser.username,
+      id,
+    });
 
     await this.usersRepository.update({ id: user.id }, updatedUser);
 
@@ -246,6 +233,36 @@ export class UsersService {
 
   private getUserHandle(username: string, userId: number) {
     return `${username}#${userId}`;
+  }
+
+  /**
+   * Throws if a user's constrained resource already exists
+   */
+  private async throwOnDuplicate({
+    email,
+    username,
+    id,
+  }: {
+    email: string;
+    username: string;
+    id?: number;
+  }) {
+    if (
+      email &&
+      (await this.usersRepository.findOne({
+        where: { email, ...(id && { id: Not(id) }) },
+      }))
+    ) {
+      throw new DuplicateUserEmailException(email);
+    }
+    if (
+      username &&
+      (await this.usersRepository.findOne({
+        where: { username, ...(id && { id: Not(id) }) },
+      }))
+    ) {
+      throw new DuplicateUsernameException(username);
+    }
   }
 }
 

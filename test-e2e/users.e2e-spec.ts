@@ -58,7 +58,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('throws user duplicate error', async () => {
+    it('throws user duplicate error due to duplicate email address', async () => {
       const existingUser = factories.user.build();
       await userRepository.save(existingUser);
       return request(app.getHttpServer())
@@ -73,10 +73,32 @@ describe('UsersController (e2e)', () => {
         .expect(HttpStatus.CONFLICT)
         .expect((res) => {
           expect(res.body).toStrictEqual({
-            error: 'DUPLICATE_USER_EXISTS',
+            error: 'DUPLICATE_USER_EMAIL_EXISTS',
             message:
               'A user with the email address: TEST_USER_1@EMAIL.COM already exists. ' +
               'Please login or use a different email address.',
+          });
+        });
+    });
+
+    it('throws user duplicate error due to duplicate username', async () => {
+      const existingUser = factories.user.build();
+      await userRepository.save(existingUser);
+      return request(app.getHttpServer())
+        .post('/users')
+        .send(
+          factories.createUserDto.build({
+            email: 'NEW_EMAIL@MAIL.COM',
+            username: existingUser.username,
+            password: '3Yarw#Nm%cpY9QV&',
+          }),
+        )
+        .expect(HttpStatus.CONFLICT)
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            error: 'DUPLICATE_USERNAME_EXISTS',
+            message:
+              'A user with the username: test-user1 already exists. Please login or user a different username.',
           });
         });
     });
@@ -243,7 +265,7 @@ describe('UsersController (e2e)', () => {
         });
     });
 
-    it('should fail due to duplicates', async () => {
+    it('should fail due to duplicate username', async () => {
       return request(app.getHttpServer())
         .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
@@ -253,7 +275,23 @@ describe('UsersController (e2e)', () => {
           expect(res.body).toStrictEqual({
             message:
               'A user with the username: test-user-2 already exists. Please login or user a different username.',
-            error: 'DUPLICATE_USER_EXISTS',
+            error: 'DUPLICATE_USERNAME_EXISTS',
+          });
+        });
+    });
+
+    it('should fail due to duplicate email', async () => {
+      return request(app.getHttpServer())
+        .patch('/users/me')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .send(factories.updateUserDto.build({ email: 'TEST_USER_2@EMAIL.COM' }))
+        .expect(HttpStatus.CONFLICT)
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            message:
+              'A user with the email address: TEST_USER_2@EMAIL.COM already exists. ' +
+              'Please login or use a different email address.',
+            error: 'DUPLICATE_USER_EMAIL_EXISTS',
           });
         });
     });
