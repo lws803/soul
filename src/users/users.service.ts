@@ -109,10 +109,10 @@ export class UsersService {
 
     if (
       await this.usersRepository.findOne({
-        where: { email: user.email, id: Not(user.id) },
+        where: { email: updatedUser.email, id: Not(user.id) },
       })
     ) {
-      throw new DuplicateUserExistException({ email: user.email });
+      throw new DuplicateUserExistException({ email: updatedUser.email });
     }
     if (
       await this.usersRepository.findOne({
