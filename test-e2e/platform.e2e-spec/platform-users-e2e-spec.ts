@@ -65,7 +65,10 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
       await platformUserRepository.save(
-        factories.platformUserEntity.build({ user: userAccount.user, platform }),
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
       );
     });
 
@@ -133,7 +136,10 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
       await platformUserRepository.save([
-        factories.platformUserEntity.build({ user: userAccount.user, platform }),
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
         factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
@@ -318,7 +324,10 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
       await platformUserRepository.save([
-        factories.platformUserEntity.build({ user: userAccount.user, platform }),
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
         factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
@@ -388,7 +397,10 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       );
 
       await platformUserRepository.save([
-        factories.platformUserEntity.build({ user: userAccount.user, platform }),
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
         factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,

@@ -1,7 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
+import {
+  CreatePlatformDto,
+  UpdatePlatformDto,
+} from 'src/platforms/serializers/api.dto';
 import { UserRole } from 'src/roles/role.enum';
 
 import { PlatformsController } from './platforms.controller';
@@ -37,7 +42,10 @@ describe('PlatformsController', () => {
               .mockResolvedValue(factories.platformEntity.build()),
             update: jest.fn().mockResolvedValue(
               factories.platformEntity.build({
-                ...factories.updatePlatformDto.build(),
+                ...plainToClass(
+                  UpdatePlatformDto,
+                  factories.updatePlatformRequest.build(),
+                ),
                 category: factories.platformCategoryEntity.build({
                   name: 'CATEGORY_UPDATE',
                 }),
@@ -74,7 +82,10 @@ describe('PlatformsController', () => {
   });
 
   it('create()', async () => {
-    const createPlatformDto = factories.createPlatformDto.build();
+    const createPlatformDto = plainToClass(
+      CreatePlatformDto,
+      factories.createPlatformRequest.build(),
+    );
     const jwtPayload = factories.jwtPayload.build();
 
     expect(
@@ -134,7 +145,10 @@ describe('PlatformsController', () => {
   });
 
   it('update()', async () => {
-    const updatePlatformDto = factories.updatePlatformDto.build();
+    const updatePlatformDto = plainToClass(
+      UpdatePlatformDto,
+      factories.updatePlatformRequest.build(),
+    );
     const platform = factories.platformEntity.build();
     const updatedPlatform = factories.platformEntity.build({
       ...updatePlatformDto,

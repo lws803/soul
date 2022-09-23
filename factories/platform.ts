@@ -3,10 +3,6 @@ import { Factory } from 'fishery';
 import * as factories from 'factories';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
-import {
-  UpdatePlatformDto,
-  CreatePlatformDto,
-} from 'src/platforms/serializers/api.dto';
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
@@ -46,17 +42,6 @@ export const platformUserEntity = Factory.define<PlatformUser>(
   },
 );
 
-export const updatePlatformDto = Factory.define<UpdatePlatformDto>(() => ({
-  name: 'TEST_PLATFORM_UPDATE',
-  category: 'CATEGORY_UPDATE',
-}));
-
-export const createPlatformDto = Factory.define<CreatePlatformDto>(() => ({
-  name: 'TEST_PLATFORM',
-  redirectUris: ['TEST_REDIRECT_URI'],
-  category: platformCategoryEntity.build().name,
-}));
-
 type CreatePlatformRequest = {
   name: string;
   redirect_uris: string[];
@@ -70,5 +55,18 @@ export const createPlatformRequest = Factory.define<CreatePlatformRequest>(
     redirect_uris: ['TEST_REDIRECT_URI'],
     category: platformCategoryEntity.build().name,
     activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
+  }),
+);
+
+type UpdatePlatformRequest = {
+  name: string;
+  category: string;
+  activity_webhook_uri?: string;
+};
+
+export const updatePlatformRequest = Factory.define<UpdatePlatformRequest>(
+  () => ({
+    name: 'TEST_PLATFORM_UPDATE',
+    category: 'CATEGORY_UPDATE',
   }),
 );

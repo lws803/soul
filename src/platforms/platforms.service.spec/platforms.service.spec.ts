@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
@@ -15,6 +16,7 @@ import {
   MaxAdminRolesPerUserException,
   PlatformCategoryNotFoundException,
 } from '../exceptions';
+import { CreatePlatformDto, UpdatePlatformDto } from '../serializers/api.dto';
 
 import {
   platformCreateQueryBuilderObject,
@@ -119,7 +121,10 @@ describe('PlatformsService', () => {
       const user = factories.userEntity.build();
 
       const newPlatform = await service.create(
-        factories.createPlatformDto.build(),
+        plainToClass(
+          CreatePlatformDto,
+          factories.createPlatformRequest.build(),
+        ),
         user.id,
       );
 
@@ -129,6 +134,7 @@ describe('PlatformsService', () => {
         name: 'TEST_PLATFORM',
         redirectUris: ['TEST_REDIRECT_URI'],
         category: factories.platformCategoryEntity.build(),
+        activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
       });
       expect(platformRepository.update).toHaveBeenCalledWith(
         { id: platform.id },
@@ -146,7 +152,12 @@ describe('PlatformsService', () => {
       const user = factories.userEntity.build();
       await expect(
         service.create(
-          factories.createPlatformDto.build({ category: 'UNKNOWN_CATEGORY' }),
+          plainToClass(
+            CreatePlatformDto,
+            factories.createPlatformRequest.build({
+              category: 'UNKNOWN_CATEGORY',
+            }),
+          ),
           user.id,
         ),
       ).rejects.toThrow(
@@ -162,7 +173,13 @@ describe('PlatformsService', () => {
         .mockResolvedValue(6);
       const user = factories.userEntity.build();
       await expect(
-        service.create(factories.createPlatformDto.build(), user.id),
+        service.create(
+          plainToClass(
+            CreatePlatformDto,
+            factories.createPlatformRequest.build(),
+          ),
+          user.id,
+        ),
       ).rejects.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
       expect(platformRepository.save).not.toHaveBeenCalled();
       expect(platformRepository.update).not.toHaveBeenCalled();
@@ -382,7 +399,13 @@ describe('PlatformsService', () => {
         .mockResolvedValue(updatedCategory);
 
       expect(
-        await service.update(platform.id, factories.updatePlatformDto.build()),
+        await service.update(
+          platform.id,
+          plainToClass(
+            UpdatePlatformDto,
+            factories.updatePlatformRequest.build(),
+          ),
+        ),
       ).toEqual(updatedPlatform);
 
       expect(platformCategoryRepository.findOne).toHaveBeenCalledWith({
@@ -399,7 +422,13 @@ describe('PlatformsService', () => {
       jest.spyOn(platformCategoryRepository, 'findOne').mockResolvedValue(null);
       const platform = factories.platformEntity.build();
       await expect(
-        service.update(platform.id, factories.updatePlatformDto.build()),
+        service.update(
+          platform.id,
+          plainToClass(
+            UpdatePlatformDto,
+            factories.updatePlatformRequest.build(),
+          ),
+        ),
       ).rejects.toThrow(
         'The category with name: CATEGORY_UPDATE was not found, please try again.',
       );
