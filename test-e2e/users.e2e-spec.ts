@@ -110,8 +110,8 @@ describe('UsersController (e2e)', () => {
         factories.user.build({ id: undefined }),
         factories.user.build({
           id: undefined,
-          username: 'test-user2',
-          userHandle: 'test-user2#2',
+          username: 'test-user-2',
+          userHandle: 'test-user-2#2',
           email: 'TEST_USER_2@EMAIL.COM',
         }),
       ]);
