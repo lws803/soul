@@ -164,7 +164,7 @@ describe('UsersController (e2e)', () => {
 
     it('should return partial list of users with full text search', async () => {
       return request(app.getHttpServer())
-        .get('/users?q=test-user2')
+        .get('/users?q=test-user-2')
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
