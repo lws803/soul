@@ -79,12 +79,14 @@ describe('UsersController', () => {
       jest
         .spyOn(usersService, 'create')
         .mockRejectedValue(
-          new DuplicateUserExistException(createUserDto.email),
+          new DuplicateUserExistException({ email: createUserDto.email }),
         );
 
       await expect(
         async () => await controller.create(createUserDto),
-      ).rejects.toThrow(new DuplicateUserExistException(createUserDto.email));
+      ).rejects.toThrow(
+        new DuplicateUserExistException({ email: createUserDto.email }),
+      );
     });
   });
 

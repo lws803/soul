@@ -25,10 +25,10 @@ export default {
   synchronize: true,
   migrationsRun: true,
   dropSchema: false,
-  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
   migrations: ['migration/*.ts'],
   cli: {
-    entitiesDir: __dirname + '/**/*.entity{.ts,.js}',
+    entitiesDir: __dirname + '/**/entities/*.entity{.ts,.js}',
     migrationsDir: 'migration',
   },
 } as ConnectionOptions;

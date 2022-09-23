@@ -89,12 +89,18 @@ describe('UsersService', () => {
   describe('create()', () => {
     it('should successfully insert a user', async () => {
       const oneUser = factories.user.build();
+      jest
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValue(oneUser);
+
       const createUserDto = factories.createUserDto.build();
       expect(await service.create(createUserDto)).toStrictEqual(oneUser);
 
       expect(repository.save).toHaveBeenCalledWith({
         email: 'TEST_USER@EMAIL.COM',
-        username: 'TEST_USER',
+        username: 'test-user',
         hashedPassword: expect.any(String),
         isActive: false,
       });
@@ -102,7 +108,7 @@ describe('UsersService', () => {
       expect(repository.update).toHaveBeenCalledWith(
         { id: oneUser.id },
         {
-          userHandle: 'test_user#1',
+          userHandle: 'test-user#1',
         },
       );
     });
@@ -116,7 +122,7 @@ describe('UsersService', () => {
         );
 
       await expect(service.create(createUserDto)).rejects.toThrow(
-        new DuplicateUserExistException(createUserDto.email),
+        new DuplicateUserExistException({ email: createUserDto.email }),
       );
     });
   });
@@ -182,21 +188,26 @@ describe('UsersService', () => {
 
   describe('update()', () => {
     it('updates a user successfully', async () => {
-      const updatedUserDto = factories.updateUserDto.build();
       const user = factories.user.build();
-      jest.spyOn(repository, 'findOne').mockResolvedValue(
-        factories.user.build({
+      jest
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(user)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({
+          ...user,
           email: 'UPDATED_EMAIL@EMAIL.COM',
-          username: 'UPDATED_USER',
-          userHandle: 'updated_user#1',
-        }),
-      );
+          username: 'updated-user',
+          userHandle: 'updated-user#1',
+        });
+
+      const updatedUserDto = factories.updateUserDto.build();
 
       expect(await service.update(user.id, updatedUserDto)).toStrictEqual(
         factories.user.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
-          username: 'UPDATED_USER',
-          userHandle: 'updated_user#1',
+          username: 'updated-user',
+          userHandle: 'updated-user#1',
         }),
       );
 
@@ -204,7 +215,7 @@ describe('UsersService', () => {
         { id: user.id },
         {
           ...updatedUserDto,
-          userHandle: 'updated_user#1',
+          userHandle: 'updated-user#1',
         },
       );
     });

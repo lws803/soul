@@ -14,7 +14,8 @@ class FullUserResponseEntity extends CreatedAtUpdatedAtEntity {
   @ApiResponseProperty({
     name: 'username',
     example: 'johndoe',
-    description: 'Username for the user. This is commonly used for displaying.',
+    description:
+      'Username for the user. This is commonly used for identifying a specific user.',
   })
   username: string;
 
@@ -66,7 +67,8 @@ export class FindOneUserResponseEntity {
   @ApiResponseProperty({
     name: 'username',
     example: 'johndoe',
-    description: 'Username for the user. This is commonly used for displaying.',
+    description:
+      'Username for the user. This is commonly used for identifying a specific user.',
   })
   username: string;
 
