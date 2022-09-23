@@ -88,15 +88,6 @@ export class PasswordResetRequestDto {
   @IsString()
   @IsEmail()
   email?: string;
-
-  @ApiProperty({ name: 'username', example: 'johndoe', required: false })
-  @Matches(/[a-z0-9-]/, {
-    message:
-      'Username can only contain lowercase alphanumeric characters with the exception of hyphens.',
-  })
-  @IsOptional()
-  @IsString()
-  username?: string;
 }
 
 export class PasswordResetDto {

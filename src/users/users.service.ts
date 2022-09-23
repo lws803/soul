@@ -116,10 +116,10 @@ export class UsersService {
     }
     if (
       await this.usersRepository.findOne({
-        where: { username: user.username, id: Not(user.id) },
+        where: { username: updatedUser.username, id: Not(user.id) },
       })
     ) {
-      throw new DuplicateUserExistException({ username: user.username });
+      throw new DuplicateUserExistException({ username: updatedUser.username });
     }
 
     await this.usersRepository.update({ id: user.id }, updatedUser);

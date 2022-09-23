@@ -49,8 +49,8 @@ describe('UsersController (e2e)', () => {
           expect(res.body).toStrictEqual({
             id: 1,
             email: 'TEST_USER@EMAIL.COM',
-            username: 'TEST_USER',
-            user_handle: 'test_user#1',
+            username: 'test-user',
+            user_handle: 'test-user#1',
             is_active: false,
             created_at: expect.any(String),
             updated_at: expect.any(String),
@@ -88,8 +88,8 @@ describe('UsersController (e2e)', () => {
         factories.user.build({ id: undefined }),
         factories.user.build({
           id: undefined,
-          username: 'TEST_USER_2',
-          userHandle: 'test_user_2#2',
+          username: 'test-user2',
+          userHandle: 'test-user2#2',
           email: 'TEST_USER_2@EMAIL.COM',
         }),
       ]);
@@ -109,13 +109,13 @@ describe('UsersController (e2e)', () => {
             users: [
               {
                 id: expect.any(Number),
-                user_handle: 'test_user_2#2',
-                username: 'TEST_USER_2',
+                user_handle: 'test-user2#2',
+                username: 'test-user2',
               },
               {
                 id: expect.any(Number),
-                user_handle: 'test_user_1#1',
-                username: 'TEST_USER_1',
+                user_handle: 'test-user1#1',
+                username: 'test-user1',
               },
             ],
           });
@@ -132,8 +132,8 @@ describe('UsersController (e2e)', () => {
             users: [
               {
                 id: expect.any(Number),
-                user_handle: 'test_user_2#2',
-                username: 'TEST_USER_2',
+                user_handle: 'test-user2#2',
+                username: 'test-user2',
               },
             ],
           });
@@ -142,7 +142,7 @@ describe('UsersController (e2e)', () => {
 
     it('should return partial list of users with full text search', async () => {
       return request(app.getHttpServer())
-        .get('/users?q=TEST_USER_2')
+        .get('/users?q=test-user2')
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
@@ -150,8 +150,8 @@ describe('UsersController (e2e)', () => {
             users: [
               {
                 id: expect.any(Number),
-                user_handle: 'test_user_2#2',
-                username: 'TEST_USER_2',
+                user_handle: 'test-user2#2',
+                username: 'test-user2',
               },
             ],
           });
@@ -175,8 +175,8 @@ describe('UsersController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: expect.any(Number),
-            user_handle: 'test_user_1#1',
-            username: 'TEST_USER_1',
+            user_handle: 'test-user1#1',
+            username: 'test-user1',
           });
         });
     });
@@ -216,12 +216,44 @@ describe('UsersController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: userAccount.user.id,
-            user_handle: `updated_user#${userAccount.user.id}`,
-            username: 'UPDATED_USER',
+            user_handle: `updated-user#${userAccount.user.id}`,
+            username: 'updated-user',
             email: 'UPDATED_EMAIL@EMAIL.COM',
             is_active: true,
             created_at: expect.any(String),
             updated_at: expect.any(String),
+          });
+        });
+    });
+
+    it('should fail validation when updating myself', async () => {
+      return request(app.getHttpServer())
+        .patch('/users/me')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .send(factories.updateUserDto.build({ username: 'HELLO$%^&*' }))
+        .expect(HttpStatus.BAD_REQUEST)
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            constraints: [
+              'Username can only contain lowercase alphanumeric characters with the exception of hyphens.',
+            ],
+            error: 'VALIDATION_ERROR',
+            message: 'Validation error.',
+          });
+        });
+    });
+
+    it('should fail due to duplicates', async () => {
+      return request(app.getHttpServer())
+        .patch('/users/me')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .send(factories.updateUserDto.build({ username: 'test-user-2' }))
+        .expect(HttpStatus.CONFLICT)
+        .expect((res) => {
+          expect(res.body).toStrictEqual({
+            message:
+              'A user with the username: test-user-2 already exists. Please login or user a different username.',
+            error: 'DUPLICATE_USER_EXISTS',
           });
         });
     });
@@ -275,7 +307,7 @@ describe('UsersController (e2e)', () => {
             email: 'TEST_USER@EMAIL.COM',
             is_active: true,
             user_handle: expect.any(String),
-            username: 'TEST_USER',
+            username: 'test-user',
           }),
         );
     });

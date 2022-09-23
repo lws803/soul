@@ -20,7 +20,7 @@ export async function createUsersAndLoginFixture(app: INestApplication) {
     .send(
       factories.createUserDto.build({
         email: 'TEST_USER_2@EMAIL.COM',
-        username: 'TEST_USER_2',
+        username: 'test-user-2',
         password: '1oNc0iY3oml5d&%9',
       }),
     )
@@ -31,7 +31,7 @@ export async function createUsersAndLoginFixture(app: INestApplication) {
     .send(
       factories.createUserDto.build({
         email: 'TEST_USER_3@EMAIL.COM',
-        username: 'TEST_USER_3',
+        username: 'test-user-3',
         password: '1oNc0iY3oml5d&%9',
       }),
     )
