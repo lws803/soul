@@ -255,11 +255,10 @@ describe('UsersService', () => {
         .mockResolvedValueOnce({
           ...user,
           bio: null,
-          displayName: null,
+          displayName: 'DISPLAY_NAME',
         });
 
       const updatedUserDto = {
-        displayName: null,
         bio: null,
       };
 
@@ -273,6 +272,7 @@ describe('UsersService', () => {
         {
           email: 'TEST_USER_1@EMAIL.COM',
           username: 'test-user-1',
+          displayName: user.displayName,
           ...updatedUserDto,
         },
       );
