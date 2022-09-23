@@ -26,7 +26,7 @@ describe('UsersService', () => {
   let userCreateQueryBuilder: any;
 
   beforeEach(async () => {
-    const usersList = factories.user.buildList(2);
+    const usersList = factories.userEntity.buildList(2);
     userCreateQueryBuilder = {
       select: jest.fn().mockImplementation(() => userCreateQueryBuilder),
       where: jest.fn().mockImplementation(() => userCreateQueryBuilder),
@@ -45,8 +45,8 @@ describe('UsersService', () => {
           provide: getRepositoryToken(User),
           useValue: {
             find: jest.fn().mockResolvedValue(usersList),
-            findOne: jest.fn().mockResolvedValue(factories.user.build()),
-            save: jest.fn().mockResolvedValue(factories.user.build()),
+            findOne: jest.fn().mockResolvedValue(factories.userEntity.build()),
+            save: jest.fn().mockResolvedValue(factories.userEntity.build()),
             update: jest.fn(),
             remove: jest.fn(),
             delete: jest.fn(),
@@ -91,7 +91,7 @@ describe('UsersService', () => {
 
   describe('create()', () => {
     it('should successfully insert a user', async () => {
-      const oneUser = factories.user.build();
+      const oneUser = factories.userEntity.build();
       jest
         .spyOn(repository, 'findOne')
         .mockResolvedValueOnce(null)
@@ -124,7 +124,7 @@ describe('UsersService', () => {
     it('should throw duplicate user email error', async () => {
       jest
         .spyOn(repository, 'findOne')
-        .mockResolvedValueOnce(factories.user.build());
+        .mockResolvedValueOnce(factories.userEntity.build());
       const createUserDto = plainToClass(
         CreateUserDto,
         factories.createUserRequest.build(),
@@ -139,7 +139,7 @@ describe('UsersService', () => {
       jest
         .spyOn(repository, 'findOne')
         .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(factories.user.build());
+        .mockResolvedValueOnce(factories.userEntity.build());
       const createUserDto = plainToClass(
         CreateUserDto,
         factories.createUserRequest.build(),
@@ -153,7 +153,7 @@ describe('UsersService', () => {
 
   describe('findAll()', () => {
     it('should successfully return a list of users with total count', async () => {
-      const users = factories.user.buildList(2);
+      const users = factories.userEntity.buildList(2);
       const totalCount = users.length;
       expect(
         await service.findAll({ page: 1, numItemsPerPage: 10 }),
@@ -161,7 +161,7 @@ describe('UsersService', () => {
     });
 
     it('should paginate correctly', async () => {
-      const users = factories.user.buildList(1);
+      const users = factories.userEntity.buildList(1);
       jest
         .spyOn(userCreateQueryBuilder, 'getManyAndCount')
         .mockResolvedValueOnce([users, users.length]);
@@ -178,7 +178,7 @@ describe('UsersService', () => {
     });
 
     it('should query for users with the given full text query', async () => {
-      const users = factories.user.buildList(2);
+      const users = factories.userEntity.buildList(2);
       expect(
         await service.findAll({ page: 1, numItemsPerPage: 10, q: 'test-user' }),
       ).toStrictEqual({
@@ -195,7 +195,7 @@ describe('UsersService', () => {
 
   describe('findOne()', () => {
     it('should return a user successfully', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       expect(await service.findOne(user.id)).toStrictEqual(user);
 
       expect(repository.findOne).toHaveBeenCalledWith({ id: user.id });
@@ -212,7 +212,7 @@ describe('UsersService', () => {
 
   describe('update()', () => {
     it('updates a user successfully', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       jest
         .spyOn(repository, 'findOne')
         .mockResolvedValueOnce(user)
@@ -233,7 +233,7 @@ describe('UsersService', () => {
       );
 
       expect(await service.update(user.id, updatedUserDto)).toStrictEqual(
-        factories.user.build({
+        factories.userEntity.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'updated-user',
           userHandle: 'updated-user#1',
@@ -260,7 +260,7 @@ describe('UsersService', () => {
     });
 
     it("updates a user's bio and display name successfully", async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       jest
         .spyOn(repository, 'findOne')
         .mockResolvedValueOnce(user)
@@ -295,7 +295,7 @@ describe('UsersService', () => {
 
   describe('remove()', () => {
     it('deletes a user successfully', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       await service.remove(user.id);
 
       expect(repository.delete).toHaveBeenCalledWith({ id: user.id });
@@ -313,18 +313,18 @@ describe('UsersService', () => {
   describe('verifyConfirmationToken()', () => {
     beforeEach(() => {
       jest.spyOn(jsonwebtoken, 'verify').mockImplementation(() => ({
-        id: factories.user.build().id,
+        id: factories.userEntity.build().id,
         tokenType: 'confirmation',
       }));
     });
 
     it('verifies and sets user as active', async () => {
       expect(await service.verifyConfirmationToken('TOKEN')).toEqual(
-        factories.user.build(),
+        factories.userEntity.build(),
       );
 
       expect(repository.save).toHaveBeenCalledWith(
-        factories.user.build({ isActive: true }),
+        factories.userEntity.build({ isActive: true }),
       );
     });
   });
@@ -333,18 +333,20 @@ describe('UsersService', () => {
     beforeEach(() => {
       jest
         .spyOn(service, 'findOneByEmail')
-        .mockResolvedValue(factories.user.build({ isActive: false }));
+        .mockResolvedValue(factories.userEntity.build({ isActive: false }));
 
       jest.spyOn(jsonwebtoken, 'sign').mockImplementation(() => 'TOKEN');
     });
 
     it('sends another email to user with confirmation token', async () => {
       expect(
-        await service.resendConfirmationToken(factories.user.build().email),
+        await service.resendConfirmationToken(
+          factories.userEntity.build().email,
+        ),
       ).toBeUndefined();
 
       expect(mailService.sendConfirmationEmail).toHaveBeenCalledWith(
-        factories.user.build({ isActive: false }),
+        factories.userEntity.build({ isActive: false }),
         'TOKEN',
       );
     });
@@ -357,7 +359,9 @@ describe('UsersService', () => {
         );
 
       expect(
-        await service.resendConfirmationToken(factories.user.build().email),
+        await service.resendConfirmationToken(
+          factories.userEntity.build().email,
+        ),
       ).toBeUndefined();
 
       expect(mailService.sendConfirmationEmail).not.toHaveBeenCalled();
@@ -366,10 +370,12 @@ describe('UsersService', () => {
     it('does not send confirmation email when user is active', async () => {
       jest
         .spyOn(service, 'findOneByEmail')
-        .mockResolvedValue(factories.user.build({ isActive: true }));
+        .mockResolvedValue(factories.userEntity.build({ isActive: true }));
 
       expect(
-        await service.resendConfirmationToken(factories.user.build().email),
+        await service.resendConfirmationToken(
+          factories.userEntity.build().email,
+        ),
       ).toBeUndefined();
 
       expect(mailService.sendConfirmationEmail).not.toHaveBeenCalled();
@@ -380,7 +386,7 @@ describe('UsersService', () => {
       jest.spyOn(service, 'findOneByEmail').mockRejectedValue(error);
 
       expect(
-        service.resendConfirmationToken(factories.user.build().email),
+        service.resendConfirmationToken(factories.userEntity.build().email),
       ).rejects.toThrow(error);
 
       expect(mailService.sendConfirmationEmail).not.toHaveBeenCalled();
@@ -394,11 +400,11 @@ describe('UsersService', () => {
 
     it('sends password reset email to user', async () => {
       expect(
-        await service.requestPasswordReset(factories.user.build().email),
+        await service.requestPasswordReset(factories.userEntity.build().email),
       ).toBeUndefined();
 
       expect(mailService.sendPasswordResetEmail).toHaveBeenCalledWith(
-        factories.user.build(),
+        factories.userEntity.build(),
         'TOKEN',
       );
     });
@@ -411,7 +417,7 @@ describe('UsersService', () => {
         );
 
       expect(
-        await service.requestPasswordReset(factories.user.build().email),
+        await service.requestPasswordReset(factories.userEntity.build().email),
       ).toBeUndefined();
       expect(mailService.sendPasswordResetEmail).not.toHaveBeenCalled();
     });
@@ -421,7 +427,7 @@ describe('UsersService', () => {
       jest.spyOn(service, 'findOneByEmail').mockRejectedValue(error);
 
       expect(
-        service.requestPasswordReset(factories.user.build().email),
+        service.requestPasswordReset(factories.userEntity.build().email),
       ).rejects.toThrow(error);
       expect(mailService.sendPasswordResetEmail).not.toHaveBeenCalled();
     });
@@ -430,7 +436,7 @@ describe('UsersService', () => {
   describe('passwordReset()', () => {
     beforeEach(() => {
       jest.spyOn(jsonwebtoken, 'verify').mockImplementation(() => ({
-        id: factories.user.build().id,
+        id: factories.userEntity.build().id,
         tokenType: 'passwordReset',
       }));
       jest
@@ -439,7 +445,7 @@ describe('UsersService', () => {
     });
 
     it('resets password from user', async () => {
-      const savedUser = factories.user.build({
+      const savedUser = factories.userEntity.build({
         hashedPassword: 'NEW_HASHED_PASSWORD',
       });
 

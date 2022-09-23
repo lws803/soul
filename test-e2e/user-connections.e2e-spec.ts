@@ -141,11 +141,11 @@ describe('UserConnectionsController (e2e)', () => {
     it('creates a new connection with opposite becomes mutual', async () => {
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save(secondUserConnection);
       await userConnectionRepository.update(
@@ -189,11 +189,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -239,13 +239,13 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('returns not found', async () => {
       await userRepository.save([
-        factories.user.build({
+        factories.userEntity.build({
           id: 999,
           email: 'TEST_USER_999@EMAIL.COM',
           userHandle: 'test-user_999#999',
           username: 'test-user-999',
         }),
-        factories.user.build({
+        factories.userEntity.build({
           id: 998,
           email: 'TEST_USER_998@EMAIL.COM',
           userHandle: 'test-user_998#998',
@@ -269,11 +269,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -351,11 +351,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -492,11 +492,11 @@ describe('UserConnectionsController (e2e)', () => {
       const firstUserConnection = factories.oneUserConnection.build();
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -543,11 +543,11 @@ describe('UserConnectionsController (e2e)', () => {
     it('fetches my follower connections', async () => {
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save(secondUserConnection);
 
@@ -622,7 +622,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('fetches my follow connections for a platform', async () => {
-      const thirdUser = factories.user.build({
+      const thirdUser = factories.userEntity.build({
         id: 3,
         username: 'test-user_3',
         userHandle: 'test-user_3#3',

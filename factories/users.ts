@@ -2,9 +2,9 @@ import { Factory } from 'fishery';
 
 import { User } from 'src/users/entities/user.entity';
 
-export const user = Factory.define<User>(({ sequence }) => {
+export const userEntity = Factory.define<User>(({ sequence }) => {
   // Rewinds the sequence as we do not want to have "sequences" bleed into subsequent builds
-  user.rewindSequence();
+  userEntity.rewindSequence();
   return {
     id: sequence,
     username: `test-user-${sequence}`,

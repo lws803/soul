@@ -6,7 +6,10 @@ describe(LocalAuthGuard, () => {
   const authGuard = new LocalAuthGuard();
   it('throws error if there is an existing error', () => {
     expect(() =>
-      authGuard.handleRequest(new Error('KNOWN_ERROR'), factories.user.build()),
+      authGuard.handleRequest(
+        new Error('KNOWN_ERROR'),
+        factories.userEntity.build(),
+      ),
     ).toThrow('KNOWN_ERROR');
   });
 

@@ -45,7 +45,7 @@ describe('ConnectionsService', () => {
         {
           provide: UsersService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.user.build()),
+            findOne: jest.fn().mockResolvedValue(factories.userEntity.build()),
           },
         },
         {
@@ -75,8 +75,8 @@ describe('ConnectionsService', () => {
   });
 
   describe('create()', () => {
-    const firstUser = factories.user.build();
-    const secondUser = factories.user.build({
+    const firstUser = factories.userEntity.build();
+    const secondUser = factories.userEntity.build({
       email: 'TEST_USER_2@EMAIL.COM',
       id: 2,
     });
@@ -413,7 +413,7 @@ describe('ConnectionsService', () => {
       });
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
-        where: { fromUser: factories.user.build() },
+        where: { fromUser: factories.userEntity.build() },
         ...defaultQueryParameters,
       });
     });
@@ -434,7 +434,7 @@ describe('ConnectionsService', () => {
       });
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
-        where: { toUser: factories.user.build() },
+        where: { toUser: factories.userEntity.build() },
         ...defaultQueryParameters,
       });
     });
@@ -456,7 +456,7 @@ describe('ConnectionsService', () => {
 
       expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
         where: {
-          fromUser: factories.user.build(),
+          fromUser: factories.userEntity.build(),
           mutualConnection: Not(IsNull()),
         },
         ...defaultQueryParameters,

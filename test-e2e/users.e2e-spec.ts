@@ -61,7 +61,7 @@ describe('UsersController (e2e)', () => {
     });
 
     it('throws user duplicate error due to duplicate email address', async () => {
-      const existingUser = factories.user.build();
+      const existingUser = factories.userEntity.build();
       await userRepository.save(existingUser);
       return request(app.getHttpServer())
         .post('/users')
@@ -84,7 +84,7 @@ describe('UsersController (e2e)', () => {
     });
 
     it('throws user duplicate error due to duplicate username', async () => {
-      const existingUser = factories.user.build();
+      const existingUser = factories.userEntity.build();
       await userRepository.save(existingUser);
       return request(app.getHttpServer())
         .post('/users')
@@ -109,8 +109,8 @@ describe('UsersController (e2e)', () => {
   describe('/users (GET)', () => {
     beforeAll(async () => {
       await userRepository.save([
-        factories.user.build({ id: undefined }),
-        factories.user.build({
+        factories.userEntity.build({ id: undefined }),
+        factories.userEntity.build({
           id: undefined,
           username: 'test-user-2',
           userHandle: 'test-user-2#2',
@@ -193,7 +193,7 @@ describe('UsersController (e2e)', () => {
 
   describe('/users/:id (GET)', () => {
     beforeAll(async () => {
-      await userRepository.save(factories.user.build());
+      await userRepository.save(factories.userEntity.build());
     });
 
     afterAll(async () => {

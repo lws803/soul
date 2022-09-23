@@ -9,7 +9,7 @@ import * as factories from './index';
 
 export const refreshToken = Factory.define<RefreshToken>(() => ({
   id: 1,
-  user: factories.user.build(),
+  user: factories.userEntity.build(),
   isRevoked: false,
   createdAt: new Date('1995-12-17T03:24:00'),
   updatedAt: new Date('1995-12-18T03:24:00'),
@@ -19,12 +19,12 @@ export const refreshToken = Factory.define<RefreshToken>(() => ({
 
 export const jwtRefreshPayload = Factory.define<JWTRefreshPayload>(() => ({
   tokenId: refreshToken.build().id,
-  userId: factories.user.build().id,
+  userId: factories.userEntity.build().id,
   tokenType: TokenType.Refresh,
 }));
 
 export const jwtPayload = Factory.define<JWTPayload>(() => {
-  const oneUser = factories.user.build();
+  const oneUser = factories.userEntity.build();
   return {
     userId: oneUser.id,
     username: oneUser.username,
@@ -33,7 +33,7 @@ export const jwtPayload = Factory.define<JWTPayload>(() => {
 });
 
 export const jwtPayloadWithPlatform = Factory.define<JWTPayload>(() => {
-  const oneUser = factories.user.build();
+  const oneUser = factories.userEntity.build();
   const onePlatformUser = factories.platformUser.build({ user: oneUser });
   return {
     userId: oneUser.id,
@@ -46,7 +46,7 @@ export const jwtPayloadWithPlatform = Factory.define<JWTPayload>(() => {
 
 export const jwtRefreshPayloadWithPlatform = Factory.define<JWTRefreshPayload>(
   () => {
-    const oneUser = factories.user.build();
+    const oneUser = factories.userEntity.build();
     const onePlatformUser = factories.platformUser.build({ user: oneUser });
     return {
       tokenId: refreshToken.build().id,

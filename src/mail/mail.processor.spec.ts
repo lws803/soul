@@ -38,7 +38,7 @@ describe(MailProcessor, () => {
 
   describe('sendConfirmationEmail()', () => {
     it('sends welcome email successfully', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const response = await processor.sendConfirmationEmail({
         data: {
           user,
@@ -50,7 +50,7 @@ describe(MailProcessor, () => {
 
       expect(sendMail).toHaveBeenCalledWith({
         context: {
-          ...factories.user.build({ hashedPassword: undefined }),
+          ...factories.userEntity.build({ hashedPassword: undefined }),
           url: 'BASE_URL?token=TEST_CODE',
         },
         subject: 'Complete your soul profile',
@@ -62,7 +62,7 @@ describe(MailProcessor, () => {
 
   describe('sendPasswordResetEmail()', () => {
     it('sends password reset email successfully', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const response = await processor.sendPasswordResetEmail({
         data: {
           user,
@@ -74,7 +74,7 @@ describe(MailProcessor, () => {
 
       expect(sendMail).toHaveBeenCalledWith({
         context: {
-          ...factories.user.build({ hashedPassword: undefined }),
+          ...factories.userEntity.build({ hashedPassword: undefined }),
           url: 'BASE_URL?token=TEST_CODE',
         },
         subject: 'Reset password',

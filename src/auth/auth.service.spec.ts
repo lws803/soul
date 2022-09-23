@@ -33,8 +33,10 @@ describe('AuthService', () => {
         {
           provide: UsersService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.user.build()),
-            findOneByEmail: jest.fn().mockResolvedValue(factories.user.build()),
+            findOne: jest.fn().mockResolvedValue(factories.userEntity.build()),
+            findOneByEmail: jest
+              .fn()
+              .mockResolvedValue(factories.userEntity.build()),
           },
         },
         {
@@ -77,7 +79,7 @@ describe('AuthService', () => {
               .mockResolvedValue(factories.jwtRefreshPayload.build()),
             sign: jest.fn().mockReturnValue('SIGNED_TOKEN'),
             verify: jest.fn().mockReturnValue({
-              userId: factories.user.build().id,
+              userId: factories.userEntity.build().id,
               platformId: factories.platform.build().id,
               callback: 'TEST_REDIRECT_URI',
               codeChallengeKey: 'CODE_CHALLENGE_KEY',
@@ -120,7 +122,7 @@ describe('AuthService', () => {
         'TEST_HASHED_PASSWORD',
       );
 
-      expect(response).toStrictEqual(factories.user.build());
+      expect(response).toStrictEqual(factories.userEntity.build());
     });
 
     it('should return null if email and password are invalid', async () => {
@@ -135,7 +137,7 @@ describe('AuthService', () => {
 
   describe('login()', () => {
     it('should generate access and refresh token on successful login', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const response = await service.login(user);
       expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
@@ -165,7 +167,7 @@ describe('AuthService', () => {
 
   describe('getCodeForPlatformAndCallback()', () => {
     it('should generate access and refresh token on successful login', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const platformUser = factories.platformUser.build();
       const codeChallenge = 'CODE_CHALLENGE';
 
@@ -187,7 +189,7 @@ describe('AuthService', () => {
     });
 
     it('denies access when callback uri is not registered', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const platformUser = factories.platformUser.build();
 
       await expect(
@@ -202,7 +204,7 @@ describe('AuthService', () => {
     });
 
     it('denies access to inactive users', async () => {
-      const user = factories.user.build({ isActive: false });
+      const user = factories.userEntity.build({ isActive: false });
       const platformUser = factories.platformUser.build();
 
       await expect(
@@ -227,7 +229,7 @@ describe('AuthService', () => {
         callback: 'TEST_REDIRECT_URI',
         codeVerifier: 'CODE_VERIFIER',
       });
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const platformUser = factories.platformUser.build();
 
       expect(jwtService.verify).toHaveBeenCalledWith(code);

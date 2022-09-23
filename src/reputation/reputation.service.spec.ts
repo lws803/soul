@@ -24,7 +24,7 @@ describe('ReputationService', () => {
         {
           provide: UsersService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.user.build()),
+            findOne: jest.fn().mockResolvedValue(factories.userEntity.build()),
           },
         },
         {
@@ -49,7 +49,7 @@ describe('ReputationService', () => {
 
   describe('findOneUserReputation()', () => {
     it('should fetch reputation from a specified user', async () => {
-      const oneUser = factories.user.build();
+      const oneUser = factories.userEntity.build();
 
       expect(await service.findOneUserReputation(oneUser.id)).toEqual({
         reputation: 9,

@@ -36,7 +36,7 @@ export const platformUser = Factory.define<PlatformUser>(({ sequence }) => {
 
   return {
     id: sequence,
-    user: factories.user.build(),
+    user: factories.userEntity.build(),
     platform: factories.platform.build(),
     roles: [UserRole.Admin, UserRole.Member],
     createdAt: new Date('1995-12-17T03:24:00'),

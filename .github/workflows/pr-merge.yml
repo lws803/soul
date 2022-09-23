@@ -28,6 +28,6 @@ jobs:
         run: npm run test:cov
 
       - run: npm run build --if-present
-    
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
