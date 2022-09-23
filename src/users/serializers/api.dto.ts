@@ -32,6 +32,16 @@ export class CreateUserDto {
   @MaxLength(20)
   @IsPasswordValid()
   password: string;
+
+  @ApiProperty({ name: 'display_name', example: 'John Doe', required: false })
+  @IsOptional()
+  @MaxLength(32)
+  displayName?: string;
+
+  @ApiProperty({ name: 'bio', example: 'User bio.', required: false })
+  @IsOptional()
+  @MaxLength(255)
+  bio?: string;
 }
 
 export class UpdateUserDto {
@@ -48,6 +58,16 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @ApiProperty({ name: 'display_name', example: 'John Doe', required: false })
+  @IsOptional()
+  @MaxLength(32)
+  displayName?: string;
+
+  @ApiProperty({ name: 'bio', example: 'User bio.', required: false })
+  @IsOptional()
+  @MaxLength(255)
+  bio?: string;
 }
 
 export class UserParamsDto {
@@ -82,12 +102,11 @@ export class PasswordResetRequestDto {
     name: 'email',
     example: 'john@email.com',
     type: String,
-    required: false,
+    required: true,
   })
-  @IsOptional()
   @IsString()
   @IsEmail()
-  email?: string;
+  email: string;
 }
 
 export class PasswordResetDto {

@@ -107,6 +107,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
                   id: 1,
                   user_handle: 'test-user#1',
                   username: 'test-user',
+                  bio: null,
+                  display_name: null,
                 },
                 platform: {
                   id: 1,
@@ -188,6 +190,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               id: 2,
               user_handle: 'test-user-2#2',
               username: 'test-user-2',
+              bio: null,
+              display_name: null,
             },
           }),
         );
@@ -235,6 +239,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               id: 2,
               user_handle: 'test-user-2#2',
               username: 'test-user-2',
+              bio: null,
+              display_name: null,
             },
           }),
         );
@@ -553,6 +559,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               id: 1,
               user_handle: 'test-user#1',
               username: 'test-user',
+              bio: null,
+              display_name: null,
             },
           }),
         );

@@ -104,6 +104,8 @@ describe('UsersService', () => {
         username: 'test-user',
         hashedPassword: expect.any(String),
         isActive: false,
+        bio: null,
+        displayName: null,
       });
       // Update step to update the userHandle
       expect(repository.update).toHaveBeenCalledWith(
@@ -210,6 +212,8 @@ describe('UsersService', () => {
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'updated-user',
           userHandle: 'updated-user#1',
+          bio: 'UPDATED_BIO',
+          displayName: 'UPDATED_DISPLAY_NAME',
         });
 
       const updatedUserDto = factories.updateUserDto.build();
@@ -219,6 +223,8 @@ describe('UsersService', () => {
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'updated-user',
           userHandle: 'updated-user#1',
+          bio: 'UPDATED_BIO',
+          displayName: 'UPDATED_DISPLAY_NAME',
         }),
       );
 
@@ -236,6 +242,39 @@ describe('UsersService', () => {
 
       await expect(service.update(1, {})).rejects.toThrow(
         new UserNotFoundException({ id: 1 }),
+      );
+    });
+
+    it("updates a user's bio and display name successfully", async () => {
+      const user = factories.user.build();
+      jest
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(user)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({
+          ...user,
+          bio: null,
+          displayName: 'DISPLAY_NAME',
+        });
+
+      const updatedUserDto = {
+        bio: null,
+      };
+
+      expect(await service.update(user.id, updatedUserDto)).toStrictEqual({
+        ...user,
+        ...updatedUserDto,
+      });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        { id: user.id },
+        {
+          email: 'TEST_USER_1@EMAIL.COM',
+          username: 'test-user-1',
+          displayName: user.displayName,
+          ...updatedUserDto,
+        },
       );
     });
   });

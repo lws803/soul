@@ -54,6 +54,8 @@ describe('UsersController (e2e)', () => {
             is_active: false,
             created_at: expect.any(String),
             updated_at: expect.any(String),
+            display_name: null,
+            bio: null,
           });
         });
     });
@@ -133,11 +135,15 @@ describe('UsersController (e2e)', () => {
                 id: expect.any(Number),
                 user_handle: 'test-user-2#2',
                 username: 'test-user-2',
+                bio: 'BIO',
+                display_name: 'DISPLAY_NAME',
               },
               {
                 id: expect.any(Number),
                 user_handle: 'test-user-1#1',
                 username: 'test-user-1',
+                bio: 'BIO',
+                display_name: 'DISPLAY_NAME',
               },
             ],
           });
@@ -156,6 +162,8 @@ describe('UsersController (e2e)', () => {
                 id: expect.any(Number),
                 user_handle: 'test-user-2#2',
                 username: 'test-user-2',
+                bio: 'BIO',
+                display_name: 'DISPLAY_NAME',
               },
             ],
           });
@@ -174,6 +182,8 @@ describe('UsersController (e2e)', () => {
                 id: expect.any(Number),
                 user_handle: 'test-user-2#2',
                 username: 'test-user-2',
+                bio: 'BIO',
+                display_name: 'DISPLAY_NAME',
               },
             ],
           });
@@ -199,6 +209,8 @@ describe('UsersController (e2e)', () => {
             id: expect.any(Number),
             user_handle: 'test-user-1#1',
             username: 'test-user-1',
+            bio: 'BIO',
+            display_name: 'DISPLAY_NAME',
           });
         });
     });
@@ -244,6 +256,8 @@ describe('UsersController (e2e)', () => {
             is_active: true,
             created_at: expect.any(String),
             updated_at: expect.any(String),
+            bio: 'UPDATED_BIO',
+            display_name: 'UPDATED_DISPLAY_NAME',
           });
         });
     });
@@ -346,6 +360,8 @@ describe('UsersController (e2e)', () => {
             is_active: true,
             user_handle: expect.any(String),
             username: 'test-user',
+            display_name: null,
+            bio: null,
           }),
         );
     });
