@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
+import {
+  CreateUserConnectionDto,
+  PostPlatformDto,
+} from 'src/user-connections/serializers/api.dto';
 
 import { ConnectionType } from './enums/connection-type.enum';
 import { UserConnectionsController } from './user-connections.controller';
@@ -61,16 +66,16 @@ describe('ConnectionsController', () => {
 
   describe('create()', () => {
     it('should create a new user connection', async () => {
-      const createUserConnectionDto = factories.createUserConnectionDto.build();
+      const createUserConnectionDto = plainToClass(
+        CreateUserConnectionDto,
+        factories.createUserConnectionRequest.build(),
+      );
 
       expect(await controller.create(userJwt, createUserConnectionDto)).toEqual(
         { isMutual: false, ...factories.userConnectionEntity.build({}) },
       );
 
-      expect(service.create).toHaveBeenCalledWith(1, {
-        fromUserId: 1,
-        toUserId: 2,
-      });
+      expect(service.create).toHaveBeenCalledWith(1, createUserConnectionDto);
     });
   });
 
@@ -169,8 +174,10 @@ describe('ConnectionsController', () => {
 
   describe('addNewPlatformToUserConnection()', () => {
     it('should add a new platform to existing user connection', async () => {
-      const postPlatformConnectionDto =
-        factories.postPlatformToUserConnectionDto.build();
+      const postPlatformConnectionDto = plainToClass(
+        PostPlatformDto,
+        factories.postPlatformToUserConnectionRequest.build(),
+      );
       expect(
         await controller.addNewPlatformToUserConnection(
           userJwt,

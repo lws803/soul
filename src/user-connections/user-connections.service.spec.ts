@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, Not, IsNull, QueryFailedError } from 'typeorm';
+import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
 import { PlatformsService } from 'src/platforms/platforms.service';
@@ -10,6 +11,7 @@ import { ActivityService } from 'src/activity/activity.service';
 import { UserConnection } from './entities/user-connection.entity';
 import { ConnectionType } from './enums/connection-type.enum';
 import { UserConnectionsService } from './user-connections.service';
+import { CreateUserConnectionDto } from './serializers/api.dto';
 
 describe('ConnectionsService', () => {
   let service: UserConnectionsService;
@@ -90,7 +92,10 @@ describe('ConnectionsService', () => {
     });
 
     it('should successfully insert a new user connection', async () => {
-      const createUserConnectionDto = factories.createUserConnectionDto.build();
+      const createUserConnectionDto = plainToClass(
+        CreateUserConnectionDto,
+        factories.createUserConnectionRequest.build(),
+      );
       expect(await service.create(1, createUserConnectionDto)).toEqual({
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
@@ -115,9 +120,12 @@ describe('ConnectionsService', () => {
 
     it('should successfully insert a new user connection with platformId', async () => {
       const onePlatform = factories.platformEntity.build();
-      const createUserConnectionDto = factories.createUserConnectionDto.build({
-        platformId: onePlatform.id,
-      });
+      const createUserConnectionDto = plainToClass(
+        CreateUserConnectionDto,
+        factories.createUserConnectionRequest.build({
+          platform_id: onePlatform.id,
+        }),
+      );
 
       jest.spyOn(userConnectionRepository, 'save').mockResolvedValue(
         factories.userConnectionEntity.build({
@@ -151,7 +159,10 @@ describe('ConnectionsService', () => {
         fromUser: secondUser,
         toUser: firstUser,
       });
-      const createUserConnectionDto = factories.createUserConnectionDto.build();
+      const createUserConnectionDto = plainToClass(
+        CreateUserConnectionDto,
+        factories.createUserConnectionRequest.build(),
+      );
 
       jest
         .spyOn(userConnectionRepository, 'findOne')
@@ -189,7 +200,10 @@ describe('ConnectionsService', () => {
     });
 
     it('should send follow activity when inserting a new user connection', async () => {
-      const createUserConnectionDto = factories.createUserConnectionDto.build();
+      const createUserConnectionDto = plainToClass(
+        CreateUserConnectionDto,
+        factories.createUserConnectionRequest.build(),
+      );
       await service.create(1, createUserConnectionDto);
 
       expect(activityService.sendFollowActivity).toHaveBeenCalledWith({
@@ -199,7 +213,10 @@ describe('ConnectionsService', () => {
     });
 
     it('should throw error when an existing connection exists', async () => {
-      const createUserConnectionDto = factories.createUserConnectionDto.build();
+      const createUserConnectionDto = plainToClass(
+        CreateUserConnectionDto,
+        factories.createUserConnectionRequest.build(),
+      );
       jest
         .spyOn(userConnectionRepository, 'save')
         .mockRejectedValue(
@@ -212,16 +229,22 @@ describe('ConnectionsService', () => {
     });
 
     it('should throw error when trying to create a connection to self', async () => {
-      const createUserConnectionDto = factories.createUserConnectionDto.build({
-        toUserId: 1,
-      });
+      const createUserConnectionDto = plainToClass(
+        CreateUserConnectionDto,
+        factories.createUserConnectionRequest.build({
+          to_user_id: 1,
+        }),
+      );
       await expect(service.create(1, createUserConnectionDto)).rejects.toThrow(
         'You cannot create a connection to yourself. Please try again.',
       );
     });
 
     it('does not send follow activity when error is thrown', async () => {
-      const createUserConnectionDto = factories.createUserConnectionDto.build();
+      const createUserConnectionDto = plainToClass(
+        CreateUserConnectionDto,
+        factories.createUserConnectionRequest.build(),
+      );
       jest
         .spyOn(userConnectionRepository, 'save')
         .mockRejectedValue(

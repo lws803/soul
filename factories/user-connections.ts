@@ -2,10 +2,6 @@ import { Factory } from 'fishery';
 
 import { FindOneUserConnectionResponseEntity } from 'src/user-connections/serializers/api-responses.entity';
 
-import {
-  CreateUserConnectionDto,
-  PostPlatformDto,
-} from 'src/user-connections/serializers/api.dto';
 import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
 
 import { platformEntity } from './platform';
@@ -42,19 +38,6 @@ export const userConnectionEntityArray = Factory.define<UserConnection[]>(
       toUser: userEntity.build({ id: 4 }),
     }),
   ],
-);
-
-export const createUserConnectionDto = Factory.define<CreateUserConnectionDto>(
-  () => ({
-    fromUserId: userEntity.build().id,
-    toUserId: userEntity.build({ id: 2 }).id,
-  }),
-);
-
-export const postPlatformToUserConnectionDto = Factory.define<PostPlatformDto>(
-  () => ({
-    platformId: platformEntity.build().id,
-  }),
 );
 
 type CreateUserConnectionRequest = {
