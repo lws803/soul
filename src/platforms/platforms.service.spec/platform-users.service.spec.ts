@@ -58,9 +58,9 @@ describe('PlatformsService - Users', () => {
         {
           provide: getRepositoryToken(PlatformCategory),
           useValue: {
-            findOne: jestonePlatformCategoryEntity
+            findOne: jest
               .fn()
-              .mockResolvedValue(factories.onePlatformCategory.build()),
+              .mockResolvedValue(factories.platformCategoryEntity.build()),
           },
         },
         {
