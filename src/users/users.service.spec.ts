@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
+import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
 import { MailService } from 'src/mail/mail.service';
@@ -14,6 +15,7 @@ import { UsersService } from './users.service';
 import { DuplicateUserEmailException } from './exceptions/duplicate-user-email.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { DuplicateUsernameException } from './exceptions';
+import { CreateUserDto, UpdateUserDto } from './serializers/api.dto';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -96,7 +98,10 @@ describe('UsersService', () => {
         .mockResolvedValueOnce(null)
         .mockResolvedValue(oneUser);
 
-      const createUserDto = factories.createUserDto.build();
+      const createUserDto = plainToClass(
+        CreateUserDto,
+        factories.createUserRequest.build(),
+      );
       expect(await service.create(createUserDto)).toStrictEqual(oneUser);
 
       expect(repository.save).toHaveBeenCalledWith({
@@ -120,7 +125,10 @@ describe('UsersService', () => {
       jest
         .spyOn(repository, 'findOne')
         .mockResolvedValueOnce(factories.user.build());
-      const createUserDto = factories.createUserDto.build();
+      const createUserDto = plainToClass(
+        CreateUserDto,
+        factories.createUserRequest.build(),
+      );
 
       await expect(service.create(createUserDto)).rejects.toThrow(
         new DuplicateUserEmailException(createUserDto.email),
@@ -132,7 +140,10 @@ describe('UsersService', () => {
         .spyOn(repository, 'findOne')
         .mockResolvedValueOnce(null)
         .mockResolvedValueOnce(factories.user.build());
-      const createUserDto = factories.createUserDto.build();
+      const createUserDto = plainToClass(
+        CreateUserDto,
+        factories.createUserRequest.build(),
+      );
 
       await expect(service.create(createUserDto)).rejects.toThrow(
         new DuplicateUsernameException(createUserDto.username),
@@ -216,7 +227,10 @@ describe('UsersService', () => {
           displayName: 'UPDATED_DISPLAY_NAME',
         });
 
-      const updatedUserDto = factories.updateUserDto.build();
+      const updatedUserDto = plainToClass(
+        UpdateUserDto,
+        factories.updateUserRequest.build(),
+      );
 
       expect(await service.update(user.id, updatedUserDto)).toStrictEqual(
         factories.user.build({

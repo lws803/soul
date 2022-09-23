@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
 
-import { CreateUserDto } from './serializers/api.dto';
+import { CreateUserDto, UpdateUserDto } from './serializers/api.dto';
 import { DuplicateUserEmailException } from './exceptions/duplicate-user-email.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UsersController } from './users.controller';
@@ -61,7 +62,10 @@ describe('UsersController', () => {
 
   describe('create()', () => {
     it('should create a user', async () => {
-      const createUserDto = factories.createUserDto.build();
+      const createUserDto = plainToClass(
+        CreateUserDto,
+        factories.createUserRequest.build(),
+      );
 
       const resp = await controller.create(createUserDto);
 
@@ -76,7 +80,10 @@ describe('UsersController', () => {
     });
 
     it('should return duplicate user email error', async () => {
-      const createUserDto = factories.createUserDto.build();
+      const createUserDto = plainToClass(
+        CreateUserDto,
+        factories.createUserRequest.build(),
+      );
       jest
         .spyOn(usersService, 'create')
         .mockRejectedValue(
@@ -89,7 +96,10 @@ describe('UsersController', () => {
     });
 
     it('should return duplicate username error', async () => {
-      const createUserDto = factories.createUserDto.build();
+      const createUserDto = plainToClass(
+        CreateUserDto,
+        factories.createUserRequest.build(),
+      );
       jest
         .spyOn(usersService, 'create')
         .mockRejectedValue(
@@ -153,7 +163,10 @@ describe('UsersController', () => {
   describe('update()', () => {
     it('should update a user', async () => {
       const user = factories.user.build();
-      const updateUserDto = factories.updateUserDto.build();
+      const updateUserDto = plainToClass(
+        UpdateUserDto,
+        factories.updateUserRequest.build(),
+      );
       const jwtPayload = factories.jwtPayload.build();
 
       expect(
