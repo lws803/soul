@@ -28,7 +28,7 @@ describe('AuthService', () => {
             exchangeCodeForToken: jest.fn().mockReturnValue({
               accessToken: 'ACCESS_TOKEN',
               refreshToken: 'REFRESH_TOKEN',
-              platformId: factories.platform.build().id,
+              platformId: factories.platformEntity.build().id,
               roles: [UserRole.Admin, UserRole.Member],
             }),
             refresh: jest.fn().mockResolvedValue({

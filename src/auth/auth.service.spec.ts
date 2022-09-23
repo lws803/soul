@@ -42,7 +42,9 @@ describe('AuthService', () => {
         {
           provide: PlatformsService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(factories.platform.build()),
+            findOne: jest
+              .fn()
+              .mockResolvedValue(factories.platformEntity.build()),
             findOnePlatformUser: jest
               .fn()
               .mockResolvedValue(factories.platformUser.build()),
@@ -80,7 +82,7 @@ describe('AuthService', () => {
             sign: jest.fn().mockReturnValue('SIGNED_TOKEN'),
             verify: jest.fn().mockReturnValue({
               userId: factories.userEntity.build().id,
-              platformId: factories.platform.build().id,
+              platformId: factories.platformEntity.build().id,
               callback: 'TEST_REDIRECT_URI',
               codeChallengeKey: 'CODE_CHALLENGE_KEY',
             }),

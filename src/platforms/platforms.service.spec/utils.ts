@@ -1,6 +1,6 @@
 import * as factories from 'factories';
 
-const platformsList = factories.platform.buildList(2);
+const platformsList = factories.platformEntity.buildList(2);
 
 export const platformCreateQueryBuilderObject = {
   select: jest.fn().mockImplementation(() => platformCreateQueryBuilderObject),

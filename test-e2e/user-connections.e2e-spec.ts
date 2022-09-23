@@ -89,7 +89,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('creates a new connection with platform', async () => {
-      const platform = factories.platform.build();
+      const platform = factories.platformEntity.build();
       await platformRepository.save(platform);
       await platformUserRepository.save(
         factories.platformUser.build({ platform }),
@@ -413,7 +413,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('adds a new platform to the existing connection', async () => {
-      const platform = factories.platform.build();
+      const platform = factories.platformEntity.build();
       await platformRepository.save(platform);
       await platformUserRepository.save(factories.platformUser.build());
 
@@ -472,7 +472,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('deletes a platform from existing connection', async () => {
-      await platformRepository.save(factories.platform.build());
+      await platformRepository.save(factories.platformEntity.build());
       await platformUserRepository.save(factories.platformUser.build());
 
       return request(app.getHttpServer())
@@ -628,7 +628,7 @@ describe('UserConnectionsController (e2e)', () => {
         userHandle: 'test-user_3#3',
         email: 'TEST_USER_3@EMAIL.COM',
       });
-      const onePlatform = factories.platform.build();
+      const onePlatform = factories.platformEntity.build();
       await userRepository.save(thirdUser);
       await platformRepository.save(onePlatform);
       const firstUserConnection = factories.oneUserConnection.build({
@@ -637,7 +637,7 @@ describe('UserConnectionsController (e2e)', () => {
       const secondUserConnection = factories.oneUserConnection.build({
         id: 2,
         toUser: thirdUser,
-        platforms: factories.platform.buildList(1),
+        platforms: factories.platformEntity.buildList(1),
       });
       await userConnectionRepository.save([
         firstUserConnection,

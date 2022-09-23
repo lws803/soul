@@ -15,8 +15,8 @@ export const onePlatformCategory = Factory.define<PlatformCategory>(() => ({
   name: 'CATEGORY',
 }));
 
-export const platform = Factory.define<Platform>(({ sequence }) => {
-  platform.rewindSequence();
+export const platformEntity = Factory.define<Platform>(({ sequence }) => {
+  platformEntity.rewindSequence();
   return {
     id: sequence,
     name: `TEST_PLATFORM_${sequence}`,
@@ -37,7 +37,7 @@ export const platformUser = Factory.define<PlatformUser>(({ sequence }) => {
   return {
     id: sequence,
     user: factories.userEntity.build(),
-    platform: factories.platform.build(),
+    platform: factories.platformEntity.build(),
     roles: [UserRole.Admin, UserRole.Member],
     createdAt: new Date('1995-12-17T03:24:00'),
     updatedAt: new Date('1995-12-18T03:24:00'),

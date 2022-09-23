@@ -60,7 +60,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
   describe('/platforms/:platformId/users (GET)', () => {
     beforeAll(async () => {
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
@@ -128,7 +128,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
   describe('/platforms/:platformId/users/:userId (PUT)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
@@ -313,7 +313,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
   describe('/platforms/:platformId/users/:userId (DELETE)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
@@ -382,7 +382,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     beforeEach(async () => {
       platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
@@ -523,7 +523,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
   describe('/platforms/:platformId/join (POST)', () => {
     beforeEach(async () => {
       await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );

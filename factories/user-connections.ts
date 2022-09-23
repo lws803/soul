@@ -8,7 +8,7 @@ import {
 } from 'src/user-connections/serializers/api.dto';
 import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
 
-import { platform } from './platform';
+import { platformEntity } from './platform';
 import { userEntity } from './users';
 
 export const oneUserConnection = Factory.define<UserConnection>(() => ({
@@ -51,7 +51,7 @@ export const createUserConnectionDto = Factory.define<CreateUserConnectionDto>(
 
 export const postPlatformToUserConnectionDto = Factory.define<PostPlatformDto>(
   () => ({
-    platformId: platform.build().id,
+    platformId: platformEntity.build().id,
   }),
 );
 
@@ -71,5 +71,5 @@ type PostPlatformToUserConnectionRequest = {
 
 export const postPlatformToUserConnectionRequest =
   Factory.define<PostPlatformToUserConnectionRequest>(() => ({
-    platform_id: platform.build().id,
+    platform_id: platformEntity.build().id,
   }));
