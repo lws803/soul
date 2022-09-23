@@ -3,10 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as factories from 'factories';
 
 import { CreateUserDto } from './serializers/api.dto';
-import { DuplicateUserExistException } from './exceptions/duplicate-user-exists.exception';
+import { DuplicateUserEmailException } from './exceptions/duplicate-user-email.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { DuplicateUsernameException } from './exceptions';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -74,19 +75,30 @@ describe('UsersController', () => {
       );
     });
 
-    it('should return duplicate error', async () => {
+    it('should return duplicate user email error', async () => {
       const createUserDto = factories.createUserDto.build();
       jest
         .spyOn(usersService, 'create')
         .mockRejectedValue(
-          new DuplicateUserExistException({ email: createUserDto.email }),
+          new DuplicateUserEmailException(createUserDto.email),
         );
 
       await expect(
         async () => await controller.create(createUserDto),
-      ).rejects.toThrow(
-        new DuplicateUserExistException({ email: createUserDto.email }),
-      );
+      ).rejects.toThrow(new DuplicateUserEmailException(createUserDto.email));
+    });
+
+    it('should return duplicate username error', async () => {
+      const createUserDto = factories.createUserDto.build();
+      jest
+        .spyOn(usersService, 'create')
+        .mockRejectedValue(
+          new DuplicateUsernameException(createUserDto.username),
+        );
+
+      await expect(
+        async () => await controller.create(createUserDto),
+      ).rejects.toThrow(new DuplicateUsernameException(createUserDto.username));
     });
   });
 
