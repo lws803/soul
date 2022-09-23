@@ -1,4 +1,4 @@
-# <img src="resources/banner.png"/>
+# <img src="resources/logo-with-word.png" width="300px" />
 
 ![pr-merge](https://github.com/soul-project/soul/actions/workflows/pr-merge.yml/badge.svg)
 ![e2e](https://github.com/soul-project/soul/actions/workflows/e2e.yml/badge.svg)
@@ -17,7 +17,7 @@ across different social media platforms as long as they are using soul to authen
 
 We believe that connections and reputation are what defines a person, user or a **soul** in the cyberspace (maybe in the real world too 🤔).
 
-This service attempts to federate some parts of a social media platform. Newer platforms can be created and maintained without having to start from a fresh
+This service attempts to outsource some parts of a social media platform. Newer platforms can be created and maintained without having to start from a fresh
 user base. On the other hand, Soul members would not have to start from scratch in an entirely new social media platform as they would be able to
 transfer their connections across all platforms which uses Soul to authenticate. You'll be moving across different worlds/ dimensions while preserving your
 soul!
