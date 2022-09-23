@@ -11,7 +11,7 @@ import { UserConnection } from 'src/user-connections/entities/user-connection.en
 import { platformEntity } from './platform';
 import { userEntity } from './users';
 
-export const oneUserConnection = Factory.define<UserConnection>(() => ({
+export const userConnectionEntity = Factory.define<UserConnection>(() => ({
   id: 1,
   fromUser: userEntity.build(),
   toUser: userEntity.build({ id: 2, email: 'TEST_USER_2@EMAIL.COM' }),
@@ -21,7 +21,7 @@ export const oneUserConnection = Factory.define<UserConnection>(() => ({
   mutualConnection: null,
 }));
 
-export const oneUserConnectionResponse =
+export const oneUserConnectionResponseEntity =
   Factory.define<FindOneUserConnectionResponseEntity>(() => ({
     id: 1,
     fromUser: userEntity.build(),
@@ -33,14 +33,16 @@ export const oneUserConnectionResponse =
     isMutual: false,
   }));
 
-export const userConnectionArray = Factory.define<UserConnection[]>(() => [
-  oneUserConnection.build({ id: 1 }),
-  oneUserConnection.build({
-    id: 2,
-    fromUser: userEntity.build({ id: 3 }),
-    toUser: userEntity.build({ id: 4 }),
-  }),
-]);
+export const userConnectionEntityArray = Factory.define<UserConnection[]>(
+  () => [
+    userConnectionEntity.build({ id: 1 }),
+    userConnectionEntity.build({
+      id: 2,
+      fromUser: userEntity.build({ id: 3 }),
+      toUser: userEntity.build({ id: 4 }),
+    }),
+  ],
+);
 
 export const createUserConnectionDto = Factory.define<CreateUserConnectionDto>(
   () => ({

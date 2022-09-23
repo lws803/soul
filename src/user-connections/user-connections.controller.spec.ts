@@ -20,26 +20,26 @@ describe('ConnectionsController', () => {
           provide: UserConnectionsService,
           useValue: {
             create: jest.fn().mockResolvedValue({
-              ...factories.oneUserConnection.build(),
+              ...factories.userConnectionEntity.build(),
               isMutual: false,
             }),
             findAll: jest.fn().mockResolvedValue({
-              totalCount: factories.userConnectionArray.build().length,
-              userConnections: factories.userConnectionArray.build(),
+              totalCount: factories.userConnectionEntityArray.build().length,
+              userConnections: factories.userConnectionEntityArray.build(),
             }),
             findMyUserConnections: jest.fn().mockResolvedValue({
-              totalCount: factories.userConnectionArray.build().length,
-              userConnections: factories.userConnectionArray.build(),
+              totalCount: factories.userConnectionEntityArray.build().length,
+              userConnections: factories.userConnectionEntityArray.build(),
             }),
             findOneByUserIds: jest
               .fn()
-              .mockResolvedValue(factories.oneUserConnection.build()),
+              .mockResolvedValue(factories.userConnectionEntity.build()),
             findOne: jest
               .fn()
-              .mockResolvedValue(factories.oneUserConnection.build()),
+              .mockResolvedValue(factories.userConnectionEntity.build()),
             remove: jest.fn(),
             addNewPlatformToUserConnection: jest.fn().mockResolvedValue(
-              factories.oneUserConnection.build({
+              factories.userConnectionEntity.build({
                 platforms: factories.platformEntity.buildList(1),
               }),
             ),
@@ -64,7 +64,7 @@ describe('ConnectionsController', () => {
       const createUserConnectionDto = factories.createUserConnectionDto.build();
 
       expect(await controller.create(userJwt, createUserConnectionDto)).toEqual(
-        { isMutual: false, ...factories.oneUserConnection.build({}) },
+        { isMutual: false, ...factories.userConnectionEntity.build({}) },
       );
 
       expect(service.create).toHaveBeenCalledWith(1, {
@@ -84,7 +84,7 @@ describe('ConnectionsController', () => {
         }),
       ).toEqual({
         totalCount: 2,
-        userConnections: factories.userConnectionArray.build(),
+        userConnections: factories.userConnectionEntityArray.build(),
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
@@ -104,7 +104,7 @@ describe('ConnectionsController', () => {
         }),
       ).toEqual({
         totalCount: 2,
-        userConnections: factories.userConnectionArray.build(),
+        userConnections: factories.userConnectionEntityArray.build(),
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
@@ -124,7 +124,7 @@ describe('ConnectionsController', () => {
         }),
       ).toEqual({
         totalCount: 2,
-        userConnections: factories.userConnectionArray.build(),
+        userConnections: factories.userConnectionEntityArray.build(),
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
@@ -143,7 +143,7 @@ describe('ConnectionsController', () => {
           fromUserId: 1,
           toUserId: 2,
         }),
-      ).toEqual(factories.oneUserConnection.build());
+      ).toEqual(factories.userConnectionEntity.build());
 
       expect(service.findOneByUserIds).toHaveBeenCalledWith(1, 2);
     });
@@ -152,7 +152,7 @@ describe('ConnectionsController', () => {
   describe('findOne()', () => {
     it('should find a connection by id successfully', async () => {
       expect(await controller.findOne({ id: 1 })).toEqual(
-        factories.oneUserConnection.build(),
+        factories.userConnectionEntity.build(),
       );
 
       expect(service.findOne).toHaveBeenCalledWith(1);
@@ -178,7 +178,7 @@ describe('ConnectionsController', () => {
           postPlatformConnectionDto,
         ),
       ).toEqual(
-        factories.oneUserConnection.build({
+        factories.userConnectionEntity.build({
           platforms: factories.platformEntity.buildList(1),
         }),
       );
