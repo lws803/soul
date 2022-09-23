@@ -244,6 +244,39 @@ describe('UsersService', () => {
         new UserNotFoundException({ id: 1 }),
       );
     });
+
+    it("updates a user's bio and display name successfully", async () => {
+      const user = factories.user.build();
+      jest
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(user)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({
+          ...user,
+          bio: null,
+          displayName: null,
+        });
+
+      const updatedUserDto = {
+        displayName: null,
+        bio: null,
+      };
+
+      expect(await service.update(user.id, updatedUserDto)).toStrictEqual({
+        ...user,
+        ...updatedUserDto,
+      });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        { id: user.id },
+        {
+          email: 'TEST_USER_1@EMAIL.COM',
+          username: 'test-user-1',
+          ...updatedUserDto,
+        },
+      );
+    });
   });
 
   describe('remove()', () => {
