@@ -8,7 +8,7 @@ export class DuplicateUsernameException extends GenericException {
       {
         message:
           `A user with the username: ${username} already exists. ` +
-          'Please login or user a different username.',
+          'Please login or use a different username.',
         error: 'DUPLICATE_USERNAME_EXISTS',
       },
       HttpStatus.CONFLICT,

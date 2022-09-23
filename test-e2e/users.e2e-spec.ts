@@ -100,7 +100,7 @@ describe('UsersController (e2e)', () => {
           expect(res.body).toStrictEqual({
             error: 'DUPLICATE_USERNAME_EXISTS',
             message:
-              'A user with the username: test-user-1 already exists. Please login or user a different username.',
+              'A user with the username: test-user-1 already exists. Please login or use a different username.',
           });
         });
     });
@@ -245,7 +245,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .send(factories.updateUserDto.build())
+        .send(factories.updateUserData.build())
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
@@ -288,7 +288,7 @@ describe('UsersController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toStrictEqual({
             message:
-              'A user with the username: test-user-2 already exists. Please login or user a different username.',
+              'A user with the username: test-user-2 already exists. Please login or use a different username.',
             error: 'DUPLICATE_USERNAME_EXISTS',
           });
         });

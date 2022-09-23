@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsEmail,
   IsInt,
@@ -34,6 +34,7 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({ name: 'display_name', example: 'John Doe', required: false })
+  @Expose({ name: 'display_name' })
   @IsOptional()
   @MaxLength(32)
   displayName?: string;
@@ -60,6 +61,7 @@ export class UpdateUserDto {
   email?: string;
 
   @ApiProperty({ name: 'display_name', example: 'John Doe', required: false })
+  @Expose({ name: 'display_name' })
   @IsOptional()
   @MaxLength(32)
   displayName?: string;
