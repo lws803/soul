@@ -39,8 +39,8 @@ $ docker run --name soul-mysql -e MYSQL_ROOT_PASSWORD=root_password -d -p 3306:3
 
 # Set up database
 $ docker exec -it soul-mysql mysql  -u root -p
-mysql> CREATE DATABASE soul_db_dev;
-mysql> CREATE DATABASE soul_db_test;
+mysql> CREATE DATABASE soul_db_dev CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+mysql> CREATE DATABASE soul_db_test CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
 # Install npm packages
 $ npm install
