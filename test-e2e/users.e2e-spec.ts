@@ -252,7 +252,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .send(factories.updateUserDto.build({ username: 'HELLO$%^&*' }))
+        .send(factories.updateUserDto.build({ username: 'Hello--test%^&' }))
         .expect(HttpStatus.BAD_REQUEST)
         .expect((res) => {
           expect(res.body).toStrictEqual({

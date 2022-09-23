@@ -15,7 +15,7 @@ import { IsPasswordValid } from 'src/common/validators/password.validator';
 
 export class CreateUserDto {
   @ApiProperty({ name: 'username', example: 'johndoe' })
-  @Matches(/[a-z0-9-]/, {
+  @Matches(/^[a-z0-9-]*$/, {
     message:
       'Username can only contain lowercase alphanumeric characters with the exception of hyphens.',
   })
@@ -37,7 +37,7 @@ export class CreateUserDto {
 export class UpdateUserDto {
   @ApiProperty({ name: 'username', example: 'johndoe', required: false })
   @IsOptional()
-  @Matches(/[a-z0-9-]/, {
+  @Matches(/^[a-z0-9-]*$/, {
     message:
       'Username can only contain lowercase alphanumeric characters with the exception of hyphens.',
   })
