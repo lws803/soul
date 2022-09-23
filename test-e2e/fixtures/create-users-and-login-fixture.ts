@@ -12,13 +12,13 @@ export async function createUsersAndLoginFixture(app: INestApplication) {
 
   await request(app.getHttpServer())
     .post('/users')
-    .send(factories.createUserDto.build({ password: '1oNc0iY3oml5d&%9' }))
+    .send(factories.createUserRequest.build({ password: '1oNc0iY3oml5d&%9' }))
     .expect(201);
 
   await request(app.getHttpServer())
     .post('/users')
     .send(
-      factories.createUserDto.build({
+      factories.createUserRequest.build({
         email: 'TEST_USER_2@EMAIL.COM',
         username: 'test-user-2',
         password: '1oNc0iY3oml5d&%9',
@@ -29,7 +29,7 @@ export async function createUsersAndLoginFixture(app: INestApplication) {
   await request(app.getHttpServer())
     .post('/users')
     .send(
-      factories.createUserDto.build({
+      factories.createUserRequest.build({
         email: 'TEST_USER_3@EMAIL.COM',
         username: 'test-user-3',
         password: '1oNc0iY3oml5d&%9',

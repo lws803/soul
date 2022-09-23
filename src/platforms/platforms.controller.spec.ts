@@ -1,7 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
+import {
+  CreatePlatformDto,
+  UpdatePlatformDto,
+} from 'src/platforms/serializers/api.dto';
 import { UserRole } from 'src/roles/role.enum';
 
 import { PlatformsController } from './platforms.controller';
@@ -12,8 +17,8 @@ describe('PlatformsController', () => {
   let platformsService: PlatformsService;
 
   beforeEach(async () => {
-    const platforms = factories.platform.buildList(2);
-    const platformUsers = factories.platformUser.buildList(2);
+    const platforms = factories.platformEntity.buildList(2);
+    const platformUsers = factories.platformUserEntity.buildList(2);
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PlatformsController],
@@ -21,7 +26,9 @@ describe('PlatformsController', () => {
         {
           provide: PlatformsService,
           useValue: {
-            create: jest.fn().mockResolvedValue(factories.platform.build()),
+            create: jest
+              .fn()
+              .mockResolvedValue(factories.platformEntity.build()),
             findAll: jest.fn().mockResolvedValue({
               platforms,
               totalCount: platforms.length,
@@ -30,11 +37,16 @@ describe('PlatformsController', () => {
               platforms,
               totalCount: platforms.length,
             }),
-            findOne: jest.fn().mockResolvedValue(factories.platform.build()),
+            findOne: jest
+              .fn()
+              .mockResolvedValue(factories.platformEntity.build()),
             update: jest.fn().mockResolvedValue(
-              factories.platform.build({
-                ...factories.updatePlatformDto.build(),
-                category: factories.onePlatformCategory.build({
+              factories.platformEntity.build({
+                ...plainToClass(
+                  UpdatePlatformDto,
+                  factories.updatePlatformRequest.build(),
+                ),
+                category: factories.platformCategoryEntity.build({
                   name: 'CATEGORY_UPDATE',
                 }),
               }),
@@ -42,18 +54,18 @@ describe('PlatformsController', () => {
             remove: jest.fn(),
             setUserRole: jest
               .fn()
-              .mockResolvedValue(factories.platformUser.build()),
+              .mockResolvedValue(factories.platformUserEntity.build()),
             removeUser: jest.fn(),
             addUser: jest
               .fn()
-              .mockResolvedValue(factories.platformUser.build()),
+              .mockResolvedValue(factories.platformUserEntity.build()),
             findAllPlatformUsers: jest.fn().mockResolvedValue({
               platformUsers,
               totalCount: platformUsers.length,
             }),
             findOnePlatformUser: jest
               .fn()
-              .mockResolvedValue(factories.platformUser.build()),
+              .mockResolvedValue(factories.platformUserEntity.build()),
           },
         },
         {
@@ -70,12 +82,15 @@ describe('PlatformsController', () => {
   });
 
   it('create()', async () => {
-    const createPlatformDto = factories.createPlatformDto.build();
+    const createPlatformDto = plainToClass(
+      CreatePlatformDto,
+      factories.createPlatformRequest.build(),
+    );
     const jwtPayload = factories.jwtPayload.build();
 
     expect(
       await controller.create({ user: jwtPayload }, createPlatformDto),
-    ).toEqual(factories.platform.build());
+    ).toEqual(factories.platformEntity.build());
     expect(platformsService.create).toHaveBeenCalledWith(
       createPlatformDto,
       jwtPayload.userId,
@@ -83,7 +98,7 @@ describe('PlatformsController', () => {
   });
 
   it('findAll()', async () => {
-    const platformsList = factories.platform.buildList(2);
+    const platformsList = factories.platformEntity.buildList(2);
     const paginationParams = { page: 1, numItemsPerPage: 10 };
     expect(await controller.findAll(paginationParams)).toEqual({
       platforms: platformsList,
@@ -94,7 +109,7 @@ describe('PlatformsController', () => {
   });
 
   it('findMyPlatforms()', async () => {
-    const platformsList = factories.platform.buildList(2);
+    const platformsList = factories.platformEntity.buildList(2);
     const paginationParams = { page: 1, numItemsPerPage: 10 };
     const queryParams = { ...paginationParams, role: UserRole.Member };
     const userJwt = factories.jwtPayload.build();
@@ -112,7 +127,7 @@ describe('PlatformsController', () => {
   });
 
   it('findOne()', async () => {
-    const platform = factories.platform.build();
+    const platform = factories.platformEntity.build();
     expect(await controller.findOne({ platformId: platform.id })).toEqual(
       platform,
     );
@@ -121,7 +136,7 @@ describe('PlatformsController', () => {
   });
 
   it('findOneFull()', async () => {
-    const platform = factories.platform.build();
+    const platform = factories.platformEntity.build();
     expect(await controller.findOneFull({ platformId: platform.id })).toEqual(
       platform,
     );
@@ -130,11 +145,14 @@ describe('PlatformsController', () => {
   });
 
   it('update()', async () => {
-    const updatePlatformDto = factories.updatePlatformDto.build();
-    const platform = factories.platform.build();
-    const updatedPlatform = factories.platform.build({
+    const updatePlatformDto = plainToClass(
+      UpdatePlatformDto,
+      factories.updatePlatformRequest.build(),
+    );
+    const platform = factories.platformEntity.build();
+    const updatedPlatform = factories.platformEntity.build({
       ...updatePlatformDto,
-      category: factories.onePlatformCategory.build({
+      category: factories.platformCategoryEntity.build({
         name: 'CATEGORY_UPDATE',
       }),
     });
@@ -150,7 +168,7 @@ describe('PlatformsController', () => {
   });
 
   it('remove()', async () => {
-    const platform = factories.platform.build();
+    const platform = factories.platformEntity.build();
 
     expect(
       await controller.remove({ platformId: platform.id }),
@@ -160,8 +178,8 @@ describe('PlatformsController', () => {
   });
 
   it('setPlatformUserRole()', async () => {
-    const user = factories.user.build();
-    const platform = factories.platform.build();
+    const user = factories.userEntity.build();
+    const platform = factories.platformEntity.build();
 
     expect(
       await controller.setPlatformUserRole(
@@ -170,7 +188,7 @@ describe('PlatformsController', () => {
           roles: [UserRole.Member],
         },
       ),
-    ).toEqual(factories.platformUser.build());
+    ).toEqual(factories.platformUserEntity.build());
 
     expect(platformsService.setUserRole).toHaveBeenCalledWith(
       platform.id,
@@ -180,8 +198,8 @@ describe('PlatformsController', () => {
   });
 
   it('removePlatformUser()', async () => {
-    const user = factories.user.build();
-    const platform = factories.platform.build();
+    const user = factories.userEntity.build();
+    const platform = factories.platformEntity.build();
 
     expect(
       await controller.removePlatformUser({
@@ -197,7 +215,7 @@ describe('PlatformsController', () => {
   });
 
   it('removeMyself()', async () => {
-    const platform = factories.platform.build();
+    const platform = factories.platformEntity.build();
     const user = factories.jwtPayload.build();
     expect(
       await controller.removeMyself({ user }, { platformId: platform.id }),
@@ -210,8 +228,8 @@ describe('PlatformsController', () => {
   });
 
   it('joinPlatform()', async () => {
-    const platform = factories.platform.build();
-    const oneUser = factories.user.build();
+    const platform = factories.platformEntity.build();
+    const oneUser = factories.userEntity.build();
 
     expect(
       await controller.joinPlatform(
@@ -220,7 +238,7 @@ describe('PlatformsController', () => {
           platformId: platform.id,
         },
       ),
-    ).toEqual(factories.platformUser.build());
+    ).toEqual(factories.platformUserEntity.build());
 
     expect(platformsService.addUser).toHaveBeenCalledWith(
       platform.id,
@@ -229,8 +247,8 @@ describe('PlatformsController', () => {
   });
 
   it('findAllPlatformUsers()', async () => {
-    const platform = factories.platform.build();
-    const platformUsers = factories.platformUser.buildList(2);
+    const platform = factories.platformEntity.build();
+    const platformUsers = factories.platformUserEntity.buildList(2);
 
     expect(
       await controller.findAllPlatformUsers(

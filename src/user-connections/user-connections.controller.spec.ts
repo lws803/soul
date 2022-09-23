@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
+import {
+  CreateUserConnectionDto,
+  PostPlatformDto,
+} from 'src/user-connections/serializers/api.dto';
 
 import { ConnectionType } from './enums/connection-type.enum';
 import { UserConnectionsController } from './user-connections.controller';
@@ -20,27 +25,27 @@ describe('ConnectionsController', () => {
           provide: UserConnectionsService,
           useValue: {
             create: jest.fn().mockResolvedValue({
-              ...factories.oneUserConnection.build(),
+              ...factories.userConnectionEntity.build(),
               isMutual: false,
             }),
             findAll: jest.fn().mockResolvedValue({
-              totalCount: factories.userConnectionArray.build().length,
-              userConnections: factories.userConnectionArray.build(),
+              totalCount: factories.userConnectionEntityArray.build().length,
+              userConnections: factories.userConnectionEntityArray.build(),
             }),
             findMyUserConnections: jest.fn().mockResolvedValue({
-              totalCount: factories.userConnectionArray.build().length,
-              userConnections: factories.userConnectionArray.build(),
+              totalCount: factories.userConnectionEntityArray.build().length,
+              userConnections: factories.userConnectionEntityArray.build(),
             }),
             findOneByUserIds: jest
               .fn()
-              .mockResolvedValue(factories.oneUserConnection.build()),
+              .mockResolvedValue(factories.userConnectionEntity.build()),
             findOne: jest
               .fn()
-              .mockResolvedValue(factories.oneUserConnection.build()),
+              .mockResolvedValue(factories.userConnectionEntity.build()),
             remove: jest.fn(),
             addNewPlatformToUserConnection: jest.fn().mockResolvedValue(
-              factories.oneUserConnection.build({
-                platforms: factories.platform.buildList(1),
+              factories.userConnectionEntity.build({
+                platforms: factories.platformEntity.buildList(1),
               }),
             ),
             removePlatformFromUserConnection: jest.fn(),
@@ -61,16 +66,16 @@ describe('ConnectionsController', () => {
 
   describe('create()', () => {
     it('should create a new user connection', async () => {
-      const createUserConnectionDto = factories.createUserConnectionDto.build();
-
-      expect(await controller.create(userJwt, createUserConnectionDto)).toEqual(
-        { isMutual: false, ...factories.oneUserConnection.build({}) },
+      const createUserConnectionDto = plainToClass(
+        CreateUserConnectionDto,
+        factories.createUserConnectionRequest.build(),
       );
 
-      expect(service.create).toHaveBeenCalledWith(1, {
-        fromUserId: 1,
-        toUserId: 2,
-      });
+      expect(await controller.create(userJwt, createUserConnectionDto)).toEqual(
+        { isMutual: false, ...factories.userConnectionEntity.build({}) },
+      );
+
+      expect(service.create).toHaveBeenCalledWith(1, createUserConnectionDto);
     });
   });
 
@@ -84,7 +89,7 @@ describe('ConnectionsController', () => {
         }),
       ).toEqual({
         totalCount: 2,
-        userConnections: factories.userConnectionArray.build(),
+        userConnections: factories.userConnectionEntityArray.build(),
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
@@ -104,7 +109,7 @@ describe('ConnectionsController', () => {
         }),
       ).toEqual({
         totalCount: 2,
-        userConnections: factories.userConnectionArray.build(),
+        userConnections: factories.userConnectionEntityArray.build(),
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
@@ -124,7 +129,7 @@ describe('ConnectionsController', () => {
         }),
       ).toEqual({
         totalCount: 2,
-        userConnections: factories.userConnectionArray.build(),
+        userConnections: factories.userConnectionEntityArray.build(),
       });
 
       expect(service.findMyUserConnections).toHaveBeenCalledWith({
@@ -143,7 +148,7 @@ describe('ConnectionsController', () => {
           fromUserId: 1,
           toUserId: 2,
         }),
-      ).toEqual(factories.oneUserConnection.build());
+      ).toEqual(factories.userConnectionEntity.build());
 
       expect(service.findOneByUserIds).toHaveBeenCalledWith(1, 2);
     });
@@ -152,7 +157,7 @@ describe('ConnectionsController', () => {
   describe('findOne()', () => {
     it('should find a connection by id successfully', async () => {
       expect(await controller.findOne({ id: 1 })).toEqual(
-        factories.oneUserConnection.build(),
+        factories.userConnectionEntity.build(),
       );
 
       expect(service.findOne).toHaveBeenCalledWith(1);
@@ -169,8 +174,10 @@ describe('ConnectionsController', () => {
 
   describe('addNewPlatformToUserConnection()', () => {
     it('should add a new platform to existing user connection', async () => {
-      const postPlatformConnectionDto =
-        factories.postPlatformToUserConnectionDto.build();
+      const postPlatformConnectionDto = plainToClass(
+        PostPlatformDto,
+        factories.postPlatformToUserConnectionRequest.build(),
+      );
       expect(
         await controller.addNewPlatformToUserConnection(
           userJwt,
@@ -178,8 +185,8 @@ describe('ConnectionsController', () => {
           postPlatformConnectionDto,
         ),
       ).toEqual(
-        factories.oneUserConnection.build({
-          platforms: factories.platform.buildList(1),
+        factories.userConnectionEntity.build({
+          platforms: factories.platformEntity.buildList(1),
         }),
       );
 

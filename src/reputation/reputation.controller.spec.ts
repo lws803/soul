@@ -7,7 +7,7 @@ import { ReputationService } from './reputation.service';
 
 describe('ReputationController', () => {
   let controller: ReputationController;
-  const user = factories.user.build();
+  const user = factories.userEntity.build();
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({

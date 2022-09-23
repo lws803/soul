@@ -48,7 +48,7 @@ describe('ReputationController (e2e)', () => {
     thirdUserAccount = thirdUser;
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -59,25 +59,25 @@ describe('ReputationController (e2e)', () => {
   describe('/:userId (GET)', () => {
     beforeAll(async () => {
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           user: userAccount.user,
           platform,
           roles: [UserRole.Banned],
         }),
       );
       await userConnectionRepository.save(
-        factories.oneUserConnection.build({
+        factories.userConnectionEntity.build({
           toUser: userAccount.user,
           fromUser: secondUserAccount.user,
         }),
       );
       await userConnectionRepository.save(
-        factories.oneUserConnection.build({
+        factories.userConnectionEntity.build({
           id: 2,
           toUser: userAccount.user,
           fromUser: thirdUserAccount.user,

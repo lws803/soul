@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
 
-import { CreateUserDto } from './serializers/api.dto';
+import { CreateUserDto, UpdateUserDto } from './serializers/api.dto';
 import { DuplicateUserEmailException } from './exceptions/duplicate-user-email.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UsersController } from './users.controller';
@@ -14,7 +15,7 @@ describe('UsersController', () => {
   let usersService: UsersService;
 
   beforeEach(async () => {
-    const usersList = factories.user.buildList(2);
+    const usersList = factories.userEntity.buildList(2);
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
@@ -31,9 +32,9 @@ describe('UsersController', () => {
               users: usersList,
               totalCount: usersList.length,
             }),
-            findOne: jest.fn().mockResolvedValue(factories.user.build()),
+            findOne: jest.fn().mockResolvedValue(factories.userEntity.build()),
             update: jest.fn().mockResolvedValue(
-              factories.user.build({
+              factories.userEntity.build({
                 email: 'UPDATED_EMAIL@EMAIL.COM',
                 username: 'updated-user',
                 userHandle: 'updated-user#1',
@@ -42,10 +43,12 @@ describe('UsersController', () => {
             remove: jest.fn(),
             verifyConfirmationToken: jest
               .fn()
-              .mockResolvedValue(factories.user.build()),
+              .mockResolvedValue(factories.userEntity.build()),
             resendConfirmationToken: jest.fn(),
             requestPasswordReset: jest.fn(),
-            passwordReset: jest.fn().mockResolvedValue(factories.user.build()),
+            passwordReset: jest
+              .fn()
+              .mockResolvedValue(factories.userEntity.build()),
           },
         },
       ],
@@ -61,7 +64,10 @@ describe('UsersController', () => {
 
   describe('create()', () => {
     it('should create a user', async () => {
-      const createUserDto = factories.createUserDto.build();
+      const createUserDto = plainToClass(
+        CreateUserDto,
+        factories.createUserRequest.build(),
+      );
 
       const resp = await controller.create(createUserDto);
 
@@ -76,7 +82,10 @@ describe('UsersController', () => {
     });
 
     it('should return duplicate user email error', async () => {
-      const createUserDto = factories.createUserDto.build();
+      const createUserDto = plainToClass(
+        CreateUserDto,
+        factories.createUserRequest.build(),
+      );
       jest
         .spyOn(usersService, 'create')
         .mockRejectedValue(
@@ -89,7 +98,10 @@ describe('UsersController', () => {
     });
 
     it('should return duplicate username error', async () => {
-      const createUserDto = factories.createUserDto.build();
+      const createUserDto = plainToClass(
+        CreateUserDto,
+        factories.createUserRequest.build(),
+      );
       jest
         .spyOn(usersService, 'create')
         .mockRejectedValue(
@@ -105,7 +117,7 @@ describe('UsersController', () => {
   describe('findAll()', () => {
     it('should return all users', async () => {
       const params = { page: 1, numItemsPerPage: 10 };
-      const usersList = factories.user.buildList(2);
+      const usersList = factories.userEntity.buildList(2);
       expect(await controller.findAll(params)).toEqual({
         users: usersList,
         totalCount: usersList.length,
@@ -115,7 +127,7 @@ describe('UsersController', () => {
     });
 
     it('should return all users with pagination', async () => {
-      const usersList = factories.user.buildList(1);
+      const usersList = factories.userEntity.buildList(1);
       jest.spyOn(usersService, 'findAll').mockResolvedValue({
         users: usersList,
         totalCount: usersList.length,
@@ -132,14 +144,14 @@ describe('UsersController', () => {
 
   describe('findOne()', () => {
     it('should return a user', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       expect(await controller.findOne({ id: user.id })).toEqual(user);
 
       expect(usersService.findOne).toHaveBeenCalledWith(user.id);
     });
 
     it('should throw user not found', async () => {
-      const oneUser = factories.user.build();
+      const oneUser = factories.userEntity.build();
       jest
         .spyOn(usersService, 'findOne')
         .mockRejectedValue(new UserNotFoundException({ id: oneUser.id }));
@@ -152,14 +164,17 @@ describe('UsersController', () => {
 
   describe('update()', () => {
     it('should update a user', async () => {
-      const user = factories.user.build();
-      const updateUserDto = factories.updateUserDto.build();
+      const user = factories.userEntity.build();
+      const updateUserDto = plainToClass(
+        UpdateUserDto,
+        factories.updateUserRequest.build(),
+      );
       const jwtPayload = factories.jwtPayload.build();
 
       expect(
         await controller.updateMe({ user: jwtPayload }, updateUserDto),
       ).toEqual(
-        factories.user.build({
+        factories.userEntity.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'updated-user',
           userHandle: 'updated-user#1',
@@ -170,7 +185,7 @@ describe('UsersController', () => {
     });
 
     it('should throw user not found', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       jest
         .spyOn(usersService, 'update')
         .mockRejectedValue(new UserNotFoundException({ id: user.id }));
@@ -184,7 +199,7 @@ describe('UsersController', () => {
 
   describe('remove()', () => {
     it('should remove a user', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const jwtPayload = factories.jwtPayload.build();
 
       await controller.removeMe({ user: jwtPayload });
@@ -193,7 +208,7 @@ describe('UsersController', () => {
     });
 
     it('should throw user not found', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       jest
         .spyOn(usersService, 'remove')
         .mockRejectedValue(new UserNotFoundException({ id: user.id }));
@@ -207,7 +222,7 @@ describe('UsersController', () => {
 
   describe('findMe()', () => {
     it('gets the right user', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const jwtPayload = factories.jwtPayload.build();
       expect(await controller.findMe({ user: jwtPayload })).toEqual(user);
     });
@@ -217,7 +232,7 @@ describe('UsersController', () => {
     it('verifies token successfully', async () => {
       expect(
         await controller.verifyConfirmationToken({ token: 'TOKEN' }),
-      ).toEqual(factories.user.build());
+      ).toEqual(factories.userEntity.build());
 
       expect(usersService.verifyConfirmationToken).toHaveBeenCalledWith(
         'TOKEN',
@@ -229,12 +244,12 @@ describe('UsersController', () => {
     it('resends confirmation email', async () => {
       expect(
         await controller.resendConfirmationToken({
-          email: factories.user.build().email,
+          email: factories.userEntity.build().email,
         }),
       ).toBeUndefined();
 
       expect(usersService.resendConfirmationToken).toHaveBeenCalledWith(
-        factories.user.build().email,
+        factories.userEntity.build().email,
       );
     });
   });
@@ -243,12 +258,12 @@ describe('UsersController', () => {
     it('requests password reset email successfully', async () => {
       expect(
         await controller.requestPasswordResetToken({
-          email: factories.user.build().email,
+          email: factories.userEntity.build().email,
         }),
       ).toBeUndefined();
 
       expect(usersService.requestPasswordReset).toHaveBeenCalledWith(
-        factories.user.build().email,
+        factories.userEntity.build().email,
       );
     });
   });
@@ -260,7 +275,7 @@ describe('UsersController', () => {
           { token: 'TOKEN' },
           { password: 'NEW_PASSWORD' },
         ),
-      ).toEqual(factories.user.build());
+      ).toEqual(factories.userEntity.build());
 
       expect(usersService.passwordReset).toHaveBeenCalledWith(
         'TOKEN',

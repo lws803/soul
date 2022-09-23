@@ -42,7 +42,7 @@ describe('AuthController (e2e)', () => {
     platformCategoryRepository = connection.getRepository(PlatformCategory);
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -62,12 +62,12 @@ describe('AuthController (e2e)', () => {
       userAccount = firstUser;
 
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           platform,
           user: userAccount.user,
         }),
@@ -174,7 +174,7 @@ describe('AuthController (e2e)', () => {
 
     it('fails to login with platform due to not being a member', async () => {
       await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
           id: 2,
           name: 'TEST_PLATFORM_2',
@@ -214,12 +214,12 @@ describe('AuthController (e2e)', () => {
       userAccount = firstUser;
 
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           platform,
           user: userAccount.user,
         }),

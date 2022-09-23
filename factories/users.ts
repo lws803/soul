@@ -1,11 +1,10 @@
 import { Factory } from 'fishery';
 
-import { CreateUserDto, UpdateUserDto } from 'src/users/serializers/api.dto';
 import { User } from 'src/users/entities/user.entity';
 
-export const user = Factory.define<User>(({ sequence }) => {
+export const userEntity = Factory.define<User>(({ sequence }) => {
   // Rewinds the sequence as we do not want to have "sequences" bleed into subsequent builds
-  user.rewindSequence();
+  userEntity.rewindSequence();
   return {
     id: sequence,
     username: `test-user-${sequence}`,
@@ -20,31 +19,32 @@ export const user = Factory.define<User>(({ sequence }) => {
   };
 });
 
-export const createUserDto = Factory.define<CreateUserDto>(() => ({
-  email: 'TEST_USER@EMAIL.COM',
-  username: 'test-user',
-  password: 'TEST_PASSWORD',
-  bio: null,
-  displayName: null,
-}));
-
-export const updateUserDto = Factory.define<UpdateUserDto>(() => ({
-  email: 'UPDATED_EMAIL@EMAIL.COM',
-  username: 'updated-user',
-  displayName: 'UPDATED_DISPLAY_NAME',
-  bio: 'UPDATED_BIO',
-}));
-
-type UpdateUserData = {
+type UpdateUserRequest = {
   email: string;
   username: string;
   display_name: string;
   bio: string;
 };
 
-export const updateUserData = Factory.define<UpdateUserData>(() => ({
+export const updateUserRequest = Factory.define<UpdateUserRequest>(() => ({
   email: 'UPDATED_EMAIL@EMAIL.COM',
   username: 'updated-user',
   display_name: 'UPDATED_DISPLAY_NAME',
   bio: 'UPDATED_BIO',
+}));
+
+type CreateUserRequest = {
+  email: string;
+  username: string;
+  password: string;
+  bio: string;
+  display_name: string;
+};
+
+export const createUserRequest = Factory.define<CreateUserRequest>(() => ({
+  email: 'TEST_USER@EMAIL.COM',
+  username: 'test-user',
+  password: 'TEST_PASSWORD',
+  bio: null,
+  display_name: null,
 }));

@@ -40,7 +40,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/users')
         .send(
-          factories.createUserDto.build({
+          factories.createUserRequest.build({
             password: '3Yarw#Nm%cpY9QV&',
           }),
         )
@@ -61,12 +61,12 @@ describe('UsersController (e2e)', () => {
     });
 
     it('throws user duplicate error due to duplicate email address', async () => {
-      const existingUser = factories.user.build();
+      const existingUser = factories.userEntity.build();
       await userRepository.save(existingUser);
       return request(app.getHttpServer())
         .post('/users')
         .send(
-          factories.createUserDto.build({
+          factories.createUserRequest.build({
             email: existingUser.email,
             username: existingUser.username,
             password: '3Yarw#Nm%cpY9QV&',
@@ -84,12 +84,12 @@ describe('UsersController (e2e)', () => {
     });
 
     it('throws user duplicate error due to duplicate username', async () => {
-      const existingUser = factories.user.build();
+      const existingUser = factories.userEntity.build();
       await userRepository.save(existingUser);
       return request(app.getHttpServer())
         .post('/users')
         .send(
-          factories.createUserDto.build({
+          factories.createUserRequest.build({
             email: 'NEW_EMAIL@MAIL.COM',
             username: existingUser.username,
             password: '3Yarw#Nm%cpY9QV&',
@@ -109,8 +109,8 @@ describe('UsersController (e2e)', () => {
   describe('/users (GET)', () => {
     beforeAll(async () => {
       await userRepository.save([
-        factories.user.build({ id: undefined }),
-        factories.user.build({
+        factories.userEntity.build({ id: undefined }),
+        factories.userEntity.build({
           id: undefined,
           username: 'test-user-2',
           userHandle: 'test-user-2#2',
@@ -193,7 +193,7 @@ describe('UsersController (e2e)', () => {
 
   describe('/users/:id (GET)', () => {
     beforeAll(async () => {
-      await userRepository.save(factories.user.build());
+      await userRepository.save(factories.userEntity.build());
     });
 
     afterAll(async () => {
@@ -245,7 +245,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .send(factories.updateUserData.build())
+        .send(factories.updateUserRequest.build())
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body).toStrictEqual({
@@ -266,7 +266,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .send(factories.updateUserDto.build({ username: 'Hello--test%^&' }))
+        .send(factories.updateUserRequest.build({ username: 'Hello--test%^&' }))
         .expect(HttpStatus.BAD_REQUEST)
         .expect((res) => {
           expect(res.body).toStrictEqual({
@@ -283,7 +283,7 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .send(factories.updateUserDto.build({ username: 'test-user-2' }))
+        .send(factories.updateUserRequest.build({ username: 'test-user-2' }))
         .expect(HttpStatus.CONFLICT)
         .expect((res) => {
           expect(res.body).toStrictEqual({
@@ -298,7 +298,9 @@ describe('UsersController (e2e)', () => {
       return request(app.getHttpServer())
         .patch('/users/me')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
-        .send(factories.updateUserDto.build({ email: 'TEST_USER_2@EMAIL.COM' }))
+        .send(
+          factories.updateUserRequest.build({ email: 'TEST_USER_2@EMAIL.COM' }),
+        )
         .expect(HttpStatus.CONFLICT)
         .expect((res) => {
           expect(res.body).toStrictEqual({

@@ -49,7 +49,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     thirdUserAccount = thirdUser;
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -60,12 +60,15 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
   describe('/platforms/:platformId/users (GET)', () => {
     beforeAll(async () => {
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({ user: userAccount.user, platform }),
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
       );
     });
 
@@ -128,13 +131,16 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
   describe('/platforms/:platformId/users/:userId (PUT)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
       await platformUserRepository.save([
-        factories.platformUser.build({ user: userAccount.user, platform }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
+        factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
@@ -313,13 +319,16 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
   describe('/platforms/:platformId/users/:userId (DELETE)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
       await platformUserRepository.save([
-        factories.platformUser.build({ user: userAccount.user, platform }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
+        factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
@@ -382,20 +391,23 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     beforeEach(async () => {
       platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
 
       await platformUserRepository.save([
-        factories.platformUser.build({ user: userAccount.user, platform }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
+        factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
           roles: [UserRole.Member],
         }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 3,
           user: thirdUserAccount.user,
           platform,
@@ -411,7 +423,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     it('quits existing platform (ADMIN)', async () => {
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 2,
           user: secondUserAccount.user,
           platform,
@@ -523,7 +535,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
   describe('/platforms/:platformId/join (POST)', () => {
     beforeEach(async () => {
       await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );

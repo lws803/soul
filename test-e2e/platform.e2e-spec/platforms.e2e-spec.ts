@@ -45,7 +45,7 @@ describe('PlatformsController (e2e)', () => {
     secondUserAccount = secondUser;
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -133,10 +133,10 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms (GET)', () => {
     beforeAll(async () => {
       await platformRepository.save([
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
-        factories.platform.build({
+        factories.platformEntity.build({
           id: 2,
           name: 'TEST_PLATFORM_2',
           nameHandle: 'test_platform_2#2',
@@ -294,17 +294,17 @@ describe('PlatformsController (e2e)', () => {
 
   describe('/platforms/my-platforms (GET)', () => {
     beforeAll(async () => {
-      const platformOne = factories.platform.build({
+      const platformOne = factories.platformEntity.build({
         redirectUris: ['https://www.example.com'],
       });
-      const platformTwo = factories.platform.build({
+      const platformTwo = factories.platformEntity.build({
         id: 2,
         name: 'TEST_PLATFORM_2',
         nameHandle: 'test_platform_2#2',
         isVerified: false,
         category: null,
       });
-      const platformThree = factories.platform.build({
+      const platformThree = factories.platformEntity.build({
         id: 3,
         name: 'TEST_PLATFORM_3',
         nameHandle: 'TEST_PLATFORM_3#3',
@@ -315,19 +315,19 @@ describe('PlatformsController (e2e)', () => {
       await platformRepository.save([platformOne, platformTwo, platformThree]);
 
       await platformUserRepository.save([
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 1,
           user: userAccount.user,
           roles: [UserRole.Admin, UserRole.Member],
           platform: platformOne,
         }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 2,
           user: userAccount.user,
           roles: [UserRole.Member],
           platform: platformTwo,
         }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 3,
           user: secondUserAccount.user,
           roles: [UserRole.Member],
@@ -423,7 +423,7 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId (GET)', () => {
     beforeAll(async () => {
       await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
@@ -469,10 +469,10 @@ describe('PlatformsController (e2e)', () => {
 
   describe('/platforms/:platformId/full (GET)', () => {
     beforeAll(async () => {
-      const platformOne = factories.platform.build({
+      const platformOne = factories.platformEntity.build({
         redirectUris: ['https://www.example.com'],
       });
-      const adminPlatform = factories.platform.build({
+      const adminPlatform = factories.platformEntity.build({
         id: 2,
         name: 'ADMIN_PLATFORM',
         nameHandle: 'admin_platform#2',
@@ -484,13 +484,13 @@ describe('PlatformsController (e2e)', () => {
       await platformRepository.save([platformOne, adminPlatform]);
 
       await platformUserRepository.save([
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 1,
           user: userAccount.user,
           roles: [UserRole.Admin, UserRole.Member],
           platform: platformOne,
         }),
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           id: 2,
           user: userAccount.user,
           roles: [UserRole.Member],
@@ -548,12 +548,12 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId (PATCH)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           user: userAccount.user,
           platform,
         }),
@@ -620,12 +620,12 @@ describe('PlatformsController (e2e)', () => {
   describe('/platforms/:platformId (DELETE)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
-        factories.platform.build({
+        factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
       );
       await platformUserRepository.save(
-        factories.platformUser.build({
+        factories.platformUserEntity.build({
           user: userAccount.user,
           platform,
         }),

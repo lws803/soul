@@ -42,7 +42,7 @@ describe('UserConnectionsController (e2e)', () => {
     firstUserAccessToken = accessToken;
 
     await platformCategoryRepository.save(
-      factories.onePlatformCategory.build(),
+      factories.platformCategoryEntity.build(),
     );
   });
 
@@ -89,10 +89,10 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('creates a new connection with platform', async () => {
-      const platform = factories.platform.build();
+      const platform = factories.platformEntity.build();
       await platformRepository.save(platform);
       await platformUserRepository.save(
-        factories.platformUser.build({ platform }),
+        factories.platformUserEntity.build({ platform }),
       );
 
       return request(app.getHttpServer())
@@ -139,13 +139,13 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('creates a new connection with opposite becomes mutual', async () => {
-      const secondUserConnection = factories.oneUserConnection.build({
+      const secondUserConnection = factories.userConnectionEntity.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save(secondUserConnection);
       await userConnectionRepository.update(
@@ -186,14 +186,14 @@ describe('UserConnectionsController (e2e)', () => {
 
   describe('/user-connections/by-users (GET)', () => {
     beforeAll(async () => {
-      const firstUserConnection = factories.oneUserConnection.build();
-      const secondUserConnection = factories.oneUserConnection.build({
+      const firstUserConnection = factories.userConnectionEntity.build();
+      const secondUserConnection = factories.userConnectionEntity.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -239,13 +239,13 @@ describe('UserConnectionsController (e2e)', () => {
 
     it('returns not found', async () => {
       await userRepository.save([
-        factories.user.build({
+        factories.userEntity.build({
           id: 999,
           email: 'TEST_USER_999@EMAIL.COM',
           userHandle: 'test-user_999#999',
           username: 'test-user-999',
         }),
-        factories.user.build({
+        factories.userEntity.build({
           id: 998,
           email: 'TEST_USER_998@EMAIL.COM',
           userHandle: 'test-user_998#998',
@@ -266,14 +266,14 @@ describe('UserConnectionsController (e2e)', () => {
 
   describe('/user-connections/:id (GET)', () => {
     beforeAll(async () => {
-      const firstUserConnection = factories.oneUserConnection.build();
-      const secondUserConnection = factories.oneUserConnection.build({
+      const firstUserConnection = factories.userConnectionEntity.build();
+      const secondUserConnection = factories.userConnectionEntity.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -332,7 +332,9 @@ describe('UserConnectionsController (e2e)', () => {
 
   describe('/user-connections/:id (DELETE)', () => {
     beforeEach(async () => {
-      await userConnectionRepository.save(factories.oneUserConnection.build());
+      await userConnectionRepository.save(
+        factories.userConnectionEntity.build(),
+      );
     });
 
     afterEach(async () => {
@@ -348,14 +350,14 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('deleting user connection removes mutual status', async () => {
-      const firstUserConnection = factories.oneUserConnection.build();
-      const secondUserConnection = factories.oneUserConnection.build({
+      const firstUserConnection = factories.userConnectionEntity.build();
+      const secondUserConnection = factories.userConnectionEntity.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -403,7 +405,9 @@ describe('UserConnectionsController (e2e)', () => {
 
   describe('/user-connections/:id/platforms (POST)', () => {
     beforeEach(async () => {
-      await userConnectionRepository.save(factories.oneUserConnection.build());
+      await userConnectionRepository.save(
+        factories.userConnectionEntity.build(),
+      );
     });
 
     afterEach(async () => {
@@ -413,9 +417,9 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('adds a new platform to the existing connection', async () => {
-      const platform = factories.platform.build();
+      const platform = factories.platformEntity.build();
       await platformRepository.save(platform);
-      await platformUserRepository.save(factories.platformUser.build());
+      await platformUserRepository.save(factories.platformUserEntity.build());
 
       await request(app.getHttpServer())
         .post('/user-connections/1/platforms')
@@ -462,7 +466,9 @@ describe('UserConnectionsController (e2e)', () => {
 
   describe('/user-connections/:id/platforms (DELETE)', () => {
     beforeEach(async () => {
-      await userConnectionRepository.save(factories.oneUserConnection.build());
+      await userConnectionRepository.save(
+        factories.userConnectionEntity.build(),
+      );
     });
 
     afterEach(async () => {
@@ -472,8 +478,8 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('deletes a platform from existing connection', async () => {
-      await platformRepository.save(factories.platform.build());
-      await platformUserRepository.save(factories.platformUser.build());
+      await platformRepository.save(factories.platformEntity.build());
+      await platformUserRepository.save(factories.platformUserEntity.build());
 
       return request(app.getHttpServer())
         .delete('/user-connections/1/platforms/1')
@@ -489,14 +495,14 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('fetches my mutual connections', async () => {
-      const firstUserConnection = factories.oneUserConnection.build();
-      const secondUserConnection = factories.oneUserConnection.build({
+      const firstUserConnection = factories.userConnectionEntity.build();
+      const secondUserConnection = factories.userConnectionEntity.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save([
         firstUserConnection,
@@ -541,13 +547,13 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('fetches my follower connections', async () => {
-      const secondUserConnection = factories.oneUserConnection.build({
+      const secondUserConnection = factories.userConnectionEntity.build({
         id: 2,
-        fromUser: factories.user.build({
+        fromUser: factories.userEntity.build({
           id: 2,
           email: 'TEST_USER_2@EMAIL.COM',
         }),
-        toUser: factories.user.build(),
+        toUser: factories.userEntity.build(),
       });
       await userConnectionRepository.save(secondUserConnection);
 
@@ -585,7 +591,7 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('fetches my follow connections', async () => {
-      const firstUserConnection = factories.oneUserConnection.build();
+      const firstUserConnection = factories.userConnectionEntity.build();
       await userConnectionRepository.save(firstUserConnection);
 
       return request(app.getHttpServer())
@@ -622,22 +628,22 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('fetches my follow connections for a platform', async () => {
-      const thirdUser = factories.user.build({
+      const thirdUser = factories.userEntity.build({
         id: 3,
         username: 'test-user_3',
         userHandle: 'test-user_3#3',
         email: 'TEST_USER_3@EMAIL.COM',
       });
-      const onePlatform = factories.platform.build();
+      const onePlatform = factories.platformEntity.build();
       await userRepository.save(thirdUser);
       await platformRepository.save(onePlatform);
-      const firstUserConnection = factories.oneUserConnection.build({
+      const firstUserConnection = factories.userConnectionEntity.build({
         platforms: [],
       });
-      const secondUserConnection = factories.oneUserConnection.build({
+      const secondUserConnection = factories.userConnectionEntity.build({
         id: 2,
         toUser: thirdUser,
-        platforms: factories.platform.buildList(1),
+        platforms: factories.platformEntity.buildList(1),
       });
       await userConnectionRepository.save([
         firstUserConnection,

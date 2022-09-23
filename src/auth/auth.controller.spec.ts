@@ -28,7 +28,7 @@ describe('AuthService', () => {
             exchangeCodeForToken: jest.fn().mockReturnValue({
               accessToken: 'ACCESS_TOKEN',
               refreshToken: 'REFRESH_TOKEN',
-              platformId: factories.platform.build().id,
+              platformId: factories.platformEntity.build().id,
               roles: [UserRole.Admin, UserRole.Member],
             }),
             refresh: jest.fn().mockResolvedValue({
@@ -56,7 +56,7 @@ describe('AuthService', () => {
 
   describe('login()', () => {
     it('should return token', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const result = await controller.login({ user });
 
       expect(result).toEqual({
@@ -95,7 +95,7 @@ describe('AuthService', () => {
 
   describe('code()', () => {
     it('should return code for platform', async () => {
-      const user = factories.user.build();
+      const user = factories.userEntity.build();
       const platformId = 1;
       const result = await controller.code(
         { user },
