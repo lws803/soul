@@ -101,6 +101,8 @@ describe('ReputationController (e2e)', () => {
               id: userAccount.user.id,
               user_handle: userAccount.user.userHandle,
               username: userAccount.user.username,
+              bio: null,
+              display_name: null,
             },
             reputation: 1,
           });
