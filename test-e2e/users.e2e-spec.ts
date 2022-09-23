@@ -98,7 +98,7 @@ describe('UsersController (e2e)', () => {
           expect(res.body).toStrictEqual({
             error: 'DUPLICATE_USERNAME_EXISTS',
             message:
-              'A user with the username: test-user1 already exists. Please login or user a different username.',
+              'A user with the username: test-user-1 already exists. Please login or user a different username.',
           });
         });
     });
@@ -131,13 +131,13 @@ describe('UsersController (e2e)', () => {
             users: [
               {
                 id: expect.any(Number),
-                user_handle: 'test-user2#2',
-                username: 'test-user2',
+                user_handle: 'test-user-2#2',
+                username: 'test-user-2',
               },
               {
                 id: expect.any(Number),
-                user_handle: 'test-user1#1',
-                username: 'test-user1',
+                user_handle: 'test-user-1#1',
+                username: 'test-user-1',
               },
             ],
           });
@@ -197,8 +197,8 @@ describe('UsersController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toStrictEqual({
             id: expect.any(Number),
-            user_handle: 'test-user1#1',
-            username: 'test-user1',
+            user_handle: 'test-user-1#1',
+            username: 'test-user-1',
           });
         });
     });

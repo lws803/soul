@@ -35,8 +35,8 @@ describe('UsersController', () => {
             update: jest.fn().mockResolvedValue(
               factories.user.build({
                 email: 'UPDATED_EMAIL@EMAIL.COM',
-                username: 'UPDATED_USER',
-                userHandle: 'UPDATED_USER#1',
+                username: 'updated-user',
+                userHandle: 'updated-user#1',
               }),
             ),
             remove: jest.fn(),
@@ -161,8 +161,8 @@ describe('UsersController', () => {
       ).toEqual(
         factories.user.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
-          username: 'UPDATED_USER',
-          userHandle: 'UPDATED_USER#1',
+          username: 'updated-user',
+          userHandle: 'updated-user#1',
         }),
       );
 

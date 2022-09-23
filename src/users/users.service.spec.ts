@@ -167,7 +167,7 @@ describe('UsersService', () => {
     it('should query for users with the given full text query', async () => {
       const users = factories.user.buildList(2);
       expect(
-        await service.findAll({ page: 1, numItemsPerPage: 10, q: 'TEST_USER' }),
+        await service.findAll({ page: 1, numItemsPerPage: 10, q: 'test-user' }),
       ).toStrictEqual({
         users,
         totalCount: users.length,
@@ -175,7 +175,7 @@ describe('UsersService', () => {
 
       expect(userCreateQueryBuilder.where).toHaveBeenCalledWith(
         'user.username like :query',
-        { query: 'TEST_USER%' },
+        { query: 'test-user%' },
       );
     });
   });
