@@ -195,7 +195,7 @@ describe('AuthController (e2e)', () => {
           expect(res.body).toEqual({
             error: 'PLATFORM_USER_NOT_FOUND',
             message:
-              'The user with username: test_user#1 was not found on ' +
+              'The user with username: test-user#1 was not found on ' +
               'platform: test_platform_2#2, please try again.',
           });
         });
