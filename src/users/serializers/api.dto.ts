@@ -5,6 +5,7 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -14,6 +15,10 @@ import { IsPasswordValid } from 'src/common/validators/password.validator';
 
 export class CreateUserDto {
   @ApiProperty({ name: 'username', example: 'johndoe' })
+  @Matches(/[a-z0-9-]/, {
+    message:
+      'Username can only contain lowercase alphanumeric characters with the exception of hyphens.',
+  })
   @MaxLength(32)
   username: string;
 
@@ -32,6 +37,10 @@ export class CreateUserDto {
 export class UpdateUserDto {
   @ApiProperty({ name: 'username', example: 'johndoe', required: false })
   @IsOptional()
+  @Matches(/[a-z0-9-]/, {
+    message:
+      'Username can only contain lowercase alphanumeric characters with the exception of hyphens.',
+  })
   @MaxLength(32)
   username?: string;
 
@@ -79,11 +88,6 @@ export class PasswordResetRequestDto {
   @IsString()
   @IsEmail()
   email?: string;
-
-  @ApiProperty({ name: 'username', example: 'johndoe', required: false })
-  @IsOptional()
-  @IsString()
-  username?: string;
 }
 
 export class PasswordResetDto {

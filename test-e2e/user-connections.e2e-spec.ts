@@ -70,13 +70,13 @@ describe('UserConnectionsController (e2e)', () => {
             id: expect.any(Number),
             from_user: {
               id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
+              user_handle: 'test-user#1',
+              username: 'test-user',
             },
             to_user: {
               id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
             },
             platforms: [],
             is_mutual: false,
@@ -103,13 +103,13 @@ describe('UserConnectionsController (e2e)', () => {
             id: expect.any(Number),
             from_user: {
               id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
+              user_handle: 'test-user#1',
+              username: 'test-user',
             },
             to_user: {
               id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
             },
             platforms: [
               {
@@ -157,13 +157,13 @@ describe('UserConnectionsController (e2e)', () => {
             id: expect.any(Number),
             from_user: {
               id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
+              user_handle: 'test-user#1',
+              username: 'test-user',
             },
             to_user: {
               id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
             },
             platforms: [],
             is_mutual: true,
@@ -206,15 +206,15 @@ describe('UserConnectionsController (e2e)', () => {
             updated_at: expect.any(String),
             from_user: {
               id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
+              user_handle: 'test-user#1',
+              username: 'test-user',
             },
             id: 1,
             platforms: [],
             to_user: {
               id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
             },
             is_mutual: true,
           }),
@@ -226,12 +226,14 @@ describe('UserConnectionsController (e2e)', () => {
         factories.user.build({
           id: 999,
           email: 'TEST_USER_999@EMAIL.COM',
-          userHandle: 'TEST_USER_999#999',
+          userHandle: 'test-user_999#999',
+          username: 'test-user-999',
         }),
         factories.user.build({
           id: 998,
           email: 'TEST_USER_998@EMAIL.COM',
-          userHandle: 'TEST_USER_998#998',
+          userHandle: 'test-user_998#998',
+          username: 'test-user-998',
         }),
       ]);
       return request(app.getHttpServer())
@@ -280,15 +282,15 @@ describe('UserConnectionsController (e2e)', () => {
             updated_at: expect.any(String),
             from_user: {
               id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
+              user_handle: 'test-user#1',
+              username: 'test-user',
             },
             id: 1,
             platforms: [],
             to_user: {
               id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
             },
             is_mutual: true,
           }),
@@ -359,15 +361,15 @@ describe('UserConnectionsController (e2e)', () => {
             updated_at: expect.any(String),
             from_user: {
               id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
             },
             id: 2,
             platforms: [],
             to_user: {
               id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
+              user_handle: 'test-user#1',
+              username: 'test-user',
             },
             is_mutual: false,
           }),
@@ -403,13 +405,13 @@ describe('UserConnectionsController (e2e)', () => {
             updated_at: expect.any(String),
             from_user: {
               id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
+              user_handle: 'test-user#1',
+              username: 'test-user',
             },
             to_user: {
               id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
             },
             platforms: [
               {
@@ -490,15 +492,15 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 from_user: {
                   id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
+                  user_handle: 'test-user#1',
+                  username: 'test-user',
                 },
                 id: expect.any(Number),
                 platforms: [],
                 to_user: {
                   id: 2,
-                  user_handle: 'test_user_2#2',
-                  username: 'TEST_USER_2',
+                  user_handle: 'test-user-2#2',
+                  username: 'test-user-2',
                 },
               },
             ],
@@ -530,15 +532,15 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 to_user: {
                   id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
+                  user_handle: 'test-user#1',
+                  username: 'test-user',
                 },
                 id: expect.any(Number),
                 platforms: [],
                 from_user: {
                   id: 2,
-                  user_handle: 'test_user_2#2',
-                  username: 'TEST_USER_2',
+                  user_handle: 'test-user-2#2',
+                  username: 'test-user-2',
                 },
               },
             ],
@@ -563,15 +565,15 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 from_user: {
                   id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
+                  user_handle: 'test-user#1',
+                  username: 'test-user',
                 },
                 id: expect.any(Number),
                 platforms: [],
                 to_user: {
                   id: 2,
-                  user_handle: 'test_user_2#2',
-                  username: 'TEST_USER_2',
+                  user_handle: 'test-user-2#2',
+                  username: 'test-user-2',
                 },
               },
             ],
@@ -582,8 +584,8 @@ describe('UserConnectionsController (e2e)', () => {
     it('fetches my follow connections for a platform', async () => {
       const thirdUser = factories.user.build({
         id: 3,
-        username: 'TEST_USER_3',
-        userHandle: 'TEST_USER_3#3',
+        username: 'test-user_3',
+        userHandle: 'test-user_3#3',
         email: 'TEST_USER_3@EMAIL.COM',
       });
       const onePlatform = factories.platform.build();
@@ -618,8 +620,8 @@ describe('UserConnectionsController (e2e)', () => {
                 updated_at: expect.any(String),
                 from_user: {
                   id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
+                  user_handle: 'test-user#1',
+                  username: 'test-user',
                 },
                 platforms: [
                   {
@@ -633,8 +635,8 @@ describe('UserConnectionsController (e2e)', () => {
                 ],
                 to_user: {
                   id: 3,
-                  user_handle: 'TEST_USER_3#3',
-                  username: 'TEST_USER_3',
+                  user_handle: 'test-user_3#3',
+                  username: 'test-user_3',
                 },
               },
             ],

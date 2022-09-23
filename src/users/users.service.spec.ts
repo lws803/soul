@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
@@ -11,8 +11,9 @@ import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
-import { DuplicateUserExistException } from './exceptions/duplicate-user-exists.exception';
+import { DuplicateUserEmailException } from './exceptions/duplicate-user-email.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
+import { DuplicateUsernameException } from './exceptions';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -89,12 +90,18 @@ describe('UsersService', () => {
   describe('create()', () => {
     it('should successfully insert a user', async () => {
       const oneUser = factories.user.build();
+      jest
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValue(oneUser);
+
       const createUserDto = factories.createUserDto.build();
       expect(await service.create(createUserDto)).toStrictEqual(oneUser);
 
       expect(repository.save).toHaveBeenCalledWith({
         email: 'TEST_USER@EMAIL.COM',
-        username: 'TEST_USER',
+        username: 'test-user',
         hashedPassword: expect.any(String),
         isActive: false,
       });
@@ -102,21 +109,31 @@ describe('UsersService', () => {
       expect(repository.update).toHaveBeenCalledWith(
         { id: oneUser.id },
         {
-          userHandle: 'test_user#1',
+          userHandle: 'test-user#1',
         },
       );
     });
 
-    it('should throw duplicate user error', async () => {
-      const createUserDto = factories.createUserDto.build();
+    it('should throw duplicate user email error', async () => {
       jest
-        .spyOn(repository, 'save')
-        .mockRejectedValue(
-          new QueryFailedError('', [], { code: 'ER_DUP_ENTRY' }),
-        );
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(factories.user.build());
+      const createUserDto = factories.createUserDto.build();
 
       await expect(service.create(createUserDto)).rejects.toThrow(
-        new DuplicateUserExistException(createUserDto.email),
+        new DuplicateUserEmailException(createUserDto.email),
+      );
+    });
+
+    it('should throw duplicate username error', async () => {
+      jest
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(factories.user.build());
+      const createUserDto = factories.createUserDto.build();
+
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        new DuplicateUsernameException(createUserDto.username),
       );
     });
   });
@@ -150,7 +167,7 @@ describe('UsersService', () => {
     it('should query for users with the given full text query', async () => {
       const users = factories.user.buildList(2);
       expect(
-        await service.findAll({ page: 1, numItemsPerPage: 10, q: 'TEST_USER' }),
+        await service.findAll({ page: 1, numItemsPerPage: 10, q: 'test-user' }),
       ).toStrictEqual({
         users,
         totalCount: users.length,
@@ -158,7 +175,7 @@ describe('UsersService', () => {
 
       expect(userCreateQueryBuilder.where).toHaveBeenCalledWith(
         'user.username like :query',
-        { query: 'TEST_USER%' },
+        { query: 'test-user%' },
       );
     });
   });
@@ -182,21 +199,26 @@ describe('UsersService', () => {
 
   describe('update()', () => {
     it('updates a user successfully', async () => {
-      const updatedUserDto = factories.updateUserDto.build();
       const user = factories.user.build();
-      jest.spyOn(repository, 'findOne').mockResolvedValue(
-        factories.user.build({
+      jest
+        .spyOn(repository, 'findOne')
+        .mockResolvedValueOnce(user)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({
+          ...user,
           email: 'UPDATED_EMAIL@EMAIL.COM',
-          username: 'UPDATED_USER',
-          userHandle: 'updated_user#1',
-        }),
-      );
+          username: 'updated-user',
+          userHandle: 'updated-user#1',
+        });
+
+      const updatedUserDto = factories.updateUserDto.build();
 
       expect(await service.update(user.id, updatedUserDto)).toStrictEqual(
         factories.user.build({
           email: 'UPDATED_EMAIL@EMAIL.COM',
-          username: 'UPDATED_USER',
-          userHandle: 'updated_user#1',
+          username: 'updated-user',
+          userHandle: 'updated-user#1',
         }),
       );
 
@@ -204,7 +226,7 @@ describe('UsersService', () => {
         { id: user.id },
         {
           ...updatedUserDto,
-          userHandle: 'updated_user#1',
+          userHandle: 'updated-user#1',
         },
       );
     });

@@ -8,8 +8,8 @@ export const user = Factory.define<User>(({ sequence }) => {
   user.rewindSequence();
   return {
     id: sequence,
-    username: `TEST_USER_${sequence}`,
-    userHandle: `test_user_${sequence}#${sequence}`,
+    username: `test-user-${sequence}`,
+    userHandle: `test-user-${sequence}#${sequence}`,
     email: `TEST_USER_${sequence}@EMAIL.COM`,
     isActive: true,
     createdAt: new Date('1995-12-17T03:24:00'),
@@ -20,11 +20,11 @@ export const user = Factory.define<User>(({ sequence }) => {
 
 export const createUserDto = Factory.define<CreateUserDto>(() => ({
   email: 'TEST_USER@EMAIL.COM',
-  username: 'TEST_USER',
+  username: 'test-user',
   password: 'TEST_PASSWORD',
 }));
 
 export const updateUserDto = Factory.define<UpdateUserDto>(() => ({
   email: 'UPDATED_EMAIL@EMAIL.COM',
-  username: 'UPDATED_USER',
+  username: 'updated-user',
 }));

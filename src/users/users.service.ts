@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -20,9 +20,10 @@ import {
 } from './serializers/api.dto';
 import { User } from './entities/user.entity';
 import {
-  DuplicateUserExistException,
   UserNotFoundException,
   InvalidTokenException,
+  DuplicateUsernameException,
+  DuplicateUserEmailException,
 } from './exceptions';
 
 @Injectable()
@@ -49,27 +50,19 @@ export class UsersService {
     user.username = createUserDto.username;
     user.isActive = false;
 
-    try {
-      const savedUser = await this.usersRepository.save(user);
-      await this.usersRepository.update(
-        { id: savedUser.id },
-        {
-          userHandle: this.getUserHandle(createUserDto.username, savedUser.id),
-        },
-      );
+    await this.throwOnDuplicate({ email: user.email, username: user.username });
 
-      this.generateCodeAndSendEmail(savedUser, 'confirmation');
+    const savedUser = await this.usersRepository.save(user);
+    await this.usersRepository.update(
+      { id: savedUser.id },
+      {
+        userHandle: this.getUserHandle(createUserDto.username, savedUser.id),
+      },
+    );
 
-      return this.usersRepository.findOne(savedUser.id);
-    } catch (exception) {
-      if (
-        exception instanceof QueryFailedError &&
-        exception.driverError.code === 'ER_DUP_ENTRY'
-      ) {
-        throw new DuplicateUserExistException(createUserDto.email);
-      }
-      throw exception;
-    }
+    this.generateCodeAndSendEmail(savedUser, 'confirmation');
+
+    return this.usersRepository.findOne(savedUser.id);
   }
 
   async findAll(queryParams: FindAllUsersQueryParamDto) {
@@ -110,7 +103,14 @@ export class UsersService {
     updatedUser.username = updateUserDto.username ?? user.username;
     updatedUser.email = updateUserDto.email ?? user.email;
 
+    await this.throwOnDuplicate({
+      email: updatedUser.email,
+      username: updatedUser.username,
+      id,
+    });
+
     await this.usersRepository.update({ id: user.id }, updatedUser);
+
     return await this.usersRepository.findOne(id);
   }
 
@@ -232,7 +232,37 @@ export class UsersService {
   }
 
   private getUserHandle(username: string, userId: number) {
-    return `${username.toLowerCase().replace(/\s+/g, '-')}#${userId}`;
+    return `${username}#${userId}`;
+  }
+
+  /**
+   * Throws if a user's constrained resource already exists
+   */
+  private async throwOnDuplicate({
+    email,
+    username,
+    id,
+  }: {
+    email: string;
+    username: string;
+    id?: number;
+  }) {
+    if (
+      email &&
+      (await this.usersRepository.findOne({
+        where: { email, ...(id && { id: Not(id) }) },
+      }))
+    ) {
+      throw new DuplicateUserEmailException(email);
+    }
+    if (
+      username &&
+      (await this.usersRepository.findOne({
+        where: { username, ...(id && { id: Not(id) }) },
+      }))
+    ) {
+      throw new DuplicateUsernameException(username);
+    }
   }
 }
 

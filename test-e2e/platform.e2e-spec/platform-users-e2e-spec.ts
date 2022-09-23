@@ -105,8 +105,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
                 roles: [UserRole.Admin, UserRole.Member],
                 user: {
                   id: 1,
-                  user_handle: 'test_user#1',
-                  username: 'TEST_USER',
+                  user_handle: 'test-user#1',
+                  username: 'test-user',
                 },
                 platform: {
                   id: 1,
@@ -186,8 +186,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
             roles: [UserRole.Admin, UserRole.Member],
             user: {
               id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
             },
           }),
         );
@@ -233,8 +233,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
             roles: [UserRole.Banned],
             user: {
               id: 2,
-              user_handle: 'test_user_2#2',
-              username: 'TEST_USER_2',
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
             },
           }),
         );
@@ -551,8 +551,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
             roles: [UserRole.Member],
             user: {
               id: 1,
-              user_handle: 'test_user#1',
-              username: 'TEST_USER',
+              user_handle: 'test-user#1',
+              username: 'test-user',
             },
           }),
         );

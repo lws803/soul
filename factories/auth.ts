@@ -64,6 +64,6 @@ export const requestUserObject = Factory.define<{
   userId: number;
 }>(() => ({
   tokenType: TokenType.Access,
-  username: 'TEST_USER',
+  username: 'test-user',
   userId: 1,
 }));
