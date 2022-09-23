@@ -23,6 +23,12 @@ export class User {
   @IsEmail()
   email: string;
 
+  @Column({ name: 'display_name', nullable: true })
+  displayName?: string;
+
+  @Column({ nullable: true })
+  bio?: string;
+
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 

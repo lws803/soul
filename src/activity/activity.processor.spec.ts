@@ -60,11 +60,15 @@ describe(ActivityProcessor, () => {
           id: fromUser.id,
           username: fromUser.username,
           user_handle: fromUser.userHandle,
+          bio: fromUser.bio,
+          display_name: fromUser.displayName,
         },
         to_user: {
           id: toUser.id,
           username: toUser.username,
           user_handle: toUser.userHandle,
+          bio: toUser.bio,
+          display_name: toUser.displayName,
         },
         type: 'FOLLOW',
       });

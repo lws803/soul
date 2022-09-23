@@ -104,6 +104,8 @@ describe('UsersService', () => {
         username: 'test-user',
         hashedPassword: expect.any(String),
         isActive: false,
+        bio: null,
+        displayName: null,
       });
       // Update step to update the userHandle
       expect(repository.update).toHaveBeenCalledWith(
@@ -210,6 +212,8 @@ describe('UsersService', () => {
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'updated-user',
           userHandle: 'updated-user#1',
+          bio: 'UPDATED_BIO',
+          displayName: 'UPDATED_DISPLAY_NAME',
         });
 
       const updatedUserDto = factories.updateUserDto.build();
@@ -219,6 +223,8 @@ describe('UsersService', () => {
           email: 'UPDATED_EMAIL@EMAIL.COM',
           username: 'updated-user',
           userHandle: 'updated-user#1',
+          bio: 'UPDATED_BIO',
+          displayName: 'UPDATED_DISPLAY_NAME',
         }),
       );
 

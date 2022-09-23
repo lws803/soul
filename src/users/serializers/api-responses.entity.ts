@@ -48,6 +48,20 @@ class FullUserResponseEntity extends CreatedAtUpdatedAtEntity {
       'here: https://login.soul-network.com/request-email-verification',
   })
   isActive: boolean;
+
+  @ApiResponseProperty({
+    name: 'bio',
+    description: 'User bio, more information about oneself.',
+  })
+  bio?: string | null = null;
+
+  @ApiResponseProperty({
+    name: 'display_name',
+    example: 'John Doe',
+    description:
+      'More display-friendly name, usually used to display on a user interface.',
+  })
+  displayName?: string | null = null;
 }
 
 export class CreateUserResponseEntity extends FullUserResponseEntity {}
@@ -81,6 +95,20 @@ export class FindOneUserResponseEntity {
       'searching/retrieving users in the future.',
   })
   userHandle: string;
+
+  @ApiResponseProperty({
+    name: 'bio',
+    description: 'User bio, more information about oneself.',
+  })
+  bio?: string | null = null;
+
+  @ApiResponseProperty({
+    name: 'display_name',
+    example: 'John Doe',
+    description:
+      'More display-friendly name, usually used to display on a user interface.',
+  })
+  displayName?: string | null = null;
 }
 
 export class FindAllUserResponseEntity {

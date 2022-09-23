@@ -49,6 +49,8 @@ export class UsersService {
     user.email = createUserDto.email;
     user.username = createUserDto.username;
     user.isActive = false;
+    user.bio = createUserDto.bio;
+    user.displayName = createUserDto.displayName;
 
     await this.throwOnDuplicate({ email: user.email, username: user.username });
 
@@ -102,6 +104,14 @@ export class UsersService {
     }
     updatedUser.username = updateUserDto.username ?? user.username;
     updatedUser.email = updateUserDto.email ?? user.email;
+
+    // We want to set these to null in case it was provided in the response
+    updatedUser.bio =
+      updateUserDto.bio !== undefined ? updateUserDto.bio : user.bio;
+    updatedUser.displayName =
+      updateUserDto.displayName !== undefined
+        ? updateUserDto.displayName
+        : user.displayName;
 
     await this.throwOnDuplicate({
       email: updatedUser.email,
