@@ -34,3 +34,17 @@ export const updateUserDto = Factory.define<UpdateUserDto>(() => ({
   displayName: 'UPDATED_DISPLAY_NAME',
   bio: 'UPDATED_BIO',
 }));
+
+type UpdateUserData = {
+  email: string;
+  username: string;
+  display_name: string;
+  bio: string;
+};
+
+export const updateUserData = Factory.define<UpdateUserData>(() => ({
+  email: 'UPDATED_EMAIL@EMAIL.COM',
+  username: 'updated-user',
+  display_name: 'UPDATED_DISPLAY_NAME',
+  bio: 'UPDATED_BIO',
+}));
