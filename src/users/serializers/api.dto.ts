@@ -33,12 +33,12 @@ export class CreateUserDto {
   @IsPasswordValid()
   password: string;
 
-  @ApiProperty({ name: 'display_name', example: 'John Doe' })
+  @ApiProperty({ name: 'display_name', example: 'John Doe', required: false })
   @IsOptional()
   @MaxLength(32)
   displayName?: string;
 
-  @ApiProperty({ name: 'bio', example: 'User bio.' })
+  @ApiProperty({ name: 'bio', example: 'User bio.', required: false })
   @IsOptional()
   @MaxLength(255)
   bio?: string;
@@ -59,12 +59,12 @@ export class UpdateUserDto {
   @IsEmail()
   email?: string;
 
-  @ApiProperty({ name: 'display_name', example: 'John Doe' })
+  @ApiProperty({ name: 'display_name', example: 'John Doe', required: false })
   @IsOptional()
   @MaxLength(32)
   displayName?: string;
 
-  @ApiProperty({ name: 'bio', example: 'User bio.' })
+  @ApiProperty({ name: 'bio', example: 'User bio.', required: false })
   @IsOptional()
   @MaxLength(255)
   bio?: string;
