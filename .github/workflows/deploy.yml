@@ -24,3 +24,10 @@ jobs:
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           git_remote_url: 'ssh://dokku@soul-network.com:22/api'
           git_push_flags: '--force -vvv'
+
+      - name: Send notification to discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: '{{ EVENT_PAYLOAD.repository.full_name }} {{ EVENT_PAYLOAD.ref }} has been deployed.'
