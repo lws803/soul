@@ -32,6 +32,7 @@ describe(TasksService, () => {
             createQueryBuilder: jest
               .fn()
               .mockImplementation(() => refreshTokenCreateQueryBuilder),
+            count: jest.fn(),
           },
         },
       ],
@@ -58,6 +59,11 @@ describe(TasksService, () => {
         { isRevoked: true },
       );
       expect(refreshTokenCreateQueryBuilder.execute).toHaveBeenCalled();
+    });
+
+    it('should count refresh tokens before and after deletion', async () => {
+      expect(await service.cleanupExpiredRefreshTokens());
+      expect(refreshTokenRepository.count).toHaveBeenCalledTimes(2);
     });
   });
 });
