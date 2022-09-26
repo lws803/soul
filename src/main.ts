@@ -6,6 +6,7 @@ import {
   ClassSerializerInterceptor,
   Logger,
 } from '@nestjs/common';
+import { Logger as PinoLogger } from 'nestjs-pino';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
@@ -22,6 +23,8 @@ const PORT = 3000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
+  app.useLogger(app.get(PinoLogger));
+
   const configService = app.get(ConfigService);
   const logger = new Logger(bootstrap.name);
   const expressApp = app.getHttpAdapter().getInstance();
