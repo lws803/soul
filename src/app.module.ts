@@ -32,7 +32,9 @@ import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
-    LoggerModule.forRoot(),
+    LoggerModule.forRoot({
+      pinoHttp: { level: 'trace' },
+    }),
     ConfigModule.forRoot(config),
     ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({

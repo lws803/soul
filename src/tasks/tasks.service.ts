@@ -16,6 +16,9 @@ export class TasksService {
   @Cron(CronExpression.EVERY_HOUR)
   async cleanupExpiredRefreshTokens() {
     this.logger.debug('Deleting expired refresh tokens...');
+    this.logger.log({
+      refreshTokensCount: await this.refreshTokenRepository.count(),
+    });
     await this.refreshTokenRepository
       .createQueryBuilder('refresh_tokens')
       .delete()
@@ -24,7 +27,9 @@ export class TasksService {
       })
       .orWhere('refresh_tokens.is_revoked = :isRevoked', { isRevoked: true })
       .execute();
-
     this.logger.debug('Deleted all expired refresh tokens');
+    this.logger.log({
+      refreshTokensCountAfterDelete: await this.refreshTokenRepository.count(),
+    });
   }
 }
