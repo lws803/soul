@@ -33,7 +33,7 @@ import { TasksModule } from './tasks/tasks.module';
 @Module({
   imports: [
     LoggerModule.forRoot({
-      pinoHttp: { level: 'trace' },
+      pinoHttp: { level: 'trace', redact: ['req.headers["authorization"]'] },
     }),
     ConfigModule.forRoot(config),
     ScheduleModule.forRoot(),
