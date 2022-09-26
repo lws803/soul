@@ -6,6 +6,7 @@ import { RavenInterceptor, RavenModule } from 'nest-raven';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
+import { LoggerModule } from 'nestjs-pino';
 // eslint-disable-next-line import/no-named-as-default
 import Redis from 'ioredis';
 
@@ -28,10 +29,12 @@ import { MailModule } from './mail/mail.module';
 import { ReputationModule } from './reputation/reputation.module';
 import { PlatformCategory } from './platforms/entities/platform-category.entity';
 import { TasksModule } from './tasks/tasks.module';
-import { RequestLogInterceptor } from './common/interceptors/request-log.interceptor';
 
 @Module({
   imports: [
+    LoggerModule.forRoot({
+      pinoHttp: { level: 'trace' },
+    }),
     ConfigModule.forRoot(config),
     ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
@@ -99,7 +102,6 @@ import { RequestLogInterceptor } from './common/interceptors/request-log.interce
         ],
       }),
     },
-    { provide: APP_INTERCEPTOR, useValue: new RequestLogInterceptor() },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
