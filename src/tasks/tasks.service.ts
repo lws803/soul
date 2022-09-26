@@ -17,7 +17,7 @@ export class TasksService {
   async cleanupExpiredRefreshTokens() {
     this.logger.debug('Deleting expired refresh tokens...');
     this.logger.log({
-      refreshTokensCount: await this.refreshTokenRepository.count(),
+      refreshTokensCountBeforeDelete: await this.refreshTokenRepository.count(),
     });
     await this.refreshTokenRepository
       .createQueryBuilder('refresh_tokens')
