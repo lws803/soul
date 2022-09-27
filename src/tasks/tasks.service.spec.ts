@@ -33,6 +33,7 @@ describe(TasksService, () => {
               .fn()
               .mockImplementation(() => refreshTokenCreateQueryBuilder),
             count: jest.fn(),
+            manager: { query: jest.fn() },
           },
         },
       ],
@@ -59,6 +60,7 @@ describe(TasksService, () => {
         { isRevoked: true },
       );
       expect(refreshTokenCreateQueryBuilder.execute).toHaveBeenCalled();
+      expect(refreshTokenRepository.manager.query).toHaveBeenCalled();
     });
 
     it('should count refresh tokens before and after deletion', async () => {
