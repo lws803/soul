@@ -13,7 +13,10 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main",
-    "lint": "eslint \"{src,apps,libs,test-e2e,factories,config}/**/*.ts\" && npm run check-types",
+    "lint": "concurrently --group --timings 'npm run lint:eslint' 'npm run check-types' 'npm run lint:prettier'",
+    "lint:eslint": "eslint \"{src,apps,libs,test-e2e,factories,config}/**/*.ts\"",
+    "lint:prettier": "prettier --check \"{src,apps,libs,test-e2e,factories,config}/**/*.ts\"",
+    "check-types": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -23,8 +26,7 @@
     "typeorm": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts",
     "migration:generate": "rm -rf ./dist && ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:generate",
     "migration:run": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:run",
-    "migration:revert": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:revert",
-    "check-types": "tsc"
+    "migration:revert": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:revert"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.1",
@@ -96,6 +98,7 @@
     "@types/zxcvbn": "^4.4.1",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
+    "concurrently": "^7.4.0",
     "dotenv": "^12.0.4",
     "eslint": "^8.15.0",
     "eslint-config-prettier": "^8.3.0",
