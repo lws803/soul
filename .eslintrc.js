@@ -7,9 +7,9 @@ module.exports = {
   plugins: ['@typescript-eslint/eslint-plugin', 'no-only-tests'],
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
+    'prettier',
   ],
   settings: {
     'import/resolver': {
