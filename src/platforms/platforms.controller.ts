@@ -24,7 +24,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
-import { PlatformRolesGuard } from 'src/roles/platform-roles.guard';
+import { PlatformRolesGuard } from 'src/auth/guards/platform-roles.guard';
 import { UserRole } from 'src/roles/role.enum';
 import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 
