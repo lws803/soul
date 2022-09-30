@@ -156,7 +156,7 @@ export class PlatformsService {
     const platform = await this.findOne(platformId);
     const user = await this.usersService.findOne(userId);
 
-    return await this.findPlatformUserOrThrow({ platform, user });
+    return this.findPlatformUserOrThrow({ platform, user });
   }
 
   async update(id: number, updatePlatformDto: UpdatePlatformDto) {
@@ -186,7 +186,7 @@ export class PlatformsService {
       activityWebhookUri ?? platform.activityWebhookUri;
 
     await this.platformRepository.update({ id: platform.id }, updatedPlatform);
-    return await this.platformRepository.findOne(id);
+    return this.platformRepository.findOne(id);
   }
 
   async remove(id: number) {
@@ -211,7 +211,7 @@ export class PlatformsService {
 
     await this.revokePlatformUserRefreshToken(platformUser);
 
-    return await this.platformUserRepository.save(platformUser);
+    return this.platformUserRepository.save(platformUser);
   }
 
   async findAllPlatformUsers({

@@ -10,6 +10,6 @@ export class AppController {
   @ApiExcludeEndpoint()
   @Get('healthcheck')
   async healthcheck(): Promise<{ status: 'OK' }> {
-    return await this.appService.healthcheck();
+    return this.appService.healthcheck();
   }
 }

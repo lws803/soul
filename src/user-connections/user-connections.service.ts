@@ -91,7 +91,6 @@ export class UserConnectionsService {
           currentUserId,
           createUserConnectionDto.toUserId,
         );
-        throw exception;
       }
     }
   }
@@ -156,7 +155,7 @@ export class UserConnectionsService {
     userConnection.platforms = Array.from(
       new Set([...userConnection.platforms, platform]),
     );
-    return await this.userConnectionRepository.save(userConnection);
+    return this.userConnectionRepository.save(userConnection);
   }
 
   async removePlatformFromUserConnection(
