@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
@@ -50,6 +51,10 @@ describe('UsersController', () => {
               .fn()
               .mockResolvedValue(factories.userEntity.build()),
           },
+        },
+        {
+          provide: ConfigService,
+          useValue: { get: jest.fn() },
         },
       ],
     }).compile();

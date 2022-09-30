@@ -5,10 +5,10 @@ import { plainToClass } from 'class-transformer';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { PlatformsService } from 'src/platforms/platforms.service';
+import { UserRole } from 'src/roles/role.enum';
+import { ROLES_KEY } from 'src/roles/roles.decorator';
 
-import { NoPermissionException } from './exceptions/no-permission.exception';
-import { UserRole } from './role.enum';
-import { ROLES_KEY } from './roles.decorator';
+import { NoPermissionException } from '../exceptions/no-permission.exception';
 
 @Injectable()
 export class PlatformRolesGuard implements CanActivate {
