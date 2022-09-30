@@ -21,10 +21,10 @@ import {
 import { plainToClass } from 'class-transformer';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { PlatformRolesGuard } from 'src/auth/guards/platform-roles.guard';
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
-import { PlatformRolesGuard } from 'src/auth/guards/platform-roles.guard';
 import { UserRole } from 'src/roles/role.enum';
 import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 
