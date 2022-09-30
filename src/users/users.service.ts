@@ -85,11 +85,11 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    return await this.findUserOrThrow({ id });
+    return this.findUserOrThrow({ id });
   }
 
   async findOneByEmail(email: string) {
-    return await this.findUserOrThrow({ email });
+    return this.findUserOrThrow({ email });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -121,7 +121,7 @@ export class UsersService {
 
     await this.usersRepository.update({ id: user.id }, updatedUser);
 
-    return await this.usersRepository.findOne(id);
+    return this.usersRepository.findOne(id);
   }
 
   async remove(id: number) {
