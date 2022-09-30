@@ -85,7 +85,7 @@ export class AuthService {
     await this.cacheManager.set(
       `${this.configService.get('REDIS_DB_KEY_PREFIX')}:${codeChallengeKey}`,
       codeChallenge,
-      { ttl: this.configService.get('PKCE_CODE_CHALLENGE_TTL') },
+      this.configService.get('PKCE_CODE_CHALLENGE_TTL'),
     );
 
     const decodedCode: DecodedCode = {
@@ -304,7 +304,8 @@ export class AuthService {
   }
 
   private async findTokenById(id: number) {
-    return this.refreshTokenRepository.findOne(id, {
+    return this.refreshTokenRepository.findOne({
+      where: { id },
       relations: ['user', 'platformUser'],
     });
   }
@@ -327,8 +328,8 @@ export class AuthService {
       // Revokes all existing tokens for this platform and user
       await this.refreshTokenRepository.update(
         {
-          user: token.user,
-          platformUser: token.platformUser || null,
+          user: { id: token.user.id },
+          platformUser: { id: token.platformUser.id } || null,
         },
         { isRevoked: true },
       );

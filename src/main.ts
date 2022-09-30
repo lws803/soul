@@ -12,9 +12,9 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
-import * as helmet from 'helmet';
+import helmet from 'helmet';
 import { textSync } from 'figlet';
-import { RedocModule, RedocOptions } from 'nestjs-redoc';
+import { RedocOptions, RedocModule } from '@nicholas.braun/nestjs-redoc';
 
 import { AppModule } from './app.module';
 import { ValidationException } from './common/exceptions/validation.exception';

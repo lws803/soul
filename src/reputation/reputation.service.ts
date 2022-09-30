@@ -31,7 +31,9 @@ export class ReputationService {
       .getCount();
 
     const followerCount = await this.userConnectionsRepository.count({
-      toUser: user,
+      where: {
+        toUser: user,
+      },
     });
 
     return {

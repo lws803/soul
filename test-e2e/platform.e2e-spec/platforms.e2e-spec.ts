@@ -82,7 +82,9 @@ describe('PlatformsController (e2e)', () => {
         );
 
       const platformUser = await platformUserRepository.findOne({
-        user: userAccount.user,
+        where: {
+          user: userAccount.user,
+        },
       });
       expect(platformUser).toBeDefined();
       expect(platformUser.roles).toEqual([UserRole.Admin, UserRole.Member]);

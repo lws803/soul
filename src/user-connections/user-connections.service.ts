@@ -67,8 +67,10 @@ export class UserConnectionsService {
         newUserConnection,
       );
       const oppositeConnection = await this.userConnectionRepository.findOne({
-        fromUser: toUser,
-        toUser: fromUser,
+        where: {
+          fromUser: toUser,
+          toUser: fromUser,
+        },
       });
       if (oppositeConnection) {
         await this.userConnectionRepository.update(
@@ -111,8 +113,10 @@ export class UserConnectionsService {
   async findOne(id: number): Promise<FindOneUserConnectionResponseEntity> {
     const userConnection = await this.findUserConnectionOrThrow({ id });
     const oppositeConnection = await this.userConnectionRepository.findOne({
-      fromUser: userConnection.toUser,
-      toUser: userConnection.fromUser,
+      where: {
+        fromUser: userConnection.toUser,
+        toUser: userConnection.fromUser,
+      },
     });
 
     return { ...userConnection, isMutual: !!oppositeConnection };
@@ -127,8 +131,10 @@ export class UserConnectionsService {
       toUserId,
     });
     const oppositeConnection = await this.userConnectionRepository.findOne({
-      fromUser: userConnection.toUser,
-      toUser: userConnection.fromUser,
+      where: {
+        fromUser: userConnection.toUser,
+        toUser: userConnection.fromUser,
+      },
     });
 
     return { ...userConnection, isMutual: !!oppositeConnection };
@@ -233,10 +239,10 @@ export class UserConnectionsService {
     if (toUserId)
       findParameters['toUser'] = await this.usersService.findOne(toUserId);
 
-    const userConnection = await this.userConnectionRepository.findOne(
-      findParameters,
-      { relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'] },
-    );
+    const userConnection = await this.userConnectionRepository.findOne({
+      where: findParameters,
+      relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'],
+    });
 
     if (!userConnection) {
       throw new UserConnectionNotFoundException({ id });

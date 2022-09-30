@@ -133,7 +133,9 @@ describe('TasksModule (e2e)', () => {
         .getOne();
 
       expect(
-        await refreshTokenRepository.count({ platformUser: platformUser }),
+        await refreshTokenRepository.count({
+          where: { platformUser: { id: platformUser.id } },
+        }),
       ).toEqual(12);
 
       expect(
@@ -161,7 +163,9 @@ describe('TasksModule (e2e)', () => {
 
       // Only the one with count above 10 should be deleted
       expect(
-        await refreshTokenRepository.count({ platformUser: platformUser }),
+        await refreshTokenRepository.count({
+          where: { platformUser: { id: platformUser.id } },
+        }),
       ).toEqual(0);
     });
   });

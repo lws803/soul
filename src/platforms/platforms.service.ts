@@ -67,9 +67,9 @@ export class PlatformsService {
         ),
       },
     );
-    const updatedPlatform = await this.platformRepository.findOne(
-      savedPlatform.id,
-    );
+    const updatedPlatform = await this.platformRepository.findOne({
+      where: { id: savedPlatform.id },
+    });
 
     const newPlatformUser = new PlatformUser();
     newPlatformUser.platform = updatedPlatform;
@@ -186,7 +186,7 @@ export class PlatformsService {
       activityWebhookUri ?? platform.activityWebhookUri;
 
     await this.platformRepository.update({ id: platform.id }, updatedPlatform);
-    return this.platformRepository.findOne(id);
+    return this.platformRepository.findOne({ where: { id } });
   }
 
   async remove(id: number) {
@@ -221,18 +221,14 @@ export class PlatformsService {
     platformId?: number;
     paginationParams: PaginationParamsDto;
   }) {
-    let where: { platform?: Platform; user?: User } | undefined = undefined;
-    if (platformId) {
-      const platform = await this.findOne(platformId);
-      where = { platform };
-    }
+    if (platformId) await this.findOne(platformId);
 
     const [platformUsers, totalCount] =
       await this.platformUserRepository.findAndCount({
         order: { id: 'ASC' },
         take: paginationParams.numItemsPerPage,
         skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
-        where,
+        where: platformId ? { platform: { id: platformId } } : undefined,
         relations: ['user', 'platform'],
       });
 
@@ -266,7 +262,8 @@ export class PlatformsService {
   }
 
   private async findPlatformOrThrow({ id }: { id: number }): Promise<Platform> {
-    const platform = await this.platformRepository.findOne(id, {
+    const platform = await this.platformRepository.findOne({
+      where: { id },
       relations: ['userConnections', 'category'],
     });
     if (!platform) throw new PlatformNotFoundException({ id });
@@ -280,13 +277,13 @@ export class PlatformsService {
     user: User;
     platform: Platform;
   }): Promise<PlatformUser> {
-    const platformUser = await this.platformUserRepository.findOne(
-      {
+    const platformUser = await this.platformUserRepository.findOne({
+      where: {
         user,
-        platform,
+        platform: { id: platform.id },
       },
-      { relations: ['user', 'platform', 'platform.category'] },
-    );
+      relations: ['user', 'platform', 'platform.category'],
+    });
     if (!platformUser)
       throw new PlatformUserNotFoundException({
         platformName: platform.nameHandle,
@@ -323,16 +320,22 @@ export class PlatformsService {
   }
 
   private async revokePlatformUserRefreshToken(platformUser: PlatformUser) {
-    if (await this.refreshTokenRepository.findOne({ platformUser })) {
+    if (
+      await this.refreshTokenRepository.findOne({
+        where: { platformUser: { id: platformUser.id } },
+      })
+    ) {
       await this.refreshTokenRepository.update(
-        { platformUser },
+        { platformUser: { id: platformUser.id } },
         { isRevoked: true },
       );
     }
   }
 
   private async findOneCategoryOrThrow(name: string) {
-    const category = await this.platformCategoryRepository.findOne({ name });
+    const category = await this.platformCategoryRepository.findOne({
+      where: { name },
+    });
     if (!category) throw new PlatformCategoryNotFoundException({ name });
     return category;
   }

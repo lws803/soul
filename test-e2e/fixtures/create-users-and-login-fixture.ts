@@ -60,17 +60,23 @@ export async function createUsersAndLoginFixture(app: INestApplication) {
     {
       accessToken: firstUserLoginResponse.body.access_token,
       refreshToken: firstUserLoginResponse.body.refresh_token,
-      user: await userRepository.findOne({ email: 'TEST_USER@EMAIL.COM' }),
+      user: await userRepository.findOne({
+        where: { email: 'TEST_USER@EMAIL.COM' },
+      }),
     },
     {
       accessToken: secondUserLoginResponse.body.access_token,
       refreshToken: secondUserLoginResponse.body.refresh_token,
-      user: await userRepository.findOne({ email: 'TEST_USER_2@EMAIL.COM' }),
+      user: await userRepository.findOne({
+        where: { email: 'TEST_USER_2@EMAIL.COM' },
+      }),
     },
     {
       accessToken: thirdUserLoginResponse.body.access_token,
       refreshToken: thirdUserLoginResponse.body.refresh_token,
-      user: await userRepository.findOne({ email: 'TEST_USER_3@EMAIL.COM' }),
+      user: await userRepository.findOne({
+        where: { email: 'TEST_USER_3@EMAIL.COM' },
+      }),
     },
   ];
 }

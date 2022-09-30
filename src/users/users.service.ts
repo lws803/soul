@@ -64,7 +64,7 @@ export class UsersService {
 
     this.generateCodeAndSendEmail(savedUser, 'confirmation');
 
-    return this.usersRepository.findOne(savedUser.id);
+    return this.usersRepository.findOne({ where: { id: savedUser.id } });
   }
 
   async findAll(queryParams: FindAllUsersQueryParamDto) {
@@ -121,7 +121,7 @@ export class UsersService {
 
     await this.usersRepository.update({ id: user.id }, updatedUser);
 
-    return this.usersRepository.findOne(id);
+    return this.usersRepository.findOne({ where: { id } });
   }
 
   async remove(id: number) {
@@ -218,10 +218,10 @@ export class UsersService {
   }): Promise<User> {
     let user;
     if (id) {
-      user = await this.usersRepository.findOne({ id });
+      user = await this.usersRepository.findOne({ where: { id } });
       if (!user) throw new UserNotFoundException({ id });
     } else if (email) {
-      user = await this.usersRepository.findOne({ email });
+      user = await this.usersRepository.findOne({ where: { email } });
       if (!user) throw new UserNotFoundException({ email });
     }
 

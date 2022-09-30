@@ -94,10 +94,12 @@ describe('AuthController (e2e)', () => {
           });
         });
       const user = await userRepository.findOne({
-        email: 'TEST_USER@EMAIL.COM',
+        where: {
+          email: 'TEST_USER@EMAIL.COM',
+        },
       });
       expect(
-        await refreshTokenRepository.findOne({ user }),
+        await refreshTokenRepository.findOne({ where: { user } }),
       ).not.toBeUndefined();
     });
 
