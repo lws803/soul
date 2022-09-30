@@ -5,8 +5,9 @@ import * as factories from 'factories';
 import { PlatformsService } from 'src/platforms/platforms.service';
 import { UserRole } from 'src/roles/role.enum';
 
+import { NoPermissionException } from '../exceptions/no-permission.exception';
+
 import { PlatformRolesGuard } from './platform-roles.guard';
-import { NoPermissionException } from './exceptions/no-permission.exception';
 
 describe(PlatformRolesGuard, () => {
   let mockContext: any;

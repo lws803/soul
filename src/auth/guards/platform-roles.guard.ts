@@ -8,7 +8,7 @@ import { PlatformsService } from 'src/platforms/platforms.service';
 import { UserRole } from 'src/roles/role.enum';
 import { ROLES_KEY } from 'src/roles/roles.decorator';
 
-import { NoPermissionException } from './exceptions/no-permission.exception';
+import { NoPermissionException } from '../exceptions/no-permission.exception';
 
 @Injectable()
 export class PlatformRolesGuard implements CanActivate {
