@@ -23,6 +23,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { ApiResponseInvalid } from 'src/common/serializers/decorators';
+import { DisableForPlatformUsersGuard } from 'src/auth/guards/disable-for-platform-users.guard';
 
 import { UsersService } from './users.service';
 import {
@@ -103,7 +104,7 @@ export class UsersController {
   })
   @ApiResponse({ status: HttpStatus.OK, type: UpdateUserResponseEntity })
   @ApiResponseInvalid([HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, DisableForPlatformUsersGuard)
   @Patch('me')
   async updateMe(
     @Request() { user }: { user: JWTPayload },
@@ -122,7 +123,7 @@ export class UsersController {
   })
   @ApiResponse({ status: HttpStatus.OK })
   @ApiResponseInvalid([HttpStatus.UNAUTHORIZED])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, DisableForPlatformUsersGuard)
   @Delete('me')
   async removeMe(@Request() { user }: { user: JWTPayload }) {
     await this.usersService.remove(user.userId);
