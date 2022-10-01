@@ -58,7 +58,7 @@ export class MailProcessor {
             job.data.code
           }`,
         },
-        subject: 'Complete your soul profile',
+        subject: 'Verify your Soul account',
         to: job.data.user.email,
       });
     } catch (error) {
