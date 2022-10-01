@@ -58,7 +58,7 @@ export class MailProcessor {
             job.data.code
           }`,
         },
-        subject: 'Complete your soul profile',
+        subject: 'Verify your Soul account',
         to: job.data.user.email,
       });
     } catch (error) {
@@ -81,7 +81,7 @@ export class MailProcessor {
             'MAIL_PASSWORD_RESET_BASE_URL',
           )}?token=${job.data.code}`,
         },
-        subject: 'Reset password',
+        subject: 'Password reset',
         to: job.data.user.email,
       });
     } catch (error) {
