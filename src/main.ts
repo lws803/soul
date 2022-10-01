@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import { join } from 'path';
+
 import {
   VersioningType,
   ValidationPipe,
@@ -15,6 +17,7 @@ import * as Tracing from '@sentry/tracing';
 import * as helmet from 'helmet';
 import { textSync } from 'figlet';
 import { RedocModule, RedocOptions } from 'nestjs-redoc';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from './app.module';
 import { ValidationException } from './common/exceptions/validation.exception';
@@ -22,7 +25,10 @@ import { ValidationException } from './common/exceptions/validation.exception';
 const PORT = 3000;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true,
+  });
+
   app.useLogger(app.get(PinoLogger));
 
   const configService = app.get(ConfigService);
@@ -82,6 +88,10 @@ async function bootstrap() {
     expressApp.use(Sentry.Handlers.tracingHandler());
     logger.log('Sentry initialized.');
   }
+
+  app.useStaticAssets(join(__dirname, '..', 'public'), {
+    prefix: '/public/',
+  });
 
   await app.listen(PORT);
 

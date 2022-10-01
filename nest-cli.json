@@ -7,6 +7,11 @@
         "include": "**/mail/templates/*.hbs",
         "outDir": "dist/src",
         "watchAssets": true
+      },
+      {
+        "include": "../public/*.png",
+        "outDir": "dist/public",
+        "watchAssets": true
       }
     ]
   }
