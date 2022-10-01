@@ -81,7 +81,7 @@ export class MailProcessor {
             'MAIL_PASSWORD_RESET_BASE_URL',
           )}?token=${job.data.code}`,
         },
-        subject: 'Reset password',
+        subject: 'Password reset',
         to: job.data.user.email,
       });
     } catch (error) {

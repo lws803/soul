@@ -77,7 +77,7 @@ describe(MailProcessor, () => {
           ...factories.userEntity.build({ hashedPassword: undefined }),
           url: 'BASE_URL?token=TEST_CODE',
         },
-        subject: 'Reset password',
+        subject: 'Password reset',
         template: 'password-reset',
         to: user.email,
       });
