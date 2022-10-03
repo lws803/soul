@@ -138,30 +138,16 @@ describe('AuthService', () => {
   });
 
   describe('login()', () => {
-    it('should generate access and refresh token on successful login', async () => {
+    it('should generate access token only on successful login', async () => {
       const user = factories.userEntity.build();
       const response = await service.login(user);
-      expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
-      expect(jwtService.signAsync).toHaveBeenNthCalledWith(
-        1,
+      expect(jwtService.signAsync).toHaveBeenCalledWith(
         factories.jwtPayload.build(),
         { secret: 'JWT_SECRET_KEY' },
       );
-      expect(jwtService.signAsync).toHaveBeenNthCalledWith(
-        2,
-        factories.jwtRefreshPayload.build(),
-        { secret: 'JWT_SECRET_KEY', expiresIn: 3600 },
-      );
-
-      expect(refreshTokenRepository.save).toHaveBeenCalledWith({
-        user: user,
-        isRevoked: false,
-        expires: expect.any(Date),
-      });
 
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
-        refreshToken: 'SIGNED_TOKEN',
         expiresIn: 'JWT_ACCESS_TOKEN_TTL',
       });
     });
@@ -316,106 +302,6 @@ describe('AuthService', () => {
     });
   });
 
-  describe('refresh()', () => {
-    it('should refresh successfully with valid refresh token', async () => {
-      const response = await service.refresh('REFRESH_TOKEN');
-
-      expect(refreshTokenRepository.findOne).toHaveBeenCalledWith(
-        factories.refreshToken.build().id,
-        { relations: ['user', 'platformUser'] },
-      );
-
-      expect(jwtService.signAsync).toHaveBeenCalledWith(
-        factories.jwtPayload.build(),
-        { secret: 'JWT_SECRET_KEY' },
-      );
-
-      expect(refreshTokenRepository.update).not.toHaveBeenCalledWith(
-        factories.refreshToken.build().id,
-        { isRevoked: true },
-      );
-
-      expect(response).toStrictEqual({
-        accessToken: 'SIGNED_TOKEN',
-        refreshToken: 'SIGNED_TOKEN',
-        expiresIn: 'JWT_ACCESS_TOKEN_TTL',
-      });
-    });
-
-    it('should revoke previous token if REFRESH_TOKEN_ROTATION is true', async () => {
-      jest.spyOn(configService, 'get').mockImplementation((arg) => {
-        if (arg === 'JWT_REFRESH_TOKEN_TTL') return 3600;
-        if (arg === 'HOST_URL') return 'localhost:3000';
-        if (arg === 'REFRESH_TOKEN_ROTATION') return true;
-      });
-      await service.refresh('REFRESH_TOKEN');
-
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
-        factories.refreshToken.build().id,
-        { isRevoked: true },
-      );
-
-      expect(refreshTokenRepository.delete).not.toHaveBeenCalled();
-    });
-
-    it('should delete previous token if REFRESH_TOKEN_ROTATION is false', async () => {
-      jest.spyOn(configService, 'get').mockImplementation((arg) => {
-        if (arg === 'JWT_REFRESH_TOKEN_TTL') return 3600;
-        if (arg === 'HOST_URL') return 'localhost:3000';
-        if (arg === 'REFRESH_TOKEN_ROTATION') return false;
-      });
-      await service.refresh('REFRESH_TOKEN');
-
-      expect(refreshTokenRepository.update).not.toHaveBeenCalled();
-      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
-        id: factories.refreshToken.build().id,
-      });
-    });
-
-    it('should throw when refresh token does not exist', async () => {
-      jest
-        .spyOn(refreshTokenRepository, 'findOne')
-        .mockImplementation(() => Promise.resolve(null));
-
-      await expect(service.refresh('REFRESH_TOKEN')).rejects.toThrow(
-        'Refresh token not found',
-      );
-    });
-
-    it('should throw when refresh token expired', async () => {
-      jest
-        .spyOn(jwtService, 'verifyAsync')
-        .mockImplementation(() =>
-          Promise.reject(new TokenExpiredError('expired token', new Date())),
-        );
-
-      await expect(service.refresh('REFRESH_TOKEN')).rejects.toThrow(
-        'Refresh token expired',
-      );
-    });
-
-    it('should throw when refresh token is revoked, and revokes all existing tokens', async () => {
-      const revokedRefreshToken = factories.refreshToken.build({
-        isRevoked: true,
-        platformUser: undefined,
-      });
-      jest
-        .spyOn(refreshTokenRepository, 'findOne')
-        .mockResolvedValue(revokedRefreshToken);
-
-      await expect(service.refresh('REFRESH_TOKEN')).rejects.toThrow(
-        'Refresh token revoked',
-      );
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
-        {
-          platformUser: null,
-          user: revokedRefreshToken.user,
-        },
-        { isRevoked: true },
-      );
-    });
-  });
-
   describe('refreshWithPlatform()', () => {
     it('should refresh successfully with valid refresh token', async () => {
       const platformUser = factories.platformUserEntity.build();
@@ -508,9 +394,12 @@ describe('AuthService', () => {
         .spyOn(refreshTokenRepository, 'findOne')
         .mockResolvedValue(revokedRefreshToken);
 
-      await expect(service.refresh('REFRESH_TOKEN')).rejects.toThrow(
-        'Refresh token revoked',
-      );
+      const platformUser = factories.platformUserEntity.build();
+
+      await expect(
+        service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
+      ).rejects.toThrow('Refresh token revoked');
+
       expect(refreshTokenRepository.update).toHaveBeenCalledWith(
         {
           platformUser: revokedRefreshToken.platformUser,

@@ -53,10 +53,6 @@ export class AuthService {
 
     return {
       accessToken: await this.generateAccessToken(user),
-      refreshToken: await this.generateRefreshToken(
-        user,
-        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
-      ),
       expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     };
   }
@@ -160,25 +156,6 @@ export class AuthService {
       ),
       platformId: decodedToken.platformId,
       roles: platformUser.roles,
-      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
-    };
-  }
-
-  async refresh(
-    encodedRefreshToken: string,
-  ): Promise<apiResponses.RefreshTokenResponseEntity> {
-    const { token, user } = await this.createAccessTokenFromRefreshToken({
-      encodedRefreshToken,
-      revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
-      deleteExistingToken: !this.configService.get('REFRESH_TOKEN_ROTATION'),
-    });
-
-    return {
-      accessToken: token,
-      refreshToken: await this.generateRefreshToken(
-        user,
-        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
-      ),
       expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     };
   }

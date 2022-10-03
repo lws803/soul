@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsOptional, IsString, IsInt } from 'class-validator';
+import { IsOptional, IsString, IsInt, IsEnum } from 'class-validator';
 
 import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.validator';
+
+import { GrantType } from '../enums/grant-type.enum';
 
 export class RefreshTokenBodyDto {
   @ApiProperty({ name: 'refresh_token' })
@@ -12,15 +14,28 @@ export class RefreshTokenBodyDto {
 
   @ApiProperty({
     name: 'client_id',
-    required: false,
+    required: true,
     type: Number,
     description: 'Platform id of a platform.',
   })
   @Expose({ name: 'client_id' })
-  @IsOptional()
   @Type(() => Number)
   @IsInt({ message: 'client_id must be an integer' })
-  platformId?: number;
+  platformId: number;
+
+  @ApiProperty({
+    name: 'grant_type',
+    type: GrantType,
+    required: false,
+    default: GrantType.RefreshToken,
+    description: 'Grant type for this authorization operation.',
+  })
+  @IsOptional()
+  @Expose({ name: 'grant_type' })
+  @IsEnum([GrantType.RefreshToken], {
+    message: `grant_type must be ${GrantType.RefreshToken}`,
+  })
+  grantType?: GrantType;
 }
 
 export class CodeQueryParamDto {
@@ -92,8 +107,17 @@ export class ValidateBodyDto {
   @IsString({ message: 'code_verifier must be a string' })
   codeVerifier: string;
 
-  @Expose({ name: 'grant_type' })
+  @ApiProperty({
+    name: 'grant_type',
+    type: GrantType,
+    required: false,
+    default: GrantType.AuthorizationCode,
+    description: 'Grant type for this authorization operation.',
+  })
   @IsOptional()
-  @IsString({ message: 'grant_type must be a string' })
-  grantType?: string;
+  @Expose({ name: 'grant_type' })
+  @IsEnum([GrantType.AuthorizationCode], {
+    message: `grant_type must be ${GrantType.AuthorizationCode}`,
+  })
+  grantType?: GrantType;
 }

@@ -25,7 +25,6 @@ import {
   CodeResponseEntity,
   LoginResponseEntity,
   PlatformLoginResponseEntity,
-  RefreshTokenResponseEntity,
   RefreshTokenWithPlatformResponseEntity,
 } from './serializers/api-responses.entity';
 import {
@@ -111,7 +110,6 @@ export class AuthController {
   @ApiOperation({
     description:
       'Refresh access token, returns new access token and a new refresh token. ' +
-      'If client_id is provided, returns new access token for that platform. ' +
       'Note that the existing refresh token will no longer be usable.',
     summary: 'Refresh access token',
   })
@@ -130,18 +128,10 @@ export class AuthController {
   @Header('Cache-Control', 'no-store')
   async refresh(
     @Body() { refreshToken, platformId }: RefreshTokenBodyDto,
-  ): Promise<
-    RefreshTokenWithPlatformResponseEntity | RefreshTokenResponseEntity
-  > {
-    if (platformId) {
-      return plainToClass(
-        RefreshTokenWithPlatformResponseEntity,
-        await this.authService.refreshWithPlatform(refreshToken, platformId),
-      );
-    }
+  ): Promise<RefreshTokenWithPlatformResponseEntity> {
     return plainToClass(
-      RefreshTokenResponseEntity,
-      await this.authService.refresh(refreshToken),
+      RefreshTokenWithPlatformResponseEntity,
+      await this.authService.refreshWithPlatform(refreshToken, platformId),
     );
   }
 }
