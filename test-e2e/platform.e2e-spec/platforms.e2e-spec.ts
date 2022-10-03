@@ -78,6 +78,7 @@ describe('PlatformsController (e2e)', () => {
             name: 'TEST_PLATFORM',
             is_verified: false,
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
+            client_secret: null,
           }),
         );
 
@@ -540,6 +541,7 @@ describe('PlatformsController (e2e)', () => {
             },
             redirect_uris: ['https://www.example.com'],
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
+            client_secret: null,
           }),
         );
     });
@@ -597,6 +599,7 @@ describe('PlatformsController (e2e)', () => {
             is_verified: true,
             redirect_uris: ['https://www.example.com'],
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
+            client_secret: null,
           }),
         );
     });

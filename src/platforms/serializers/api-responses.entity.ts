@@ -76,6 +76,12 @@ export class FullPlatformResponseEntity extends CreatedAtUpdatedAtEntity {
   })
   @Type(() => PlatformCategoryResponseEntity)
   category?: PlatformCategoryResponseEntity;
+
+  @ApiResponseProperty({
+    name: 'client_secret',
+    description: 'Client secret for use with client credentials flow.',
+  })
+  clientSecret?: string | null = null;
 }
 
 export class CreatePlatformResponseEntity extends FullPlatformResponseEntity {}

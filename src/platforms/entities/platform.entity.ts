@@ -70,4 +70,7 @@ export class Platform {
   @ManyToOne(() => PlatformCategory)
   @JoinColumn([{ name: 'platform_category_id', referencedColumnName: 'id' }])
   category?: PlatformCategory;
+
+  @Column({ name: 'client_secret', nullable: true })
+  clientSecret: string;
 }
