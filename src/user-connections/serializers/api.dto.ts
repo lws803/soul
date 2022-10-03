@@ -65,6 +65,7 @@ export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
     name: 'connection_type',
     example: ConnectionType.Mutual,
     type: String,
+    enum: ConnectionType,
   })
   @Expose({ name: 'connection_type' })
   @IsEnum(ConnectionType, {
