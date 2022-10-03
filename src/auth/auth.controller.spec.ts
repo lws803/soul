@@ -20,7 +20,6 @@ describe('AuthService', () => {
           useValue: {
             login: jest.fn().mockResolvedValue({
               accessToken: 'ACCESS_TOKEN',
-              refreshToken: 'REFRESH_TOKEN',
             }),
             findCodeForPlatformAndCallback: jest.fn().mockResolvedValue({
               code: 'CODE',
@@ -30,10 +29,6 @@ describe('AuthService', () => {
               refreshToken: 'REFRESH_TOKEN',
               platformId: factories.platformEntity.build().id,
               roles: [UserRole.Admin, UserRole.Member],
-            }),
-            refresh: jest.fn().mockResolvedValue({
-              accessToken: 'ACCESS_TOKEN',
-              refreshToken: 'REFRESH_TOKEN',
             }),
             refreshWithPlatform: jest.fn().mockResolvedValue({
               accessToken: 'ACCESS_TOKEN',
@@ -59,26 +54,12 @@ describe('AuthService', () => {
       const user = factories.userEntity.build();
       const result = await controller.login({ user });
 
-      expect(result).toEqual({
-        accessToken: 'ACCESS_TOKEN',
-        refreshToken: 'REFRESH_TOKEN',
-      });
+      expect(result).toEqual({ accessToken: 'ACCESS_TOKEN' });
       expect(service.login).toHaveBeenCalledWith(user);
     });
   });
 
   describe('refresh()', () => {
-    it('should return token', async () => {
-      const refreshToken = 'REFRESH_TOKEN';
-      const result = await controller.refresh({ refreshToken });
-
-      expect(result).toEqual({
-        accessToken: 'ACCESS_TOKEN',
-        refreshToken: 'REFRESH_TOKEN',
-      });
-      expect(service.refresh).toHaveBeenCalledWith(refreshToken);
-    });
-
     it('should return token with platformId', async () => {
       const refreshToken = 'REFRESH_TOKEN';
       const result = await controller.refresh({ platformId: 1, refreshToken });

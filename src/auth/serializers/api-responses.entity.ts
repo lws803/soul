@@ -11,12 +11,6 @@ export class LoginResponseEntity {
   accessToken: string;
 
   @ApiResponseProperty({
-    name: 'refresh_token',
-    description: 'Token used for obtaining a new access token after expiry.',
-  })
-  refreshToken: string;
-
-  @ApiResponseProperty({
     name: 'expires_in',
     description: 'Time for access token to expire (in seconds).',
   })
@@ -48,6 +42,12 @@ export class PlatformLoginResponseEntity extends LoginResponseEntity {
   platformId: number;
 
   @ApiResponseProperty({
+    name: 'refresh_token',
+    description: 'Token used for obtaining a new access token after expiry.',
+  })
+  refreshToken: string;
+
+  @ApiResponseProperty({
     name: 'roles',
     example: [UserRole.Admin, UserRole.Member],
     description: 'User roles for a platform.',
@@ -57,7 +57,7 @@ export class PlatformLoginResponseEntity extends LoginResponseEntity {
   roles: UserRole[];
 }
 
-export class RefreshTokenResponseEntity {
+class RefreshTokenResponseEntity {
   @ApiResponseProperty({
     name: 'access_token',
     description:

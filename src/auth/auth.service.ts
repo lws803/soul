@@ -53,10 +53,6 @@ export class AuthService {
 
     return {
       accessToken: await this.generateAccessToken(user),
-      refreshToken: await this.generateRefreshToken(
-        user,
-        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
-      ),
       expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     };
   }
@@ -164,25 +160,6 @@ export class AuthService {
     };
   }
 
-  async refresh(
-    encodedRefreshToken: string,
-  ): Promise<apiResponses.RefreshTokenResponseEntity> {
-    const { token, user } = await this.createAccessTokenFromRefreshToken({
-      encodedRefreshToken,
-      revokeExistingToken: this.configService.get('REFRESH_TOKEN_ROTATION'),
-      deleteExistingToken: !this.configService.get('REFRESH_TOKEN_ROTATION'),
-    });
-
-    return {
-      accessToken: token,
-      refreshToken: await this.generateRefreshToken(
-        user,
-        this.configService.get('JWT_REFRESH_TOKEN_TTL'),
-      ),
-      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
-    };
-  }
-
   async refreshWithPlatform(
     encodedRefreshToken: string,
     platformId: number,
@@ -217,7 +194,7 @@ export class AuthService {
     deleteExistingToken,
   }: {
     encodedRefreshToken: string;
-    platformId?: number;
+    platformId: number;
     revokeExistingToken?: boolean;
     deleteExistingToken?: boolean;
   }) {
@@ -263,7 +240,7 @@ export class AuthService {
   private async generateRefreshToken(
     user: User,
     expiresIn: number,
-    platformId?: number,
+    platformId: number,
     roles?: UserRole[],
   ) {
     const token = await this.createRefreshToken(user, expiresIn, platformId);
@@ -283,7 +260,7 @@ export class AuthService {
   private async createRefreshToken(
     user: User,
     ttl: number,
-    platformId?: number,
+    platformId: number,
   ) {
     const token = new RefreshToken();
 
@@ -309,7 +286,7 @@ export class AuthService {
     });
   }
 
-  public async resolveRefreshToken(encoded: string, platformId?: number) {
+  public async resolveRefreshToken(encoded: string, platformId: number) {
     const payload = await this.decodeRefreshToken(encoded);
 
     if (payload.tokenType === TokenType.Access) {
@@ -342,14 +319,8 @@ export class AuthService {
       throw new exceptions.InvalidTokenException('Refresh token malformed');
     }
 
-    if (platformId && payload.platformId !== platformId) {
+    if (payload.platformId !== platformId) {
       throw new exceptions.InvalidTokenException('Invalid token for platform');
-    }
-
-    if (!platformId && payload.platformId) {
-      throw new exceptions.InvalidTokenException(
-        `Refresh token is for a platform with id: ${payload.platformId}.`,
-      );
     }
 
     return { user, token, platformId, roles: payload.roles };

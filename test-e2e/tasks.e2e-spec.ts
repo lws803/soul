@@ -85,9 +85,30 @@ describe('TasksModule (e2e)', () => {
     });
 
     it('clears tokens for platforms exceeding 10', async () => {
+      const platformId = 1;
+
+      const params = new URLSearchParams({
+        code_challenge: codeChallenge,
+        state: 'TEST_STATE',
+        redirect_uri: 'https://www.example.com',
+        client_id: String(platformId),
+      });
+      const codeResp = await request(app.getHttpServer())
+        .post(`/auth/code?${params.toString()}`)
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const resp = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
+
+      const { refresh_token } = resp.body;
+
       await request(app.getHttpServer())
         .post('/auth/refresh')
-        .send({ refresh_token: userAccount.refreshToken })
+        .send({ refresh_token, client_id: platformId })
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
@@ -95,11 +116,12 @@ describe('TasksModule (e2e)', () => {
             access_token: expect.any(String),
             refresh_token: expect.any(String),
             expires_in: 900,
+            platform_id: 1,
+            roles: ['admin', 'member'],
           });
         });
 
-      const platformId = 1;
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 10; i++) {
         const params = new URLSearchParams({
           code_challenge: codeChallenge,
           state: 'TEST_STATE',
@@ -134,7 +156,7 @@ describe('TasksModule (e2e)', () => {
 
       expect(
         await refreshTokenRepository.count({ platformUser: platformUser }),
-      ).toEqual(12);
+      ).toEqual(11);
 
       expect(
         await platformUserRepository
