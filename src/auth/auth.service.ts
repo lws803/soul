@@ -194,7 +194,7 @@ export class AuthService {
     deleteExistingToken,
   }: {
     encodedRefreshToken: string;
-    platformId?: number;
+    platformId: number;
     revokeExistingToken?: boolean;
     deleteExistingToken?: boolean;
   }) {
