@@ -5,7 +5,6 @@ import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
 
 import { User } from 'src/users/entities/user.entity';
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
@@ -19,7 +18,6 @@ import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fi
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let userRepository: Repository<User>;
-  let refreshTokenRepository: Repository<RefreshToken>;
   let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
   let platformCategoryRepository: Repository<PlatformCategory>;
@@ -36,7 +34,6 @@ describe('AuthController (e2e)', () => {
     await connection.synchronize(true);
 
     userRepository = connection.getRepository(User);
-    refreshTokenRepository = connection.getRepository(RefreshToken);
     platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
     platformCategoryRepository = connection.getRepository(PlatformCategory);
@@ -89,16 +86,9 @@ describe('AuthController (e2e)', () => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
             access_token: expect.any(String),
-            refresh_token: expect.any(String),
             expires_in: 900,
           });
         });
-      const user = await userRepository.findOne({
-        email: 'TEST_USER@EMAIL.COM',
-      });
-      expect(
-        await refreshTokenRepository.findOne({ user }),
-      ).not.toBeUndefined();
     });
 
     it('logs in successfully for platform', async () => {
@@ -232,22 +222,7 @@ describe('AuthController (e2e)', () => {
       await userRepository.delete({});
     });
 
-    it('refreshes token successfully', async () => {
-      await request(app.getHttpServer())
-        .post('/auth/refresh')
-        .send({ refresh_token: userAccount.refreshToken })
-        .expect(HttpStatus.OK)
-        .expect((res) => {
-          expect(res.headers['cache-control']).toBe('no-store');
-          expect(res.body).toEqual({
-            access_token: expect.any(String),
-            refresh_token: expect.any(String),
-            expires_in: 900,
-          });
-        });
-    });
-
-    it('refreshes token for platform', async () => {
+    it('refreshes token for platform successfully', async () => {
       const params = new URLSearchParams({
         code_challenge: codeChallenge,
         state: 'TEST_STATE',
@@ -306,11 +281,12 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
         .send({ refresh_token })
-        .expect(HttpStatus.UNAUTHORIZED)
+        .expect(HttpStatus.BAD_REQUEST)
         .expect((res) =>
           expect(res.body).toEqual({
-            error: 'INVALID_TOKEN',
-            message: 'Refresh token is for a platform with id: 1.',
+            constraints: ['client_id must be an integer'],
+            error: 'VALIDATION_ERROR',
+            message: 'Validation error.',
           }),
         );
     });
@@ -318,7 +294,7 @@ describe('AuthController (e2e)', () => {
     it('fails when refreshing with access token', async () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
-        .send({ refresh_token: userAccount.accessToken })
+        .send({ refresh_token: userAccount.accessToken, client_id: 1 })
         .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -332,7 +308,10 @@ describe('AuthController (e2e)', () => {
     it('fails when refresh token is invalid or corrupted', async () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
-        .send({ refresh_token: userAccount.refreshToken + 'INVALID' })
+        .send({
+          refresh_token: userAccount.refreshToken + 'INVALID',
+          client_id: 1,
+        })
         .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
           expect(res.body).toEqual({
