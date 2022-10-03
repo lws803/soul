@@ -25,9 +25,8 @@ export class RefreshTokenBodyDto {
 
   @ApiProperty({
     name: 'grant_type',
-    type: GrantType,
     required: false,
-    default: GrantType.RefreshToken,
+    enum: [GrantType.RefreshToken],
     description: 'Grant type for this authorization operation.',
   })
   @IsOptional()
@@ -109,9 +108,8 @@ export class ValidateBodyDto {
 
   @ApiProperty({
     name: 'grant_type',
-    type: GrantType,
     required: false,
-    default: GrantType.AuthorizationCode,
+    enum: [GrantType.AuthorizationCode],
     description: 'Grant type for this authorization operation.',
   })
   @IsOptional()
