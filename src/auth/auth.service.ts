@@ -240,7 +240,7 @@ export class AuthService {
   private async generateRefreshToken(
     user: User,
     expiresIn: number,
-    platformId?: number,
+    platformId: number,
     roles?: UserRole[],
   ) {
     const token = await this.createRefreshToken(user, expiresIn, platformId);
@@ -260,7 +260,7 @@ export class AuthService {
   private async createRefreshToken(
     user: User,
     ttl: number,
-    platformId?: number,
+    platformId: number,
   ) {
     const token = new RefreshToken();
 
@@ -286,7 +286,7 @@ export class AuthService {
     });
   }
 
-  public async resolveRefreshToken(encoded: string, platformId?: number) {
+  public async resolveRefreshToken(encoded: string, platformId: number) {
     const payload = await this.decodeRefreshToken(encoded);
 
     if (payload.tokenType === TokenType.Access) {
@@ -319,14 +319,8 @@ export class AuthService {
       throw new exceptions.InvalidTokenException('Refresh token malformed');
     }
 
-    if (platformId && payload.platformId !== platformId) {
+    if (payload.platformId !== platformId) {
       throw new exceptions.InvalidTokenException('Invalid token for platform');
-    }
-
-    if (!platformId && payload.platformId) {
-      throw new exceptions.InvalidTokenException(
-        `Refresh token is for a platform with id: ${payload.platformId}.`,
-      );
     }
 
     return { user, token, platformId, roles: payload.roles };
