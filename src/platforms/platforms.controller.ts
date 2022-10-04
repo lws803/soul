@@ -364,7 +364,6 @@ export class PlatformsController {
   async generateNewClientSecret(
     @Param() { platformId }: PlatformIdParamDto,
   ): Promise<FullPlatformResponseEntity> {
-    // TODO: Add unit tests for this
     return plainToClass(
       FullPlatformResponseEntity,
       await this.platformsService.generateClientSecret(platformId),

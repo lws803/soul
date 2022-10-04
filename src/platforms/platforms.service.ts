@@ -267,7 +267,6 @@ export class PlatformsService {
   }
 
   async generateClientSecret(platformId: number): Promise<Platform> {
-    // TODO: add unit tests
     const platform = await this.findOne(platformId);
     platform.clientSecret = randomString.generate(32);
 
