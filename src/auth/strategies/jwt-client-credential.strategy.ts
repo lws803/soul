@@ -3,14 +3,17 @@ import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import * as Sentry from '@sentry/node';
 
-import { JWTPayload } from '../entities/jwt-payload.entity';
 import { TokenType } from '../enums/token-type.enum';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception';
+import { JWTClientCredentialPayload } from '../entities/jwt-client-credential-payload.entity';
 
+// TODO: Add test for this
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-user') {
+export class JwtClientCredentialStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-client-credential',
+) {
   constructor(private readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -22,22 +25,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-user') {
     });
   }
 
-  async validate(req: Request, payload: JWTPayload) {
+  async validate(req: Request, payload: JWTClientCredentialPayload) {
     if (!payload) {
       throw new InvalidTokenException();
     }
-    if (payload.tokenType !== TokenType.Access) {
+    if (payload.tokenType !== TokenType.ClientAccess) {
       throw new InvalidTokenException(
-        'Refresh token used in place of access token, please try again.',
+        'Token used is a not a client credential access token.',
       );
     }
-
-    Sentry.setUser({ username: payload.username });
-    Sentry.setContext('additional user information', {
-      userId: payload.userId,
-      platformId: payload.platformId,
-      roles: payload.roles,
-    });
 
     return payload;
   }

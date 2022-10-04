@@ -187,6 +187,8 @@ export class AuthService {
     };
   }
 
+  // TODO: Add new function to retrieve access token from client secret
+
   private async createAccessTokenFromRefreshToken({
     encodedRefreshToken,
     platformId,

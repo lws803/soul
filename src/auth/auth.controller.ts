@@ -136,5 +136,6 @@ export class AuthController {
   }
 
   // TODO: Create another endpoint for client credentials auth, we can use a longer expiry time for
-  // this one and no need to return a refresh token too
+  // this one and no need to return a refresh token too.
+  // TODO: Also make sure to throw an error when platform does not have a client secret yet
 }

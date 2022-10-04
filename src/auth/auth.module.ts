@@ -14,6 +14,7 @@ import { AuthService } from './auth.service';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { JwtClientCredentialStrategy } from './strategies/jwt-client-credential.strategy';
 
 @Module({
   imports: [
@@ -40,6 +41,11 @@ import { LocalStrategy } from './strategies/local.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    JwtClientCredentialStrategy,
+  ],
 })
 export class AuthModule {}

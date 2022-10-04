@@ -27,6 +27,7 @@ import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { ApiResponseInvalid } from 'src/common/serializers/decorators';
+import { JwtClientCredentialAuthGuard } from 'src/auth/guards/jwt-client-credential-auth.guard';
 
 import { PlatformsService } from './platforms.service';
 import {
@@ -215,8 +216,9 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Lists all platform users.',
     summary: 'List platform users',
+    description:
+      'Lists all platform users (requires client credential access).',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -228,8 +230,7 @@ export class PlatformsController {
     HttpStatus.UNAUTHORIZED,
     HttpStatus.NOT_FOUND,
   ])
-  @Roles(UserRole.Member)
-  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtClientCredentialAuthGuard)
   @Get(':platform_id/users')
   async findAllPlatformUsers(
     @Param() { platformId }: PlatformIdParamDto,
