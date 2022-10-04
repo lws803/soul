@@ -134,4 +134,7 @@ export class AuthController {
       await this.authService.refreshWithPlatform(refreshToken, platformId),
     );
   }
+
+  // TODO: Create another endpoint for client credentials auth, we can use a longer expiry time for
+  // this one and no need to return a refresh token too
 }

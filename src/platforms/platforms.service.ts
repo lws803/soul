@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
+import * as randomString from 'randomstring';
 
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
@@ -263,6 +264,14 @@ export class PlatformsService {
       }
       throw exception;
     }
+  }
+
+  async generateClientSecret(platformId: number): Promise<Platform> {
+    // TODO: add unit tests
+    const platform = await this.findOne(platformId);
+    platform.clientSecret = randomString.generate(32);
+
+    return this.platformRepository.save(platform);
   }
 
   private async findPlatformOrThrow({ id }: { id: number }): Promise<Platform> {
