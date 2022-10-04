@@ -24,6 +24,7 @@ export const platformEntity = Factory.define<Platform>(({ sequence }) => {
     redirectUris: ['TEST_REDIRECT_URI'],
     category: platformCategoryEntity.build(),
     activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
+    clientSecret: null,
   };
 });
 

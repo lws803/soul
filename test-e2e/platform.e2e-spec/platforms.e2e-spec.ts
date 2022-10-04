@@ -78,6 +78,7 @@ describe('PlatformsController (e2e)', () => {
             name: 'TEST_PLATFORM',
             is_verified: false,
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
+            client_secret: null,
           }),
         );
 
@@ -540,6 +541,7 @@ describe('PlatformsController (e2e)', () => {
             },
             redirect_uris: ['https://www.example.com'],
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
+            client_secret: null,
           }),
         );
     });
@@ -597,6 +599,7 @@ describe('PlatformsController (e2e)', () => {
             is_verified: true,
             redirect_uris: ['https://www.example.com'],
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
+            client_secret: null,
           }),
         );
     });
@@ -660,6 +663,78 @@ describe('PlatformsController (e2e)', () => {
     it('throws insufficient permissions', async () => {
       await request(app.getHttpServer())
         .delete('/platforms/1')
+        .set('Authorization', `Bearer ${userAccount.accessToken}`)
+        .expect(HttpStatus.FORBIDDEN)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            error: 'PERMISSION_DENIED',
+            message:
+              'You lack the permissions necessary to perform this action.',
+          }),
+        );
+    });
+  });
+
+  describe('/platforms/:platformId/generate-new-client-secret (PATCH)', () => {
+    beforeEach(async () => {
+      const platform = await platformRepository.save(
+        factories.platformEntity.build({
+          redirectUris: ['https://www.example.com'],
+        }),
+      );
+      await platformUserRepository.save(
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
+      );
+    });
+
+    it('generates new secret for platform', async () => {
+      const params = new URLSearchParams({
+        redirect_uri: 'https://www.example.com',
+        state: 'TEST_STATE',
+        code_challenge: codeChallenge,
+        client_id: String(1),
+      });
+      const codeResp = await request(app.getHttpServer())
+        .post(`/auth/code?${params.toString()}`)
+        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
+      const response = await request(app.getHttpServer())
+        .post('/auth/verify')
+        .send({
+          code: codeResp.body.code,
+          redirect_uri: 'https://www.example.com',
+          code_verifier: codeVerifier,
+        });
+
+      const res = await request(app.getHttpServer())
+        .patch('/platforms/1/generate-new-client-secret')
+        .set('Authorization', `Bearer ${response.body.access_token}`)
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual(
+            expect.objectContaining({
+              client_secret: expect.any(String),
+              id: 1,
+            }),
+          ),
+        );
+
+      expect(res.status).toEqual(HttpStatus.OK);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          client_secret: expect.any(String),
+          id: 1,
+        }),
+      );
+      const platform = await platformRepository.findOne(res.body.id);
+      expect(platform.clientSecret).toEqual(res.body.client_secret);
+    });
+
+    it('throws insufficient permissions', async () => {
+      await request(app.getHttpServer())
+        .patch('/platforms/1/generate-new-client-secret')
         .set('Authorization', `Bearer ${userAccount.accessToken}`)
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>

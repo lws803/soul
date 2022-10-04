@@ -342,4 +342,31 @@ export class PlatformsController {
       await this.platformsService.addUser(platformId, user.userId),
     );
   }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    description: 'Generates a new client secret for the specified platform.',
+    summary: 'Generate new client secret',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: FullPlatformResponseEntity,
+  })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
+  @Roles(UserRole.Admin)
+  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @Patch(':platform_id/generate-new-client-secret')
+  async generateNewClientSecret(
+    @Param() { platformId }: PlatformIdParamDto,
+  ): Promise<FullPlatformResponseEntity> {
+    return plainToClass(
+      FullPlatformResponseEntity,
+      await this.platformsService.generateClientSecret(platformId),
+    );
+  }
 }

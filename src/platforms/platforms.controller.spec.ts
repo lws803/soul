@@ -52,6 +52,11 @@ describe('PlatformsController', () => {
               }),
             ),
             remove: jest.fn(),
+            generateClientSecret: jest.fn().mockResolvedValue(
+              factories.platformEntity.build({
+                clientSecret: 'CLIENT_SECRET',
+              }),
+            ),
             setUserRole: jest
               .fn()
               .mockResolvedValue(factories.platformUserEntity.build()),
@@ -175,6 +180,18 @@ describe('PlatformsController', () => {
     ).toBeUndefined();
 
     expect(platformsService.remove).toHaveBeenCalledWith(platform.id);
+  });
+
+  it('generateNewClientSecret()', async () => {
+    const platform = factories.platformEntity.build();
+
+    expect(
+      await controller.generateNewClientSecret({ platformId: platform.id }),
+    ).toEqual({ ...platform, clientSecret: 'CLIENT_SECRET' });
+
+    expect(platformsService.generateClientSecret).toHaveBeenCalledWith(
+      platform.id,
+    );
   });
 
   it('setPlatformUserRole()', async () => {

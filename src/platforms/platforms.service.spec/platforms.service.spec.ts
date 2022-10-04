@@ -447,4 +447,17 @@ describe('PlatformsService', () => {
       });
     });
   });
+
+  describe('generateClientSecret()', () => {
+    it('should generate new client secret successfully', async () => {
+      const platform = factories.platformEntity.build();
+
+      await service.generateClientSecret(platform.id);
+
+      expect(platformRepository.save).toHaveBeenCalledWith({
+        ...platform,
+        clientSecret: expect.any(String),
+      });
+    });
+  });
 });
