@@ -159,5 +159,6 @@ export class AuthController {
       ClientAuthenticateResponseEntity,
       await this.authService.authenticateClient(platformId, clientSecret),
     );
+
   }
 }
