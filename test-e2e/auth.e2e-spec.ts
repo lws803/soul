@@ -108,7 +108,7 @@ describe('AuthController (e2e)', () => {
           redirect_uri: 'https://www.example.com',
           code_verifier: codeVerifier,
         })
-        .expect(HttpStatus.CREATED)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -245,7 +245,7 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
         .send({ refresh_token, client_id: 1 })
-        .expect(HttpStatus.CREATED)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -345,7 +345,7 @@ describe('AuthController (e2e)', () => {
           client_id: platform.id,
           client_secret: platform.clientSecret,
         })
-        .expect(HttpStatus.CREATED)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({

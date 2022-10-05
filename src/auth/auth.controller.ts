@@ -7,6 +7,7 @@ import {
   Body,
   Header,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import {
   ApiExcludeEndpoint,
@@ -87,7 +88,7 @@ export class AuthController {
     summary: 'Verify platform login',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,
+    status: HttpStatus.OK,
     type: PlatformLoginResponseEntity,
   })
   @ApiResponseInvalid([
@@ -96,6 +97,7 @@ export class AuthController {
     HttpStatus.UNAUTHORIZED,
     HttpStatus.NOT_FOUND,
   ])
+  @HttpCode(HttpStatus.OK)
   @Post('verify')
   @Header('Cache-Control', 'no-store')
   async verify(
@@ -114,7 +116,7 @@ export class AuthController {
     summary: 'Refresh access token',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,
+    status: HttpStatus.OK,
     type: RefreshTokenWithPlatformResponseEntity,
   })
   @ApiResponseInvalid([
@@ -123,6 +125,7 @@ export class AuthController {
     HttpStatus.UNAUTHORIZED,
     HttpStatus.NOT_FOUND,
   ])
+  @HttpCode(HttpStatus.OK)
   @Post('refresh')
   @Header('Cache-Control', 'no-store')
   async refresh(
@@ -141,7 +144,7 @@ export class AuthController {
     summary: 'Authenticate client',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,
+    status: HttpStatus.OK,
     type: ClientAuthenticateResponseEntity,
   })
   @ApiResponseInvalid([
@@ -150,6 +153,7 @@ export class AuthController {
     HttpStatus.UNAUTHORIZED,
     HttpStatus.NOT_FOUND,
   ])
+  @HttpCode(HttpStatus.OK)
   @Post('authenticate-client')
   @Header('Cache-Control', 'no-store')
   async authenticateClient(
