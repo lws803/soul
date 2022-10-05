@@ -62,6 +62,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       const platform = await platformRepository.save(
         factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
+          clientSecret: 'CLIENT_SECRET',
         }),
       );
       await platformUserRepository.save(
@@ -78,21 +79,11 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
 
     it('fetches all users within a platform', async () => {
-      const params = new URLSearchParams({
-        redirect_uri: 'https://www.example.com',
-        state: 'TEST_STATE',
-        code_challenge: codeChallenge,
-        client_id: String(1),
-      });
-      const codeResp = await request(app.getHttpServer())
-        .post(`/auth/code?${params.toString()}`)
-        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/authenticate-client')
         .send({
-          code: codeResp.body.code,
-          redirect_uri: 'https://www.example.com',
-          code_verifier: codeVerifier,
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
         });
 
       await request(app.getHttpServer())

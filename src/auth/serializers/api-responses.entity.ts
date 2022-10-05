@@ -96,3 +96,26 @@ export class RefreshTokenWithPlatformResponseEntity extends RefreshTokenResponse
   })
   roles: UserRole[];
 }
+
+export class ClientAuthenticateResponseEntity {
+  @ApiResponseProperty({
+    name: 'access_token',
+    description:
+      'Token used for access to resources that requires client authentication. ' +
+      'Use this as a bearer token.',
+  })
+  accessToken: string;
+
+  @ApiResponseProperty({
+    name: 'platform_id',
+    example: 1,
+    description: 'ID of the platform.',
+  })
+  platformId: number;
+
+  @ApiResponseProperty({
+    name: 'expires_in',
+    description: 'Time for access token to expire (in seconds).',
+  })
+  expiresIn: number;
+}

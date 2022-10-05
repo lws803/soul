@@ -23,6 +23,9 @@ const schema = Joi.object({
   JWT_ACCESS_TOKEN_TTL: Joi.number()
     .required()
     .description('Auth JWT access token TTL (in seconds)'),
+  JWT_CLIENT_ACCESS_TOKEN_TTL: Joi.number()
+    .required()
+    .description('Auth JWT client access token TTL (in seconds)'),
   // Redis config
   REDIS_DB_HOST: Joi.string().required().description('Redis database host'),
   REDIS_DB_PASSWORD: Joi.string()

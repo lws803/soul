@@ -17,6 +17,7 @@ import { PlatformsService } from 'src/platforms/platforms.service';
 import { UserRole } from 'src/roles/role.enum';
 
 import { JWTPayload } from './entities/jwt-payload.entity';
+import { JWTClientCredentialPayload } from './entities/jwt-client-credential-payload.entity';
 import { JWTRefreshPayload } from './entities/jwt-refresh-payload.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { TokenType } from './enums/token-type.enum';
@@ -187,6 +188,30 @@ export class AuthService {
     };
   }
 
+  async authenticateClient(
+    platformId: number,
+    clientSecret: string,
+  ): Promise<apiResponses.ClientAuthenticateResponseEntity> {
+    const platform = await this.platformService.findOne(platformId);
+
+    if (platform.clientSecret === null)
+      throw new exceptions.NullClientSecretException();
+    if (platform.clientSecret !== clientSecret)
+      throw new exceptions.UnauthorizedClientException();
+
+    const payload = plainToClass(JWTClientCredentialPayload, {
+      platformId,
+    });
+
+    return {
+      accessToken: await this.jwtService.signAsync(classToPlain(payload), {
+        secret: this.configService.get('JWT_SECRET_KEY'),
+        expiresIn: this.configService.get('JWT_CLIENT_ACCESS_TOKEN_TTL'),
+      }),
+      expiresIn: this.configService.get('JWT_CLIENT_ACCESS_TOKEN_TTL'),
+      platformId,
+    };
+  }
   private async createAccessTokenFromRefreshToken({
     encodedRefreshToken,
     platformId,
@@ -234,6 +259,7 @@ export class AuthService {
 
     return this.jwtService.signAsync(classToPlain(payload), {
       secret: this.configService.get('JWT_SECRET_KEY'),
+      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     });
   }
 

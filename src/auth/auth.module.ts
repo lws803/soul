@@ -12,8 +12,9 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RefreshToken } from './entities/refresh-token.entity';
-import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { JwtUserStrategy } from './strategies/jwt-user.strategy';
+import { JwtClientCredentialsStrategy } from './strategies/jwt-client-credentials.strategy';
 
 @Module({
   imports: [
@@ -40,6 +41,11 @@ import { LocalStrategy } from './strategies/local.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtUserStrategy,
+    JwtClientCredentialsStrategy,
+  ],
 })
 export class AuthModule {}

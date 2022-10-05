@@ -6,12 +6,12 @@ import * as factories from 'factories';
 
 import { JWTPayload } from '../entities/jwt-payload.entity';
 
-import { JwtStrategy } from './jwt.strategy';
+import { JwtUserStrategy } from './jwt-user.strategy';
 
-describe(JwtStrategy, () => {
+describe(JwtUserStrategy, () => {
   const request = {} as unknown as Request;
 
-  const jwtStrategy = new JwtStrategy({
+  const jwtStrategy = new JwtUserStrategy({
     get: jest.fn().mockImplementation((key) => {
       return key;
     }),

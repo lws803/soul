@@ -119,3 +119,34 @@ export class ValidateBodyDto {
   })
   grantType?: GrantType;
 }
+
+export class AuthenticateClientBodyDto {
+  @ApiProperty({ name: 'client_secret' })
+  @Expose({ name: 'client_secret' })
+  @IsString({ message: 'client_secret must be a string' })
+  clientSecret: string;
+
+  @ApiProperty({
+    name: 'client_id',
+    required: true,
+    type: Number,
+    description: 'Platform id of a platform.',
+  })
+  @Expose({ name: 'client_id' })
+  @Type(() => Number)
+  @IsInt({ message: 'client_id must be an integer' })
+  platformId: number;
+
+  @ApiProperty({
+    name: 'grant_type',
+    required: false,
+    enum: [GrantType.ClientCredentials],
+    description: 'Grant type for this authorization operation.',
+  })
+  @IsOptional()
+  @Expose({ name: 'grant_type' })
+  @IsEnum([GrantType.ClientCredentials], {
+    message: `grant_type must be ${GrantType.ClientCredentials}`,
+  })
+  grantType?: GrantType;
+}

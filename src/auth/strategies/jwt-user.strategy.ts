@@ -10,7 +10,7 @@ import { TokenType } from '../enums/token-type.enum';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtUserStrategy extends PassportStrategy(Strategy, 'jwt-user') {
   constructor(private readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([

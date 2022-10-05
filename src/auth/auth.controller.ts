@@ -7,7 +7,6 @@ import {
   Body,
   Header,
   HttpStatus,
-  HttpCode,
 } from '@nestjs/common';
 import {
   ApiExcludeEndpoint,
@@ -22,6 +21,7 @@ import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 
 import { AuthService } from './auth.service';
 import {
+  ClientAuthenticateResponseEntity,
   CodeResponseEntity,
   LoginResponseEntity,
   PlatformLoginResponseEntity,
@@ -31,6 +31,7 @@ import {
   RefreshTokenBodyDto,
   CodeQueryParamDto,
   ValidateBodyDto,
+  AuthenticateClientBodyDto,
 } from './serializers/api.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
@@ -96,7 +97,6 @@ export class AuthController {
     HttpStatus.NOT_FOUND,
   ])
   @Post('verify')
-  @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   async verify(
     @Body() args: ValidateBodyDto,
@@ -124,7 +124,6 @@ export class AuthController {
     HttpStatus.NOT_FOUND,
   ])
   @Post('refresh')
-  @HttpCode(HttpStatus.OK)
   @Header('Cache-Control', 'no-store')
   async refresh(
     @Body() { refreshToken, platformId }: RefreshTokenBodyDto,
@@ -135,6 +134,30 @@ export class AuthController {
     );
   }
 
-  // TODO: Create another endpoint for client credentials auth, we can use a longer expiry time for
-  // this one and no need to return a refresh token too
+  @ApiOperation({
+    description:
+      'Authenticate client with client credentials flow using a client secret. ' +
+      'A client secret must be set before this.',
+    summary: 'Authenticate client',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: ClientAuthenticateResponseEntity,
+  })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
+  @Post('authenticate-client')
+  @Header('Cache-Control', 'no-store')
+  async authenticateClient(
+    @Body() { platformId, clientSecret }: AuthenticateClientBodyDto,
+  ): Promise<ClientAuthenticateResponseEntity> {
+    return plainToClass(
+      ClientAuthenticateResponseEntity,
+      await this.authService.authenticateClient(platformId, clientSecret),
+    );
+  }
 }

@@ -20,13 +20,14 @@ import {
 } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtUserAuthGuard } from 'src/auth/guards/jwt-user-auth.guard';
 import { PlatformRolesGuard } from 'src/auth/guards/platform-roles.guard';
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { ApiResponseInvalid } from 'src/common/serializers/decorators';
+import { JwtClientCredentialsAuthGuard } from 'src/auth/guards/jwt-client-credentials-auth.guard';
 
 import { PlatformsService } from './platforms.service';
 import {
@@ -70,7 +71,7 @@ export class PlatformsController {
     HttpStatus.UNAUTHORIZED,
     HttpStatus.CONFLICT,
   ])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtUserAuthGuard)
   @Post()
   async create(
     @Request() { user }: { user: JWTPayload },
@@ -109,7 +110,7 @@ export class PlatformsController {
     HttpStatus.FORBIDDEN,
     HttpStatus.UNAUTHORIZED,
   ])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtUserAuthGuard)
   @Get('/my-platforms')
   async findMyPlatforms(
     @Request() { user }: { user: JWTPayload },
@@ -156,7 +157,7 @@ export class PlatformsController {
     HttpStatus.NOT_FOUND,
   ])
   @Roles(UserRole.Admin)
-  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Get(':platform_id/full')
   async findOneFull(
     @Param() { platformId }: PlatformIdParamDto,
@@ -181,7 +182,7 @@ export class PlatformsController {
     HttpStatus.NOT_FOUND,
   ])
   @Roles(UserRole.Admin)
-  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Patch(':platform_id')
   async update(
     @Param() { platformId }: PlatformIdParamDto,
@@ -207,7 +208,7 @@ export class PlatformsController {
     HttpStatus.NOT_FOUND,
   ])
   @Roles(UserRole.Admin)
-  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Delete(':platform_id')
   async remove(@Param() { platformId }: PlatformIdParamDto) {
     await this.platformsService.remove(platformId);
@@ -215,8 +216,9 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Lists all platform users.',
     summary: 'List platform users',
+    description:
+      'Lists all platform users (requires client credential access).',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -228,8 +230,7 @@ export class PlatformsController {
     HttpStatus.UNAUTHORIZED,
     HttpStatus.NOT_FOUND,
   ])
-  @Roles(UserRole.Member)
-  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtClientCredentialsAuthGuard)
   @Get(':platform_id/users')
   async findAllPlatformUsers(
     @Param() { platformId }: PlatformIdParamDto,
@@ -260,7 +261,7 @@ export class PlatformsController {
     HttpStatus.NOT_FOUND,
   ])
   @Roles(UserRole.Admin)
-  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Put(':platform_id/users/:user_id')
   async setPlatformUserRole(
     @Param() { platformId, userId }: SetUserPlatformRoleParamsDto,
@@ -285,7 +286,7 @@ export class PlatformsController {
     HttpStatus.NOT_FOUND,
   ])
   @Roles(UserRole.Admin)
-  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Delete(':platform_id/users/:user_id')
   async removePlatformUser(
     @Param() { platformId, userId }: RemovePlatformUserParamsDto,
@@ -306,7 +307,7 @@ export class PlatformsController {
     HttpStatus.BAD_REQUEST,
   ])
   @Roles(UserRole.Member)
-  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Delete(':platform_id/quit')
   async removeMyself(
     @Request() { user }: { user: JWTPayload },
@@ -331,7 +332,7 @@ export class PlatformsController {
     HttpStatus.CONFLICT,
     HttpStatus.BAD_REQUEST,
   ])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtUserAuthGuard)
   @Post(':platform_id/join')
   async joinPlatform(
     @Request() { user }: { user: JWTPayload },
@@ -359,7 +360,7 @@ export class PlatformsController {
     HttpStatus.NOT_FOUND,
   ])
   @Roles(UserRole.Admin)
-  @UseGuards(JwtAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Patch(':platform_id/generate-new-client-secret')
   async generateNewClientSecret(
     @Param() { platformId }: PlatformIdParamDto,

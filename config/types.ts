@@ -9,6 +9,7 @@ export type ConfigProperties = {
   JWT_SECRET_KEY: string;
   JWT_REFRESH_TOKEN_TTL: number;
   JWT_ACCESS_TOKEN_TTL: number;
+  JWT_CLIENT_ACCESS_TOKEN_TTL: number;
   REFRESH_TOKEN_ROTATION: boolean;
   // Redis config
   REDIS_DB_HOST: string;
