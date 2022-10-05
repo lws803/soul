@@ -42,7 +42,7 @@ describe(JwtClientCredentialsStrategy, () => {
         request,
         payload as unknown as JWTPayload,
       ),
-    ).rejects.toThrow('Token used is a not a client credential access token.');
+    ).rejects.toThrow('Token used is a not a client credentials access token.');
   });
 
   it('throws when accessing unauthorized platform id', async () => {
