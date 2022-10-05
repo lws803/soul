@@ -107,6 +107,13 @@ export class ClientAuthenticateResponseEntity {
   accessToken: string;
 
   @ApiResponseProperty({
+    name: 'platform_id',
+    example: 1,
+    description: 'ID of the platform.',
+  })
+  platformId: number;
+
+  @ApiResponseProperty({
     name: 'expires_in',
     description: 'Time for access token to expire (in seconds).',
   })

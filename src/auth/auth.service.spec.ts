@@ -490,6 +490,7 @@ describe('AuthService', () => {
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
         expiresIn: 'JWT_CLIENT_ACCESS_TOKEN_TTL',
+        platformId: platform.id,
       });
     });
 

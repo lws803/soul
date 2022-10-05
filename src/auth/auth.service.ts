@@ -209,6 +209,7 @@ export class AuthService {
         expiresIn: this.configService.get('JWT_CLIENT_ACCESS_TOKEN_TTL'),
       }),
       expiresIn: this.configService.get('JWT_CLIENT_ACCESS_TOKEN_TTL'),
+      platformId,
     };
   }
   private async createAccessTokenFromRefreshToken({

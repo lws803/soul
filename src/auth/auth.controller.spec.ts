@@ -36,6 +36,10 @@ describe('AuthService', () => {
               platformId: 1,
               roles: [UserRole.Admin, UserRole.Member],
             }),
+            authenticateClient: jest.fn().mockResolvedValue({
+              accessToken: 'CLIENT_ACCESS_TOKEN',
+              platformId: 1,
+            }),
           },
         },
       ],
@@ -119,6 +123,27 @@ describe('AuthService', () => {
         code: 'CODE',
         codeVerifier: 'CODE_VERIFIER',
       });
+    });
+  });
+
+  describe('authenticateClient()', () => {
+    it('should authenticate client', async () => {
+      const platform = factories.platformEntity.build({
+        clientSecret: 'CLIENT_SECRET',
+      });
+      const result = await controller.authenticateClient({
+        platformId: platform.id,
+        clientSecret: platform.clientSecret,
+      });
+
+      expect(result).toEqual({
+        accessToken: 'CLIENT_ACCESS_TOKEN',
+        platformId: platform.id,
+      });
+      expect(service.authenticateClient).toHaveBeenCalledWith(
+        platform.id,
+        platform.clientSecret,
+      );
     });
   });
 });
