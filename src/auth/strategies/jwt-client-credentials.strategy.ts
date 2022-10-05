@@ -10,9 +10,9 @@ import { JWTClientCredentialPayload } from '../entities/jwt-client-credential-pa
 import { NoPermissionException } from '../exceptions';
 
 @Injectable()
-export class JwtClientCredentialStrategy extends PassportStrategy(
+export class JwtClientCredentialsStrategy extends PassportStrategy(
   Strategy,
-  'jwt-client-credential',
+  'jwt-client-credentials',
 ) {
   constructor(private readonly configService: ConfigService) {
     super({

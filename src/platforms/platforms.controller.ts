@@ -27,7 +27,7 @@ import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { ApiResponseInvalid } from 'src/common/serializers/decorators';
-import { JwtClientCredentialAuthGuard } from 'src/auth/guards/jwt-client-credential-auth.guard';
+import { JwtClientCredentialsAuthGuard } from 'src/auth/guards/jwt-client-credentials-auth.guard';
 
 import { PlatformsService } from './platforms.service';
 import {
@@ -230,7 +230,7 @@ export class PlatformsController {
     HttpStatus.UNAUTHORIZED,
     HttpStatus.NOT_FOUND,
   ])
-  @UseGuards(JwtClientCredentialAuthGuard)
+  @UseGuards(JwtClientCredentialsAuthGuard)
   @Get(':platform_id/users')
   async findAllPlatformUsers(
     @Param() { platformId }: PlatformIdParamDto,

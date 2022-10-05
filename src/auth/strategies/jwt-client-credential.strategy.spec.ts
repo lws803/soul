@@ -7,15 +7,15 @@ import * as factories from 'factories';
 import { JWTPayload } from '../entities/jwt-payload.entity';
 import { NoPermissionException } from '../exceptions';
 
-import { JwtClientCredentialStrategy } from './jwt-client-credential.strategy';
+import { JwtClientCredentialsStrategy } from './jwt-client-credentials.strategy';
 
-describe(JwtClientCredentialStrategy, () => {
+describe(JwtClientCredentialsStrategy, () => {
   const platform = factories.platformEntity.build();
   const request = {
     params: { platform_id: platform.id },
   } as unknown as Request;
 
-  const jwtClientCredentialStrategy = new JwtClientCredentialStrategy({
+  const jwtClientCredentialStrategy = new JwtClientCredentialsStrategy({
     get: jest.fn().mockImplementation((key) => {
       return key;
     }),
