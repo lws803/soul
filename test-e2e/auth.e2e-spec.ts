@@ -108,7 +108,7 @@ describe('AuthController (e2e)', () => {
           redirect_uri: 'https://www.example.com',
           code_verifier: codeVerifier,
         })
-        .expect(HttpStatus.OK)
+        .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -245,7 +245,7 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
         .send({ refresh_token, client_id: 1 })
-        .expect(HttpStatus.OK)
+        .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -319,6 +319,41 @@ describe('AuthController (e2e)', () => {
             message: 'Invalid token used.',
           }),
         );
+    });
+  });
+
+  describe('/auth/authenticate-client, (POST)', () => {
+    let platform: Platform;
+
+    beforeAll(async () => {
+      platform = await platformRepository.save(
+        factories.platformEntity.build({
+          redirectUris: ['https://www.example.com'],
+          clientSecret: 'CLIENT_SECRET',
+        }),
+      );
+    });
+
+    afterAll(async () => {
+      await platformRepository.delete({});
+    });
+
+    it('authenticates client successfully', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/authenticate-client')
+        .send({
+          client_id: platform.id,
+          client_secret: platform.clientSecret,
+        })
+        .expect(HttpStatus.CREATED)
+        .expect((res) => {
+          expect(res.headers['cache-control']).toBe('no-store');
+          expect(res.body).toEqual({
+            access_token: expect.any(String),
+            expires_in: 63072000,
+            platform_id: 1,
+          });
+        });
     });
   });
 });

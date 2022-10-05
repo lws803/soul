@@ -109,7 +109,7 @@ describe('TasksModule (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
         .send({ refresh_token, client_id: platformId })
-        .expect(HttpStatus.OK)
+        .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
