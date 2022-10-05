@@ -2,6 +2,7 @@ import { Factory } from 'fishery';
 
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { JWTRefreshPayload } from 'src/auth/entities/jwt-refresh-payload.entity';
+import { JWTClientCredentialPayload } from 'src/auth/entities/jwt-client-credential-payload.entity';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { TokenType } from 'src/auth/enums/token-type.enum';
 
@@ -31,6 +32,12 @@ export const jwtPayload = Factory.define<JWTPayload>(() => {
     tokenType: TokenType.Access,
   };
 });
+
+export const jwtClientCredentialPayload =
+  Factory.define<JWTClientCredentialPayload>(() => ({
+    platformId: factories.platformEntity.build().id,
+    tokenType: TokenType.ClientAccess,
+  }));
 
 export const jwtPayloadWithPlatform = Factory.define<JWTPayload>(() => {
   const oneUser = factories.userEntity.build();

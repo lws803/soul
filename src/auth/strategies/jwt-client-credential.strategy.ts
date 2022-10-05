@@ -7,6 +7,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { TokenType } from '../enums/token-type.enum';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception';
 import { JWTClientCredentialPayload } from '../entities/jwt-client-credential-payload.entity';
+import { NoPermissionException } from '../exceptions';
 
 // TODO: Add test for this
 @Injectable()
@@ -26,14 +27,18 @@ export class JwtClientCredentialStrategy extends PassportStrategy(
   }
 
   async validate(req: Request, payload: JWTClientCredentialPayload) {
+    const { params } = req;
+    const { platform_id } = params;
     if (!payload) {
       throw new InvalidTokenException();
     }
-    if (payload.tokenType !== TokenType.ClientAccess) {
+    if (payload.tokenType !== TokenType.ClientAccess)
       throw new InvalidTokenException(
         'Token used is a not a client credential access token.',
       );
-    }
+
+    if (Number(platform_id) !== payload.platformId)
+      throw new NoPermissionException();
 
     return payload;
   }
