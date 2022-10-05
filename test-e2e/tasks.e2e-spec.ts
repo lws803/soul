@@ -109,7 +109,7 @@ describe('TasksModule (e2e)', () => {
       await request(app.getHttpServer())
         .post('/auth/refresh')
         .send({ refresh_token, client_id: platformId })
-        .expect(HttpStatus.CREATED)
+        .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.headers['cache-control']).toBe('no-store');
           expect(res.body).toEqual({
@@ -143,7 +143,7 @@ describe('TasksModule (e2e)', () => {
         const refreshResp = await request(app.getHttpServer())
           .post('/auth/refresh')
           .send({ refresh_token, client_id: 1 });
-        expect(refreshResp.status).toBe(HttpStatus.CREATED);
+        expect(refreshResp.status).toBe(HttpStatus.OK);
       }
 
       const platformUser = await platformUserRepository
