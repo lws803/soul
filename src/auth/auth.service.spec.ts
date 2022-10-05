@@ -17,7 +17,12 @@ import { PlatformsService } from 'src/platforms/platforms.service';
 
 import { AuthService } from './auth.service';
 import { RefreshToken } from './entities/refresh-token.entity';
-import { InvalidCodeException, PKCENotMatchException } from './exceptions';
+import {
+  InvalidCodeException,
+  NullClientSecretException,
+  PKCENotMatchException,
+  UnauthorizedClientException,
+} from './exceptions';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -25,6 +30,7 @@ describe('AuthService', () => {
   let refreshTokenRepository: Repository<RefreshToken>;
   let cacheManager: Cache;
   let configService: ConfigService;
+  let platformsService: PlatformsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -110,6 +116,7 @@ describe('AuthService', () => {
     );
     cacheManager = module.get<Cache>(CACHE_MANAGER);
     configService = module.get<ConfigService>(ConfigService);
+    platformsService = module.get<PlatformsService>(PlatformsService);
   });
 
   describe('validateUser()', () => {
@@ -143,7 +150,7 @@ describe('AuthService', () => {
       const response = await service.login(user);
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         factories.jwtPayload.build(),
-        { secret: 'JWT_SECRET_KEY' },
+        { secret: 'JWT_SECRET_KEY', expiresIn: 'JWT_ACCESS_TOKEN_TTL' },
       );
 
       expect(response).toStrictEqual({
@@ -226,7 +233,7 @@ describe('AuthService', () => {
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
         1,
         factories.jwtPayloadWithPlatform.build(),
-        { secret: 'JWT_SECRET_KEY' },
+        { secret: 'JWT_SECRET_KEY', expiresIn: 'JWT_ACCESS_TOKEN_TTL' },
       );
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
         2,
@@ -321,7 +328,7 @@ describe('AuthService', () => {
       );
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         factories.jwtPayloadWithPlatform.build(),
-        { secret: 'JWT_SECRET_KEY' },
+        { secret: 'JWT_SECRET_KEY', expiresIn: 'JWT_ACCESS_TOKEN_TTL' },
       );
       expect(refreshTokenRepository.update).not.toHaveBeenCalledWith(
         factories.refreshToken.build().id,
@@ -461,6 +468,55 @@ describe('AuthService', () => {
       expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
         id: factories.refreshToken.build().id,
       });
+    });
+  });
+
+  describe('authenticateClient()', () => {
+    it('should authenticate clients and generate access token successfully', async () => {
+      const platform = factories.platformEntity.build({
+        clientSecret: 'CLIENT_SECRET',
+      });
+      jest.spyOn(platformsService, 'findOne').mockResolvedValue(platform);
+
+      const response = await service.authenticateClient(
+        platform.id,
+        platform.clientSecret,
+      );
+      expect(jwtService.signAsync).toHaveBeenCalledWith(
+        factories.jwtClientCredentialPayload.build({ platformId: platform.id }),
+        { secret: 'JWT_SECRET_KEY', expiresIn: 'JWT_CLIENT_ACCESS_TOKEN_TTL' },
+      );
+
+      expect(response).toStrictEqual({
+        accessToken: 'SIGNED_TOKEN',
+        expiresIn: 'JWT_CLIENT_ACCESS_TOKEN_TTL',
+      });
+    });
+
+    it('should throw when platform does not have client secret set', async () => {
+      const platform = factories.platformEntity.build({
+        clientSecret: null,
+      });
+      jest.spyOn(platformsService, 'findOne').mockResolvedValue(platform);
+
+      expect(
+        service.authenticateClient(platform.id, platform.clientSecret),
+      ).rejects.toThrow(new NullClientSecretException());
+
+      expect(jwtService.signAsync).not.toHaveBeenCalled();
+    });
+
+    it('should throw when client secret does not match', async () => {
+      const platform = factories.platformEntity.build({
+        clientSecret: 'CLIENT_SECRET',
+      });
+      jest.spyOn(platformsService, 'findOne').mockResolvedValue(platform);
+
+      expect(
+        service.authenticateClient(platform.id, 'WRONG_SECRET'),
+      ).rejects.toThrow(new UnauthorizedClientException());
+
+      expect(jwtService.signAsync).not.toHaveBeenCalled();
     });
   });
 });

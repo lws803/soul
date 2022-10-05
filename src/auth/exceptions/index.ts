@@ -5,3 +5,5 @@ export * from './invalid-callback.exception';
 export * from './pkce-not-match.exception';
 export * from './invalid-code.exception';
 export * from './no-permission.exception';
+export * from './unauthorized-client.exception';
+export * from './null-client-secret.exception';
