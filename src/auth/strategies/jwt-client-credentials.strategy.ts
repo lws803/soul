@@ -33,7 +33,7 @@ export class JwtClientCredentialsStrategy extends PassportStrategy(
     }
     if (payload.tokenType !== TokenType.ClientAccess)
       throw new InvalidTokenException(
-        'Token used is a not a client credential access token.',
+        'Token used is a not a client credentials access token.',
       );
 
     if (Number(platform_id) !== payload.platformId)
