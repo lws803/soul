@@ -9,7 +9,6 @@ import { InvalidTokenException } from '../exceptions/invalid-token.exception';
 import { JWTClientCredentialPayload } from '../entities/jwt-client-credential-payload.entity';
 import { NoPermissionException } from '../exceptions';
 
-// TODO: Add test for this
 @Injectable()
 export class JwtClientCredentialStrategy extends PassportStrategy(
   Strategy,
