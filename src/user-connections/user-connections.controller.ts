@@ -19,7 +19,7 @@ import {
 import { plainToClass } from 'class-transformer';
 
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtUserAuthGuard } from 'src/auth/guards/jwt-user-auth.guard';
 import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 
 import { UserConnectionsService } from './user-connections.service';
@@ -61,7 +61,7 @@ export class UserConnectionsController {
     HttpStatus.CONFLICT,
     HttpStatus.BAD_REQUEST,
   ])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtUserAuthGuard)
   @Post()
   async create(
     @Request() { user }: { user: JWTPayload },
@@ -87,7 +87,7 @@ export class UserConnectionsController {
     HttpStatus.UNAUTHORIZED,
     HttpStatus.BAD_REQUEST,
   ])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtUserAuthGuard)
   @Get('/my-connections')
   async findMyConnections(
     @Request() { user }: { user: JWTPayload },
@@ -168,7 +168,7 @@ export class UserConnectionsController {
     HttpStatus.CONFLICT,
     HttpStatus.BAD_REQUEST,
   ])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtUserAuthGuard)
   @Post(':id/platforms')
   async addNewPlatformToUserConnection(
     @Request() { user }: { user: JWTPayload },
@@ -197,7 +197,7 @@ export class UserConnectionsController {
     HttpStatus.NOT_FOUND,
     HttpStatus.BAD_REQUEST,
   ])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtUserAuthGuard)
   @Delete(':id/platforms/:platform_id')
   async removePlatformFromUserConnection(
     @Request() { user }: { user: JWTPayload },
@@ -222,7 +222,7 @@ export class UserConnectionsController {
     HttpStatus.NOT_FOUND,
     HttpStatus.BAD_REQUEST,
   ])
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtUserAuthGuard)
   @Delete(':id')
   async remove(
     @Request() { user }: { user: JWTPayload },

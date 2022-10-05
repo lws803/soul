@@ -12,8 +12,8 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RefreshToken } from './entities/refresh-token.entity';
-import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { JwtUserStrategy } from './strategies/jwt-user.strategy';
 import { JwtClientCredentialStrategy } from './strategies/jwt-client-credential.strategy';
 
 @Module({
@@ -44,7 +44,7 @@ import { JwtClientCredentialStrategy } from './strategies/jwt-client-credential.
   providers: [
     AuthService,
     LocalStrategy,
-    JwtStrategy,
+    JwtUserStrategy,
     JwtClientCredentialStrategy,
   ],
 })
