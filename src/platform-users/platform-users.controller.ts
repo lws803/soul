@@ -57,6 +57,7 @@ export class PlatformUsersController {
     HttpStatus.NOT_FOUND,
   ])
   @UseGuards(JwtClientCredentialsAuthGuard)
+  // TODO: Convert these into params instead of using the path
   @Get(':platform_id/users')
   async findAllPlatformUsers(
     @Param() { platformId }: PlatformIdParamDto,
