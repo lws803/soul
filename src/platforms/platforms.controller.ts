@@ -9,7 +9,6 @@ import {
   UseGuards,
   Request,
   Query,
-  Put,
   HttpStatus,
 } from '@nestjs/common';
 import {
@@ -22,21 +21,16 @@ import { plainToClass } from 'class-transformer';
 
 import { JwtUserAuthGuard } from 'src/auth/guards/jwt-user-auth.guard';
 import { PlatformRolesGuard } from 'src/auth/guards/platform-roles.guard';
-import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { ApiResponseInvalid } from 'src/common/serializers/decorators';
-import { JwtClientCredentialsAuthGuard } from 'src/auth/guards/jwt-client-credentials-auth.guard';
 
 import { PlatformsService } from './platforms.service';
 import {
   UpdatePlatformDto,
   CreatePlatformDto,
   PlatformIdParamDto,
-  RemovePlatformUserParamsDto,
-  SetUserPlatformRoleParamsDto,
-  SetUserPlatformRoleQueryParamsDto,
   FindAllPlatformsQueryParamDto,
   FindMyPlatformsQueryParamDto,
 } from './serializers/api.dto';
@@ -44,10 +38,8 @@ import {
   CreatePlatformResponseEntity,
   CreatePlatformUserResponseEntity,
   FindAllPlatformResponseEntity,
-  FindAllPlatformUsersResponseEntity,
   FindOnePlatformResponseEntity,
   FullPlatformResponseEntity,
-  SetPlatformUserRoleResponseEntity,
   UpdatePlatformResponseEntity,
 } from './serializers/api-responses.entity';
 
@@ -212,86 +204,6 @@ export class PlatformsController {
   @Delete(':platform_id')
   async remove(@Param() { platformId }: PlatformIdParamDto) {
     await this.platformsService.remove(platformId);
-  }
-
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'List platform users',
-    description:
-      'Lists all platform users (requires client credential access).',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: FindAllPlatformUsersResponseEntity,
-  })
-  @ApiResponseInvalid([
-    HttpStatus.BAD_REQUEST,
-    HttpStatus.FORBIDDEN,
-    HttpStatus.UNAUTHORIZED,
-    HttpStatus.NOT_FOUND,
-  ])
-  @UseGuards(JwtClientCredentialsAuthGuard)
-  @Get(':platform_id/users')
-  async findAllPlatformUsers(
-    @Param() { platformId }: PlatformIdParamDto,
-    @Query() paginationParams: PaginationParamsDto,
-  ): Promise<FindAllPlatformUsersResponseEntity> {
-    return plainToClass(
-      FindAllPlatformUsersResponseEntity,
-      await this.platformsService.findAllPlatformUsers({
-        platformId,
-        paginationParams,
-      }),
-    );
-  }
-
-  @ApiBearerAuth()
-  @ApiOperation({
-    description: 'Sets a role for a user on a platform.',
-    summary: 'Set role for user',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: SetPlatformUserRoleResponseEntity,
-  })
-  @ApiResponseInvalid([
-    HttpStatus.BAD_REQUEST,
-    HttpStatus.FORBIDDEN,
-    HttpStatus.UNAUTHORIZED,
-    HttpStatus.NOT_FOUND,
-  ])
-  @Roles(UserRole.Admin)
-  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
-  @Put(':platform_id/users/:user_id')
-  async setPlatformUserRole(
-    @Param() { platformId, userId }: SetUserPlatformRoleParamsDto,
-    @Query() { roles }: SetUserPlatformRoleQueryParamsDto,
-  ): Promise<SetPlatformUserRoleResponseEntity> {
-    return plainToClass(
-      SetPlatformUserRoleResponseEntity,
-      await this.platformsService.setUserRole(platformId, userId, roles),
-    );
-  }
-
-  @ApiBearerAuth()
-  @ApiOperation({
-    description: 'Deletes a user from a platform.',
-    summary: 'Delete platform user',
-  })
-  @ApiResponse({ status: HttpStatus.OK })
-  @ApiResponseInvalid([
-    HttpStatus.BAD_REQUEST,
-    HttpStatus.FORBIDDEN,
-    HttpStatus.UNAUTHORIZED,
-    HttpStatus.NOT_FOUND,
-  ])
-  @Roles(UserRole.Admin)
-  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
-  @Delete(':platform_id/users/:user_id')
-  async removePlatformUser(
-    @Param() { platformId, userId }: RemovePlatformUserParamsDto,
-  ) {
-    await this.platformsService.removeUser(platformId, userId);
   }
 
   @ApiBearerAuth()

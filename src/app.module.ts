@@ -29,6 +29,7 @@ import { MailModule } from './mail/mail.module';
 import { ReputationModule } from './reputation/reputation.module';
 import { PlatformCategory } from './platforms/entities/platform-category.entity';
 import { TasksModule } from './tasks/tasks.module';
+import { PlatformUsersModule } from './platform-users/platform-users.module';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { TasksModule } from './tasks/tasks.module';
     RavenModule,
     ReputationModule,
     TasksModule,
+    PlatformUsersModule,
   ],
   controllers: [AppController],
   providers: [

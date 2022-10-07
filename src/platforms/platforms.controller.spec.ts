@@ -18,7 +18,6 @@ describe('PlatformsController', () => {
 
   beforeEach(async () => {
     const platforms = factories.platformEntity.buildList(2);
-    const platformUsers = factories.platformUserEntity.buildList(2);
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PlatformsController],
@@ -57,18 +56,8 @@ describe('PlatformsController', () => {
                 clientSecret: 'CLIENT_SECRET',
               }),
             ),
-            setUserRole: jest
-              .fn()
-              .mockResolvedValue(factories.platformUserEntity.build()),
             removeUser: jest.fn(),
             addUser: jest
-              .fn()
-              .mockResolvedValue(factories.platformUserEntity.build()),
-            findAllPlatformUsers: jest.fn().mockResolvedValue({
-              platformUsers,
-              totalCount: platformUsers.length,
-            }),
-            findOnePlatformUser: jest
               .fn()
               .mockResolvedValue(factories.platformUserEntity.build()),
           },
@@ -194,43 +183,6 @@ describe('PlatformsController', () => {
     );
   });
 
-  it('setPlatformUserRole()', async () => {
-    const user = factories.userEntity.build();
-    const platform = factories.platformEntity.build();
-
-    expect(
-      await controller.setPlatformUserRole(
-        { platformId: platform.id, userId: user.id },
-        {
-          roles: [UserRole.Member],
-        },
-      ),
-    ).toEqual(factories.platformUserEntity.build());
-
-    expect(platformsService.setUserRole).toHaveBeenCalledWith(
-      platform.id,
-      user.id,
-      [UserRole.Member],
-    );
-  });
-
-  it('removePlatformUser()', async () => {
-    const user = factories.userEntity.build();
-    const platform = factories.platformEntity.build();
-
-    expect(
-      await controller.removePlatformUser({
-        platformId: platform.id,
-        userId: user.id,
-      }),
-    ).toBeUndefined();
-
-    expect(platformsService.removeUser).toHaveBeenCalledWith(
-      platform.id,
-      user.id,
-    );
-  });
-
   it('removeMyself()', async () => {
     const platform = factories.platformEntity.build();
     const user = factories.jwtPayload.build();
@@ -261,22 +213,5 @@ describe('PlatformsController', () => {
       platform.id,
       oneUser.id,
     );
-  });
-
-  it('findAllPlatformUsers()', async () => {
-    const platform = factories.platformEntity.build();
-    const platformUsers = factories.platformUserEntity.buildList(2);
-
-    expect(
-      await controller.findAllPlatformUsers(
-        { platformId: platform.id },
-        { page: 1, numItemsPerPage: 10 },
-      ),
-    ).toEqual({ platformUsers, totalCount: platformUsers.length });
-
-    expect(platformsService.findAllPlatformUsers).toHaveBeenCalledWith({
-      platformId: platform.id,
-      paginationParams: { numItemsPerPage: 10, page: 1 },
-    });
   });
 });
