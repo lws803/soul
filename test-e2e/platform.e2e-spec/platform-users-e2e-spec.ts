@@ -80,7 +80,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     it('fetches all users within a platform', async () => {
       const response = await request(app.getHttpServer())
-        .post('/auth/authenticate-client')
+        .post('/auth/oauth/client-credentials')
         .send({
           client_secret: 'CLIENT_SECRET',
           client_id: 1,
@@ -156,7 +156,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -205,7 +205,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -254,7 +254,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -286,7 +286,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -344,7 +344,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -432,7 +432,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -457,7 +457,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -501,7 +501,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',

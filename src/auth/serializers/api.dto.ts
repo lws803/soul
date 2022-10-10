@@ -1,10 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsOptional, IsString, IsInt, IsEnum } from 'class-validator';
+import { IsString, IsInt } from 'class-validator';
 
 import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.validator';
-
-import { GrantType } from '../enums/grant-type.enum';
 
 export class RefreshTokenBodyDto {
   @ApiProperty({ name: 'refresh_token' })
@@ -22,19 +20,6 @@ export class RefreshTokenBodyDto {
   @Type(() => Number)
   @IsInt({ message: 'client_id must be an integer' })
   platformId: number;
-
-  @ApiProperty({
-    name: 'grant_type',
-    required: false,
-    enum: [GrantType.RefreshToken],
-    description: 'Grant type for this authorization operation.',
-  })
-  @IsOptional()
-  @Expose({ name: 'grant_type' })
-  @IsEnum([GrantType.RefreshToken], {
-    message: `grant_type must be ${GrantType.RefreshToken}`,
-  })
-  grantType?: GrantType;
 }
 
 export class CodeQueryParamDto {
@@ -105,19 +90,6 @@ export class ValidateBodyDto {
   @Expose({ name: 'code_verifier' })
   @IsString({ message: 'code_verifier must be a string' })
   codeVerifier: string;
-
-  @ApiProperty({
-    name: 'grant_type',
-    required: false,
-    enum: [GrantType.AuthorizationCode],
-    description: 'Grant type for this authorization operation.',
-  })
-  @IsOptional()
-  @Expose({ name: 'grant_type' })
-  @IsEnum([GrantType.AuthorizationCode], {
-    message: `grant_type must be ${GrantType.AuthorizationCode}`,
-  })
-  grantType?: GrantType;
 }
 
 export class AuthenticateClientBodyDto {
@@ -136,17 +108,4 @@ export class AuthenticateClientBodyDto {
   @Type(() => Number)
   @IsInt({ message: 'client_id must be an integer' })
   platformId: number;
-
-  @ApiProperty({
-    name: 'grant_type',
-    required: false,
-    enum: [GrantType.ClientCredentials],
-    description: 'Grant type for this authorization operation.',
-  })
-  @IsOptional()
-  @Expose({ name: 'grant_type' })
-  @IsEnum([GrantType.ClientCredentials], {
-    message: `grant_type must be ${GrantType.ClientCredentials}`,
-  })
-  grantType?: GrantType;
 }

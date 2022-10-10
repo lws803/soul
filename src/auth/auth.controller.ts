@@ -98,7 +98,7 @@ export class AuthController {
     HttpStatus.NOT_FOUND,
   ])
   @HttpCode(HttpStatus.OK)
-  @Post('verify')
+  @Post('oauth/authorization-code')
   @Header('Cache-Control', 'no-store')
   async verify(
     @Body() args: ValidateBodyDto,
@@ -126,7 +126,7 @@ export class AuthController {
     HttpStatus.NOT_FOUND,
   ])
   @HttpCode(HttpStatus.OK)
-  @Post('refresh')
+  @Post('oauth/refresh-token')
   @Header('Cache-Control', 'no-store')
   async refresh(
     @Body() { refreshToken, platformId }: RefreshTokenBodyDto,
@@ -154,7 +154,7 @@ export class AuthController {
     HttpStatus.NOT_FOUND,
   ])
   @HttpCode(HttpStatus.OK)
-  @Post('authenticate-client')
+  @Post('oauth/client-credentials')
   @Header('Cache-Control', 'no-store')
   async authenticateClient(
     @Body() { platformId, clientSecret }: AuthenticateClientBodyDto,

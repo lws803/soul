@@ -97,7 +97,7 @@ describe('TasksModule (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const resp = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -107,7 +107,7 @@ describe('TasksModule (e2e)', () => {
       const { refresh_token } = resp.body;
 
       await request(app.getHttpServer())
-        .post('/auth/refresh')
+        .post('/auth/oauth/refresh-token')
         .send({ refresh_token, client_id: platformId })
         .expect(HttpStatus.OK)
         .expect((res) => {
@@ -132,7 +132,7 @@ describe('TasksModule (e2e)', () => {
           .post(`/auth/code?${params.toString()}`)
           .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
         const resp = await request(app.getHttpServer())
-          .post('/auth/verify')
+          .post('/auth/oauth/authorization-code')
           .send({
             code: codeResp.body.code,
             redirect_uri: 'https://www.example.com',
@@ -141,7 +141,7 @@ describe('TasksModule (e2e)', () => {
 
         const { refresh_token } = resp.body;
         const refreshResp = await request(app.getHttpServer())
-          .post('/auth/refresh')
+          .post('/auth/oauth/refresh-token')
           .send({ refresh_token, client_id: 1 });
         expect(refreshResp.status).toBe(HttpStatus.OK);
       }

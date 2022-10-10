@@ -102,7 +102,7 @@ describe('AuthController (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -146,7 +146,7 @@ describe('AuthController (e2e)', () => {
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
 
       await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -192,7 +192,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('/auth/refresh', () => {
+  describe('/auth/oauth/refresh-token', () => {
     let userAccount: {
       accessToken: string;
       refreshToken: string;
@@ -233,7 +233,7 @@ describe('AuthController (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const resp = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -243,7 +243,7 @@ describe('AuthController (e2e)', () => {
       const { refresh_token } = resp.body;
 
       await request(app.getHttpServer())
-        .post('/auth/refresh')
+        .post('/auth/oauth/refresh-token')
         .send({ refresh_token, client_id: 1 })
         .expect(HttpStatus.OK)
         .expect((res) => {
@@ -269,7 +269,7 @@ describe('AuthController (e2e)', () => {
         .post(`/auth/code?${params.toString()}`)
         .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const resp = await request(app.getHttpServer())
-        .post('/auth/verify')
+        .post('/auth/oauth/authorization-code')
         .send({
           code: codeResp.body.code,
           redirect_uri: 'https://www.example.com',
@@ -279,7 +279,7 @@ describe('AuthController (e2e)', () => {
       const { refresh_token } = resp.body;
 
       await request(app.getHttpServer())
-        .post('/auth/refresh')
+        .post('/auth/oauth/refresh-token')
         .send({ refresh_token })
         .expect(HttpStatus.BAD_REQUEST)
         .expect((res) =>
@@ -293,7 +293,7 @@ describe('AuthController (e2e)', () => {
 
     it('fails when refreshing with access token', async () => {
       await request(app.getHttpServer())
-        .post('/auth/refresh')
+        .post('/auth/oauth/refresh-token')
         .send({ refresh_token: userAccount.accessToken, client_id: 1 })
         .expect(HttpStatus.UNAUTHORIZED)
         .expect((res) =>
@@ -307,7 +307,7 @@ describe('AuthController (e2e)', () => {
 
     it('fails when refresh token is invalid or corrupted', async () => {
       await request(app.getHttpServer())
-        .post('/auth/refresh')
+        .post('/auth/oauth/refresh-token')
         .send({
           refresh_token: userAccount.refreshToken + 'INVALID',
           client_id: 1,
@@ -322,7 +322,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('/auth/authenticate-client, (POST)', () => {
+  describe('/auth/oauth/client-credentials, (POST)', () => {
     let platform: Platform;
 
     beforeAll(async () => {
@@ -340,7 +340,7 @@ describe('AuthController (e2e)', () => {
 
     it('authenticates client successfully', async () => {
       await request(app.getHttpServer())
-        .post('/auth/authenticate-client')
+        .post('/auth/oauth/client-credentials')
         .send({
           client_id: platform.id,
           client_secret: platform.clientSecret,
