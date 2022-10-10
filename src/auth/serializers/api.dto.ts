@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsOptional } from 'class-validator';
 
 import { IsValidRedirectUri } from 'src/common/validators/is-valid-redirect-uri.validator';
 
@@ -20,6 +20,10 @@ export class RefreshTokenBodyDto {
   @Type(() => Number)
   @IsInt({ message: 'client_id must be an integer' })
   platformId: number;
+
+  @IsOptional()
+  @Expose({ name: 'grant_type' })
+  grantType?: string;
 }
 
 export class CodeQueryParamDto {
@@ -90,6 +94,10 @@ export class ValidateBodyDto {
   @Expose({ name: 'code_verifier' })
   @IsString({ message: 'code_verifier must be a string' })
   codeVerifier: string;
+
+  @IsOptional()
+  @Expose({ name: 'grant_type' })
+  grantType?: string;
 }
 
 export class AuthenticateClientBodyDto {
@@ -108,4 +116,8 @@ export class AuthenticateClientBodyDto {
   @Type(() => Number)
   @IsInt({ message: 'client_id must be an integer' })
   platformId: number;
+
+  @IsOptional()
+  @Expose({ name: 'grant_type' })
+  grantType?: string;
 }
