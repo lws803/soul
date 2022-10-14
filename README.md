@@ -29,56 +29,98 @@ start your own platform!
 
 ## Installation
 
+Set up node using nvm and use project specific npm (optional)
+
 ```bash
-# Set up node using nvm and use project specific npm (optional)
-$ nvm use
-$ npm -g install npm@8.3.2
+nvm use
+```
 
-# Run MySQL
-$ docker run --name soul-mysql -e MYSQL_ROOT_PASSWORD=root_password -d -p 3306:3306 mysql:latest
+```bash
+npm -g install npm@8.12.1
+```
 
-# Set up database
-$ docker exec -it soul-mysql mysql  -u root -p
+run MySQL
+
+```bash
+docker run --name soul-mysql -e MYSQL_ROOT_PASSWORD=root_password -d -p 3306:3306 mysql:latest
+```
+
+set up database
+
+```bash
+docker exec -it soul-mysql mysql -u root -p
+```
+
+```bash
 mysql> CREATE DATABASE soul_db_dev CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+```
+
+```bash
 mysql> CREATE DATABASE soul_db_test CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+```
 
-# Install npm packages
-$ npm install
+install npm packages
 
-# Run migrations (on soul_db_dev database)
-$ npm run migration:run
+```bash
+npm install
+```
 
-# Run Mailhog
-$ docker run -d -p 1025:1025 -p 8025:8025 --name mailhog mailhog/mailhog
+run migrations (on soul_db_dev database)
 
-# Run Redis
-$ docker run -d -p 6379:6379 --name redis redis
+```bash
+npm run migration:run
+```
+
+run Mailhog
+
+```bash
+docker run -d -p 1025:1025 -p 8025:8025 --name mailhog mailhog/mailhog
+```
+
+run Redis
+
+```bash
+docker run -d -p 6379:6379 --name redis redis
 ```
 
 ## Running the service locally
 
+### local development
+
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run start
 ```
 
-## Test
+### watch mode
 
 ```bash
-# unit tests
-$ npm run test
+npm run start:dev
+```
 
-# e2e tests
-$ npm run test:e2e
+### production mode
 
-# test coverage
-$ npm run test:cov
+```bash
+npm run start:prod
+```
+
+## Tests
+
+### unit tests
+
+```bash
+npm run test
+```
+
+### e2e tests
+
+```bash
+npm run test:e2e
+```
+
+### test coverage
+
+```bash
+npm run test:cov
 ```
 
 ## Overriding env variables
