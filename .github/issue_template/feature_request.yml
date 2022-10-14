@@ -1,0 +1,31 @@
+name: '🚀 Feature Request'
+description: 'I have a specific suggestion for Soul!'
+labels: ['needs triage', 'Enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for taking the time to suggest a new feature!** Please fill out the fields below.
+
+        If you feel an open-ended discussion with the community and Soul maintainers would be more suitable to forming the right details for your feature request, you can post in [Discussions](https://github.com/soul-project/soul/discussions) instead.
+
+  - type: textarea
+    attributes:
+      label: What problem are you trying to solve?
+      description: A concise description of what the problem is.
+      placeholder: 'e.g. I want to …'
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Describe the solution you'd like"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Describe any alternatives you've considered"
+      description: |
+        Can Soul already do this, but in a less convenient way?
+        Can you do this using other APIs?
