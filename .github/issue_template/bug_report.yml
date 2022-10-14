@@ -8,7 +8,7 @@ body:
       value: |
         **Thanks for reporting an issue!** please fill out the fields below.
 
-        If you’re unsure whether the issue you’re having is a bug, you can post in [Discussions](https://github.com/theos/theos/discussions) instead.
+        If you're unsure whether the issue you're having is a bug, you can post in [Discussions](https://github.com/soul-project/soul/discussions) instead.
 
   - type: textarea
     id: bug-steps
