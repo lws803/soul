@@ -457,9 +457,9 @@ describe('UsersService', () => {
       expect(refreshTokensRepository.delete).toHaveBeenCalledWith({
         user: savedUser,
       });
-      expect(mailService.sendPasswordResetConfirmationEmail).toHaveBeenCalledWith(
-        savedUser,
-      );
+      expect(
+        mailService.sendPasswordResetConfirmationEmail,
+      ).toHaveBeenCalledWith(savedUser);
     });
   });
 });
