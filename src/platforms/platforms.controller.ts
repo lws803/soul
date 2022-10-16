@@ -44,7 +44,7 @@ import {
   CreatePlatformResponseEntity,
   CreatePlatformUserResponseEntity,
   FindAllPlatformResponseEntity,
-  FindAllPlatformUsersResponseEntity,
+  FindAllFullPlatformUsersResponseEntity,
   FindOnePlatformResponseEntity,
   FullPlatformResponseEntity,
   SetPlatformUserRoleResponseEntity,
@@ -222,7 +222,7 @@ export class PlatformsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: FindAllPlatformUsersResponseEntity,
+    type: FindAllFullPlatformUsersResponseEntity,
   })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
@@ -235,9 +235,9 @@ export class PlatformsController {
   async findAllPlatformUsers(
     @Param() { platformId }: PlatformIdParamDto,
     @Query() paginationParams: PaginationParamsDto,
-  ): Promise<FindAllPlatformUsersResponseEntity> {
+  ): Promise<FindAllFullPlatformUsersResponseEntity> {
     return plainToClass(
-      FindAllPlatformUsersResponseEntity,
+      FindAllFullPlatformUsersResponseEntity,
       await this.platformsService.findAllPlatformUsers({
         platformId,
         paginationParams,
