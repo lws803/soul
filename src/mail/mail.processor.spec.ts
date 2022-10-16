@@ -83,4 +83,24 @@ describe(MailProcessor, () => {
       });
     });
   });
+
+  describe('sendPasswordResetConfirmationEmail()', () => {
+    it('sends password reset confirmation email successfully', async () => {
+      const user = factories.userEntity.build();
+      const response = await processor.sendPasswordResetConfirmationEmail({
+        data: {
+          user,
+        },
+      } as Job<{ user: User; code: string }>);
+
+      expect(response).toBeUndefined();
+
+      expect(sendMail).toHaveBeenCalledWith({
+        context: factories.userEntity.build({ hashedPassword: undefined }),
+        subject: 'Password reset confirmation',
+        template: 'password-reset-confirmation',
+        to: user.email,
+      });
+    });
+  });
 });

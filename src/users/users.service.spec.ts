@@ -76,6 +76,7 @@ describe('UsersService', () => {
           useValue: {
             sendConfirmationEmail: jest.fn(),
             sendPasswordResetEmail: jest.fn(),
+            sendPasswordResetConfirmationEmail: jest.fn(),
           },
         },
       ],
@@ -456,6 +457,9 @@ describe('UsersService', () => {
       expect(refreshTokensRepository.delete).toHaveBeenCalledWith({
         user: savedUser,
       });
+      expect(
+        mailService.sendPasswordResetConfirmationEmail,
+      ).toHaveBeenCalledWith(savedUser);
     });
   });
 });
