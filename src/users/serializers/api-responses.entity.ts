@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { CreatedAtUpdatedAtEntity } from 'src/common/serializers/created-at-updated-at.entity';
 import { ApiResponseProperty } from 'src/common/serializers/decorators';
 
-class FullUserResponseEntity extends CreatedAtUpdatedAtEntity {
+export class FullUserResponseEntity extends CreatedAtUpdatedAtEntity {
   @ApiResponseProperty({
     name: 'id',
     example: 1234,

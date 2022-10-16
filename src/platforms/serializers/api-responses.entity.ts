@@ -3,7 +3,10 @@ import { Type } from 'class-transformer';
 import { CreatedAtUpdatedAtEntity } from 'src/common/serializers/created-at-updated-at.entity';
 import { ApiResponseProperty } from 'src/common/serializers/decorators';
 import { UserRole } from 'src/roles/role.enum';
-import { FindOneUserResponseEntity } from 'src/users/serializers/api-responses.entity';
+import {
+  FindOneUserResponseEntity,
+  FullUserResponseEntity,
+} from 'src/users/serializers/api-responses.entity';
 
 export class PlatformCategoryResponseEntity {
   @ApiResponseProperty({
@@ -175,13 +178,35 @@ class FindOnePlatformUserResponseEntity {
   roles: UserRole[];
 }
 
-export class FindAllPlatformUsersResponseEntity {
+class FullPlatformUserResponseEntity {
+  @ApiResponseProperty({
+    name: 'id',
+    example: 1,
+    description: 'ID of a platform user.',
+  })
+  id: number;
+
+  @ApiResponseProperty({ name: 'user', type: FullUserResponseEntity })
+  @Type(() => FullUserResponseEntity)
+  user: FullUserResponseEntity;
+
+  @ApiResponseProperty({
+    name: 'roles',
+    example: [UserRole.Admin, UserRole.Member],
+    description: 'User roles for a platform.',
+    enum: Object.values(UserRole),
+    type: [UserRole],
+  })
+  roles: UserRole[];
+}
+
+export class FindAllFullPlatformUsersResponseEntity {
   @ApiResponseProperty({
     name: 'platform_users',
     type: [FindOnePlatformUserResponseEntity],
   })
-  @Type(() => FindOnePlatformUserResponseEntity)
-  platformUsers: FindOnePlatformUserResponseEntity[];
+  @Type(() => FullPlatformUserResponseEntity)
+  platformUsers: FullPlatformUserResponseEntity[];
 
   @ApiResponseProperty({
     name: 'total_count',
