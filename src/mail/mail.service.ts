@@ -45,4 +45,19 @@ export class MailService {
       return false;
     }
   }
+
+  async sendPasswordResetConfirmationEmail(user: User) {
+    try {
+      await this.mailQueue.add('password_reset_confirmation', {
+        user,
+      });
+      return true;
+    } catch (error) {
+      this.logger.error(
+        `Error queueing password reset confirmation email to user ${user.email}`,
+      );
+      Sentry.captureException(error);
+      return false;
+    }
+  }
 }

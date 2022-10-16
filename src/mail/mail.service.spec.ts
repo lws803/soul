@@ -86,4 +86,30 @@ describe(MailService, () => {
       expect(mockedSentryCaptureException).toHaveBeenCalled();
     });
   });
+
+  describe('sendPasswordResetConfirmationEmail()', () => {
+    it('sends password reset confirmation email', async () => {
+      const result = await service.sendPasswordResetConfirmationEmail(
+        factories.userEntity.build(),
+      );
+      expect(result).toBe(true);
+
+      expect(addToQueue).toHaveBeenCalledWith('password_reset_confirmation', {
+        user: factories.userEntity.build(),
+      });
+    });
+
+    it('fails to send password reset confirmation email', async () => {
+      const mockedSentryCaptureException = jest.spyOn(
+        Sentry,
+        'captureException',
+      );
+      addToQueue.mockRejectedValueOnce(new Error('TEST_ERROR'));
+      const result = await service.sendPasswordResetConfirmationEmail(
+        factories.userEntity.build(),
+      );
+      expect(result).toBe(false);
+      expect(mockedSentryCaptureException).toHaveBeenCalled();
+    });
+  });
 });

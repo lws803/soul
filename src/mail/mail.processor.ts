@@ -91,4 +91,24 @@ export class MailProcessor {
       throw error;
     }
   }
+
+  @Process('password_reset_confirmation')
+  async sendPasswordResetConfirmationEmail(job: Job<{ user: User }>) {
+    this.logger.log(
+      `Sending password reset confirmation email to '${job.data.user.email}'`,
+    );
+    try {
+      await this.mailerService.sendMail({
+        template: 'password-reset-confirmation',
+        context: plainToClass(User, job.data.user),
+        subject: 'Password reset confirmation',
+        to: job.data.user.email,
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to send password reset confirmation email to '${job.data.user.email}'`,
+      );
+      throw error;
+    }
+  }
 }

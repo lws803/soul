@@ -160,6 +160,7 @@ export class UsersService {
         this.generateCodeAndSendEmail(user, 'confirmation');
       }
     } catch (error) {
+      // We do not wish to throw a 404 user not found for this specific case
       if (error instanceof UserNotFoundException) {
         return;
       }
@@ -172,6 +173,7 @@ export class UsersService {
       const user = await this.findOneByEmail(email);
       this.generateCodeAndSendEmail(user, 'passwordReset');
     } catch (error) {
+      // We do not wish to throw a 404 user not found for this specific case
       if (error instanceof UserNotFoundException) {
         return;
       }
@@ -197,6 +199,7 @@ export class UsersService {
 
       await this.usersRepository.save(user);
       await this.refreshTokensRepository.delete({ user: user });
+      await this.mailService.sendPasswordResetConfirmationEmail(user);
 
       return user;
     } catch (exception) {
@@ -206,6 +209,7 @@ export class UsersService {
       ) {
         throw new InvalidTokenException();
       }
+      throw exception;
     }
   }
 
