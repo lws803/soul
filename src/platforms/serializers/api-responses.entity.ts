@@ -203,7 +203,7 @@ class FullPlatformUserResponseEntity {
 export class FindAllFullPlatformUsersResponseEntity {
   @ApiResponseProperty({
     name: 'platform_users',
-    type: [FindOnePlatformUserResponseEntity],
+    type: [FullPlatformUserResponseEntity],
   })
   @Type(() => FullPlatformUserResponseEntity)
   platformUsers: FullPlatformUserResponseEntity[];
