@@ -489,9 +489,10 @@ describe('UserConnectionsController (e2e)', () => {
     });
   });
 
-  describe('/user-connections/my-connections (GET)', () => {
+  describe.only('/user-connections/my-connections (GET)', () => {
     afterEach(async () => {
       await userConnectionRepository.delete({});
+      await platformUserRepository.delete({});
     });
 
     it('fetches my mutual connections', async () => {
@@ -627,7 +628,7 @@ describe('UserConnectionsController (e2e)', () => {
         );
     });
 
-    it('fetches my follow connections for a platform', async () => {
+    it.only('fetches my follow connections for a platform', async () => {
       const thirdUser = factories.userEntity.build({
         id: 3,
         username: 'test-user_3',
@@ -649,6 +650,17 @@ describe('UserConnectionsController (e2e)', () => {
         firstUserConnection,
         secondUserConnection,
       ]);
+      // TODO: refactor
+      await platformUserRepository.save(
+        factories.platformUserEntity.build({
+          user: factories.userEntity.build(),
+        }),
+      );
+      await platformUserRepository.save(
+        factories.platformUserEntity.build({
+          user: factories.userEntity.build({ id: 2 }),
+        }),
+      );
 
       return request(app.getHttpServer())
         .get(

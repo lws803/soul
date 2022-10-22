@@ -1,13 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  IsNull,
-  Not,
-  QueryFailedError,
-  Repository,
-  OrderByCondition,
-  In,
-} from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 
 import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
@@ -29,6 +22,7 @@ import {
   FindOneUserConnectionResponseEntity,
 } from './serializers/api-responses.entity';
 import { ConnectionType } from './enums/connection-type.enum';
+import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 
 @Injectable()
 export class UserConnectionsService {
@@ -187,33 +181,62 @@ export class UserConnectionsService {
     platformId?: number;
   }) {
     const fromUser = await this.usersService.findOne(userId);
-    const order: OrderByCondition = { createdAt: 'DESC', id: 'DESC' };
-    const defaultArgs = {
-      order,
-      take: paginationParams.numItemsPerPage,
-      skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
-      relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'],
-    };
-    let where: any = { fromUser };
+    let baseQuery = this.userConnectionRepository
+      .createQueryBuilder('userConnection')
+      .leftJoinAndSelect('userConnection.fromUser', 'fromUser')
+      .leftJoinAndSelect('userConnection.toUser', 'toUser')
+      .leftJoinAndSelect('userConnection.mutualConnection', 'mutualConnection');
 
     if (platformId) {
       const platform = await this.platformService.findOne(platformId);
-      const userConnectionIds = platform.userConnections.map(
-        (userConnection) => userConnection.id,
-      );
-      where['id'] = In(userConnectionIds);
+      baseQuery = baseQuery
+        .leftJoinAndMapOne(
+          'userConnection.toPlatformUser',
+          PlatformUser,
+          'toPlatformUser',
+          'toPlatformUser.platform = :platformId AND userConnection.toUser = toPlatformUser.user',
+          { platformId: platform.id },
+        )
+        .leftJoinAndMapOne(
+          'userConnection.fromPlatformUser',
+          PlatformUser,
+          'fromPlatformUser',
+          'fromPlatformUser.platform = :platformId AND userConnection.fromUser = fromPlatformUser.user',
+          { platformId: platform.id },
+        );
     }
 
+    baseQuery = baseQuery.select();
+
     if (connectionType === ConnectionType.Mutual) {
-      where = { mutualConnection: Not(IsNull()), fromUser };
+      baseQuery = baseQuery
+        .where('userConnection.fromUser = :id', {
+          id: fromUser.id,
+        })
+        .andWhere('userConnection.mutualConnection IS NOT NULL');
     } else if (connectionType === ConnectionType.Follower) {
-      where = { toUser: fromUser };
-    }
-    const [userConnections, totalCount] =
-      await this.userConnectionRepository.findAndCount({
-        ...defaultArgs,
-        where,
+      baseQuery = baseQuery.where('userConnection.toUser = :id', {
+        id: fromUser.id,
       });
+    } else {
+      baseQuery = baseQuery.where('userConnection.fromUser = :id', {
+        id: fromUser.id,
+      });
+      // FIXME: Fix this query
+      // platformId &&
+      //   (baseQuery = baseQuery.andWhere(
+      //     'userConnection.toPlatformUser IS NOT NULL',
+      //   ));
+    }
+
+    const [userConnections, totalCount] = await baseQuery
+      .orderBy('userConnection.createdAt', 'DESC')
+      .take(paginationParams.numItemsPerPage)
+      .skip((paginationParams.page - 1) * paginationParams.numItemsPerPage)
+      .getManyAndCount();
+
+    debugger;
+
     return { userConnections, totalCount };
   }
 

@@ -2,7 +2,10 @@ import { Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtEntity } from 'src/common/serializers/created-at-updated-at.entity';
 import { ApiResponseProperty } from 'src/common/serializers/decorators';
-import { FindOnePlatformResponseEntity } from 'src/platforms/serializers/api-responses.entity';
+import {
+  FindOnePlatformResponseEntity,
+  FindOnePlatformUserResponseEntity,
+} from 'src/platforms/serializers/api-responses.entity';
 import { FindOneUserResponseEntity } from 'src/users/serializers/api-responses.entity';
 
 class FullUserConnectionResponseEntity extends CreatedAtUpdatedAtEntity {
@@ -19,7 +22,7 @@ class FullUserConnectionResponseEntity extends CreatedAtUpdatedAtEntity {
     description: 'User connection from a specified user.',
   })
   @Type(() => FindOneUserResponseEntity)
-  fromUser: FindOneUserResponseEntity;
+  fromUser?: FindOneUserResponseEntity;
 
   @ApiResponseProperty({
     name: 'to_user',
@@ -27,7 +30,23 @@ class FullUserConnectionResponseEntity extends CreatedAtUpdatedAtEntity {
     description: 'User connection to a specified user.',
   })
   @Type(() => FindOneUserResponseEntity)
-  toUser: FindOneUserResponseEntity;
+  toUser?: FindOneUserResponseEntity;
+
+  @ApiResponseProperty({
+    name: 'from_platform_user',
+    type: FindOnePlatformUserResponseEntity,
+    description: 'User connection from specified platform user.',
+  })
+  @Type(() => FindOnePlatformResponseEntity)
+  fromPlatformUser?: FindOnePlatformUserResponseEntity;
+
+  @ApiResponseProperty({
+    name: 'to_platform_user',
+    type: FindOnePlatformUserResponseEntity,
+    description: 'User connection to specified platform user.',
+  })
+  @Type(() => FindOnePlatformResponseEntity)
+  toPlatformUser?: FindOnePlatformUserResponseEntity;
 
   @ApiResponseProperty({
     name: 'platforms',

@@ -13,6 +13,7 @@ import {
 
 import { User } from '../../users/entities/user.entity';
 import { Platform } from '../../platforms/entities/platform.entity';
+import { PlatformUser } from '../../platforms/entities/platform-user.entity';
 
 @Unique(['fromUser', 'toUser'])
 @Entity({ name: 'user_connections' })
@@ -33,6 +34,10 @@ export class UserConnection {
   })
   @JoinColumn([{ name: 'to_user_id', referencedColumnName: 'id' }])
   toUser: User;
+
+  toPlatformUser?: PlatformUser;
+
+  fromPlatformUser?: PlatformUser;
 
   @ManyToMany(() => Platform, (platform) => platform.userConnections)
   @JoinTable({

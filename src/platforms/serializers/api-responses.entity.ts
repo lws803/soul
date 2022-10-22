@@ -149,7 +149,7 @@ export class FindAllPlatformResponseEntity {
   totalCount: number;
 }
 
-class FindOnePlatformUserResponseEntity {
+export class FindOnePlatformUserResponseEntity {
   @ApiResponseProperty({
     name: 'id',
     example: 1,
