@@ -8,6 +8,7 @@ import {
   IsEnum,
   IsInt,
   IsOptional,
+  IsPositive,
   MaxLength,
 } from 'class-validator';
 
@@ -161,4 +162,20 @@ export class FindMyPlatformsQueryParamDto extends PaginationParamsDto {
       `${UserRole.Admin}, ${UserRole.Member}, ${UserRole.Banned}`,
   })
   role?: UserRole;
+}
+
+export class ListAllPlatformUsersQueryParamDto extends PaginationParamsDto {
+  @ApiProperty({
+    name: 'uid',
+    example: 1,
+    type: [Number],
+    description: 'List of user ids you want to filter for.',
+    required: false,
+  })
+  @Type(() => Number)
+  @IsOptional()
+  @IsArray()
+  @IsPositive({ each: true })
+  @IsInt({ each: true })
+  uid?: number[];
 }

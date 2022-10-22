@@ -270,13 +270,13 @@ describe('PlatformsController', () => {
     expect(
       await controller.findAllPlatformUsers(
         { platformId: platform.id },
-        { page: 1, numItemsPerPage: 10 },
+        { page: 1, numItemsPerPage: 10, uid: [1] },
       ),
     ).toEqual({ platformUsers, totalCount: platformUsers.length });
 
     expect(platformsService.findAllPlatformUsers).toHaveBeenCalledWith({
       platformId: platform.id,
-      paginationParams: { numItemsPerPage: 10, page: 1 },
+      params: { numItemsPerPage: 10, page: 1, uid: [1] },
     });
   });
 });

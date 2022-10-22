@@ -22,7 +22,6 @@ import { plainToClass } from 'class-transformer';
 
 import { JwtUserAuthGuard } from 'src/auth/guards/jwt-user-auth.guard';
 import { PlatformRolesGuard } from 'src/auth/guards/platform-roles.guard';
-import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { UserRole } from 'src/roles/role.enum';
@@ -39,6 +38,7 @@ import {
   SetUserPlatformRoleQueryParamsDto,
   FindAllPlatformsQueryParamDto,
   FindMyPlatformsQueryParamDto,
+  ListAllPlatformUsersQueryParamDto,
 } from './serializers/api.dto';
 import {
   CreatePlatformResponseEntity,
@@ -236,13 +236,13 @@ export class PlatformsController {
   @Get(':platform_id/users')
   async findAllPlatformUsers(
     @Param() { platformId }: PlatformIdParamDto,
-    @Query() paginationParams: PaginationParamsDto,
+    @Query() params: ListAllPlatformUsersQueryParamDto,
   ): Promise<FindAllFullPlatformUsersResponseEntity> {
     return plainToClass(
       FindAllFullPlatformUsersResponseEntity,
       await this.platformsService.findAllPlatformUsers({
         platformId,
-        paginationParams,
+        params,
       }),
     );
   }

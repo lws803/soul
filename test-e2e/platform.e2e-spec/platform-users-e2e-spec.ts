@@ -65,12 +65,22 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
           clientSecret: 'CLIENT_SECRET',
         }),
       );
-      await platformUserRepository.save(
+      await platformUserRepository.save([
         factories.platformUserEntity.build({
           user: userAccount.user,
           platform,
         }),
-      );
+        factories.platformUserEntity.build({
+          id: 2,
+          user: secondUserAccount.user,
+          platform,
+        }),
+        factories.platformUserEntity.build({
+          id: 3,
+          user: thirdUserAccount.user,
+          platform,
+        }),
+      ]);
     });
 
     afterAll(async () => {
@@ -92,18 +102,99 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
-            total_count: 1,
+            total_count: 3,
             platform_users: [
               {
-                id: 1,
+                id: expect.any(Number),
                 roles: [UserRole.Admin, UserRole.Member],
                 user: {
-                  id: 1,
+                  id: expect.any(Number),
                   user_handle: 'test-user#1',
                   username: 'test-user',
                   bio: null,
                   display_name: null,
                   email: 'TEST_USER@EMAIL.COM',
+                  is_active: true,
+                  created_at: expect.any(String),
+                  updated_at: expect.any(String),
+                },
+              },
+              {
+                id: expect.any(Number),
+                roles: [UserRole.Admin, UserRole.Member],
+                user: {
+                  id: expect.any(Number),
+                  user_handle: 'test-user-2#2',
+                  username: 'test-user-2',
+                  bio: null,
+                  display_name: null,
+                  email: 'TEST_USER_2@EMAIL.COM',
+                  is_active: true,
+                  created_at: expect.any(String),
+                  updated_at: expect.any(String),
+                },
+              },
+              {
+                id: expect.any(Number),
+                roles: [UserRole.Admin, UserRole.Member],
+                user: {
+                  id: expect.any(Number),
+                  user_handle: 'test-user-3#3',
+                  username: 'test-user-3',
+                  bio: null,
+                  display_name: null,
+                  email: 'TEST_USER_3@EMAIL.COM',
+                  is_active: true,
+                  created_at: expect.any(String),
+                  updated_at: expect.any(String),
+                },
+              },
+            ],
+          }),
+        );
+    });
+
+    it('fetches all users within a platform with filters', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/oauth/client-credentials')
+        .send({
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
+        });
+
+      await request(app.getHttpServer())
+        .get('/platforms/1/users?uid=1&uid=2')
+        .set('Authorization', `Bearer ${response.body.access_token}`)
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            total_count: 2,
+            platform_users: [
+              {
+                id: expect.any(Number),
+                roles: [UserRole.Admin, UserRole.Member],
+                user: {
+                  id: expect.any(Number),
+                  user_handle: 'test-user#1',
+                  username: 'test-user',
+                  bio: null,
+                  display_name: null,
+                  email: 'TEST_USER@EMAIL.COM',
+                  is_active: true,
+                  created_at: expect.any(String),
+                  updated_at: expect.any(String),
+                },
+              },
+              {
+                id: expect.any(Number),
+                roles: [UserRole.Admin, UserRole.Member],
+                user: {
+                  id: expect.any(Number),
+                  user_handle: 'test-user-2#2',
+                  username: 'test-user-2',
+                  bio: null,
+                  display_name: null,
+                  email: 'TEST_USER_2@EMAIL.COM',
                   is_active: true,
                   created_at: expect.any(String),
                   updated_at: expect.any(String),
