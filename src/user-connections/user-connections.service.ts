@@ -6,7 +6,6 @@ import {
   QueryFailedError,
   Repository,
   OrderByCondition,
-  In,
 } from 'typeorm';
 
 import { UsersService } from 'src/users/users.service';
@@ -179,12 +178,10 @@ export class UserConnectionsService {
     userId,
     connectionType,
     paginationParams,
-    platformId,
   }: {
     userId: number;
     connectionType: ConnectionType;
     paginationParams: PaginationParamsDto;
-    platformId?: number;
   }) {
     const fromUser = await this.usersService.findOne(userId);
     const order: OrderByCondition = { createdAt: 'DESC', id: 'DESC' };
@@ -195,14 +192,6 @@ export class UserConnectionsService {
       relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'],
     };
     let where: any = { fromUser };
-
-    if (platformId) {
-      const platform = await this.platformService.findOne(platformId);
-      const userConnectionIds = platform.userConnections.map(
-        (userConnection) => userConnection.id,
-      );
-      where['id'] = In(userConnectionIds);
-    }
 
     if (connectionType === ConnectionType.Mutual) {
       where = { mutualConnection: Not(IsNull()), fromUser };

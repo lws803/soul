@@ -57,7 +57,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     await app.close();
   });
 
-  describe('/platforms/:platformId/users (GET)', () => {
+  describe('/platforms/:platform_id/users (GET)', () => {
     beforeAll(async () => {
       const platform = await platformRepository.save(
         factories.platformEntity.build({
@@ -65,12 +65,22 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
           clientSecret: 'CLIENT_SECRET',
         }),
       );
-      await platformUserRepository.save(
+      await platformUserRepository.save([
         factories.platformUserEntity.build({
           user: userAccount.user,
           platform,
         }),
-      );
+        factories.platformUserEntity.build({
+          id: 2,
+          user: secondUserAccount.user,
+          platform,
+        }),
+        factories.platformUserEntity.build({
+          id: 3,
+          user: thirdUserAccount.user,
+          platform,
+        }),
+      ]);
     });
 
     afterAll(async () => {
@@ -92,18 +102,99 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
-            total_count: 1,
+            total_count: 3,
             platform_users: [
               {
-                id: 1,
+                id: expect.any(Number),
                 roles: [UserRole.Admin, UserRole.Member],
                 user: {
-                  id: 1,
+                  id: expect.any(Number),
                   user_handle: 'test-user#1',
                   username: 'test-user',
                   bio: null,
                   display_name: null,
                   email: 'TEST_USER@EMAIL.COM',
+                  is_active: true,
+                  created_at: expect.any(String),
+                  updated_at: expect.any(String),
+                },
+              },
+              {
+                id: expect.any(Number),
+                roles: [UserRole.Admin, UserRole.Member],
+                user: {
+                  id: expect.any(Number),
+                  user_handle: 'test-user-2#2',
+                  username: 'test-user-2',
+                  bio: null,
+                  display_name: null,
+                  email: 'TEST_USER_2@EMAIL.COM',
+                  is_active: true,
+                  created_at: expect.any(String),
+                  updated_at: expect.any(String),
+                },
+              },
+              {
+                id: expect.any(Number),
+                roles: [UserRole.Admin, UserRole.Member],
+                user: {
+                  id: expect.any(Number),
+                  user_handle: 'test-user-3#3',
+                  username: 'test-user-3',
+                  bio: null,
+                  display_name: null,
+                  email: 'TEST_USER_3@EMAIL.COM',
+                  is_active: true,
+                  created_at: expect.any(String),
+                  updated_at: expect.any(String),
+                },
+              },
+            ],
+          }),
+        );
+    });
+
+    it('fetches all users within a platform with filters', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/oauth/client-credentials')
+        .send({
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
+        });
+
+      await request(app.getHttpServer())
+        .get('/platforms/1/users?uid=1&uid=2')
+        .set('Authorization', `Bearer ${response.body.access_token}`)
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            total_count: 2,
+            platform_users: [
+              {
+                id: expect.any(Number),
+                roles: [UserRole.Admin, UserRole.Member],
+                user: {
+                  id: expect.any(Number),
+                  user_handle: 'test-user#1',
+                  username: 'test-user',
+                  bio: null,
+                  display_name: null,
+                  email: 'TEST_USER@EMAIL.COM',
+                  is_active: true,
+                  created_at: expect.any(String),
+                  updated_at: expect.any(String),
+                },
+              },
+              {
+                id: expect.any(Number),
+                roles: [UserRole.Admin, UserRole.Member],
+                user: {
+                  id: expect.any(Number),
+                  user_handle: 'test-user-2#2',
+                  username: 'test-user-2',
+                  bio: null,
+                  display_name: null,
+                  email: 'TEST_USER_2@EMAIL.COM',
                   is_active: true,
                   created_at: expect.any(String),
                   updated_at: expect.any(String),
@@ -115,7 +206,84 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
   });
 
-  describe('/platforms/:platformId/users/:userId (PUT)', () => {
+  describe('/platforms/:platform_id/users/:user_id (GET)', () => {
+    beforeAll(async () => {
+      const platform = await platformRepository.save(
+        factories.platformEntity.build({
+          redirectUris: ['https://www.example.com'],
+          clientSecret: 'CLIENT_SECRET',
+        }),
+      );
+      await platformUserRepository.save([
+        factories.platformUserEntity.build({
+          user: userAccount.user,
+          platform,
+        }),
+        factories.platformUserEntity.build({
+          id: 2,
+          user: secondUserAccount.user,
+          platform,
+        }),
+        factories.platformUserEntity.build({
+          id: 3,
+          user: thirdUserAccount.user,
+          platform,
+        }),
+      ]);
+    });
+
+    afterAll(async () => {
+      await platformUserRepository.delete({});
+      await platformRepository.delete({});
+    });
+
+    it('fetches single user within a platform', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/oauth/client-credentials')
+        .send({
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
+        });
+
+      await request(app.getHttpServer())
+        .get('/platforms/1/users/1')
+        .set('Authorization', `Bearer ${response.body.access_token}`)
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            id: expect.any(Number),
+            roles: [UserRole.Admin, UserRole.Member],
+            user: {
+              id: expect.any(Number),
+              user_handle: 'test-user#1',
+              username: 'test-user',
+              bio: null,
+              display_name: null,
+              email: 'TEST_USER@EMAIL.COM',
+              is_active: true,
+              created_at: expect.any(String),
+              updated_at: expect.any(String),
+            },
+          }),
+        );
+    });
+
+    it('throws not found when user is not found', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/oauth/client-credentials')
+        .send({
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
+        });
+
+      await request(app.getHttpServer())
+        .get('/platforms/1/users/999')
+        .set('Authorization', `Bearer ${response.body.access_token}`)
+        .expect(HttpStatus.NOT_FOUND);
+    });
+  });
+
+  describe('/platforms/:platform_id/users/:user_id (PUT)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
         factories.platformEntity.build({
@@ -303,7 +471,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
   });
 
-  describe('/platforms/:platformId/users/:userId (DELETE)', () => {
+  describe('/platforms/:platform_id/users/:user_id (DELETE)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
         factories.platformEntity.build({
@@ -373,7 +541,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
   });
 
-  describe('/platforms/:platformId/quit (DELETE)', () => {
+  describe('/platforms/:platform_id/quit (DELETE)', () => {
     let platform: Platform;
 
     beforeEach(async () => {
@@ -519,7 +687,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
   });
 
-  describe('/platforms/:platformId/join (POST)', () => {
+  describe('/platforms/:platform_id/join (POST)', () => {
     beforeEach(async () => {
       await platformRepository.save(
         factories.platformEntity.build({

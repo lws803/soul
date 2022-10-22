@@ -29,11 +29,6 @@ class FullUserConnectionResponseEntity extends CreatedAtUpdatedAtEntity {
   @Type(() => FindOneUserResponseEntity)
   toUser: FindOneUserResponseEntity;
 
-  @ApiResponseProperty({
-    name: 'platforms',
-    type: [FindOnePlatformResponseEntity],
-    description: 'Platforms this user connection is associated with.',
-  })
   @Type(() => FindOnePlatformResponseEntity)
   platforms: FindOnePlatformResponseEntity[] = [];
 }

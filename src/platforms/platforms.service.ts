@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { FindOneOptions, In, QueryFailedError, Repository } from 'typeorm';
 import * as randomString from 'randomstring';
 
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
-import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { UserRole } from 'src/roles/role.enum';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
@@ -13,6 +12,7 @@ import {
   CreatePlatformDto,
   FindAllPlatformsQueryParamDto,
   FindMyPlatformsQueryParamDto,
+  ListAllPlatformUsersQueryParamDto,
   UpdatePlatformDto,
 } from './serializers/api.dto';
 import { Platform } from './entities/platform.entity';
@@ -217,22 +217,25 @@ export class PlatformsService {
 
   async findAllPlatformUsers({
     platformId,
-    paginationParams,
+    params,
   }: {
     platformId?: number;
-    paginationParams: PaginationParamsDto;
+    params: ListAllPlatformUsersQueryParamDto;
   }) {
-    let where: { platform?: Platform; user?: User } | undefined = undefined;
+    const where: FindOneOptions<PlatformUser>['where'] = {};
     if (platformId) {
       const platform = await this.findOne(platformId);
-      where = { platform };
+      where['platform'] = platform;
+    }
+    if (params.uid) {
+      where['user'] = In(params.uid);
     }
 
     const [platformUsers, totalCount] =
       await this.platformUserRepository.findAndCount({
-        order: { id: 'ASC' },
-        take: paginationParams.numItemsPerPage,
-        skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
+        order: { createdAt: 'DESC' },
+        take: params.numItemsPerPage,
+        skip: (params.page - 1) * params.numItemsPerPage,
         where,
         relations: ['user', 'platform'],
       });

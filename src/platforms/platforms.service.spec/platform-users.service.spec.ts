@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { QueryFailedError, Repository, In } from 'typeorm';
 
 import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
@@ -228,7 +228,7 @@ describe('PlatformsService - Users', () => {
       expect(
         await service.findAllPlatformUsers({
           platformId: platform.id,
-          paginationParams: {
+          params: {
             page: 1,
             numItemsPerPage: 10,
           },
@@ -237,13 +237,45 @@ describe('PlatformsService - Users', () => {
 
       expect(platformUserRepository.findAndCount).toHaveBeenCalledWith({
         order: {
-          id: 'ASC',
+          createdAt: 'DESC',
         },
         relations: ['user', 'platform'],
         skip: 0,
         take: 10,
         where: {
           platform,
+        },
+      });
+    });
+
+    it('should filter platform users successfully', async () => {
+      const platform = factories.platformEntity.build();
+      const platformUsers = factories.platformUserEntity.buildList(1);
+      jest
+        .spyOn(platformUserRepository, 'findAndCount')
+        .mockResolvedValue([platformUsers, platformUsers.length]);
+
+      expect(
+        await service.findAllPlatformUsers({
+          platformId: platform.id,
+          params: {
+            page: 1,
+            numItemsPerPage: 10,
+            uid: [1],
+          },
+        }),
+      ).toEqual({ platformUsers, totalCount: platformUsers.length });
+
+      expect(platformUserRepository.findAndCount).toHaveBeenCalledWith({
+        order: {
+          createdAt: 'DESC',
+        },
+        relations: ['user', 'platform'],
+        skip: 0,
+        take: 10,
+        where: {
+          platform,
+          user: In([1]),
         },
       });
     });
@@ -260,7 +292,7 @@ describe('PlatformsService - Users', () => {
       expect(
         await service.findAllPlatformUsers({
           platformId: platform.id,
-          paginationParams: {
+          params: {
             page: 1,
             numItemsPerPage: 1,
           },
@@ -272,7 +304,7 @@ describe('PlatformsService - Users', () => {
 
       expect(platformUserRepository.findAndCount).toHaveBeenCalledWith({
         order: {
-          id: 'ASC',
+          createdAt: 'DESC',
         },
         relations: ['user', 'platform'],
         skip: 0,

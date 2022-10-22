@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiExcludeEndpoint,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -94,7 +95,6 @@ export class UserConnectionsController {
     @Query()
     {
       connectionType,
-      platformId,
       page,
       numItemsPerPage,
     }: FindMyUserConnectionsQueryParamsDto,
@@ -105,7 +105,6 @@ export class UserConnectionsController {
         userId: user.userId,
         connectionType,
         paginationParams: { page, numItemsPerPage },
-        platformId,
       }),
     );
   }
@@ -152,6 +151,7 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiExcludeEndpoint()
   @ApiBearerAuth()
   @ApiOperation({
     description: 'Add a new platform to an existing user connection.',
@@ -185,6 +185,7 @@ export class UserConnectionsController {
     );
   }
 
+  @ApiExcludeEndpoint()
   @ApiBearerAuth()
   @ApiOperation({
     description: 'Delete platform from an existing user connection.',
