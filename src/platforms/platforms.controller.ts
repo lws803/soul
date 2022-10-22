@@ -214,7 +214,7 @@ export class PlatformsController {
     await this.platformsService.remove(platformId);
   }
 
-  // TODO: Implement find platform user endpoint
+  // TODO: Implement find platform user endpoint + protect this endpoint behind client credentials auth
 
   @ApiBearerAuth()
   @ApiOperation({

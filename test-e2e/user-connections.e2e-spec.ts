@@ -82,7 +82,6 @@ describe('UserConnectionsController (e2e)', () => {
               bio: null,
               display_name: null,
             },
-            platforms: [],
             is_mutual: false,
           }),
         );
@@ -119,20 +118,6 @@ describe('UserConnectionsController (e2e)', () => {
               bio: null,
               display_name: null,
             },
-            platforms: [
-              {
-                created_at: expect.any(String),
-                updated_at: expect.any(String),
-                id: expect.any(Number),
-                is_verified: true,
-                name: platform.name,
-                name_handle: platform.nameHandle,
-                category: {
-                  id: 1,
-                  name: 'CATEGORY',
-                },
-              },
-            ],
             is_mutual: false,
           }),
         );
@@ -177,7 +162,6 @@ describe('UserConnectionsController (e2e)', () => {
               bio: null,
               display_name: null,
             },
-            platforms: [],
             is_mutual: true,
           }),
         );
@@ -224,7 +208,6 @@ describe('UserConnectionsController (e2e)', () => {
               display_name: null,
             },
             id: 1,
-            platforms: [],
             to_user: {
               id: 2,
               user_handle: 'test-user-2#2',
@@ -304,7 +287,6 @@ describe('UserConnectionsController (e2e)', () => {
               display_name: null,
             },
             id: 1,
-            platforms: [],
             to_user: {
               id: 2,
               user_handle: 'test-user-2#2',
@@ -389,7 +371,6 @@ describe('UserConnectionsController (e2e)', () => {
               display_name: null,
             },
             id: 2,
-            platforms: [],
             to_user: {
               id: 1,
               user_handle: 'test-user#1',
@@ -445,20 +426,6 @@ describe('UserConnectionsController (e2e)', () => {
               bio: null,
               display_name: null,
             },
-            platforms: [
-              {
-                created_at: expect.any(String),
-                updated_at: expect.any(String),
-                id: 1,
-                is_verified: true,
-                name: platform.name,
-                name_handle: platform.nameHandle,
-                category: {
-                  id: 1,
-                  name: 'CATEGORY',
-                },
-              },
-            ],
           }),
         );
     });
@@ -532,7 +499,6 @@ describe('UserConnectionsController (e2e)', () => {
                   display_name: null,
                 },
                 id: expect.any(Number),
-                platforms: [],
                 to_user: {
                   id: 2,
                   user_handle: 'test-user-2#2',
@@ -576,7 +542,6 @@ describe('UserConnectionsController (e2e)', () => {
                   display_name: null,
                 },
                 id: expect.any(Number),
-                platforms: [],
                 from_user: {
                   id: 2,
                   user_handle: 'test-user-2#2',
@@ -613,80 +578,12 @@ describe('UserConnectionsController (e2e)', () => {
                   display_name: null,
                 },
                 id: expect.any(Number),
-                platforms: [],
                 to_user: {
                   id: 2,
                   user_handle: 'test-user-2#2',
                   username: 'test-user-2',
                   bio: null,
                   display_name: null,
-                },
-              },
-            ],
-          }),
-        );
-    });
-
-    it('fetches my follow connections for a platform', async () => {
-      const thirdUser = factories.userEntity.build({
-        id: 3,
-        username: 'test-user_3',
-        userHandle: 'test-user_3#3',
-        email: 'TEST_USER_3@EMAIL.COM',
-      });
-      const onePlatform = factories.platformEntity.build();
-      await userRepository.save(thirdUser);
-      await platformRepository.save(onePlatform);
-      const firstUserConnection = factories.userConnectionEntity.build({
-        platforms: [],
-      });
-      const secondUserConnection = factories.userConnectionEntity.build({
-        id: 2,
-        toUser: thirdUser,
-        platforms: factories.platformEntity.buildList(1),
-      });
-      await userConnectionRepository.save([
-        firstUserConnection,
-        secondUserConnection,
-      ]);
-
-      return request(app.getHttpServer())
-        .get(
-          '/user-connections/my-connections?connection_type=following&platform_id=1',
-        )
-        .set('Authorization', `Bearer ${firstUserAccessToken}`)
-        .expect(HttpStatus.OK)
-        .expect((res) =>
-          expect(res.body).toStrictEqual({
-            total_count: 1,
-            user_connections: [
-              {
-                id: expect.any(Number),
-                created_at: expect.any(String),
-                updated_at: expect.any(String),
-                from_user: {
-                  id: 1,
-                  user_handle: 'test-user#1',
-                  username: 'test-user',
-                  bio: null,
-                  display_name: null,
-                },
-                platforms: [
-                  {
-                    created_at: expect.any(String),
-                    updated_at: expect.any(String),
-                    id: 1,
-                    is_verified: true,
-                    name: onePlatform.name,
-                    name_handle: onePlatform.nameHandle,
-                  },
-                ],
-                to_user: {
-                  id: 3,
-                  user_handle: 'test-user_3#3',
-                  username: 'test-user_3',
-                  bio: 'BIO',
-                  display_name: 'DISPLAY_NAME',
                 },
               },
             ],
