@@ -50,7 +50,7 @@ import {
   FullPlatformResponseEntity,
   SetPlatformUserRoleResponseEntity,
   UpdatePlatformResponseEntity,
-  FullPlatformUserResponseEntity,
+  FindOneFullPlatformUserResponseEntity,
 } from './serializers/api-responses.entity';
 
 @ApiTags('Platforms')
@@ -223,7 +223,7 @@ export class PlatformsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: FullPlatformUserResponseEntity,
+    type: FindOneFullPlatformUserResponseEntity,
   })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
@@ -235,9 +235,9 @@ export class PlatformsController {
   @Get(':platform_id/users/:user_id')
   async findOnePlatformUser(
     @Param() { platformId, userId }: FindOnePlatformUserParamDto,
-  ): Promise<FullPlatformUserResponseEntity> {
+  ): Promise<FindOneFullPlatformUserResponseEntity> {
     return plainToClass(
-      FullPlatformUserResponseEntity,
+      FindOneFullPlatformUserResponseEntity,
       await this.platformsService.findOnePlatformUser(platformId, userId),
     );
   }

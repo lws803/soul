@@ -178,7 +178,7 @@ class FindOnePlatformUserResponseEntity {
   roles: UserRole[];
 }
 
-export class FullPlatformUserResponseEntity {
+export class FindOneFullPlatformUserResponseEntity {
   @ApiResponseProperty({
     name: 'id',
     example: 1,
@@ -203,10 +203,10 @@ export class FullPlatformUserResponseEntity {
 export class FindAllFullPlatformUsersResponseEntity {
   @ApiResponseProperty({
     name: 'platform_users',
-    type: [FullPlatformUserResponseEntity],
+    type: [FindOneFullPlatformUserResponseEntity],
   })
-  @Type(() => FullPlatformUserResponseEntity)
-  platformUsers: FullPlatformUserResponseEntity[];
+  @Type(() => FindOneFullPlatformUserResponseEntity)
+  platformUsers: FindOneFullPlatformUserResponseEntity[];
 
   @ApiResponseProperty({
     name: 'total_count',
