@@ -39,6 +39,7 @@ import {
   FindAllPlatformsQueryParamDto,
   FindMyPlatformsQueryParamDto,
   ListAllPlatformUsersQueryParamDto,
+  FindOnePlatformUserParamDto,
 } from './serializers/api.dto';
 import {
   CreatePlatformResponseEntity,
@@ -49,6 +50,7 @@ import {
   FullPlatformResponseEntity,
   SetPlatformUserRoleResponseEntity,
   UpdatePlatformResponseEntity,
+  FullPlatformUserResponseEntity,
 } from './serializers/api-responses.entity';
 
 @ApiTags('Platforms')
@@ -214,7 +216,31 @@ export class PlatformsController {
     await this.platformsService.remove(platformId);
   }
 
-  // TODO: Implement find platform user endpoint + protect this endpoint behind client credentials auth
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Find one platform user',
+    description: 'Find one platform user (requires client credential access).',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: FullPlatformUserResponseEntity,
+  })
+  @ApiResponseInvalid([
+    HttpStatus.BAD_REQUEST,
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+  ])
+  @UseGuards(JwtClientCredentialsAuthGuard)
+  @Get(':platform_id/users/:user_id')
+  async findOnePlatformUser(
+    @Param() { platformId, userId }: FindOnePlatformUserParamDto,
+  ): Promise<FullPlatformUserResponseEntity> {
+    return plainToClass(
+      FullPlatformUserResponseEntity,
+      await this.platformsService.findOnePlatformUser(platformId, userId),
+    );
+  }
 
   @ApiBearerAuth()
   @ApiOperation({

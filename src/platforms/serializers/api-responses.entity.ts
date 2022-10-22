@@ -178,7 +178,7 @@ class FindOnePlatformUserResponseEntity {
   roles: UserRole[];
 }
 
-class FullPlatformUserResponseEntity {
+export class FullPlatformUserResponseEntity {
   @ApiResponseProperty({
     name: 'id',
     example: 1,

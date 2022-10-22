@@ -279,4 +279,21 @@ describe('PlatformsController', () => {
       params: { numItemsPerPage: 10, page: 1, uid: [1] },
     });
   });
+
+  it('findOnePlatformUser()', async () => {
+    const platform = factories.platformEntity.build();
+    const platformUser = factories.platformUserEntity.build();
+
+    expect(
+      await controller.findOnePlatformUser({
+        platformId: platform.id,
+        userId: platformUser.user.id,
+      }),
+    ).toEqual(platformUser);
+
+    expect(platformsService.findOnePlatformUser).toHaveBeenCalledWith(
+      platform.id,
+      platformUser.user.id,
+    );
+  });
 });
