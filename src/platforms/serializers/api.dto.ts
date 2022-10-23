@@ -207,7 +207,7 @@ export class UpdatePlatformUserBodyDto {
     name: 'profile_url',
     example: 'https://example.com',
     description: 'User profile URL in your platform.',
-    type: String,
+    required: false,
   })
   @Expose({ name: 'profile_url' })
   @IsOptional()
@@ -220,6 +220,7 @@ export class UpdatePlatformUserBodyDto {
     example: 'admin',
     type: [String],
     description: 'List of roles',
+    required: false,
   })
   @IsOptional()
   @IsArray()
