@@ -289,7 +289,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
   });
 
-  describe('/platforms/:platform_id/users/:user_id/roles (PUT)', () => {
+  describe('/platforms/:platform_id/users/:user_id (PUT)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
         factories.platformEntity.build({
@@ -334,8 +334,77 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
-            profile_url: 'PROFILE_URL',
+            profile_url: null,
             roles: [UserRole.Admin, UserRole.Member],
+            user: {
+              id: 2,
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
+              bio: null,
+              display_name: null,
+              email: 'TEST_USER_2@EMAIL.COM',
+              is_active: true,
+              created_at: expect.any(String),
+              updated_at: expect.any(String),
+            },
+          }),
+        );
+    });
+
+    it('sets user role and profile url', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/oauth/client-credentials')
+        .send({
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
+        });
+
+      await request(app.getHttpServer())
+        .put('/platforms/1/users/2')
+        .set('Authorization', `Bearer ${response.body.access_token}`)
+        .send({
+          roles: ['admin', 'member'],
+          profile_url: 'NEW_PROFILE_URL',
+        })
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            id: 2,
+            profile_url: 'NEW_PROFILE_URL',
+            roles: [UserRole.Admin, UserRole.Member],
+            user: {
+              id: 2,
+              user_handle: 'test-user-2#2',
+              username: 'test-user-2',
+              bio: null,
+              display_name: null,
+              email: 'TEST_USER_2@EMAIL.COM',
+              is_active: true,
+              created_at: expect.any(String),
+              updated_at: expect.any(String),
+            },
+          }),
+        );
+    });
+
+    it('sets user profile url', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/oauth/client-credentials')
+        .send({
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
+        });
+
+      await request(app.getHttpServer())
+        .put('/platforms/1/users/2')
+        .set('Authorization', `Bearer ${response.body.access_token}`)
+        .send({ profile_url: 'NEW_PROFILE_URL' })
+        .expect(HttpStatus.OK)
+        .expect((res) =>
+          expect(res.body).toEqual({
+            id: 2,
+            profile_url: 'NEW_PROFILE_URL',
+            roles: [UserRole.Member],
             user: {
               id: 2,
               user_handle: 'test-user-2#2',
@@ -367,7 +436,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
-            profile_url: 'PROFILE_URL',
+            profile_url: null,
             roles: [UserRole.Banned],
             user: {
               id: 2,

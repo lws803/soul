@@ -194,26 +194,6 @@ describe('PlatformsController', () => {
     );
   });
 
-  it('setPlatformUserRole()', async () => {
-    const user = factories.userEntity.build();
-    const platform = factories.platformEntity.build();
-
-    expect(
-      await controller.setPlatformUserRole(
-        { platformId: platform.id, userId: user.id },
-        {
-          roles: [UserRole.Member],
-        },
-      ),
-    ).toEqual(factories.platformUserEntity.build());
-
-    expect(platformsService.setUserRole).toHaveBeenCalledWith(
-      platform.id,
-      user.id,
-      [UserRole.Member],
-    );
-  });
-
   it('removePlatformUser()', async () => {
     const user = factories.userEntity.build();
     const platform = factories.platformEntity.build();

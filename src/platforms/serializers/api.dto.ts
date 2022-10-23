@@ -206,6 +206,8 @@ export class UpdatePlatformUserBodyDto {
     description: 'User profile URL in your platform.',
     type: String,
   })
+  @Expose({ name: 'profile_url' })
+  @IsOptional()
   profileUrl?: string;
 
   @ApiProperty({
@@ -214,6 +216,7 @@ export class UpdatePlatformUserBodyDto {
     type: [String],
     description: 'List of roles',
   })
+  @IsOptional()
   @IsArray()
   @IsEnum(UserRole, { each: true })
   roles?: UserRole[] = [UserRole.Member];
