@@ -61,7 +61,7 @@ export class FullPlatformResponseEntity extends CreatedAtUpdatedAtEntity {
     example: 'https://example.com',
     description: 'Webhook URI for Soul to broadcast user activity.',
   })
-  activityWebhookUri?: string;
+  activityWebhookUri?: string | null = null;
 
   @ApiResponseProperty({
     name: 'redirect_uris',
@@ -77,7 +77,7 @@ export class FullPlatformResponseEntity extends CreatedAtUpdatedAtEntity {
     example: 'https://example.com',
     description: 'Homepage URL for your platform.',
   })
-  homepageUrl?: string;
+  homepageUrl?: string | null = null;
 
   @ApiResponseProperty({
     name: 'category',
@@ -127,7 +127,7 @@ export class FindOnePlatformResponseEntity extends CreatedAtUpdatedAtEntity {
     example: 'https://example.com',
     description: 'Homepage URL for your platform.',
   })
-  homepageUrl?: string;
+  homepageUrl?: string | null = null;
 
   @ApiResponseProperty({
     name: 'is_verified',
@@ -187,7 +187,7 @@ class FindOnePlatformUserResponseEntity {
     example: 'https://example.com',
     description: 'User profile URL in your platform.',
   })
-  profileUrl?: string;
+  profileUrl?: string | null = null;
 
   @ApiResponseProperty({
     name: 'roles',
@@ -220,7 +220,7 @@ export class FindOneFullPlatformUserResponseEntity {
     example: 'https://example.com',
     description: 'User profile URL in your platform.',
   })
-  profileUrl?: string;
+  profileUrl?: string | null = null;
 
   @ApiResponseProperty({
     name: 'roles',
