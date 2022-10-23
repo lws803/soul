@@ -525,6 +525,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       const platform = await platformRepository.save(
         factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
+          clientSecret: 'CLIENT_SECRET',
         }),
       );
       await platformUserRepository.save([
@@ -547,21 +548,11 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
 
     it('deletes a platform user', async () => {
-      const params = new URLSearchParams({
-        redirect_uri: 'https://www.example.com',
-        state: 'TEST_STATE',
-        code_challenge: codeChallenge,
-        client_id: String(1),
-      });
-      const codeResp = await request(app.getHttpServer())
-        .post(`/auth/code?${params.toString()}`)
-        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/oauth/authorization-code')
+        .post('/auth/oauth/client-credentials')
         .send({
-          code: codeResp.body.code,
-          redirect_uri: 'https://www.example.com',
-          code_verifier: codeVerifier,
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
         });
 
       await request(app.getHttpServer())
@@ -569,24 +560,6 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toEqual({}));
-    });
-
-    it('throws due to insufficient permissions', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-
-      await request(app.getHttpServer())
-        .delete('/platforms/1/users/1')
-        .set('Authorization', `Bearer ${response.body.access_token}`)
-        .expect(HttpStatus.FORBIDDEN)
-        .expect((res) =>
-          expect(res.body).toEqual({
-            error: 'PERMISSION_DENIED',
-            message:
-              'You lack the permissions necessary to perform this action.',
-          }),
-        );
     });
   });
 

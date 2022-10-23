@@ -237,9 +237,8 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description:
-      'Updates a platform membership (requires client credential access).',
-    summary: 'Update platform membership',
+    description: 'Updates a platform user (requires client credential access).',
+    summary: 'Update platform user',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -300,8 +299,9 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    description: 'Deletes a user from a platform.',
     summary: 'Delete platform user',
+    description:
+      'Deletes a user from a platform (requires client credential access).',
   })
   @ApiResponse({ status: HttpStatus.OK })
   @ApiResponseInvalid([
@@ -311,7 +311,7 @@ export class PlatformsController {
     HttpStatus.NOT_FOUND,
   ])
   @Roles(UserRole.Admin)
-  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
+  @UseGuards(JwtClientCredentialsAuthGuard)
   @Delete(':platform_id/users/:user_id')
   async removePlatformUser(
     @Param() { platformId, userId }: api.RemovePlatformUserParamsDto,
