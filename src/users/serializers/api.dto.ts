@@ -8,6 +8,7 @@ import {
   Matches,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
@@ -35,14 +36,16 @@ export class CreateUserDto {
 
   @ApiProperty({ name: 'display_name', example: 'John Doe', required: false })
   @Expose({ name: 'display_name' })
+  @ValidateIf((_object, value) => value !== null)
   @IsOptional()
   @MaxLength(32)
-  displayName?: string;
+  displayName?: string | null;
 
   @ApiProperty({ name: 'bio', example: 'User bio.', required: false })
+  @ValidateIf((_object, value) => value !== null)
   @IsOptional()
   @MaxLength(255)
-  bio?: string;
+  bio?: string | null;
 }
 
 export class UpdateUserDto {
@@ -62,14 +65,16 @@ export class UpdateUserDto {
 
   @ApiProperty({ name: 'display_name', example: 'John Doe', required: false })
   @Expose({ name: 'display_name' })
+  @ValidateIf((_object, value) => value !== null)
   @IsOptional()
   @MaxLength(32)
-  displayName?: string;
+  displayName?: string | null;
 
   @ApiProperty({ name: 'bio', example: 'User bio.', required: false })
+  @ValidateIf((_object, value) => value !== null)
   @IsOptional()
   @MaxLength(255)
-  bio?: string;
+  bio?: string | null;
 }
 
 export class UserParamsDto {

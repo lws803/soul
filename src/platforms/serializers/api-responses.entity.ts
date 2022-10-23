@@ -61,7 +61,7 @@ export class FullPlatformResponseEntity extends CreatedAtUpdatedAtEntity {
     example: 'https://example.com',
     description: 'Webhook URI for Soul to broadcast user activity.',
   })
-  activityWebhookUri?: string;
+  activityWebhookUri?: string | null = null;
 
   @ApiResponseProperty({
     name: 'redirect_uris',
@@ -71,6 +71,13 @@ export class FullPlatformResponseEntity extends CreatedAtUpdatedAtEntity {
       'defined in https://docs.microsoft.com/en-us/azure/active-directory/develop/reply-url',
   })
   redirectUris: string[];
+
+  @ApiResponseProperty({
+    name: 'homepage_url',
+    example: 'https://example.com',
+    description: 'Homepage URL for your platform.',
+  })
+  homepageUrl?: string | null = null;
 
   @ApiResponseProperty({
     name: 'category',
@@ -114,6 +121,13 @@ export class FindOnePlatformResponseEntity extends CreatedAtUpdatedAtEntity {
       'ID is present after the # symbol.',
   })
   nameHandle: string;
+
+  @ApiResponseProperty({
+    name: 'homepage_url',
+    example: 'https://example.com',
+    description: 'Homepage URL for your platform.',
+  })
+  homepageUrl?: string | null = null;
 
   @ApiResponseProperty({
     name: 'is_verified',
@@ -169,6 +183,13 @@ class FindOnePlatformUserResponseEntity {
   platform: FindOnePlatformResponseEntity;
 
   @ApiResponseProperty({
+    name: 'profile_url',
+    example: 'https://example.com',
+    description: 'User profile URL in your platform.',
+  })
+  profileUrl?: string | null = null;
+
+  @ApiResponseProperty({
     name: 'roles',
     example: [UserRole.Admin, UserRole.Member],
     description: 'User roles for a platform.',
@@ -178,6 +199,10 @@ class FindOnePlatformUserResponseEntity {
   roles: UserRole[];
 }
 
+/**
+ * Find platform user with full user details and no platform detail.
+ * This schema is used for platform server / backend-facing endpoints.
+ */
 export class FindOneFullPlatformUserResponseEntity {
   @ApiResponseProperty({
     name: 'id',
@@ -189,6 +214,13 @@ export class FindOneFullPlatformUserResponseEntity {
   @ApiResponseProperty({ name: 'user', type: FullUserResponseEntity })
   @Type(() => FullUserResponseEntity)
   user: FullUserResponseEntity;
+
+  @ApiResponseProperty({
+    name: 'profile_url',
+    example: 'https://example.com',
+    description: 'User profile URL in your platform.',
+  })
+  profileUrl?: string | null = null;
 
   @ApiResponseProperty({
     name: 'roles',
@@ -220,3 +252,5 @@ export class FindAllFullPlatformUsersResponseEntity {
 export class SetPlatformUserRoleResponseEntity extends FindOnePlatformUserResponseEntity {}
 
 export class CreatePlatformUserResponseEntity extends FindOnePlatformUserResponseEntity {}
+
+export class UpdatePlatformUserResponseEntity extends FindOnePlatformUserResponseEntity {}

@@ -145,16 +145,20 @@ describe('PlatformsService - Users', () => {
     });
   });
 
-  describe('setUserRole()', () => {
+  describe('updateOnePlatformUser()', () => {
     it('should set platform user role successfully', async () => {
       const platformUser = factories.platformUserEntity.build();
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
+      const params = {
+        platformId: platform.id,
+        userId: user.id,
+      };
+      const body = {
+        roles: [UserRole.Admin, UserRole.Member],
+      };
 
-      await service.setUserRole(platform.id, user.id, [
-        UserRole.Admin,
-        UserRole.Member,
-      ]);
+      await service.updateOnePlatformUser(params, body);
 
       expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
       expect(refreshTokenRepository.findOne).toHaveBeenCalledWith({
@@ -166,19 +170,39 @@ describe('PlatformsService - Users', () => {
       );
     });
 
+    it('should set profile url', async () => {
+      const platformUser = factories.platformUserEntity.build({
+        profileUrl: 'NEW_PROFILE_URL',
+      });
+      const platform = factories.platformEntity.build();
+      const user = factories.userEntity.build();
+      const params = {
+        platformId: platform.id,
+        userId: user.id,
+      };
+      const body = { profileUrl: 'NEW_PROFILE_URL' };
+      await service.updateOnePlatformUser(params, body);
+
+      expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
+    });
+
     it('should throw an error when user has too many admin roles', async () => {
       jest
         .spyOn(platformUserCreateQueryBuilder, 'getCount')
         .mockResolvedValue(6);
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
+      const params = {
+        platformId: platform.id,
+        userId: user.id,
+      };
+      const body = {
+        roles: [UserRole.Admin, UserRole.Member],
+      };
 
-      await expect(
-        service.setUserRole(platform.id, user.id, [
-          UserRole.Admin,
-          UserRole.Member,
-        ]),
-      ).rejects.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
+      await expect(service.updateOnePlatformUser(params, body)).rejects.toThrow(
+        new MaxAdminRolesPerUserException({ max: 5 }),
+      );
       expect(platformUserRepository.save).not.toHaveBeenCalled();
     });
 
@@ -188,9 +212,16 @@ describe('PlatformsService - Users', () => {
         .mockResolvedValue(6);
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
+      const params = {
+        platformId: platform.id,
+        userId: user.id,
+      };
+      const body = {
+        roles: [UserRole.Member],
+      };
 
       await expect(
-        service.setUserRole(platform.id, user.id, [UserRole.Member]),
+        service.updateOnePlatformUser(params, body),
       ).resolves.not.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
       expect(platformUserRepository.save).toHaveBeenCalled();
     });

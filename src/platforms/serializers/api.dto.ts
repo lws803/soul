@@ -10,6 +10,7 @@ import {
   IsOptional,
   IsPositive,
   MaxLength,
+  ValidateIf,
 } from 'class-validator';
 
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
@@ -82,9 +83,22 @@ export class CreatePlatformDto {
     required: false,
   })
   @Expose({ name: 'activity_webhook_uri' })
+  @ValidateIf((_object, value) => value !== null)
   @IsOptional()
   @MaxLength(255)
-  activityWebhookUri?: string;
+  activityWebhookUri?: string | null;
+
+  @ApiProperty({
+    name: 'homepage_url',
+    example: 'https://www.example.com',
+    description: 'Homepage URL for your platform.',
+    required: false,
+  })
+  @Expose({ name: 'homepage_url' })
+  @ValidateIf((_object, value) => value !== null)
+  @IsOptional()
+  @MaxLength(255)
+  homepageUrl?: string | null;
 
   @ApiProperty({
     name: 'redirect_uris',
@@ -186,4 +200,29 @@ export class FindOnePlatformUserParamDto extends PlatformIdParamDto {
   @Type(() => Number)
   @IsInt({ message: 'user_id must be an integer' })
   userId: number;
+}
+
+export class UpdatePlatformUserBodyDto {
+  @ApiProperty({
+    name: 'profile_url',
+    example: 'https://example.com',
+    description: 'User profile URL in your platform.',
+    type: String,
+  })
+  @Expose({ name: 'profile_url' })
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  @MaxLength(255)
+  profileUrl?: string | null;
+
+  @ApiProperty({
+    name: 'roles',
+    example: 'admin',
+    type: [String],
+    description: 'List of roles',
+  })
+  @IsOptional()
+  @IsArray()
+  @IsEnum(UserRole, { each: true })
+  roles?: UserRole[];
 }

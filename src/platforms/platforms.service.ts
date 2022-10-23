@@ -8,24 +8,11 @@ import { User } from 'src/users/entities/user.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
-import {
-  CreatePlatformDto,
-  FindAllPlatformsQueryParamDto,
-  FindMyPlatformsQueryParamDto,
-  ListAllPlatformUsersQueryParamDto,
-  UpdatePlatformDto,
-} from './serializers/api.dto';
+import * as api from './serializers/api.dto';
+import * as exceptions from './exceptions';
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
 import { PlatformCategory } from './entities/platform-category.entity';
-import {
-  PlatformNotFoundException,
-  PlatformUserNotFoundException,
-  NoAdminsRemainingException,
-  DuplicatePlatformUserException,
-  PlatformCategoryNotFoundException,
-  MaxAdminRolesPerUserException,
-} from './exceptions';
 import { FindAllPlatformResponseEntity } from './serializers/api-responses.entity';
 
 const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
@@ -44,12 +31,13 @@ export class PlatformsService {
     private readonly platformCategoryRepository: Repository<PlatformCategory>,
   ) {}
 
-  async create(createPlatformDto: CreatePlatformDto, userId: number) {
+  async create(createPlatformDto: api.CreatePlatformDto, userId: number) {
     await this.isNewAdminPermittedOrThrow(userId);
     const platform = new Platform();
     platform.name = createPlatformDto.name;
     platform.redirectUris = createPlatformDto.redirectUris;
     platform.activityWebhookUri = createPlatformDto.activityWebhookUri;
+    platform.homepageUrl = createPlatformDto.homepageUrl;
 
     if (createPlatformDto.category) {
       const category = await this.findOneCategoryOrThrow(
@@ -81,7 +69,7 @@ export class PlatformsService {
     return updatedPlatform;
   }
 
-  async findAll(queryParams: FindAllPlatformsQueryParamDto) {
+  async findAll(queryParams: api.FindAllPlatformsQueryParamDto) {
     let baseQuery = this.platformRepository
       .createQueryBuilder('platform')
       .leftJoinAndSelect('platform.category', 'category')
@@ -118,7 +106,7 @@ export class PlatformsService {
   }
 
   async findMyPlatforms(
-    queryParams: FindMyPlatformsQueryParamDto,
+    queryParams: api.FindMyPlatformsQueryParamDto,
     userId: number,
   ): Promise<FindAllPlatformResponseEntity> {
     let baseQuery = this.platformUserRepository
@@ -160,7 +148,38 @@ export class PlatformsService {
     return this.findPlatformUserOrThrow({ platform, user });
   }
 
-  async update(id: number, updatePlatformDto: UpdatePlatformDto) {
+  async updateOnePlatformUser(
+    { platformId, userId }: { platformId: number; userId: number },
+    updatePlatformUserDto: api.UpdatePlatformUserBodyDto,
+  ) {
+    const platformUser = await this.findOnePlatformUser(platformId, userId);
+
+    if (updatePlatformUserDto.roles) {
+      const roles = updatePlatformUserDto.roles;
+      if (
+        platformUser.roles.includes(UserRole.Admin) &&
+        !roles.includes(UserRole.Admin)
+      ) {
+        // Check if there are any remaining admins
+        await this.findAnotherAdminOrThrow(platformId, userId);
+      }
+
+      if (roles.includes(UserRole.Admin))
+        await this.isNewAdminPermittedOrThrow(userId);
+
+      platformUser.roles = [...new Set(roles)];
+      await this.revokePlatformUserRefreshToken(platformUser);
+    }
+
+    platformUser.profileUrl =
+      updatePlatformUserDto.profileUrl !== undefined
+        ? updatePlatformUserDto.profileUrl
+        : platformUser.profileUrl;
+
+    return await this.platformUserRepository.save(platformUser);
+  }
+
+  async update(id: number, updatePlatformDto: api.UpdatePlatformDto) {
     const platform = await this.findOne(id);
     const updatedPlatform: Partial<Platform> = {};
 
@@ -169,6 +188,7 @@ export class PlatformsService {
       name: platformName,
       redirectUris,
       activityWebhookUri,
+      homepageUrl,
     } = updatePlatformDto;
 
     if (platformName) {
@@ -185,6 +205,8 @@ export class PlatformsService {
     updatedPlatform.name = platformName ?? platform.name;
     updatedPlatform.activityWebhookUri =
       activityWebhookUri ?? platform.activityWebhookUri;
+    updatedPlatform.homepageUrl =
+      homepageUrl !== undefined ? homepageUrl : platform.homepageUrl;
 
     await this.platformRepository.update({ id: platform.id }, updatedPlatform);
     return this.platformRepository.findOne(id);
@@ -195,32 +217,12 @@ export class PlatformsService {
     await this.platformRepository.delete({ id: platform.id });
   }
 
-  async setUserRole(platformId: number, userId: number, roles: UserRole[]) {
-    const platformUser = await this.findOnePlatformUser(platformId, userId);
-    if (
-      platformUser.roles.includes(UserRole.Admin) &&
-      !roles.includes(UserRole.Admin)
-    ) {
-      // Check if there are any remaining admins
-      await this.findAnotherAdminOrThrow(platformId, userId);
-    }
-
-    if (roles.includes(UserRole.Admin))
-      await this.isNewAdminPermittedOrThrow(userId);
-
-    platformUser.roles = [...new Set(roles)];
-
-    await this.revokePlatformUserRefreshToken(platformUser);
-
-    return this.platformUserRepository.save(platformUser);
-  }
-
   async findAllPlatformUsers({
     platformId,
     params,
   }: {
     platformId?: number;
-    params: ListAllPlatformUsersQueryParamDto;
+    params: api.ListAllPlatformUsersQueryParamDto;
   }) {
     const where: FindOneOptions<PlatformUser>['where'] = {};
     if (platformId) {
@@ -263,7 +265,7 @@ export class PlatformsService {
         exception instanceof QueryFailedError &&
         exception.driverError.code === 'ER_DUP_ENTRY'
       ) {
-        throw new DuplicatePlatformUserException();
+        throw new exceptions.DuplicatePlatformUserException();
       }
       throw exception;
     }
@@ -280,7 +282,7 @@ export class PlatformsService {
     const platform = await this.platformRepository.findOne(id, {
       relations: ['userConnections', 'category'],
     });
-    if (!platform) throw new PlatformNotFoundException({ id });
+    if (!platform) throw new exceptions.PlatformNotFoundException({ id });
     return platform;
   }
 
@@ -299,7 +301,7 @@ export class PlatformsService {
       { relations: ['user', 'platform', 'platform.category'] },
     );
     if (!platformUser)
-      throw new PlatformUserNotFoundException({
+      throw new exceptions.PlatformUserNotFoundException({
         platformName: platform.nameHandle,
         username: user.userHandle,
       });
@@ -316,7 +318,7 @@ export class PlatformsService {
       .getOne();
 
     if (!adminPlatformUser) {
-      throw new NoAdminsRemainingException();
+      throw new exceptions.NoAdminsRemainingException();
     }
   }
 
@@ -328,7 +330,7 @@ export class PlatformsService {
       .getCount();
 
     if (adminCount >= NUM_ADMIN_ROLES_ALLOWED_PER_USER)
-      throw new MaxAdminRolesPerUserException({
+      throw new exceptions.MaxAdminRolesPerUserException({
         max: NUM_ADMIN_ROLES_ALLOWED_PER_USER,
       });
   }
@@ -344,7 +346,8 @@ export class PlatformsService {
 
   private async findOneCategoryOrThrow(name: string) {
     const category = await this.platformCategoryRepository.findOne({ name });
-    if (!category) throw new PlatformCategoryNotFoundException({ name });
+    if (!category)
+      throw new exceptions.PlatformCategoryNotFoundException({ name });
     return category;
   }
 
