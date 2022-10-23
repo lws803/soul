@@ -79,6 +79,7 @@ describe('PlatformsController (e2e)', () => {
             is_verified: false,
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
             client_secret: null,
+            homepage_url: 'HOMEPAGE_URL',
           }),
         );
 
@@ -166,6 +167,7 @@ describe('PlatformsController (e2e)', () => {
                 is_verified: false,
                 name_handle: 'test_platform_2#2',
                 category: null,
+                homepage_url: 'HOMEPAGE_URL',
               },
               {
                 created_at: expect.any(String),
@@ -178,6 +180,7 @@ describe('PlatformsController (e2e)', () => {
                   id: 1,
                   name: 'CATEGORY',
                 },
+                homepage_url: 'HOMEPAGE_URL',
               },
             ],
             total_count: 2,
@@ -200,6 +203,7 @@ describe('PlatformsController (e2e)', () => {
                 name_handle: 'test_platform_2#2',
                 is_verified: false,
                 category: null,
+                homepage_url: 'HOMEPAGE_URL',
               },
             ],
             total_count: 2,
@@ -225,6 +229,7 @@ describe('PlatformsController (e2e)', () => {
                   id: 1,
                   name: 'CATEGORY',
                 },
+                homepage_url: 'HOMEPAGE_URL',
               },
             ],
             total_count: 1,
@@ -250,6 +255,7 @@ describe('PlatformsController (e2e)', () => {
                   id: 1,
                   name: 'CATEGORY',
                 },
+                homepage_url: 'HOMEPAGE_URL',
               },
             ],
             total_count: 1,
@@ -285,6 +291,7 @@ describe('PlatformsController (e2e)', () => {
                 is_verified: false,
                 name_handle: 'test_platform_2#2',
                 category: null,
+                homepage_url: 'HOMEPAGE_URL',
               },
             ],
             total_count: 1,
@@ -358,6 +365,7 @@ describe('PlatformsController (e2e)', () => {
                 is_verified: false,
                 name_handle: 'test_platform_2#2',
                 category: null,
+                homepage_url: 'HOMEPAGE_URL',
               },
               {
                 created_at: expect.any(String),
@@ -367,6 +375,7 @@ describe('PlatformsController (e2e)', () => {
                 is_verified: true,
                 name_handle: 'test_platform_1#1',
                 category: { id: 1, name: 'CATEGORY' },
+                homepage_url: 'HOMEPAGE_URL',
               },
             ],
             total_count: 2,
@@ -390,6 +399,7 @@ describe('PlatformsController (e2e)', () => {
                 is_verified: false,
                 name_handle: 'test_platform_2#2',
                 category: null,
+                homepage_url: 'HOMEPAGE_URL',
               },
             ],
             total_count: 2,
@@ -413,6 +423,7 @@ describe('PlatformsController (e2e)', () => {
                 is_verified: true,
                 name_handle: 'test_platform_1#1',
                 category: { id: 1, name: 'CATEGORY' },
+                homepage_url: 'HOMEPAGE_URL',
               },
             ],
             total_count: 1,
@@ -450,6 +461,7 @@ describe('PlatformsController (e2e)', () => {
               id: 1,
               name: 'CATEGORY',
             },
+            homepage_url: 'HOMEPAGE_URL',
           }),
         );
     });
@@ -542,6 +554,7 @@ describe('PlatformsController (e2e)', () => {
             redirect_uris: ['https://www.example.com'],
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
             client_secret: null,
+            homepage_url: 'HOMEPAGE_URL',
           }),
         );
     });
@@ -600,6 +613,7 @@ describe('PlatformsController (e2e)', () => {
             redirect_uris: ['https://www.example.com'],
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
             client_secret: null,
+            homepage_url: 'HOMEPAGE_URL',
           }),
         );
     });

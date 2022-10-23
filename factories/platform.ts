@@ -25,6 +25,7 @@ export const platformEntity = Factory.define<Platform>(({ sequence }) => {
     category: platformCategoryEntity.build(),
     activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
     clientSecret: null,
+    homepageUrl: 'HOMEPAGE_URL',
   };
 });
 
@@ -39,6 +40,7 @@ export const platformUserEntity = Factory.define<PlatformUser>(
       roles: [UserRole.Admin, UserRole.Member],
       createdAt: new Date('1995-12-17T03:24:00'),
       updatedAt: new Date('1995-12-18T03:24:00'),
+      profileUrl: 'PROFILE_URL',
     };
   },
 );
@@ -56,6 +58,7 @@ export const createPlatformRequest = Factory.define<CreatePlatformRequest>(
     redirect_uris: ['TEST_REDIRECT_URI'],
     category: platformCategoryEntity.build().name,
     activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
+    homepage_url: 'HOMEPAGE_URL',
   }),
 );
 
@@ -63,11 +66,13 @@ type UpdatePlatformRequest = {
   name: string;
   category: string;
   activity_webhook_uri?: string;
+  homepage_url?: string;
 };
 
 export const updatePlatformRequest = Factory.define<UpdatePlatformRequest>(
   () => ({
     name: 'TEST_PLATFORM_UPDATE',
     category: 'CATEGORY_UPDATE',
+    homepageUrl: 'HOMEPAGE_URL_UPDATE',
   }),
 );

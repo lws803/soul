@@ -252,3 +252,5 @@ export class FindAllFullPlatformUsersResponseEntity {
 export class SetPlatformUserRoleResponseEntity extends FindOnePlatformUserResponseEntity {}
 
 export class CreatePlatformUserResponseEntity extends FindOnePlatformUserResponseEntity {}
+
+export class UpdatePlatformUserResponseEntity extends FindOnePlatformUserResponseEntity {}

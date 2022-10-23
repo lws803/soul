@@ -14,6 +14,7 @@ import {
   FindMyPlatformsQueryParamDto,
   ListAllPlatformUsersQueryParamDto,
   UpdatePlatformDto,
+  UpdatePlatformUserBodyDto,
 } from './serializers/api.dto';
 import { Platform } from './entities/platform.entity';
 import { PlatformUser } from './entities/platform-user.entity';
@@ -50,6 +51,7 @@ export class PlatformsService {
     platform.name = createPlatformDto.name;
     platform.redirectUris = createPlatformDto.redirectUris;
     platform.activityWebhookUri = createPlatformDto.activityWebhookUri;
+    platform.homepageUrl = createPlatformDto.homepageUrl;
 
     if (createPlatformDto.category) {
       const category = await this.findOneCategoryOrThrow(
@@ -160,6 +162,20 @@ export class PlatformsService {
     return this.findPlatformUserOrThrow({ platform, user });
   }
 
+  async updateOnePlatformUser(
+    params: { platformId: number; userId: number },
+    body: UpdatePlatformUserBodyDto,
+  ) {
+    // TODO: Add tests
+    const platformUser = await this.findOnePlatformUser(
+      params.platformId,
+      params.userId,
+    );
+
+    await this.platformUserRepository.update({ id: platformUser.id }, body);
+    return this.platformUserRepository.findOne(platformUser.id);
+  }
+
   async update(id: number, updatePlatformDto: UpdatePlatformDto) {
     const platform = await this.findOne(id);
     const updatedPlatform: Partial<Platform> = {};
@@ -169,6 +185,7 @@ export class PlatformsService {
       name: platformName,
       redirectUris,
       activityWebhookUri,
+      homepageUrl,
     } = updatePlatformDto;
 
     if (platformName) {
@@ -185,6 +202,7 @@ export class PlatformsService {
     updatedPlatform.name = platformName ?? platform.name;
     updatedPlatform.activityWebhookUri =
       activityWebhookUri ?? platform.activityWebhookUri;
+    updatedPlatform.homepageUrl = homepageUrl ?? platform.homepageUrl;
 
     await this.platformRepository.update({ id: platform.id }, updatedPlatform);
     return this.platformRepository.findOne(id);

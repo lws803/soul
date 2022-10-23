@@ -198,3 +198,13 @@ export class FindOnePlatformUserParamDto extends PlatformIdParamDto {
   @IsInt({ message: 'user_id must be an integer' })
   userId: number;
 }
+
+export class UpdatePlatformUserBodyDto {
+  @ApiProperty({
+    name: 'profile_url',
+    example: 'https://example.com',
+    description: 'User profile URL in your platform.',
+    type: String,
+  })
+  profileUrl?: string;
+}

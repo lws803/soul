@@ -238,6 +238,37 @@ export class PlatformsController {
 
   @ApiBearerAuth()
   @ApiOperation({
+    description:
+      'Updates a platform membership (requires client credential access).',
+    summary: 'Update platform membership',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponses.FindOneFullPlatformUserResponseEntity,
+  })
+  @ApiResponseInvalid([
+    HttpStatus.FORBIDDEN,
+    HttpStatus.UNAUTHORIZED,
+    HttpStatus.NOT_FOUND,
+    HttpStatus.CONFLICT,
+    HttpStatus.BAD_REQUEST,
+  ])
+  @UseGuards(JwtClientCredentialsAuthGuard)
+  @Put(':platform_id/users/:user_id')
+  async updatePlatformUser(
+    @Param() params: api.FindOnePlatformUserParamDto,
+    @Body() body: api.UpdatePlatformUserBodyDto,
+  ): Promise<apiResponses.FindOneFullPlatformUserResponseEntity> {
+    // TODO: Add tests
+    // TODO: Also make it such that it's possible to update user roles here
+    return plainToClass(
+      apiResponses.FindOneFullPlatformUserResponseEntity,
+      await this.platformsService.updateOnePlatformUser(params, body),
+    );
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
     summary: 'List platform users',
     description:
       'Lists all platform users (requires client credential access).',
@@ -284,11 +315,12 @@ export class PlatformsController {
   ])
   @Roles(UserRole.Admin)
   @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
-  @Put(':platform_id/users/:user_id')
+  @Put(':platform_id/users/:user_id/roles')
   async setPlatformUserRole(
     @Param() { platformId, userId }: api.SetUserPlatformRoleParamsDto,
     @Query() { roles }: api.SetUserPlatformRoleQueryParamsDto,
   ): Promise<apiResponses.SetPlatformUserRoleResponseEntity> {
+    // TODO: Remove this
     return plainToClass(
       apiResponses.SetPlatformUserRoleResponseEntity,
       await this.platformsService.setUserRole(platformId, userId, roles),
@@ -393,4 +425,3 @@ export class PlatformsController {
     );
   }
 }
-// TODO: Add a new endpoint to patch platform user resources

@@ -107,6 +107,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               {
                 id: expect.any(Number),
                 roles: [UserRole.Admin, UserRole.Member],
+                profile_url: 'PROFILE_URL',
                 user: {
                   id: expect.any(Number),
                   user_handle: 'test-user#1',
@@ -122,6 +123,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               {
                 id: expect.any(Number),
                 roles: [UserRole.Admin, UserRole.Member],
+                profile_url: 'PROFILE_URL',
                 user: {
                   id: expect.any(Number),
                   user_handle: 'test-user-2#2',
@@ -137,6 +139,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               {
                 id: expect.any(Number),
                 roles: [UserRole.Admin, UserRole.Member],
+                profile_url: 'PROFILE_URL',
                 user: {
                   id: expect.any(Number),
                   user_handle: 'test-user-3#3',
@@ -173,6 +176,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               {
                 id: expect.any(Number),
                 roles: [UserRole.Admin, UserRole.Member],
+                profile_url: 'PROFILE_URL',
                 user: {
                   id: expect.any(Number),
                   user_handle: 'test-user#1',
@@ -188,6 +192,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               {
                 id: expect.any(Number),
                 roles: [UserRole.Admin, UserRole.Member],
+                profile_url: 'PROFILE_URL',
                 user: {
                   id: expect.any(Number),
                   user_handle: 'test-user-2#2',
@@ -253,6 +258,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
           expect(res.body).toEqual({
             id: expect.any(Number),
             roles: [UserRole.Admin, UserRole.Member],
+            profile_url: 'PROFILE_URL',
             user: {
               id: expect.any(Number),
               user_handle: 'test-user#1',
@@ -283,7 +289,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
   });
 
-  describe('/platforms/:platform_id/users/:user_id (PUT)', () => {
+  describe('/platforms/:platform_id/users/:user_id/roles (PUT)', () => {
     beforeEach(async () => {
       const platform = await platformRepository.save(
         factories.platformEntity.build({
@@ -328,12 +334,13 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         });
 
       await request(app.getHttpServer())
-        .put('/platforms/1/users/2?roles=admin,member')
+        .put('/platforms/1/users/2/roles?roles=admin,member')
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
+            profile_url: 'PROFILE_URL',
             platform: {
               created_at: expect.any(String),
               updated_at: expect.any(String),
@@ -345,6 +352,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
                 id: 1,
                 name: 'CATEGORY',
               },
+              homepage_url: 'HOMEPAGE_URL',
             },
             roles: [UserRole.Admin, UserRole.Member],
             user: {
@@ -377,12 +385,13 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         });
 
       await request(app.getHttpServer())
-        .put('/platforms/1/users/2?roles=banned')
+        .put('/platforms/1/users/2/roles?roles=banned')
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
+            profile_url: 'PROFILE_URL',
             platform: {
               created_at: expect.any(String),
               updated_at: expect.any(String),
@@ -394,6 +403,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
                 id: 1,
                 name: 'CATEGORY',
               },
+              homepage_url: 'HOMEPAGE_URL',
             },
             roles: [UserRole.Banned],
             user: {
@@ -426,7 +436,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         });
 
       await request(app.getHttpServer())
-        .put('/platforms/1/users/1?roles=member')
+        .put('/platforms/1/users/1/roles?roles=member')
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
@@ -458,7 +468,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         });
 
       await request(app.getHttpServer())
-        .put('/platforms/1/users/1?roles=admin,member')
+        .put('/platforms/1/users/1/roles?roles=admin,member')
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
@@ -709,6 +719,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .expect((res) =>
           expect(res.body).toEqual({
             id: expect.any(Number),
+            profile_url: null,
             platform: {
               created_at: expect.any(String),
               id: 1,
@@ -720,6 +731,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
                 id: 1,
                 name: 'CATEGORY',
               },
+              homepage_url: 'HOMEPAGE_URL',
             },
             roles: [UserRole.Member],
             user: {

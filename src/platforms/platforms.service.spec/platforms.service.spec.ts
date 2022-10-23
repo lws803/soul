@@ -135,6 +135,7 @@ describe('PlatformsService', () => {
         redirectUris: ['TEST_REDIRECT_URI'],
         category: factories.platformCategoryEntity.build(),
         activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
+        homepageUrl: 'HOMEPAGE_URL',
       });
       expect(platformRepository.update).toHaveBeenCalledWith(
         { id: platform.id },
@@ -388,6 +389,7 @@ describe('PlatformsService', () => {
         category: updatedCategory,
         redirectUris: ['TEST_REDIRECT_URI'],
         activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
+        homepageUrl: 'HOMEPAGE_URL',
       };
       const updatedPlatform = factories.platformEntity.build(updates);
 
