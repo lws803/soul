@@ -259,7 +259,6 @@ export class PlatformsController {
     @Param() params: api.FindOnePlatformUserParamDto,
     @Body() body: api.UpdatePlatformUserBodyDto,
   ): Promise<apiResponses.FindOneFullPlatformUserResponseEntity> {
-    // TODO: Add tests
     return plainToClass(
       apiResponses.FindOneFullPlatformUserResponseEntity,
       await this.platformsService.updateOnePlatformUser(params, body),

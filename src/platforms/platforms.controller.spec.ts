@@ -57,9 +57,6 @@ describe('PlatformsController', () => {
                 clientSecret: 'CLIENT_SECRET',
               }),
             ),
-            setUserRole: jest
-              .fn()
-              .mockResolvedValue(factories.platformUserEntity.build()),
             removeUser: jest.fn(),
             addUser: jest
               .fn()
@@ -69,6 +66,9 @@ describe('PlatformsController', () => {
               totalCount: platformUsers.length,
             }),
             findOnePlatformUser: jest
+              .fn()
+              .mockResolvedValue(factories.platformUserEntity.build()),
+            updateOnePlatformUser: jest
               .fn()
               .mockResolvedValue(factories.platformUserEntity.build()),
           },
@@ -274,6 +274,28 @@ describe('PlatformsController', () => {
     expect(platformsService.findOnePlatformUser).toHaveBeenCalledWith(
       platform.id,
       platformUser.user.id,
+    );
+  });
+
+  it('updatePlatformUser()', async () => {
+    const platform = factories.platformEntity.build();
+    const platformUser = factories.platformUserEntity.build();
+    const params = {
+      platformId: platform.id,
+      userId: platformUser.user.id,
+    };
+    const body = {
+      profileUrl: 'PROFILE_URL',
+      roles: [UserRole.Member],
+    };
+
+    expect(await controller.updatePlatformUser(params, body)).toEqual(
+      platformUser,
+    );
+
+    expect(platformsService.updateOnePlatformUser).toHaveBeenCalledWith(
+      params,
+      body,
     );
   });
 });

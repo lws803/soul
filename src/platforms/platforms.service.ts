@@ -149,21 +149,31 @@ export class PlatformsService {
   }
 
   async updateOnePlatformUser(
-    params: { platformId: number; userId: number },
+    { platformId, userId }: { platformId: number; userId: number },
     body: api.UpdatePlatformUserBodyDto,
   ) {
-    // TODO: Add tests
-    const platformUser = await this.findOnePlatformUser(
-      params.platformId,
-      params.userId,
-    );
+    const platformUser = await this.findOnePlatformUser(platformId, userId);
 
     if (body.roles) {
-      await this.setUserRole(params.platformId, params.userId, body.roles);
+      const roles = body.roles;
+      if (
+        platformUser.roles.includes(UserRole.Admin) &&
+        !roles.includes(UserRole.Admin)
+      ) {
+        // Check if there are any remaining admins
+        await this.findAnotherAdminOrThrow(platformId, userId);
+      }
+
+      if (roles.includes(UserRole.Admin))
+        await this.isNewAdminPermittedOrThrow(userId);
+
+      platformUser.roles = [...new Set(roles)];
+      await this.revokePlatformUserRefreshToken(platformUser);
     }
 
-    await this.platformUserRepository.update({ id: platformUser.id }, body);
-    return this.findOnePlatformUser(params.platformId, params.userId);
+    platformUser.profileUrl = body.profileUrl;
+
+    return await this.platformUserRepository.save(platformUser);
   }
 
   async update(id: number, updatePlatformDto: api.UpdatePlatformDto) {
@@ -201,26 +211,6 @@ export class PlatformsService {
   async remove(id: number) {
     const platform = await this.findOne(id);
     await this.platformRepository.delete({ id: platform.id });
-  }
-
-  async setUserRole(platformId: number, userId: number, roles: UserRole[]) {
-    const platformUser = await this.findOnePlatformUser(platformId, userId);
-    if (
-      platformUser.roles.includes(UserRole.Admin) &&
-      !roles.includes(UserRole.Admin)
-    ) {
-      // Check if there are any remaining admins
-      await this.findAnotherAdminOrThrow(platformId, userId);
-    }
-
-    if (roles.includes(UserRole.Admin))
-      await this.isNewAdminPermittedOrThrow(userId);
-
-    platformUser.roles = [...new Set(roles)];
-
-    await this.revokePlatformUserRefreshToken(platformUser);
-
-    return this.platformUserRepository.save(platformUser);
   }
 
   async findAllPlatformUsers({
