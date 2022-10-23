@@ -294,6 +294,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       const platform = await platformRepository.save(
         factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
+          clientSecret: 'CLIENT_SECRET',
         }),
       );
       await platformUserRepository.save([
@@ -316,44 +317,24 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
 
     it('sets user role', async () => {
-      const params = new URLSearchParams({
-        redirect_uri: 'https://www.example.com',
-        state: 'TEST_STATE',
-        code_challenge: codeChallenge,
-        client_id: String(1),
-      });
-      const codeResp = await request(app.getHttpServer())
-        .post(`/auth/code?${params.toString()}`)
-        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/oauth/authorization-code')
+        .post('/auth/oauth/client-credentials')
         .send({
-          code: codeResp.body.code,
-          redirect_uri: 'https://www.example.com',
-          code_verifier: codeVerifier,
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
         });
 
       await request(app.getHttpServer())
-        .put('/platforms/1/users/2/roles?roles=admin,member')
+        .put('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.access_token}`)
+        .send({
+          roles: ['admin', 'member'],
+        })
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
             profile_url: 'PROFILE_URL',
-            platform: {
-              created_at: expect.any(String),
-              updated_at: expect.any(String),
-              id: 1,
-              name: 'TEST_PLATFORM_1',
-              is_verified: true,
-              name_handle: 'test_platform_1#1',
-              category: {
-                id: 1,
-                name: 'CATEGORY',
-              },
-              homepage_url: 'HOMEPAGE_URL',
-            },
             roles: [UserRole.Admin, UserRole.Member],
             user: {
               id: 2,
@@ -361,50 +342,32 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               username: 'test-user-2',
               bio: null,
               display_name: null,
+              email: 'TEST_USER_2@EMAIL.COM',
+              is_active: true,
+              created_at: expect.any(String),
+              updated_at: expect.any(String),
             },
           }),
         );
     });
 
     it('bans a user', async () => {
-      const params = new URLSearchParams({
-        redirect_uri: 'https://www.example.com',
-        state: 'TEST_STATE',
-        code_challenge: codeChallenge,
-        client_id: String(1),
-      });
-      const codeResp = await request(app.getHttpServer())
-        .post(`/auth/code?${params.toString()}`)
-        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/oauth/authorization-code')
+        .post('/auth/oauth/client-credentials')
         .send({
-          code: codeResp.body.code,
-          redirect_uri: 'https://www.example.com',
-          code_verifier: codeVerifier,
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
         });
 
       await request(app.getHttpServer())
-        .put('/platforms/1/users/2/roles?roles=banned')
+        .put('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.access_token}`)
+        .send({ roles: ['banned'] })
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
             profile_url: 'PROFILE_URL',
-            platform: {
-              created_at: expect.any(String),
-              updated_at: expect.any(String),
-              id: 1,
-              is_verified: true,
-              name: 'TEST_PLATFORM_1',
-              name_handle: 'test_platform_1#1',
-              category: {
-                id: 1,
-                name: 'CATEGORY',
-              },
-              homepage_url: 'HOMEPAGE_URL',
-            },
             roles: [UserRole.Banned],
             user: {
               id: 2,
@@ -412,32 +375,29 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
               username: 'test-user-2',
               bio: null,
               display_name: null,
+              email: 'TEST_USER_2@EMAIL.COM',
+              is_active: true,
+              created_at: expect.any(String),
+              updated_at: expect.any(String),
             },
           }),
         );
     });
 
     it('throws an error when trying to set only remaining admin to member', async () => {
-      const params = new URLSearchParams({
-        redirect_uri: 'https://www.example.com',
-        state: 'TEST_STATE',
-        code_challenge: codeChallenge,
-        client_id: String(1),
-      });
-      const codeResp = await request(app.getHttpServer())
-        .post(`/auth/code?${params.toString()}`)
-        .send({ email: 'TEST_USER@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
       const response = await request(app.getHttpServer())
-        .post('/auth/oauth/authorization-code')
+        .post('/auth/oauth/client-credentials')
         .send({
-          code: codeResp.body.code,
-          redirect_uri: 'https://www.example.com',
-          code_verifier: codeVerifier,
+          client_secret: 'CLIENT_SECRET',
+          client_id: 1,
         });
 
       await request(app.getHttpServer())
-        .put('/platforms/1/users/1/roles?roles=member')
+        .put('/platforms/1/users/1')
         .set('Authorization', `Bearer ${response.body.access_token}`)
+        .send({
+          roles: ['member'],
+        })
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -445,37 +405,6 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
             message:
               'It seems like you might be the last admin of this platform. ' +
               'You need to appoint another admin before performing this action.',
-          }),
-        );
-    });
-
-    it('throws with insufficient permissions', async () => {
-      const params = new URLSearchParams({
-        redirect_uri: 'https://www.example.com',
-        state: 'TEST_STATE',
-        code_challenge: codeChallenge,
-        client_id: String(1),
-      });
-      const codeResp = await request(app.getHttpServer())
-        .post(`/auth/code?${params.toString()}`)
-        .send({ email: 'TEST_USER_2@EMAIL.COM', password: '1oNc0iY3oml5d&%9' });
-      const response = await request(app.getHttpServer())
-        .post('/auth/oauth/authorization-code')
-        .send({
-          code: codeResp.body.code,
-          redirect_uri: 'https://www.example.com',
-          code_verifier: codeVerifier,
-        });
-
-      await request(app.getHttpServer())
-        .put('/platforms/1/users/1/roles?roles=admin,member')
-        .set('Authorization', `Bearer ${response.body.access_token}`)
-        .expect(HttpStatus.FORBIDDEN)
-        .expect((res) =>
-          expect(res.body).toEqual({
-            error: 'PERMISSION_DENIED',
-            message:
-              'You lack the permissions necessary to perform this action.',
           }),
         );
     });

@@ -158,8 +158,12 @@ export class PlatformsService {
       params.userId,
     );
 
+    if (body.roles) {
+      await this.setUserRole(params.platformId, params.userId, body.roles);
+    }
+
     await this.platformUserRepository.update({ id: platformUser.id }, body);
-    return this.platformUserRepository.findOne(platformUser.id);
+    return this.findOnePlatformUser(params.platformId, params.userId);
   }
 
   async update(id: number, updatePlatformDto: api.UpdatePlatformDto) {

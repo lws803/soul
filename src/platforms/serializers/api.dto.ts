@@ -207,4 +207,14 @@ export class UpdatePlatformUserBodyDto {
     type: String,
   })
   profileUrl?: string;
+
+  @ApiProperty({
+    name: 'roles',
+    example: 'admin',
+    type: [String],
+    description: 'List of roles',
+  })
+  @IsArray()
+  @IsEnum(UserRole, { each: true })
+  roles?: UserRole[] = [UserRole.Member];
 }

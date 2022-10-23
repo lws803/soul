@@ -260,7 +260,6 @@ export class PlatformsController {
     @Body() body: api.UpdatePlatformUserBodyDto,
   ): Promise<apiResponses.FindOneFullPlatformUserResponseEntity> {
     // TODO: Add tests
-    // TODO: Also make it such that it's possible to update user roles here
     return plainToClass(
       apiResponses.FindOneFullPlatformUserResponseEntity,
       await this.platformsService.updateOnePlatformUser(params, body),
@@ -295,35 +294,6 @@ export class PlatformsController {
         platformId,
         params,
       }),
-    );
-  }
-
-  @ApiBearerAuth()
-  @ApiOperation({
-    description: 'Sets a role for a user on a platform.',
-    summary: 'Set role for user',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: apiResponses.SetPlatformUserRoleResponseEntity,
-  })
-  @ApiResponseInvalid([
-    HttpStatus.BAD_REQUEST,
-    HttpStatus.FORBIDDEN,
-    HttpStatus.UNAUTHORIZED,
-    HttpStatus.NOT_FOUND,
-  ])
-  @Roles(UserRole.Admin)
-  @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
-  @Put(':platform_id/users/:user_id/roles')
-  async setPlatformUserRole(
-    @Param() { platformId, userId }: api.SetUserPlatformRoleParamsDto,
-    @Query() { roles }: api.SetUserPlatformRoleQueryParamsDto,
-  ): Promise<apiResponses.SetPlatformUserRoleResponseEntity> {
-    // TODO: Remove this
-    return plainToClass(
-      apiResponses.SetPlatformUserRoleResponseEntity,
-      await this.platformsService.setUserRole(platformId, userId, roles),
     );
   }
 
