@@ -180,7 +180,7 @@ describe('PlatformsService - Users', () => {
         platformId: platform.id,
         userId: user.id,
       };
-      const body = { profileUrl: 'PROFILE_URL' };
+      const body = { profileUrl: 'NEW_PROFILE_URL' };
       await service.updateOnePlatformUser(params, body);
 
       expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
