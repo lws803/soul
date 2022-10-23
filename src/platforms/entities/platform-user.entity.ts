@@ -27,8 +27,8 @@ export class PlatformUser {
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
   user: User;
 
-  @Column({ name: 'user_url', nullable: true })
-  userUrl?: string;
+  @Column({ name: 'profile_url', nullable: true })
+  profileUrl?: string;
 
   @ManyToOne(() => Platform, {
     onDelete: 'CASCADE',

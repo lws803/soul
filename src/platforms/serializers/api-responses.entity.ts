@@ -183,11 +183,11 @@ class FindOnePlatformUserResponseEntity {
   platform: FindOnePlatformResponseEntity;
 
   @ApiResponseProperty({
-    name: 'user_url',
+    name: 'profile_url',
     example: 'https://example.com',
-    description: 'User account URL in your platform.',
+    description: 'User profile URL in your platform.',
   })
-  userUrl?: string;
+  profileUrl?: string;
 
   @ApiResponseProperty({
     name: 'roles',
@@ -216,11 +216,11 @@ export class FindOneFullPlatformUserResponseEntity {
   user: FullUserResponseEntity;
 
   @ApiResponseProperty({
-    name: 'user_url',
+    name: 'profile_url',
     example: 'https://example.com',
-    description: 'User account URL in your platform.',
+    description: 'User profile URL in your platform.',
   })
-  userUrl?: string;
+  profileUrl?: string;
 
   @ApiResponseProperty({
     name: 'roles',
