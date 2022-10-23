@@ -27,6 +27,9 @@ export class PlatformUser {
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
   user: User;
 
+  @Column({ name: 'user_url', nullable: true })
+  userUrl?: string;
+
   @ManyToOne(() => Platform, {
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',

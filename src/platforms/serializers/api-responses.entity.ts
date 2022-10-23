@@ -73,6 +73,13 @@ export class FullPlatformResponseEntity extends CreatedAtUpdatedAtEntity {
   redirectUris: string[];
 
   @ApiResponseProperty({
+    name: 'homepage_url',
+    example: 'https://example.com',
+    description: 'Homepage URL for your platform.',
+  })
+  homepageUrl?: string;
+
+  @ApiResponseProperty({
     name: 'category',
     type: PlatformCategoryResponseEntity,
     description: 'Categories associated with this platform.',
@@ -114,6 +121,13 @@ export class FindOnePlatformResponseEntity extends CreatedAtUpdatedAtEntity {
       'ID is present after the # symbol.',
   })
   nameHandle: string;
+
+  @ApiResponseProperty({
+    name: 'homepage_url',
+    example: 'https://example.com',
+    description: 'Homepage URL for your platform.',
+  })
+  homepageUrl?: string;
 
   @ApiResponseProperty({
     name: 'is_verified',
@@ -169,6 +183,13 @@ class FindOnePlatformUserResponseEntity {
   platform: FindOnePlatformResponseEntity;
 
   @ApiResponseProperty({
+    name: 'user_url',
+    example: 'https://example.com',
+    description: 'User account URL in your platform.',
+  })
+  userUrl?: string;
+
+  @ApiResponseProperty({
     name: 'roles',
     example: [UserRole.Admin, UserRole.Member],
     description: 'User roles for a platform.',
@@ -178,6 +199,10 @@ class FindOnePlatformUserResponseEntity {
   roles: UserRole[];
 }
 
+/**
+ * Find platform user with full user details and no platform detail.
+ * This schema is used for platform server / backend-facing endpoints.
+ */
 export class FindOneFullPlatformUserResponseEntity {
   @ApiResponseProperty({
     name: 'id',
@@ -189,6 +214,13 @@ export class FindOneFullPlatformUserResponseEntity {
   @ApiResponseProperty({ name: 'user', type: FullUserResponseEntity })
   @Type(() => FullUserResponseEntity)
   user: FullUserResponseEntity;
+
+  @ApiResponseProperty({
+    name: 'user_url',
+    example: 'https://example.com',
+    description: 'User account URL in your platform.',
+  })
+  userUrl?: string;
 
   @ApiResponseProperty({
     name: 'roles',

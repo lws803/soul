@@ -36,6 +36,9 @@ export class Platform {
   @Column({ name: 'activity_webhook_uri', nullable: true })
   activityWebhookUri?: string;
 
+  @Column({ name: 'homepage_url', nullable: true })
+  homepageUrl?: string;
+
   @ManyToMany(
     () => UserConnection,
     (userConnection) => userConnection.platforms,

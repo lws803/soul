@@ -29,29 +29,8 @@ import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 import { JwtClientCredentialsAuthGuard } from 'src/auth/guards/jwt-client-credentials-auth.guard';
 
 import { PlatformsService } from './platforms.service';
-import {
-  UpdatePlatformDto,
-  CreatePlatformDto,
-  PlatformIdParamDto,
-  RemovePlatformUserParamsDto,
-  SetUserPlatformRoleParamsDto,
-  SetUserPlatformRoleQueryParamsDto,
-  FindAllPlatformsQueryParamDto,
-  FindMyPlatformsQueryParamDto,
-  ListAllPlatformUsersQueryParamDto,
-  FindOnePlatformUserParamDto,
-} from './serializers/api.dto';
-import {
-  CreatePlatformResponseEntity,
-  CreatePlatformUserResponseEntity,
-  FindAllPlatformResponseEntity,
-  FindAllFullPlatformUsersResponseEntity,
-  FindOnePlatformResponseEntity,
-  FullPlatformResponseEntity,
-  SetPlatformUserRoleResponseEntity,
-  UpdatePlatformResponseEntity,
-  FindOneFullPlatformUserResponseEntity,
-} from './serializers/api-responses.entity';
+import * as api from './serializers/api.dto';
+import * as apiResponses from './serializers/api-responses.entity';
 
 @ApiTags('Platforms')
 @Controller({ path: 'platforms', version: '1' })
@@ -65,7 +44,7 @@ export class PlatformsController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: CreatePlatformResponseEntity,
+    type: apiResponses.CreatePlatformResponseEntity,
   })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
@@ -77,10 +56,10 @@ export class PlatformsController {
   @Post()
   async create(
     @Request() { user }: { user: JWTPayload },
-    @Body() createPlatformDto: CreatePlatformDto,
-  ): Promise<CreatePlatformResponseEntity> {
+    @Body() createPlatformDto: api.CreatePlatformDto,
+  ): Promise<apiResponses.CreatePlatformResponseEntity> {
     return plainToClass(
-      CreatePlatformResponseEntity,
+      apiResponses.CreatePlatformResponseEntity,
       await this.platformsService.create(createPlatformDto, user.userId),
     );
   }
@@ -89,14 +68,17 @@ export class PlatformsController {
     description: 'List all platforms with pagination.',
     summary: 'List platforms',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseEntity })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponses.FindAllPlatformResponseEntity,
+  })
   @ApiResponseInvalid([HttpStatus.BAD_REQUEST])
   @Get()
   async findAll(
-    @Query() params: FindAllPlatformsQueryParamDto,
-  ): Promise<FindAllPlatformResponseEntity> {
+    @Query() params: api.FindAllPlatformsQueryParamDto,
+  ): Promise<apiResponses.FindAllPlatformResponseEntity> {
     return plainToClass(
-      FindAllPlatformResponseEntity,
+      apiResponses.FindAllPlatformResponseEntity,
       await this.platformsService.findAll(params),
     );
   }
@@ -106,7 +88,10 @@ export class PlatformsController {
     description: 'List my platforms with pagination.',
     summary: 'List my platforms',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: FindAllPlatformResponseEntity })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponses.FindAllPlatformResponseEntity,
+  })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
     HttpStatus.FORBIDDEN,
@@ -116,10 +101,10 @@ export class PlatformsController {
   @Get('/my-platforms')
   async findMyPlatforms(
     @Request() { user }: { user: JWTPayload },
-    @Query() params: FindMyPlatformsQueryParamDto,
-  ): Promise<FindAllPlatformResponseEntity> {
+    @Query() params: api.FindMyPlatformsQueryParamDto,
+  ): Promise<apiResponses.FindAllPlatformResponseEntity> {
     return plainToClass(
-      FindAllPlatformResponseEntity,
+      apiResponses.FindAllPlatformResponseEntity,
       await this.platformsService.findMyPlatforms(params, user.userId),
     );
   }
@@ -128,7 +113,10 @@ export class PlatformsController {
     description: 'Find one platform from a given `platform_id`.',
     summary: 'Find platform by id',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseEntity })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponses.FindOnePlatformResponseEntity,
+  })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
     HttpStatus.FORBIDDEN,
@@ -137,10 +125,10 @@ export class PlatformsController {
   ])
   @Get(':platform_id')
   async findOne(
-    @Param() { platformId }: PlatformIdParamDto,
-  ): Promise<FindOnePlatformResponseEntity> {
+    @Param() { platformId }: api.PlatformIdParamDto,
+  ): Promise<apiResponses.FindOnePlatformResponseEntity> {
     return plainToClass(
-      FindOnePlatformResponseEntity,
+      apiResponses.FindOnePlatformResponseEntity,
       await this.platformsService.findOne(platformId),
     );
   }
@@ -151,7 +139,10 @@ export class PlatformsController {
       'Find one platform with full details from a given `platform_id`.',
     summary: 'Find full platform by id',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: FindOnePlatformResponseEntity })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponses.FindOnePlatformResponseEntity,
+  })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
     HttpStatus.FORBIDDEN,
@@ -162,10 +153,10 @@ export class PlatformsController {
   @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Get(':platform_id/full')
   async findOneFull(
-    @Param() { platformId }: PlatformIdParamDto,
-  ): Promise<FullPlatformResponseEntity> {
+    @Param() { platformId }: api.PlatformIdParamDto,
+  ): Promise<apiResponses.FullPlatformResponseEntity> {
     return plainToClass(
-      FullPlatformResponseEntity,
+      apiResponses.FullPlatformResponseEntity,
       await this.platformsService.findOne(platformId),
     );
   }
@@ -176,7 +167,10 @@ export class PlatformsController {
       'Updates a platform (only authorized platform owners can update a platform).',
     summary: 'Update platform',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: UpdatePlatformResponseEntity })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponses.UpdatePlatformResponseEntity,
+  })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
     HttpStatus.FORBIDDEN,
@@ -187,11 +181,11 @@ export class PlatformsController {
   @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Patch(':platform_id')
   async update(
-    @Param() { platformId }: PlatformIdParamDto,
-    @Body() updatePlatformDto: UpdatePlatformDto,
-  ): Promise<UpdatePlatformResponseEntity> {
+    @Param() { platformId }: api.PlatformIdParamDto,
+    @Body() updatePlatformDto: api.UpdatePlatformDto,
+  ): Promise<apiResponses.UpdatePlatformResponseEntity> {
     return plainToClass(
-      UpdatePlatformResponseEntity,
+      apiResponses.UpdatePlatformResponseEntity,
       await this.platformsService.update(platformId, updatePlatformDto),
     );
   }
@@ -212,7 +206,7 @@ export class PlatformsController {
   @Roles(UserRole.Admin)
   @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Delete(':platform_id')
-  async remove(@Param() { platformId }: PlatformIdParamDto) {
+  async remove(@Param() { platformId }: api.PlatformIdParamDto) {
     await this.platformsService.remove(platformId);
   }
 
@@ -223,7 +217,7 @@ export class PlatformsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: FindOneFullPlatformUserResponseEntity,
+    type: apiResponses.FindOneFullPlatformUserResponseEntity,
   })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
@@ -234,10 +228,10 @@ export class PlatformsController {
   @UseGuards(JwtClientCredentialsAuthGuard)
   @Get(':platform_id/users/:user_id')
   async findOnePlatformUser(
-    @Param() { platformId, userId }: FindOnePlatformUserParamDto,
-  ): Promise<FindOneFullPlatformUserResponseEntity> {
+    @Param() { platformId, userId }: api.FindOnePlatformUserParamDto,
+  ): Promise<apiResponses.FindOneFullPlatformUserResponseEntity> {
     return plainToClass(
-      FindOneFullPlatformUserResponseEntity,
+      apiResponses.FindOneFullPlatformUserResponseEntity,
       await this.platformsService.findOnePlatformUser(platformId, userId),
     );
   }
@@ -250,7 +244,7 @@ export class PlatformsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: FindAllFullPlatformUsersResponseEntity,
+    type: apiResponses.FindAllFullPlatformUsersResponseEntity,
   })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
@@ -261,11 +255,11 @@ export class PlatformsController {
   @UseGuards(JwtClientCredentialsAuthGuard)
   @Get(':platform_id/users')
   async findAllPlatformUsers(
-    @Param() { platformId }: PlatformIdParamDto,
-    @Query() params: ListAllPlatformUsersQueryParamDto,
-  ): Promise<FindAllFullPlatformUsersResponseEntity> {
+    @Param() { platformId }: api.PlatformIdParamDto,
+    @Query() params: api.ListAllPlatformUsersQueryParamDto,
+  ): Promise<apiResponses.FindAllFullPlatformUsersResponseEntity> {
     return plainToClass(
-      FindAllFullPlatformUsersResponseEntity,
+      apiResponses.FindAllFullPlatformUsersResponseEntity,
       await this.platformsService.findAllPlatformUsers({
         platformId,
         params,
@@ -280,7 +274,7 @@ export class PlatformsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: SetPlatformUserRoleResponseEntity,
+    type: apiResponses.SetPlatformUserRoleResponseEntity,
   })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
@@ -292,11 +286,11 @@ export class PlatformsController {
   @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Put(':platform_id/users/:user_id')
   async setPlatformUserRole(
-    @Param() { platformId, userId }: SetUserPlatformRoleParamsDto,
-    @Query() { roles }: SetUserPlatformRoleQueryParamsDto,
-  ): Promise<SetPlatformUserRoleResponseEntity> {
+    @Param() { platformId, userId }: api.SetUserPlatformRoleParamsDto,
+    @Query() { roles }: api.SetUserPlatformRoleQueryParamsDto,
+  ): Promise<apiResponses.SetPlatformUserRoleResponseEntity> {
     return plainToClass(
-      SetPlatformUserRoleResponseEntity,
+      apiResponses.SetPlatformUserRoleResponseEntity,
       await this.platformsService.setUserRole(platformId, userId, roles),
     );
   }
@@ -317,7 +311,7 @@ export class PlatformsController {
   @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Delete(':platform_id/users/:user_id')
   async removePlatformUser(
-    @Param() { platformId, userId }: RemovePlatformUserParamsDto,
+    @Param() { platformId, userId }: api.RemovePlatformUserParamsDto,
   ) {
     await this.platformsService.removeUser(platformId, userId);
   }
@@ -339,7 +333,7 @@ export class PlatformsController {
   @Delete(':platform_id/quit')
   async removeMyself(
     @Request() { user }: { user: JWTPayload },
-    @Param() { platformId }: PlatformIdParamDto,
+    @Param() { platformId }: api.PlatformIdParamDto,
   ) {
     await this.platformsService.removeUser(platformId, user.userId);
   }
@@ -351,7 +345,7 @@ export class PlatformsController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: CreatePlatformUserResponseEntity,
+    type: apiResponses.CreatePlatformUserResponseEntity,
   })
   @ApiResponseInvalid([
     HttpStatus.FORBIDDEN,
@@ -364,10 +358,10 @@ export class PlatformsController {
   @Post(':platform_id/join')
   async joinPlatform(
     @Request() { user }: { user: JWTPayload },
-    @Param() { platformId }: PlatformIdParamDto,
-  ): Promise<CreatePlatformUserResponseEntity> {
+    @Param() { platformId }: api.PlatformIdParamDto,
+  ): Promise<apiResponses.CreatePlatformUserResponseEntity> {
     return plainToClass(
-      CreatePlatformUserResponseEntity,
+      apiResponses.CreatePlatformUserResponseEntity,
       await this.platformsService.addUser(platformId, user.userId),
     );
   }
@@ -379,7 +373,7 @@ export class PlatformsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: FullPlatformResponseEntity,
+    type: apiResponses.FullPlatformResponseEntity,
   })
   @ApiResponseInvalid([
     HttpStatus.BAD_REQUEST,
@@ -391,11 +385,12 @@ export class PlatformsController {
   @UseGuards(JwtUserAuthGuard, PlatformRolesGuard)
   @Patch(':platform_id/generate-new-client-secret')
   async generateNewClientSecret(
-    @Param() { platformId }: PlatformIdParamDto,
-  ): Promise<FullPlatformResponseEntity> {
+    @Param() { platformId }: api.PlatformIdParamDto,
+  ): Promise<apiResponses.FullPlatformResponseEntity> {
     return plainToClass(
-      FullPlatformResponseEntity,
+      apiResponses.FullPlatformResponseEntity,
       await this.platformsService.generateClientSecret(platformId),
     );
   }
 }
+// TODO: Add a new endpoint to patch platform user resources

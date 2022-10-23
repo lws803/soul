@@ -87,6 +87,17 @@ export class CreatePlatformDto {
   activityWebhookUri?: string;
 
   @ApiProperty({
+    name: 'homepage_url',
+    example: 'https://www.example.com',
+    description: 'Homepage URL for your platform.',
+    required: false,
+  })
+  @Expose({ name: 'homepage_url' })
+  @IsOptional()
+  @MaxLength(255)
+  homepageUrl?: string;
+
+  @ApiProperty({
     name: 'redirect_uris',
     example: ['https://example.com', 'http://localhost:3000'],
     description:
