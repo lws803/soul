@@ -76,3 +76,14 @@ export const updatePlatformRequest = Factory.define<UpdatePlatformRequest>(
     homepageUrl: 'HOMEPAGE_URL_UPDATE',
   }),
 );
+
+type UpdatePlatformUserRequest = {
+  profile_url?: string | null;
+  roles?: string[];
+};
+
+export const updatePlatformUserRequest =
+  Factory.define<UpdatePlatformUserRequest>(() => ({
+    profile_url: 'PROFILE_URL_UPDATE',
+    roles: ['admin', 'member'],
+  }));

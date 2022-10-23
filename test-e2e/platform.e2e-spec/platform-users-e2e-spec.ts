@@ -328,7 +328,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .patch('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .send({
-          roles: ['admin', 'member'],
+          ...factories.updatePlatformUserRequest.build(),
+          profile_url: undefined,
         })
         .expect(HttpStatus.OK)
         .expect((res) =>
@@ -362,15 +363,12 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       await request(app.getHttpServer())
         .patch('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.access_token}`)
-        .send({
-          roles: ['admin', 'member'],
-          profile_url: 'NEW_PROFILE_URL',
-        })
+        .send(factories.updatePlatformUserRequest.build())
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
-            profile_url: 'NEW_PROFILE_URL',
+            profile_url: 'PROFILE_URL_UPDATE',
             roles: [UserRole.Admin, UserRole.Member],
             user: {
               id: 2,
@@ -398,12 +396,15 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       await request(app.getHttpServer())
         .patch('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.access_token}`)
-        .send({ profile_url: 'NEW_PROFILE_URL' })
+        .send({
+          ...factories.updatePlatformUserRequest.build(),
+          roles: undefined,
+        })
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
             id: 2,
-            profile_url: 'NEW_PROFILE_URL',
+            profile_url: 'PROFILE_URL_UPDATE',
             roles: [UserRole.Member],
             user: {
               id: 2,
@@ -431,7 +432,10 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       await request(app.getHttpServer())
         .patch('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.access_token}`)
-        .send({ profile_url: null })
+        .send({
+          ...factories.updatePlatformUserRequest.build({ profile_url: null }),
+          roles: undefined,
+        })
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -464,7 +468,10 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
       await request(app.getHttpServer())
         .patch('/platforms/1/users/2')
         .set('Authorization', `Bearer ${response.body.access_token}`)
-        .send({ roles: ['banned'] })
+        .send({
+          ...factories.updatePlatformUserRequest.build({ roles: ['banned'] }),
+          profile_url: undefined,
+        })
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toEqual({
@@ -498,7 +505,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         .patch('/platforms/1/users/1')
         .set('Authorization', `Bearer ${response.body.access_token}`)
         .send({
-          roles: ['member'],
+          ...factories.updatePlatformUserRequest.build({ roles: ['member'] }),
+          profile_url: undefined,
         })
         .expect(HttpStatus.FORBIDDEN)
         .expect((res) =>
