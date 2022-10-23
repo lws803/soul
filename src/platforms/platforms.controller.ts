@@ -256,11 +256,14 @@ export class PlatformsController {
   @Patch(':platform_id/users/:user_id')
   async updatePlatformUser(
     @Param() params: api.FindOnePlatformUserParamDto,
-    @Body() body: api.UpdatePlatformUserBodyDto,
+    @Body() updatePlatformUserDto: api.UpdatePlatformUserBodyDto,
   ): Promise<apiResponses.FindOneFullPlatformUserResponseEntity> {
     return plainToClass(
       apiResponses.FindOneFullPlatformUserResponseEntity,
-      await this.platformsService.updateOnePlatformUser(params, body),
+      await this.platformsService.updateOnePlatformUser(
+        params,
+        updatePlatformUserDto,
+      ),
     );
   }
 

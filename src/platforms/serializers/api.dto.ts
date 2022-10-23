@@ -83,9 +83,10 @@ export class CreatePlatformDto {
     required: false,
   })
   @Expose({ name: 'activity_webhook_uri' })
+  @ValidateIf((_object, value) => value !== null)
   @IsOptional()
   @MaxLength(255)
-  activityWebhookUri?: string;
+  activityWebhookUri?: string | null;
 
   @ApiProperty({
     name: 'homepage_url',
@@ -94,9 +95,10 @@ export class CreatePlatformDto {
     required: false,
   })
   @Expose({ name: 'homepage_url' })
+  @ValidateIf((_object, value) => value !== null)
   @IsOptional()
   @MaxLength(255)
-  homepageUrl?: string;
+  homepageUrl?: string | null;
 
   @ApiProperty({
     name: 'redirect_uris',

@@ -150,12 +150,12 @@ export class PlatformsService {
 
   async updateOnePlatformUser(
     { platformId, userId }: { platformId: number; userId: number },
-    body: api.UpdatePlatformUserBodyDto,
+    updatePlatformUserDto: api.UpdatePlatformUserBodyDto,
   ) {
     const platformUser = await this.findOnePlatformUser(platformId, userId);
 
-    if (body.roles) {
-      const roles = body.roles;
+    if (updatePlatformUserDto.roles) {
+      const roles = updatePlatformUserDto.roles;
       if (
         platformUser.roles.includes(UserRole.Admin) &&
         !roles.includes(UserRole.Admin)
@@ -172,7 +172,9 @@ export class PlatformsService {
     }
 
     platformUser.profileUrl =
-      body.profileUrl !== undefined ? body.profileUrl : platformUser.profileUrl;
+      updatePlatformUserDto.profileUrl !== undefined
+        ? updatePlatformUserDto.profileUrl
+        : platformUser.profileUrl;
 
     return await this.platformUserRepository.save(platformUser);
   }
@@ -203,7 +205,8 @@ export class PlatformsService {
     updatedPlatform.name = platformName ?? platform.name;
     updatedPlatform.activityWebhookUri =
       activityWebhookUri ?? platform.activityWebhookUri;
-    updatedPlatform.homepageUrl = homepageUrl ?? platform.homepageUrl;
+    updatedPlatform.homepageUrl =
+      homepageUrl !== undefined ? homepageUrl : platform.homepageUrl;
 
     await this.platformRepository.update({ id: platform.id }, updatedPlatform);
     return this.platformRepository.findOne(id);
