@@ -208,6 +208,7 @@ export class UpdatePlatformUserBodyDto {
   })
   @Expose({ name: 'profile_url' })
   @IsOptional()
+  @MaxLength(255)
   profileUrl?: string;
 
   @ApiProperty({
