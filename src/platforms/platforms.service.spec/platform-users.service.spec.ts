@@ -148,10 +148,6 @@ describe('PlatformsService - Users', () => {
   describe('updateOnePlatformUser()', () => {
     it('should set platform user role successfully', async () => {
       const platformUser = factories.platformUserEntity.build();
-      const updatedPlatformUser = {
-        ...platformUser,
-        profileUrl: undefined,
-      };
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
       const params = {
@@ -164,21 +160,19 @@ describe('PlatformsService - Users', () => {
 
       await service.updateOnePlatformUser(params, body);
 
-      expect(platformUserRepository.save).toHaveBeenCalledWith(
-        updatedPlatformUser,
-      );
+      expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
       expect(refreshTokenRepository.findOne).toHaveBeenCalledWith({
-        platformUser: updatedPlatformUser,
+        platformUser,
       });
       expect(refreshTokenRepository.update).toHaveBeenCalledWith(
-        { platformUser: updatedPlatformUser },
+        { platformUser },
         { isRevoked: true },
       );
     });
 
     it('should set profile url', async () => {
       const platformUser = factories.platformUserEntity.build({
-        profileUrl: 'PROFILE_URL',
+        profileUrl: 'NEW_PROFILE_URL',
       });
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();

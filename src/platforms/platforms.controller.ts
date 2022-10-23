@@ -9,7 +9,6 @@ import {
   UseGuards,
   Request,
   Query,
-  Put,
   HttpStatus,
 } from '@nestjs/common';
 import {
@@ -254,7 +253,7 @@ export class PlatformsController {
     HttpStatus.BAD_REQUEST,
   ])
   @UseGuards(JwtClientCredentialsAuthGuard)
-  @Put(':platform_id/users/:user_id')
+  @Patch(':platform_id/users/:user_id')
   async updatePlatformUser(
     @Param() params: api.FindOnePlatformUserParamDto,
     @Body() body: api.UpdatePlatformUserBodyDto,

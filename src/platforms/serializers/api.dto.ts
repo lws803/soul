@@ -10,6 +10,7 @@ import {
   IsOptional,
   IsPositive,
   MaxLength,
+  ValidateIf,
 } from 'class-validator';
 
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
@@ -208,8 +209,9 @@ export class UpdatePlatformUserBodyDto {
   })
   @Expose({ name: 'profile_url' })
   @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
   @MaxLength(255)
-  profileUrl?: string;
+  profileUrl?: string | null;
 
   @ApiProperty({
     name: 'roles',
@@ -220,5 +222,5 @@ export class UpdatePlatformUserBodyDto {
   @IsOptional()
   @IsArray()
   @IsEnum(UserRole, { each: true })
-  roles?: UserRole[] = [UserRole.Member];
+  roles?: UserRole[];
 }

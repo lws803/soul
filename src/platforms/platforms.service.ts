@@ -171,7 +171,8 @@ export class PlatformsService {
       await this.revokePlatformUserRefreshToken(platformUser);
     }
 
-    platformUser.profileUrl = body.profileUrl;
+    platformUser.profileUrl =
+      body.profileUrl !== undefined ? body.profileUrl : platformUser.profileUrl;
 
     return await this.platformUserRepository.save(platformUser);
   }
