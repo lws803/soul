@@ -57,5 +57,7 @@ jobs:
 
       - run: npm ci
 
+      - run: DB_NAME='soul_db_test' npm run migration:run
+
       - name: Run integration tests
         run: npm run test:e2e
