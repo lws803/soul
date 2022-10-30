@@ -26,8 +26,7 @@
     "typeorm": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts",
     "migration:generate": "rm -rf ./dist && ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:generate",
     "migration:run": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:run",
-    "migration:revert": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:revert",
-    "migration:test:setup": ""
+    "migration:revert": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:revert"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.1",
