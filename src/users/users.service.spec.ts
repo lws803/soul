@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
@@ -8,9 +6,8 @@ import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
 import { MailService } from 'src/mail/mail.service';
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
-import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { DuplicateUserEmailException } from './exceptions/duplicate-user-email.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
@@ -20,44 +17,32 @@ import { CreateUserDto, UpdateUserDto } from './serializers/api.dto';
 describe('UsersService', () => {
   let service: UsersService;
   let mailService: MailService;
-  let repository: Repository<User>;
-  let refreshTokensRepository: Repository<RefreshToken>;
-
-  let userCreateQueryBuilder: any;
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
-    const usersList = factories.userEntity.buildList(2);
-    userCreateQueryBuilder = {
-      select: jest.fn().mockImplementation(() => userCreateQueryBuilder),
-      where: jest.fn().mockImplementation(() => userCreateQueryBuilder),
-      orderBy: jest.fn().mockImplementation(() => userCreateQueryBuilder),
-      skip: jest.fn().mockImplementation(() => userCreateQueryBuilder),
-      take: jest.fn().mockImplementation(() => userCreateQueryBuilder),
-      getManyAndCount: jest
-        .fn()
-        .mockResolvedValue([usersList, usersList.length]),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
         {
-          provide: getRepositoryToken(User),
+          provide: PrismaService,
           useValue: {
-            find: jest.fn().mockResolvedValue(usersList),
-            findOne: jest.fn().mockResolvedValue(factories.userEntity.build()),
-            save: jest.fn().mockResolvedValue(factories.userEntity.build()),
-            update: jest.fn(),
-            remove: jest.fn(),
-            delete: jest.fn(),
-            createQueryBuilder: jest
-              .fn()
-              .mockImplementation(() => userCreateQueryBuilder),
+            user: {
+              findUnique: jest
+                .fn()
+                .mockResolvedValue(factories.userEntity.build()),
+              create: jest.fn().mockResolvedValue(factories.userEntity.build()),
+              update: jest.fn().mockResolvedValue(factories.userEntity.build()),
+              findMany: jest
+                .fn()
+                .mockResolvedValue(factories.userEntity.buildList(2)),
+              count: jest.fn().mockResolvedValue(2),
+              delete: jest.fn(),
+              findFirst: jest.fn().mockResolvedValue(null),
+            },
+            refreshToken: {
+              deleteMany: jest.fn(),
+            },
           },
-        },
-        {
-          provide: getRepositoryToken(RefreshToken),
-          useValue: { delete: jest.fn() },
         },
         {
           provide: ConfigService,
@@ -84,17 +69,14 @@ describe('UsersService', () => {
 
     service = module.get<UsersService>(UsersService);
     mailService = module.get<MailService>(MailService);
-    repository = module.get<Repository<User>>(getRepositoryToken(User));
-    refreshTokensRepository = module.get<Repository<RefreshToken>>(
-      getRepositoryToken(RefreshToken),
-    );
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   describe('create()', () => {
     it('should successfully insert a user', async () => {
       const oneUser = factories.userEntity.build();
       jest
-        .spyOn(repository, 'findOne')
+        .spyOn(prismaService.user, 'findUnique')
         .mockResolvedValueOnce(null)
         .mockResolvedValueOnce(null)
         .mockResolvedValue(oneUser);
@@ -105,27 +87,31 @@ describe('UsersService', () => {
       );
       expect(await service.create(createUserDto)).toStrictEqual(oneUser);
 
-      expect(repository.save).toHaveBeenCalledWith({
-        email: 'TEST_USER@EMAIL.COM',
-        username: 'test-user',
-        hashedPassword: expect.any(String),
-        isActive: false,
-        bio: null,
-        displayName: null,
+      expect(prismaService.user.create).toHaveBeenCalledWith({
+        data: {
+          email: 'TEST_USER@EMAIL.COM',
+          username: 'test-user',
+          hashedPassword: expect.any(String),
+          isActive: false,
+          bio: null,
+          displayName: null,
+        },
       });
       // Update step to update the userHandle
-      expect(repository.update).toHaveBeenCalledWith(
-        { id: oneUser.id },
-        {
-          userHandle: 'test-user#1',
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: {
+          id: oneUser.id,
         },
-      );
+        data: {
+          userHandle: 'test-user-1#1',
+        },
+      });
     });
 
     it('should throw duplicate user email error', async () => {
       jest
-        .spyOn(repository, 'findOne')
-        .mockResolvedValueOnce(factories.userEntity.build());
+        .spyOn(prismaService.user, 'findFirst')
+        .mockResolvedValue(factories.userEntity.build());
       const createUserDto = plainToClass(
         CreateUserDto,
         factories.createUserRequest.build(),
@@ -138,9 +124,10 @@ describe('UsersService', () => {
 
     it('should throw duplicate username error', async () => {
       jest
-        .spyOn(repository, 'findOne')
+        .spyOn(prismaService.user, 'findFirst')
         .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(factories.userEntity.build());
+        .mockResolvedValue(factories.userEntity.build());
+
       const createUserDto = plainToClass(
         CreateUserDto,
         factories.createUserRequest.build(),
@@ -163,9 +150,8 @@ describe('UsersService', () => {
 
     it('should paginate correctly', async () => {
       const users = factories.userEntity.buildList(1);
-      jest
-        .spyOn(userCreateQueryBuilder, 'getManyAndCount')
-        .mockResolvedValueOnce([users, users.length]);
+      jest.spyOn(prismaService.user, 'findMany').mockResolvedValue(users);
+      jest.spyOn(prismaService.user, 'count').mockResolvedValue(users.length);
 
       expect(
         await service.findAll({ page: 1, numItemsPerPage: 1 }),
@@ -174,8 +160,15 @@ describe('UsersService', () => {
         totalCount: users.length,
       });
 
-      expect(userCreateQueryBuilder.skip).toHaveBeenCalledWith(0);
-      expect(userCreateQueryBuilder.take).toHaveBeenCalledWith(1);
+      expect(prismaService.user.findMany).toHaveBeenCalledWith({
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        skip: 0,
+        take: 1,
+        where: {},
+      });
+      expect(prismaService.user.count).toHaveBeenCalledWith({
+        where: {},
+      });
     });
 
     it('should query for users with the given full text query', async () => {
@@ -187,10 +180,15 @@ describe('UsersService', () => {
         totalCount: users.length,
       });
 
-      expect(userCreateQueryBuilder.where).toHaveBeenCalledWith(
-        'user.username like :query',
-        { query: 'test-user%' },
-      );
+      expect(prismaService.user.findMany).toHaveBeenCalledWith({
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        skip: 0,
+        take: 10,
+        where: { username: { startsWith: 'test-user' } },
+      });
+      expect(prismaService.user.count).toHaveBeenCalledWith({
+        where: { username: { startsWith: 'test-user' } },
+      });
     });
   });
 
@@ -199,11 +197,13 @@ describe('UsersService', () => {
       const user = factories.userEntity.build();
       expect(await service.findOne(user.id)).toStrictEqual(user);
 
-      expect(repository.findOne).toHaveBeenCalledWith({ id: user.id });
+      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { id: user.id },
+      });
     });
 
     it('throws user not found', async () => {
-      jest.spyOn(repository, 'findOne').mockResolvedValue(undefined);
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(undefined);
 
       await expect(service.findOne(1)).rejects.toThrow(
         new UserNotFoundException({ id: 1 }),
@@ -214,19 +214,15 @@ describe('UsersService', () => {
   describe('update()', () => {
     it('updates a user successfully', async () => {
       const user = factories.userEntity.build();
-      jest
-        .spyOn(repository, 'findOne')
-        .mockResolvedValueOnce(user)
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          ...user,
-          email: 'UPDATED_EMAIL@EMAIL.COM',
-          username: 'updated-user',
-          userHandle: 'updated-user#1',
-          bio: 'UPDATED_BIO',
-          displayName: 'UPDATED_DISPLAY_NAME',
-        });
+      jest.spyOn(prismaService.user, 'findFirst').mockResolvedValue(null);
+      jest.spyOn(prismaService.user, 'update').mockResolvedValue({
+        ...user,
+        email: 'UPDATED_EMAIL@EMAIL.COM',
+        username: 'updated-user',
+        userHandle: 'updated-user#1',
+        bio: 'UPDATED_BIO',
+        displayName: 'UPDATED_DISPLAY_NAME',
+      });
 
       const updatedUserDto = plainToClass(
         UpdateUserDto,
@@ -243,17 +239,17 @@ describe('UsersService', () => {
         }),
       );
 
-      expect(repository.update).toHaveBeenCalledWith(
-        { id: user.id },
-        {
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: user.id },
+        data: {
           ...updatedUserDto,
           userHandle: 'updated-user#1',
         },
-      );
+      });
     });
 
     it('throws user not found', async () => {
-      jest.spyOn(repository, 'findOne').mockResolvedValue(undefined);
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(undefined);
 
       await expect(service.update(1, {})).rejects.toThrow(
         new UserNotFoundException({ id: 1 }),
@@ -262,16 +258,13 @@ describe('UsersService', () => {
 
     it("updates a user's bio and display name successfully", async () => {
       const user = factories.userEntity.build();
-      jest
-        .spyOn(repository, 'findOne')
-        .mockResolvedValueOnce(user)
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          ...user,
-          bio: null,
-          displayName: 'DISPLAY_NAME',
-        });
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValueOnce(user);
+      jest.spyOn(prismaService.user, 'findFirst').mockResolvedValue(null);
+      jest.spyOn(prismaService.user, 'update').mockResolvedValue({
+        ...user,
+        bio: null,
+        displayName: 'DISPLAY_NAME',
+      });
 
       const updatedUserDto = {
         bio: null,
@@ -282,15 +275,15 @@ describe('UsersService', () => {
         ...updatedUserDto,
       });
 
-      expect(repository.update).toHaveBeenCalledWith(
-        { id: user.id },
-        {
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: user.id },
+        data: {
           email: 'TEST_USER_1@EMAIL.COM',
           username: 'test-user-1',
           displayName: user.displayName,
           ...updatedUserDto,
         },
-      );
+      });
     });
   });
 
@@ -299,11 +292,13 @@ describe('UsersService', () => {
       const user = factories.userEntity.build();
       await service.remove(user.id);
 
-      expect(repository.delete).toHaveBeenCalledWith({ id: user.id });
+      expect(prismaService.user.delete).toHaveBeenCalledWith({
+        where: { id: user.id },
+      });
     });
 
     it('throws user not found', async () => {
-      jest.spyOn(repository, 'findOne').mockResolvedValue(undefined);
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(undefined);
 
       await expect(service.remove(1)).rejects.toThrow(
         new UserNotFoundException({ id: 1 }),
@@ -312,21 +307,23 @@ describe('UsersService', () => {
   });
 
   describe('verifyConfirmationToken()', () => {
+    const user = factories.userEntity.build();
+
     beforeEach(() => {
       jest.spyOn(jsonwebtoken, 'verify').mockImplementation(() => ({
-        id: factories.userEntity.build().id,
+        id: user.id,
         tokenType: 'confirmation',
       }));
     });
 
     it('verifies and sets user as active', async () => {
-      expect(await service.verifyConfirmationToken('TOKEN')).toEqual(
-        factories.userEntity.build(),
-      );
-
-      expect(repository.save).toHaveBeenCalledWith(
-        factories.userEntity.build({ isActive: true }),
-      );
+      expect(await service.verifyConfirmationToken('TOKEN')).toEqual(user);
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        data: { isActive: true },
+        where: {
+          id: user.id,
+        },
+      });
     });
   });
 
@@ -449,13 +446,17 @@ describe('UsersService', () => {
       const savedUser = factories.userEntity.build({
         hashedPassword: 'NEW_HASHED_PASSWORD',
       });
+      jest.spyOn(prismaService.user, 'update').mockResolvedValue(savedUser);
 
       expect(await service.passwordReset('TOKEN', 'NEW_PASSWORD')).toEqual(
         savedUser,
       );
-      expect(repository.save).toHaveBeenCalledWith(savedUser);
-      expect(refreshTokensRepository.delete).toHaveBeenCalledWith({
-        user: savedUser,
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: savedUser.id },
+        data: { hashedPassword: savedUser.hashedPassword },
+      });
+      expect(prismaService.refreshToken.deleteMany).toHaveBeenCalledWith({
+        where: { userId: savedUser.id },
       });
       expect(
         mailService.sendPasswordResetConfirmationEmail,

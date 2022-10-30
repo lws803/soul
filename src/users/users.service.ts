@@ -202,7 +202,7 @@ export class UsersService {
       await this.prismaService.refreshToken.deleteMany({
         where: { userId: user.id },
       });
-      await this.mailService.sendPasswordResetConfirmationEmail(user);
+      await this.mailService.sendPasswordResetConfirmationEmail(updatedUser);
 
       return updatedUser;
     } catch (exception) {
