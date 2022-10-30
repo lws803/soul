@@ -11,7 +11,10 @@ import { PlatformCategory } from 'src/platforms/entities/platform-category.entit
 import * as factories from '../factories';
 
 import createAppFixture from './fixtures/create-app-fixture';
-import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fixture';
+import {
+  createUsersAndLoginFixture,
+  UserAccount,
+} from './fixtures/create-users-and-login-fixture';
 
 describe('UserConnectionsController (e2e)', () => {
   let app: INestApplication;
@@ -22,7 +25,7 @@ describe('UserConnectionsController (e2e)', () => {
   let platformUserRepository: Repository<PlatformUser>;
   let platformCategoryRepository: Repository<PlatformCategory>;
 
-  let firstUserAccessToken: string;
+  let firstUser: UserAccount;
 
   beforeAll(async () => {
     app = await createAppFixture({});
@@ -38,8 +41,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     await connection.synchronize(true);
 
-    const [{ accessToken }] = await createUsersAndLoginFixture(app);
-    firstUserAccessToken = accessToken;
+    firstUser = (await createUsersAndLoginFixture(app))[0];
 
     await platformCategoryRepository.save(
       factories.platformCategoryEntity.build(),
@@ -60,7 +62,7 @@ describe('UserConnectionsController (e2e)', () => {
     it('creates a new connection', async () => {
       return request(app.getHttpServer())
         .post('/user-connections')
-        .set('Authorization', `Bearer ${firstUserAccessToken}`)
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
         .send(factories.createUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
@@ -87,6 +89,29 @@ describe('UserConnectionsController (e2e)', () => {
         );
     });
 
+    it('throws when duplicate', async () => {
+      const createUserConnectionReq =
+        factories.createUserConnectionRequest.build();
+      await request(app.getHttpServer())
+        .post('/user-connections')
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
+        .send(createUserConnectionReq);
+
+      return request(app.getHttpServer())
+        .post('/user-connections')
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
+        .send(createUserConnectionReq)
+        .expect(HttpStatus.CONFLICT)
+        .expect((res) =>
+          expect(res.body).toStrictEqual({
+            error: 'DUPLICATE_USER_CONNECTION',
+            message:
+              `A user connection from id: ${firstUser.user.id} ` +
+              `to id: ${createUserConnectionReq.to_user_id} already exists`,
+          }),
+        );
+    });
+
     it('creates a new connection with platform', async () => {
       const platform = factories.platformEntity.build();
       await platformRepository.save(platform);
@@ -96,7 +121,7 @@ describe('UserConnectionsController (e2e)', () => {
 
       return request(app.getHttpServer())
         .post('/user-connections')
-        .set('Authorization', `Bearer ${firstUserAccessToken}`)
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
         .send(factories.createUserConnectionRequest.build({ platform_id: 1 }))
         .expect(HttpStatus.CREATED)
         .expect((res) =>
@@ -140,7 +165,7 @@ describe('UserConnectionsController (e2e)', () => {
 
       return request(app.getHttpServer())
         .post('/user-connections')
-        .set('Authorization', `Bearer ${firstUserAccessToken}`)
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
         .send(factories.createUserConnectionRequest.build())
         .expect(HttpStatus.CREATED)
         .expect((res) =>
@@ -326,7 +351,7 @@ describe('UserConnectionsController (e2e)', () => {
     it('deletes user connection', async () => {
       return request(app.getHttpServer())
         .delete('/user-connections/1')
-        .set('Authorization', `Bearer ${firstUserAccessToken}`)
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toStrictEqual({}));
     });
@@ -352,7 +377,7 @@ describe('UserConnectionsController (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete('/user-connections/1')
-        .set('Authorization', `Bearer ${firstUserAccessToken}`)
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) => expect(res.body).toStrictEqual({}));
 
@@ -410,7 +435,7 @@ describe('UserConnectionsController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get('/user-connections/my-connections?connection_type=mutual')
-        .set('Authorization', `Bearer ${firstUserAccessToken}`)
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -453,7 +478,7 @@ describe('UserConnectionsController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get('/user-connections/my-connections?connection_type=follower')
-        .set('Authorization', `Bearer ${firstUserAccessToken}`)
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({
@@ -489,7 +514,7 @@ describe('UserConnectionsController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get('/user-connections/my-connections?connection_type=following')
-        .set('Authorization', `Bearer ${firstUserAccessToken}`)
+        .set('Authorization', `Bearer ${firstUser.accessToken}`)
         .expect(HttpStatus.OK)
         .expect((res) =>
           expect(res.body).toStrictEqual({

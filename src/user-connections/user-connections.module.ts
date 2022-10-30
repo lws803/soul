@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { PlatformsModule } from 'src/platforms/platforms.module';
 import { UsersModule } from 'src/users/users.module';
 import { ActivityModule } from 'src/activity/activity.module';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -14,7 +13,6 @@ import { UserConnection } from './entities/user-connection.entity';
   imports: [
     TypeOrmModule.forFeature([UserConnection]),
     UsersModule,
-    PlatformsModule,
     ActivityModule,
   ],
   controllers: [UserConnectionsController],
