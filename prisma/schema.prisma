@@ -122,7 +122,7 @@ model User {
   isActive                                              Boolean            @default(true) @map("is_active") @db.TinyInt
   hashedPassword                                        String             @map("hashed_password") @db.VarChar(255)
   createdAt                                             DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                                             DateTime           @default(now()) @map("updated_at") @db.Timestamp(6)
+  updatedAt                                             DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
   displayName                                           String?            @map("display_name") @db.VarChar(255)
   bio                                                   String?            @db.VarChar(255)
   platform_users                                        platform_users[]
