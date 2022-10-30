@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -12,7 +10,6 @@ import {
 import { User } from '@prisma/client';
 
 import { MailService } from 'src/mail/mail.service';
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import {
@@ -30,8 +27,6 @@ import {
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(RefreshToken)
-    private refreshTokensRepository: Repository<RefreshToken>,
     private configService: ConfigService,
     private mailService: MailService,
     private prismaService: PrismaService,
@@ -202,7 +197,10 @@ export class UsersService {
           ),
         },
       });
-      await this.refreshTokensRepository.delete({ user: user });
+      // TODO: Validate if this works
+      await this.prismaService.refreshToken.deleteMany({
+        where: { userId: user.id },
+      });
       await this.mailService.sendPasswordResetConfirmationEmail(user);
 
       return updatedUser;
