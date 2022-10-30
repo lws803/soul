@@ -87,11 +87,17 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    return this.findUserOrThrow({ id });
+    const user = await this.prismaService.user.findUnique({ where: { id } });
+    if (!user) throw new UserNotFoundException({ id });
+    return user;
   }
 
   async findOneByEmail(email: string) {
-    return this.findUserOrThrow({ email });
+    const user = await this.prismaService.user.findUnique({
+      where: { email },
+    });
+    if (!user) throw new UserNotFoundException({ email });
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -214,28 +220,6 @@ export class UsersService {
       }
       throw exception;
     }
-  }
-
-  private async findUserOrThrow({
-    id,
-    email,
-  }: {
-    id?: number;
-    email?: string;
-  }): Promise<User> {
-    if (id) {
-      const user = await this.prismaService.user.findUnique({ where: { id } });
-      if (!user) throw new UserNotFoundException({ id });
-      return user;
-    } else if (email) {
-      const user = await this.prismaService.user.findUnique({
-        where: { email },
-      });
-      if (!user) throw new UserNotFoundException({ email });
-      return user;
-    }
-
-    return null;
   }
 
   private async generateCodeAndSendEmail(user: User, payloadType: PayloadType) {
