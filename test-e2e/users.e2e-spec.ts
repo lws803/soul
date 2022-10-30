@@ -366,6 +366,4 @@ describe('UsersController (e2e)', () => {
         );
     });
   });
-
-  // TODO: Create password reset e2e tests
 });

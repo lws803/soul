@@ -43,7 +43,7 @@ export class UsersService {
       username: createUserDto.username,
     });
 
-    // TODO: Try to wrap this in a transaction
+    // TODO: Should be wrapped in a transaction
     const savedUser = await this.prismaService.user.create({
       data: {
         hashedPassword,
@@ -198,7 +198,7 @@ export class UsersService {
           ),
         },
       });
-      // TODO: Validate if this works
+
       await this.prismaService.refreshToken.deleteMany({
         where: { userId: user.id },
       });
