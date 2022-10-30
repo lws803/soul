@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { plainToClass } from 'class-transformer';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 import * as factories from 'factories';
 import { MailService } from 'src/mail/mail.service';
@@ -11,7 +12,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from './users.service';
 import { DuplicateUserEmailException } from './exceptions/duplicate-user-email.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
-import { DuplicateUsernameException } from './exceptions';
+import {
+  DuplicateUsernameException,
+  InvalidTokenException,
+} from './exceptions';
 import { CreateUserDto, UpdateUserDto } from './serializers/api.dto';
 
 describe('UsersService', () => {
@@ -325,6 +329,17 @@ describe('UsersService', () => {
         },
       });
     });
+
+    it('throws token expired error', async () => {
+      jest.spyOn(jsonwebtoken, 'verify').mockImplementation(() => {
+        throw new JsonWebTokenError('MESSAGE', new Error('ERROR'));
+      });
+
+      expect(service.verifyConfirmationToken('TOKEN')).rejects.toThrow(
+        new InvalidTokenException(),
+      );
+      expect(prismaService.user.update).not.toHaveBeenCalled();
+    });
   });
 
   describe('resendConfirmationToken()', () => {
@@ -461,6 +476,18 @@ describe('UsersService', () => {
       expect(
         mailService.sendPasswordResetConfirmationEmail,
       ).toHaveBeenCalledWith(savedUser);
+    });
+
+    it('throws token expired error', async () => {
+      jest.spyOn(jsonwebtoken, 'verify').mockImplementation(() => {
+        throw new JsonWebTokenError('MESSAGE', new Error('ERROR'));
+      });
+
+      expect(service.passwordReset('TOKEN', 'NEW_PASSWORD')).rejects.toThrow(
+        new InvalidTokenException(),
+      );
+      expect(prismaService.user.update).not.toHaveBeenCalled();
+      expect(prismaService.refreshToken.deleteMany).not.toHaveBeenCalled();
     });
   });
 });
