@@ -116,16 +116,16 @@ model user_connections_platforms_platforms {
 }
 
 model User {
-  id                                                    Int              @id @default(autoincrement())
-  username                                              String           @unique(map: "IDX_fe0bb3f6520ee0469504521e71") @db.VarChar(255)
-  userHandle                                            String?          @unique(map: "IDX_7408d3a73b446527a875a312d4") @map("user_handle") @db.VarChar(255)
-  email                                                 String           @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar(255)
-  isActive                                              Boolean          @default(true) @map("is_active") @db.TinyInt
-  hashedPassword                                        String           @map("hashed_password") @db.VarChar(255)
-  createdAt                                             DateTime         @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                                             DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
-  displayName                                           String?          @map("display_name") @db.VarChar(255)
-  bio                                                   String?          @db.VarChar(255)
+  id                                                    Int                @id @default(autoincrement())
+  username                                              String             @unique(map: "IDX_fe0bb3f6520ee0469504521e71") @db.VarChar(255)
+  userHandle                                            String?            @unique(map: "IDX_7408d3a73b446527a875a312d4") @map("user_handle") @db.VarChar(255)
+  email                                                 String             @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar(255)
+  isActive                                              Boolean            @default(true) @map("is_active") @db.TinyInt
+  hashedPassword                                        String             @map("hashed_password") @db.VarChar(255)
+  createdAt                                             DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                                             DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  displayName                                           String?            @map("display_name") @db.VarChar(255)
+  bio                                                   String?            @db.VarChar(255)
   platform_users                                        platform_users[]
   refresh_tokens                                        RefreshToken[]
   user_connections_user_connections_to_user_idTousers   UserConnection[] @relation("user_connections_to_user_idTousers")
