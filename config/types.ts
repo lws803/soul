@@ -5,6 +5,7 @@ export type ConfigProperties = {
   DB_USER: string;
   DB_PASSWORD?: string;
   DB_NAME: string;
+  DATABASE_URL: string;
   // Auth config
   JWT_SECRET_KEY: string;
   JWT_REFRESH_TOKEN_TTL: number;
