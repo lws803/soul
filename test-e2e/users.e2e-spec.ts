@@ -1,8 +1,8 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Connection, Repository } from 'typeorm';
 import * as request from 'supertest';
+import { Connection } from 'typeorm';
 
-import { User } from 'src/users/entities/user.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../factories';
 
@@ -14,17 +14,18 @@ import {
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
-  let connection: Connection;
-  let userRepository: Repository<User>;
+  let prismaService: PrismaService;
 
   beforeAll(async () => {
     app = await createAppFixture({});
     await app.init();
     app.useLogger(false);
 
-    connection = app.get(Connection);
-    userRepository = connection.getRepository(User);
+    const connection = app.get(Connection);
+    // TODO: Remove once we have fully migrated to prisma and have a script to support it.
     await connection.synchronize(true);
+
+    prismaService = app.get<PrismaService>(PrismaService);
   });
 
   afterAll(async () => {
@@ -33,7 +34,7 @@ describe('UsersController (e2e)', () => {
 
   describe('/users (POST)', () => {
     afterEach(async () => {
-      await userRepository.delete({});
+      await prismaService.user.deleteMany();
     });
 
     it('creates a new user successfully', () => {
@@ -47,10 +48,10 @@ describe('UsersController (e2e)', () => {
         .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.body).toStrictEqual({
-            id: 1,
+            id: expect.any(Number),
             email: 'TEST_USER@EMAIL.COM',
             username: 'test-user',
-            user_handle: 'test-user#1',
+            user_handle: expect.stringContaining('test-user#'),
             is_active: false,
             created_at: expect.any(String),
             updated_at: expect.any(String),
@@ -62,7 +63,7 @@ describe('UsersController (e2e)', () => {
 
     it('throws user duplicate error due to duplicate email address', async () => {
       const existingUser = factories.userEntity.build();
-      await userRepository.save(existingUser);
+      await prismaService.user.create({ data: existingUser });
       return request(app.getHttpServer())
         .post('/users')
         .send(
@@ -85,7 +86,7 @@ describe('UsersController (e2e)', () => {
 
     it('throws user duplicate error due to duplicate username', async () => {
       const existingUser = factories.userEntity.build();
-      await userRepository.save(existingUser);
+      await prismaService.user.create({ data: existingUser });
       return request(app.getHttpServer())
         .post('/users')
         .send(
@@ -108,19 +109,21 @@ describe('UsersController (e2e)', () => {
 
   describe('/users (GET)', () => {
     beforeAll(async () => {
-      await userRepository.save([
-        factories.userEntity.build({ id: undefined }),
-        factories.userEntity.build({
-          id: undefined,
-          username: 'test-user-2',
-          userHandle: 'test-user-2#2',
-          email: 'TEST_USER_2@EMAIL.COM',
-        }),
-      ]);
+      await prismaService.user.createMany({
+        data: [
+          factories.userEntity.build({ id: undefined }),
+          factories.userEntity.build({
+            id: undefined,
+            username: 'test-user-2',
+            userHandle: 'test-user-2#2',
+            email: 'TEST_USER_2@EMAIL.COM',
+          }),
+        ],
+      });
     });
 
     afterAll(async () => {
-      await userRepository.delete({});
+      await prismaService.user.deleteMany();
     });
 
     it('should return full list of users', async () => {
@@ -193,11 +196,11 @@ describe('UsersController (e2e)', () => {
 
   describe('/users/:id (GET)', () => {
     beforeAll(async () => {
-      await userRepository.save(factories.userEntity.build());
+      await prismaService.user.create({ data: factories.userEntity.build() });
     });
 
     afterAll(async () => {
-      await userRepository.delete({});
+      await prismaService.user.deleteMany();
     });
 
     it('should return a user', async () => {
@@ -238,7 +241,7 @@ describe('UsersController (e2e)', () => {
     });
 
     afterEach(async () => {
-      await userRepository.delete({});
+      await prismaService.user.deleteMany();
     });
 
     it('should update myself', async () => {
@@ -322,7 +325,7 @@ describe('UsersController (e2e)', () => {
     });
 
     afterEach(async () => {
-      await userRepository.delete({});
+      await prismaService.user.deleteMany();
     });
 
     it('should delete myself', async () => {
@@ -345,7 +348,7 @@ describe('UsersController (e2e)', () => {
     });
 
     afterAll(async () => {
-      await userRepository.delete({});
+      await prismaService.user.deleteMany();
     });
 
     it('retrieves me', async () => {

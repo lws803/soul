@@ -321,10 +321,12 @@ describe('ConnectionsService', () => {
       const userConnection = factories.userConnectionEntity.build();
       jest
         .spyOn(userService, 'findOne')
-        .mockResolvedValueOnce(userConnection.fromUser);
+        .mockResolvedValueOnce(factories.userEntity.build());
       jest
         .spyOn(userService, 'findOne')
-        .mockResolvedValueOnce(userConnection.toUser);
+        .mockResolvedValueOnce(
+          factories.userEntity.build({ id: 2, email: 'TEST_USER_2@EMAIL.COM' }),
+        );
 
       expect(await service.findOneByUserIds(1, 2)).toEqual(
         factories.oneUserConnectionResponseEntity.build({ isMutual: true }),
