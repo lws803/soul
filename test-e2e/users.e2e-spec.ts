@@ -1,5 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
+import { Connection } from 'typeorm';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -19,6 +20,10 @@ describe('UsersController (e2e)', () => {
     app = await createAppFixture({});
     await app.init();
     app.useLogger(false);
+
+    const connection = app.get(Connection);
+    // TODO: Remove once we have fully migrated to prisma and have a script to support it.
+    await connection.synchronize(true);
 
     prismaService = app.get<PrismaService>(PrismaService);
   });
