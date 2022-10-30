@@ -6,13 +6,6 @@ import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dt
 
 import { ConnectionType } from '../enums/connection-type.enum';
 
-export class PostPlatformDto {
-  @ApiProperty({ name: 'platform_id', example: 1 })
-  @Expose({ name: 'platform_id' })
-  @IsInt({ message: 'platform_id must be an integer' })
-  platformId: number;
-}
-
 export class CreateUserConnectionDto {
   @ApiProperty({ name: 'to_user_id', example: 12345 })
   @Expose({ name: 'to_user_id' })
@@ -74,27 +67,4 @@ export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
       `${ConnectionType.Following}, ${ConnectionType.Follower}, ${ConnectionType.Mutual}`,
   })
   connectionType: ConnectionType;
-}
-
-export class RemovePlatformFromUserConnectionParamsDto {
-  @ApiProperty({
-    name: 'id',
-    type: Number,
-    description: 'User connection id',
-    example: 1,
-  })
-  @Type(() => Number)
-  @IsInt()
-  id: number;
-
-  @ApiProperty({
-    name: 'platform_id',
-    type: Number,
-    description: 'Platform id',
-    example: 1,
-  })
-  @Expose({ name: 'platform_id' })
-  @Type(() => Number)
-  @IsInt({ message: 'platform_id must be an integer' })
-  platformId?: number;
 }

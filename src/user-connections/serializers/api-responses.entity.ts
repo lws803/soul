@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 
 import { CreatedAtUpdatedAtEntity } from 'src/common/serializers/created-at-updated-at.entity';
 import { ApiResponseProperty } from 'src/common/serializers/decorators';
-import { FindOnePlatformResponseEntity } from 'src/platforms/serializers/api-responses.entity';
 import { FindOneUserResponseEntity } from 'src/users/serializers/api-responses.entity';
 
 class FullUserConnectionResponseEntity extends CreatedAtUpdatedAtEntity {
@@ -28,16 +27,13 @@ class FullUserConnectionResponseEntity extends CreatedAtUpdatedAtEntity {
   })
   @Type(() => FindOneUserResponseEntity)
   toUser: FindOneUserResponseEntity;
-
-  @Type(() => FindOnePlatformResponseEntity)
-  platforms: FindOnePlatformResponseEntity[] = [];
 }
 
 export class CreateUserConnectionResponseEntity extends FullUserConnectionResponseEntity {
   @ApiResponseProperty({
     name: 'is_mutual',
     description:
-      'Identifies if this platform is a mutual connection, ' +
+      'Identifies if this is a mutual connection, ' +
       'i.e. there is an exact opposite connection for the same pair of users.',
   })
   isMutual: boolean;
@@ -47,7 +43,7 @@ export class FindOneUserConnectionResponseEntity extends FullUserConnectionRespo
   @ApiResponseProperty({
     name: 'is_mutual',
     description:
-      'Identifies if this platform is a mutual connection, ' +
+      'Identifies if this is a mutual connection, ' +
       'i.e. there is an exact opposite connection for the same pair of users.',
   })
   isMutual: boolean;
@@ -69,5 +65,3 @@ export class FindAllUserConnectionResponseEntity {
   })
   totalCount: number;
 }
-
-export class AddNewPlatformToUserConnectionResponseEntity extends FullUserConnectionResponseEntity {}

@@ -23,7 +23,6 @@ import {
   DuplicateUserConnectionException,
 } from './exceptions';
 import {
-  AddNewPlatformToUserConnectionResponseEntity,
   CreateUserConnectionResponseEntity,
   FindAllUserConnectionResponseEntity,
   FindOneUserConnectionResponseEntity,
@@ -111,12 +110,8 @@ export class UserConnectionsService {
 
   async findOne(id: number): Promise<FindOneUserConnectionResponseEntity> {
     const userConnection = await this.findUserConnectionOrThrow({ id });
-    const oppositeConnection = await this.userConnectionRepository.findOne({
-      fromUser: userConnection.toUser,
-      toUser: userConnection.fromUser,
-    });
 
-    return { ...userConnection, isMutual: !!oppositeConnection };
+    return { ...userConnection, isMutual: !!userConnection.mutualConnection };
   }
 
   async findOneByUserIds(
@@ -127,53 +122,16 @@ export class UserConnectionsService {
       fromUserId,
       toUserId,
     });
-    const oppositeConnection = await this.userConnectionRepository.findOne({
-      fromUser: userConnection.toUser,
-      toUser: userConnection.fromUser,
-    });
 
-    return { ...userConnection, isMutual: !!oppositeConnection };
+    return { ...userConnection, isMutual: !!userConnection.mutualConnection };
   }
 
   async remove(id: number, currentUserId: number) {
-    const userConnection = await this.findOne(id);
+    const userConnection = await this.findUserConnectionOrThrow({ id });
     if (userConnection.fromUser.id !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
     }
-    await this.userConnectionRepository.delete({ id });
-  }
-
-  async addNewPlatformToUserConnection(
-    id: number,
-    platformId: number,
-    currentUserId: number,
-  ): Promise<AddNewPlatformToUserConnectionResponseEntity> {
-    const { isMutual: _isMutual, ...userConnection } = await this.findOne(id);
-    if (userConnection.fromUser.id !== currentUserId) {
-      throw new UserNotInvolvedInConnectionException();
-    }
-    const platform = await this.platformService.findOne(platformId);
-    userConnection.platforms = Array.from(
-      new Set([...userConnection.platforms, platform]),
-    );
-    return this.userConnectionRepository.save(userConnection);
-  }
-
-  async removePlatformFromUserConnection(
-    id: number,
-    platformId: number,
-    currentUserId: number,
-  ) {
-    const { isMutual: _isMutual, ...userConnection } = await this.findOne(id);
-    const platform = await this.platformService.findOne(platformId);
-    if (userConnection.fromUser.id !== currentUserId) {
-      throw new UserNotInvolvedInConnectionException();
-    }
-    userConnection.platforms.splice(
-      userConnection.platforms.indexOf(platform),
-      1,
-    );
-    await this.userConnectionRepository.save(userConnection);
+    await this.prismaService.userConnection.delete({ where: { id } });
   }
 
   async findMyUserConnections({
@@ -217,17 +175,14 @@ export class UserConnectionsService {
     fromUserId?: number;
     toUserId?: number;
   }) {
-    const findParameters = {};
-    if (id) findParameters['id'] = id;
-    if (fromUserId)
-      findParameters['fromUser'] = await this.usersService.findOne(fromUserId);
-    if (toUserId)
-      findParameters['toUser'] = await this.usersService.findOne(toUserId);
-
-    const userConnection = await this.userConnectionRepository.findOne(
-      findParameters,
-      { relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'] },
-    );
+    const userConnection = await this.prismaService.userConnection.findFirst({
+      where: {
+        ...(fromUserId && { fromUserId }),
+        ...(toUserId && { toUserId }),
+        ...(id && { id }),
+      },
+      include: { toUser: true, fromUser: true, mutualConnection: true },
+    });
 
     if (!userConnection) {
       throw new UserConnectionNotFoundException({ id });
