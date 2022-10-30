@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { ActivityService } from 'src/activity/activity.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { CreateUserConnectionDto } from './serializers/api.dto';
 import { UserConnection } from './entities/user-connection.entity';
@@ -37,6 +38,7 @@ export class UserConnectionsService {
     private usersService: UsersService,
     private platformService: PlatformsService,
     private activityService: ActivityService,
+    private prismaService: PrismaService,
   ) {}
 
   async create(

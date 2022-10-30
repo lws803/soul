@@ -61,8 +61,8 @@ model platforms {
 model platforms_user_connections_user_connections {
   user_connection_id Int
   platform_id        Int
-  user_connections   user_connections @relation(fields: [platform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_68497f3c1d20e50b6701fd27716")
-  platforms          platforms        @relation(fields: [user_connection_id], references: [id], onDelete: Cascade, map: "FK_ec16e6694ea1e9b32c032f2088e")
+  user_connections   UserConnection @relation(fields: [platform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_68497f3c1d20e50b6701fd27716")
+  platforms          platforms      @relation(fields: [user_connection_id], references: [id], onDelete: Cascade, map: "FK_ec16e6694ea1e9b32c032f2088e")
 
   @@id([user_connection_id, platform_id])
   @@index([platform_id], map: "IDX_68497f3c1d20e50b6701fd2771")
@@ -85,29 +85,30 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
-model user_connections {
+model UserConnection {
   id                                          Int                                           @id @default(autoincrement())
-  created_at                                  DateTime                                      @default(now()) @db.Timestamp(6)
-  updated_at                                  DateTime                                      @default(now()) @db.Timestamp(6)
+  createdAt                                   DateTime                                      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                                   DateTime                                      @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
   from_user_id                                Int?
   to_user_id                                  Int?
   opposite_user_connection_id                 Int?                                          @unique(map: "REL_e5af0196967d64092604220d02")
-  users_user_connections_to_user_idTousers    User?                                         @relation("user_connections_to_user_idTousers", fields: [to_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_4b78485d215013ef730563ced8c")
-  users_user_connections_from_user_idTousers  User?                                         @relation("user_connections_from_user_idTousers", fields: [from_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_cb08c09787fc9b7283feb3a7f51")
-  user_connections                            user_connections?                             @relation("user_connectionsTouser_connections", fields: [opposite_user_connection_id], references: [id], onUpdate: NoAction, map: "FK_e5af0196967d64092604220d029")
+  toUser                                      User?                                         @relation("user_connections_to_user_idTousers", fields: [to_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_4b78485d215013ef730563ced8c")
+  fromUser                                    User?                                         @relation("user_connections_from_user_idTousers", fields: [from_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_cb08c09787fc9b7283feb3a7f51")
+  user_connections                            UserConnection?                               @relation("user_connectionsTouser_connections", fields: [opposite_user_connection_id], references: [id], onUpdate: NoAction, map: "FK_e5af0196967d64092604220d029")
   platforms_user_connections_user_connections platforms_user_connections_user_connections[]
-  other_user_connections                      user_connections?                             @relation("user_connectionsTouser_connections")
+  other_user_connections                      UserConnection?                               @relation("user_connectionsTouser_connections")
   user_connections_platforms_platforms        user_connections_platforms_platforms[]
 
   @@unique([from_user_id, to_user_id], map: "IDX_89fbb46e0b112a12798cc1ee60")
   @@index([to_user_id], map: "FK_4b78485d215013ef730563ced8c")
+  @@map("user_connections")
 }
 
 model user_connections_platforms_platforms {
   platform_id        Int
   user_connection_id Int
-  platforms          platforms        @relation(fields: [user_connection_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_44980a74eaf800d40e4ad89d066")
-  user_connections   user_connections @relation(fields: [platform_id], references: [id], onDelete: Cascade, map: "FK_a464a03734dd2d3f6d2b9d8e9d6")
+  platforms          platforms      @relation(fields: [user_connection_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_44980a74eaf800d40e4ad89d066")
+  user_connections   UserConnection @relation(fields: [platform_id], references: [id], onDelete: Cascade, map: "FK_a464a03734dd2d3f6d2b9d8e9d6")
 
   @@id([platform_id, user_connection_id])
   @@index([user_connection_id], map: "IDX_44980a74eaf800d40e4ad89d06")
@@ -115,20 +116,20 @@ model user_connections_platforms_platforms {
 }
 
 model User {
-  id                                                    Int                @id @default(autoincrement())
-  username                                              String             @unique(map: "IDX_fe0bb3f6520ee0469504521e71") @db.VarChar(255)
-  userHandle                                            String?            @unique(map: "IDX_7408d3a73b446527a875a312d4") @map("user_handle") @db.VarChar(255)
-  email                                                 String             @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar(255)
-  isActive                                              Boolean            @default(true) @map("is_active") @db.TinyInt
-  hashedPassword                                        String             @map("hashed_password") @db.VarChar(255)
-  createdAt                                             DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                                             DateTime           @default(now()) @map("updated_at") @db.Timestamp(6)
-  displayName                                           String?            @map("display_name") @db.VarChar(255)
-  bio                                                   String?            @db.VarChar(255)
+  id                                                    Int              @id @default(autoincrement())
+  username                                              String           @unique(map: "IDX_fe0bb3f6520ee0469504521e71") @db.VarChar(255)
+  userHandle                                            String?          @unique(map: "IDX_7408d3a73b446527a875a312d4") @map("user_handle") @db.VarChar(255)
+  email                                                 String           @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar(255)
+  isActive                                              Boolean          @default(true) @map("is_active") @db.TinyInt
+  hashedPassword                                        String           @map("hashed_password") @db.VarChar(255)
+  createdAt                                             DateTime         @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                                             DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  displayName                                           String?          @map("display_name") @db.VarChar(255)
+  bio                                                   String?          @db.VarChar(255)
   platform_users                                        platform_users[]
   refresh_tokens                                        RefreshToken[]
-  user_connections_user_connections_to_user_idTousers   user_connections[] @relation("user_connections_to_user_idTousers")
-  user_connections_user_connections_from_user_idTousers user_connections[] @relation("user_connections_from_user_idTousers")
+  user_connections_user_connections_to_user_idTousers   UserConnection[] @relation("user_connections_to_user_idTousers")
+  user_connections_user_connections_from_user_idTousers UserConnection[] @relation("user_connections_from_user_idTousers")
 
   @@map("users")
 }
