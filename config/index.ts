@@ -15,8 +15,6 @@ const schema = Joi.object({
     .allow('')
     .description('Primary database password'),
   DB_NAME: Joi.string().required().description('Primary database name'),
-  DATABASE_URL: Joi.string().required().description('Primary database url'),
-
   // Auth config
   JWT_SECRET_KEY: Joi.string().required().description('Auth JWT secret key'),
   JWT_REFRESH_TOKEN_TTL: Joi.number()

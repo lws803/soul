@@ -1,5 +1,6 @@
 import { Factory } from 'fishery';
-import { User } from '@prisma/client';
+
+import { User } from 'src/users/entities/user.entity';
 
 export const userEntity = Factory.define<User>(({ sequence }) => {
   // Rewinds the sequence as we do not want to have "sequences" bleed into subsequent builds

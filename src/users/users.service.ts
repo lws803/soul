@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Not, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -7,16 +9,16 @@ import {
   TokenExpiredError,
   JsonWebTokenError,
 } from 'jsonwebtoken';
-import { User } from '@prisma/client';
 
 import { MailService } from 'src/mail/mail.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 
 import {
   UpdateUserDto,
   CreateUserDto,
   FindAllUsersQueryParamDto,
 } from './serializers/api.dto';
+import { User } from './entities/user.entity';
 import {
   UserNotFoundException,
   InvalidTokenException,
@@ -27,108 +29,104 @@ import {
 @Injectable()
 export class UsersService {
   constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+    @InjectRepository(RefreshToken)
+    private refreshTokensRepository: Repository<RefreshToken>,
     private configService: ConfigService,
     private mailService: MailService,
-    private prismaService: PrismaService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
+    const user = new User();
+
     const hashedPassword = await bcrypt.hash(
       createUserDto.password,
       await bcrypt.genSalt(),
     );
 
-    await this.throwOnDuplicate({
-      email: createUserDto.email,
-      username: createUserDto.username,
-    });
+    user.hashedPassword = hashedPassword;
+    user.email = createUserDto.email;
+    user.username = createUserDto.username;
+    user.isActive = false;
+    user.bio = createUserDto.bio;
+    user.displayName = createUserDto.displayName;
 
-    // TODO: Should be wrapped in a transaction
-    const savedUser = await this.prismaService.user.create({
-      data: {
-        hashedPassword,
-        email: createUserDto.email,
-        username: createUserDto.username,
-        isActive: false,
-        bio: createUserDto.bio,
-        displayName: createUserDto.displayName,
+    await this.throwOnDuplicate({ email: user.email, username: user.username });
+
+    const savedUser = await this.usersRepository.save(user);
+    await this.usersRepository.update(
+      { id: savedUser.id },
+      {
+        userHandle: this.getUserHandle(createUserDto.username, savedUser.id),
       },
-    });
+    );
 
-    const updatedUser = await this.prismaService.user.update({
-      where: { id: savedUser.id },
-      data: {
-        userHandle: this.getUserHandle(savedUser.username, savedUser.id),
-      },
-    });
+    this.generateCodeAndSendEmail(savedUser, 'confirmation');
 
-    await this.generateCodeAndSendEmail(savedUser, 'confirmation');
-
-    return updatedUser;
+    return this.usersRepository.findOne(savedUser.id);
   }
 
   async findAll(queryParams: FindAllUsersQueryParamDto) {
+    let baseQuery = this.usersRepository.createQueryBuilder('user').select();
     const query = queryParams.q;
-    const users = await this.prismaService.user.findMany({
-      skip: (queryParams.page - 1) * queryParams.numItemsPerPage,
-      take: queryParams.numItemsPerPage,
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      where: {
-        ...(query && { username: { startsWith: query } }),
-      },
-    });
-    const totalCount = await this.prismaService.user.count({
-      where: {
-        ...(query && { username: { startsWith: query } }),
-      },
-    });
+    if (query) {
+      baseQuery = baseQuery.where('user.username like :query', {
+        query: `${query}%`,
+      });
+    }
+    baseQuery = baseQuery
+      .orderBy({ 'user.createdAt': 'DESC', 'user.id': 'DESC' })
+      .take(queryParams.numItemsPerPage)
+      .skip((queryParams.page - 1) * queryParams.numItemsPerPage);
 
+    const [users, totalCount] = await baseQuery.getManyAndCount();
     return { users, totalCount };
   }
 
   async findOne(id: number) {
-    const user = await this.prismaService.user.findUnique({ where: { id } });
-    if (!user) throw new UserNotFoundException({ id });
-    return user;
+    return this.findUserOrThrow({ id });
   }
 
   async findOneByEmail(email: string) {
-    const user = await this.prismaService.user.findUnique({
-      where: { email },
-    });
-    if (!user) throw new UserNotFoundException({ email });
-    return user;
+    return this.findUserOrThrow({ email });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
+    const updatedUser: Partial<User> = {};
+
+    if (updateUserDto.username) {
+      updatedUser.userHandle = this.getUserHandle(
+        updateUserDto.username,
+        user.id,
+      );
+    }
+    updatedUser.username = updateUserDto.username ?? user.username;
+    updatedUser.email = updateUserDto.email ?? user.email;
+
+    // We want to set these to null in case it was provided in the response
+    updatedUser.bio =
+      updateUserDto.bio !== undefined ? updateUserDto.bio : user.bio;
+    updatedUser.displayName =
+      updateUserDto.displayName !== undefined
+        ? updateUserDto.displayName
+        : user.displayName;
 
     await this.throwOnDuplicate({
-      email: updateUserDto.email,
-      username: updateUserDto.username,
+      email: updatedUser.email,
+      username: updatedUser.username,
       id,
     });
 
-    return await this.prismaService.user.update({
-      where: { id: user.id },
-      data: {
-        bio: updateUserDto.bio !== undefined ? updateUserDto.bio : user.bio,
-        displayName:
-          updateUserDto.displayName !== undefined
-            ? updateUserDto.displayName
-            : user.displayName,
-        username: updateUserDto.username ?? user.username,
-        email: updateUserDto.email ?? user.email,
-        ...(updateUserDto.username && {
-          userHandle: this.getUserHandle(updateUserDto.username, user.id),
-        }),
-      },
-    });
+    await this.usersRepository.update({ id: user.id }, updatedUser);
+
+    return this.usersRepository.findOne(id);
   }
 
   async remove(id: number) {
     const user = await this.findOne(id);
-    await this.prismaService.user.delete({ where: { id: user.id } });
+    await this.usersRepository.delete({ id: user.id });
   }
 
   async verifyConfirmationToken(token: string) {
@@ -142,10 +140,9 @@ export class UsersService {
       }
 
       const user = await this.findOne(id);
-      return await this.prismaService.user.update({
-        where: { id: user.id },
-        data: { isActive: true },
-      });
+      user.isActive = true;
+      await this.usersRepository.save(user);
+      return user;
     } catch (exception) {
       if (
         exception instanceof TokenExpiredError ||
@@ -195,22 +192,16 @@ export class UsersService {
       }
 
       const user = await this.findOne(id);
-      const updatedUser = await this.prismaService.user.update({
-        where: { id: user.id },
-        data: {
-          hashedPassword: await bcrypt.hash(
-            newPassword,
-            await bcrypt.genSalt(),
-          ),
-        },
-      });
+      user.hashedPassword = await bcrypt.hash(
+        newPassword,
+        await bcrypt.genSalt(),
+      );
 
-      await this.prismaService.refreshToken.deleteMany({
-        where: { userId: user.id },
-      });
-      await this.mailService.sendPasswordResetConfirmationEmail(updatedUser);
+      await this.usersRepository.save(user);
+      await this.refreshTokensRepository.delete({ user: user });
+      await this.mailService.sendPasswordResetConfirmationEmail(user);
 
-      return updatedUser;
+      return user;
     } catch (exception) {
       if (
         exception instanceof TokenExpiredError ||
@@ -220,6 +211,25 @@ export class UsersService {
       }
       throw exception;
     }
+  }
+
+  private async findUserOrThrow({
+    id,
+    email,
+  }: {
+    id?: number;
+    email?: string;
+  }): Promise<User> {
+    let user;
+    if (id) {
+      user = await this.usersRepository.findOne({ id });
+      if (!user) throw new UserNotFoundException({ id });
+    } else if (email) {
+      user = await this.usersRepository.findOne({ email });
+      if (!user) throw new UserNotFoundException({ email });
+    }
+
+    return user;
   }
 
   private async generateCodeAndSendEmail(user: User, payloadType: PayloadType) {
@@ -247,22 +257,22 @@ export class UsersService {
     username,
     id,
   }: {
-    email?: string;
-    username?: string;
+    email: string;
+    username: string;
     id?: number;
   }) {
     if (
       email &&
-      (await this.prismaService.user.findFirst({
-        where: { email, ...(id && { id: { not: id } }) },
+      (await this.usersRepository.findOne({
+        where: { email, ...(id && { id: Not(id) }) },
       }))
     ) {
       throw new DuplicateUserEmailException(email);
     }
     if (
       username &&
-      (await this.prismaService.user.findFirst({
-        where: { username, ...(id && { id: { not: id } }) },
+      (await this.usersRepository.findOne({
+        where: { username, ...(id && { id: Not(id) }) },
       }))
     ) {
       throw new DuplicateUsernameException(username);
