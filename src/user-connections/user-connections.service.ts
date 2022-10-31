@@ -124,7 +124,7 @@ export class UserConnectionsService {
     userId: number;
     connectionType: ConnectionType;
     paginationParams: PaginationParamsDto;
-  }) {
+  }): Promise<FindAllUserConnectionResponseEntity> {
     const fromUser = await this.usersService.findOne(userId);
 
     const defaultArgs: Parameters<
@@ -133,13 +133,13 @@ export class UserConnectionsService {
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: paginationParams.numItemsPerPage,
       skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
-      include: { fromUser: true, toUser: true, mutualConnection: true },
     };
 
     if (connectionType === ConnectionType.Mutual) {
       const userConnections = await this.prismaService.userConnection.findMany({
         ...defaultArgs,
         where: { mutualConnection: { isNot: null }, fromUser },
+        include: { fromUser: true, toUser: true, mutualConnection: true },
       });
       const totalCount = await this.prismaService.userConnection.count({
         where: { mutualConnection: { isNot: null }, fromUser },
@@ -152,6 +152,7 @@ export class UserConnectionsService {
       const userConnections = await this.prismaService.userConnection.findMany({
         ...defaultArgs,
         where: { toUser: fromUser },
+        include: { fromUser: true, toUser: true, mutualConnection: true },
       });
       const totalCount = await this.prismaService.userConnection.count({
         where: { toUser: fromUser },
@@ -162,7 +163,9 @@ export class UserConnectionsService {
     const userConnections = await this.prismaService.userConnection.findMany({
       ...defaultArgs,
       where: { fromUser },
+      include: { fromUser: true, toUser: true, mutualConnection: true },
     });
+
     const totalCount = await this.prismaService.userConnection.count({
       where: { fromUser },
     });
