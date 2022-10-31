@@ -40,6 +40,7 @@ describe('UserConnectionsController (e2e)', () => {
 
     prismaService = app.get<PrismaService>(PrismaService);
 
+    // TODO: Remove once we have fully migrated to prisma and have a script to support it.
     await connection.synchronize(true);
 
     firstUser = (await createUsersAndLoginFixture(app))[0];

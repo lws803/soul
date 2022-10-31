@@ -254,135 +254,152 @@ describe('ConnectionsService', () => {
     });
   });
 
-  // describe('findOne()', () => {
-  //   it('should return one user connection successfully', async () => {
-  //     expect(await service.findOne(1)).toEqual(
-  //       factories.oneUserConnectionResponseEntity.build({ isMutual: true }),
-  //     );
-  //     expect(userConnectionRepository.findOne).toHaveBeenCalledWith(
-  //       { id: 1 },
-  //       { relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'] },
-  //     );
-  //   });
+  describe('findOne()', () => {
+    it('should return one user connection successfully', async () => {
+      expect(await service.findOne(1)).toEqual({
+        id: 1,
+        fromUserId: firstUser.id,
+        toUserId: secondUser.id,
+        oppositeUserConnectionId: null,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        isMutual: false,
+      });
+      expect(prismaService.userConnection.findFirst).toHaveBeenCalledWith({
+        where: { id: 1 },
+        include: { fromUser: true, mutualConnection: true, toUser: true },
+      });
+    });
 
-  //   it('should throw when connection is not found', async () => {
-  //     jest.spyOn(userConnectionRepository, 'findOne').mockResolvedValue(null);
-  //     await expect(service.findOne(999)).rejects.toThrow(
-  //       'User connection with id: 999 not found',
-  //     );
-  //   });
-  // });
+    it('should throw when connection is not found', async () => {
+      jest
+        .spyOn(prismaService.userConnection, 'findFirst')
+        .mockResolvedValue(null);
 
-  // describe('findOneByUserIds()', () => {
-  //   it('should return one user connection successfully', async () => {
-  //     const userConnection = factories.userConnectionEntity.build();
-  //     jest
-  //       .spyOn(userService, 'findOne')
-  //       .mockResolvedValueOnce(factories.userEntity.build());
-  //     jest
-  //       .spyOn(userService, 'findOne')
-  //       .mockResolvedValueOnce(
-  //         factories.userEntity.build({ id: 2, email: 'TEST_USER_2@EMAIL.COM' }),
-  //       );
+      await expect(service.findOne(999)).rejects.toThrow(
+        'User connection with id: 999 not found',
+      );
+    });
+  });
 
-  //     expect(await service.findOneByUserIds(1, 2)).toEqual(
-  //       factories.oneUserConnectionResponseEntity.build({ isMutual: true }),
-  //     );
-  //     expect(userConnectionRepository.findOne).toHaveBeenCalledWith(
-  //       { fromUser: userConnection.fromUser, toUser: userConnection.toUser },
-  //       { relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'] },
-  //     );
-  //   });
-  // });
+  describe('findOneByUserIds()', () => {
+    it('should return one user connection successfully', async () => {
+      jest
+        .spyOn(userService, 'findOne')
+        .mockResolvedValueOnce(factories.userEntity.build());
+      jest
+        .spyOn(userService, 'findOne')
+        .mockResolvedValueOnce(
+          factories.userEntity.build({ id: 2, email: 'TEST_USER_2@EMAIL.COM' }),
+        );
 
-  // describe('remove()', () => {
-  //   it('should remove a user connection successfully', async () => {
-  //     expect(await service.remove(1, 1)).toBeUndefined();
-  //     expect(userConnectionRepository.delete).toHaveBeenCalledWith({ id: 1 });
-  //   });
+      expect(await service.findOneByUserIds(1, 2)).toEqual({
+        id: 1,
+        fromUserId: firstUser.id,
+        toUserId: secondUser.id,
+        isMutual: false,
+        oppositeUserConnectionId: null,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      });
+      expect(prismaService.userConnection.findFirst).toHaveBeenCalledWith({
+        include: { fromUser: true, mutualConnection: true, toUser: true },
+        where: { fromUser: firstUser, toUser: secondUser },
+      });
+    });
+  });
 
-  //   it('should throw when user is not involved in the connection', async () => {
-  //     await expect(service.remove(1, 2)).rejects.toThrow(
-  //       'You have no permissions to update this connection.',
-  //     );
-  //   });
-  // });
+  describe('remove()', () => {
+    it('should remove a user connection successfully', async () => {
+      expect(await service.remove(1, 1)).toBeUndefined();
+      expect(prismaService.userConnection.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+    });
 
-  // describe('findMyUserConnections()', () => {
-  //   const defaultQueryParameters = {
-  //     order: {
-  //       createdAt: 'DESC',
-  //       id: 'DESC',
-  //     },
-  //     relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'],
-  //     skip: 0,
-  //     take: 10,
-  //   };
+    it('should throw when user is not involved in the connection', async () => {
+      await expect(service.remove(1, 2)).rejects.toThrow(
+        'You have no permissions to update this connection.',
+      );
+    });
+  });
 
-  //   it('should return a list of user connections (my follows) with total count', async () => {
-  //     expect(
-  //       await service.findMyUserConnections({
-  //         userId: 1,
-  //         connectionType: ConnectionType.Following,
-  //         paginationParams: {
-  //           numItemsPerPage: 10,
-  //           page: 1,
-  //         },
-  //       }),
-  //     ).toEqual({
-  //       totalCount: 2,
-  //       userConnections: factories.userConnectionEntityArray.build(),
-  //     });
+  describe('findMyUserConnections()', () => {
+    const defaultQueryParameters = {
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      include: {
+        fromUser: true,
+        mutualConnection: true,
+        toUser: true,
+      },
+      skip: 0,
+      take: 10,
+    };
 
-  //     expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
-  //       where: { fromUser: factories.userEntity.build() },
-  //       ...defaultQueryParameters,
-  //     });
-  //   });
+    it('should return a list of user connections (my follows) with total count', async () => {
+      expect(
+        await service.findMyUserConnections({
+          userId: 1,
+          connectionType: ConnectionType.Following,
+          paginationParams: {
+            numItemsPerPage: 10,
+            page: 1,
+          },
+        }),
+      ).toEqual({
+        totalCount: 2,
+        userConnections: factories.userConnectionEntityArray.build(),
+      });
 
-  //   it('should return a list of user connections (my followers) with total count', async () => {
-  //     expect(
-  //       await service.findMyUserConnections({
-  //         userId: 1,
-  //         connectionType: ConnectionType.Follower,
-  //         paginationParams: {
-  //           numItemsPerPage: 10,
-  //           page: 1,
-  //         },
-  //       }),
-  //     ).toEqual({
-  //       totalCount: 2,
-  //       userConnections: factories.userConnectionEntityArray.build(),
-  //     });
+      expect(prismaService.userConnection.findMany).toHaveBeenCalledWith({
+        where: { fromUser: firstUser },
+        ...defaultQueryParameters,
+      });
+    });
 
-  //     expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
-  //       where: { toUser: factories.userEntity.build() },
-  //       ...defaultQueryParameters,
-  //     });
-  //   });
+    it('should return a list of user connections (my followers) with total count', async () => {
+      expect(
+        await service.findMyUserConnections({
+          userId: 1,
+          connectionType: ConnectionType.Follower,
+          paginationParams: {
+            numItemsPerPage: 10,
+            page: 1,
+          },
+        }),
+      ).toEqual({
+        totalCount: 2,
+        userConnections: factories.userConnectionEntityArray.build(),
+      });
 
-  //   it('should return a list of user connections (mutual friends) with total count', async () => {
-  //     expect(
-  //       await service.findMyUserConnections({
-  //         userId: 1,
-  //         connectionType: ConnectionType.Mutual,
-  //         paginationParams: {
-  //           numItemsPerPage: 10,
-  //           page: 1,
-  //         },
-  //       }),
-  //     ).toEqual({
-  //       totalCount: 2,
-  //       userConnections: factories.userConnectionEntityArray.build(),
-  //     });
+      expect(prismaService.userConnection.findMany).toHaveBeenCalledWith({
+        where: { toUser: factories.userEntity.build() },
+        ...defaultQueryParameters,
+      });
+    });
 
-  //     expect(userConnectionRepository.findAndCount).toHaveBeenCalledWith({
-  //       where: {
-  //         fromUser: factories.userEntity.build(),
-  //         mutualConnection: Not(IsNull()),
-  //       },
-  //       ...defaultQueryParameters,
-  //     });
-  //   });
-  // });
+    it('should return a list of user connections (mutual friends) with total count', async () => {
+      expect(
+        await service.findMyUserConnections({
+          userId: 1,
+          connectionType: ConnectionType.Mutual,
+          paginationParams: {
+            numItemsPerPage: 10,
+            page: 1,
+          },
+        }),
+      ).toEqual({
+        totalCount: 2,
+        userConnections: factories.userConnectionEntityArray.build(),
+      });
+
+      expect(prismaService.userConnection.findMany).toHaveBeenCalledWith({
+        where: {
+          fromUser: factories.userEntity.build(),
+          mutualConnection: { isNot: null },
+        },
+        ...defaultQueryParameters,
+      });
+    });
+  });
 });

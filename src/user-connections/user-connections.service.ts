@@ -110,7 +110,7 @@ export class UserConnectionsService {
 
   async remove(id: number, currentUserId: number) {
     const userConnection = await this.findUserConnectionOrThrow({ id });
-    if (userConnection.fromUser.id !== currentUserId) {
+    if (userConnection.fromUserId !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
     }
     await this.prismaService.userConnection.delete({ where: { id } });

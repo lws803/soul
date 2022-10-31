@@ -40,12 +40,6 @@ describe('ConnectionsController', () => {
               .fn()
               .mockResolvedValue(factories.userConnectionEntity.build()),
             remove: jest.fn(),
-            addNewPlatformToUserConnection: jest.fn().mockResolvedValue(
-              factories.userConnectionEntity.build({
-                platforms: factories.platformEntity.buildList(1),
-              }),
-            ),
-            removePlatformFromUserConnection: jest.fn(),
           },
         },
       ],

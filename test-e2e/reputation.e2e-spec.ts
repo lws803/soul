@@ -72,15 +72,15 @@ describe('ReputationController (e2e)', () => {
       );
       await userConnectionRepository.save(
         factories.userConnectionEntity.build({
-          toUser: userAccount.user,
-          fromUser: secondUserAccount.user,
+          toUserId: userAccount.user.id,
+          fromUserId: secondUserAccount.user.id,
         }),
       );
       await userConnectionRepository.save(
         factories.userConnectionEntity.build({
           id: 2,
-          toUser: userAccount.user,
-          fromUser: thirdUserAccount.user,
+          toUserId: userAccount.user.id,
+          fromUserId: thirdUserAccount.user.id,
         }),
       );
     });
