@@ -26,7 +26,8 @@
     "typeorm": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts",
     "migration:generate": "rm -rf ./dist && ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:generate",
     "migration:run": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:run",
-    "migration:revert": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:revert"
+    "migration:revert": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:revert",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.1",

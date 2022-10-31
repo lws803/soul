@@ -1,20 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import {
-  IsNull,
-  Not,
-  QueryFailedError,
-  Repository,
-  OrderByCondition,
-} from 'typeorm';
 
 import { UsersService } from 'src/users/users.service';
-import { PlatformsService } from 'src/platforms/platforms.service';
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 import { ActivityService } from 'src/activity/activity.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { CreateUserConnectionDto } from './serializers/api.dto';
-import { UserConnection } from './entities/user-connection.entity';
 import {
   UserConnectionNotFoundException,
   UserConnectionToSelfException,
@@ -22,7 +13,6 @@ import {
   DuplicateUserConnectionException,
 } from './exceptions';
 import {
-  AddNewPlatformToUserConnectionResponseEntity,
   CreateUserConnectionResponseEntity,
   FindAllUserConnectionResponseEntity,
   FindOneUserConnectionResponseEntity,
@@ -32,11 +22,9 @@ import { ConnectionType } from './enums/connection-type.enum';
 @Injectable()
 export class UserConnectionsService {
   constructor(
-    @InjectRepository(UserConnection)
-    private userConnectionRepository: Repository<UserConnection>,
     private usersService: UsersService,
-    private platformService: PlatformsService,
     private activityService: ActivityService,
+    private prismaService: PrismaService,
   ) {}
 
   async create(
@@ -51,70 +39,58 @@ export class UserConnectionsService {
     const toUser = await this.usersService.findOne(
       createUserConnectionDto.toUserId,
     );
-    const newUserConnection = new UserConnection();
-    newUserConnection.fromUser = fromUser;
-    newUserConnection.toUser = toUser;
 
-    if (createUserConnectionDto.platformId) {
-      newUserConnection.platforms = [
-        await this.platformService.findOne(createUserConnectionDto.platformId),
-      ];
-    }
+    await this.throwOnDuplicate(
+      currentUserId,
+      createUserConnectionDto.toUserId,
+    );
 
-    try {
-      const currentConnection = await this.userConnectionRepository.save(
-        newUserConnection,
-      );
-      const oppositeConnection = await this.userConnectionRepository.findOne({
-        fromUser: toUser,
-        toUser: fromUser,
+    const newConnection = await this.prismaService.userConnection.create({
+      data: {
+        fromUserId: fromUser.id,
+        toUserId: toUser.id,
+      },
+      include: { fromUser: true, toUser: true },
+    });
+    const oppositeConnection =
+      await this.prismaService.userConnection.findFirst({
+        where: { fromUser: toUser, toUser: fromUser },
       });
-      if (oppositeConnection) {
-        await this.userConnectionRepository.update(
-          { id: currentConnection.id },
-          { mutualConnection: oppositeConnection },
-        );
-        await this.userConnectionRepository.update(
-          { id: oppositeConnection.id },
-          { mutualConnection: currentConnection },
-        );
-      }
-      await this.activityService.sendFollowActivity({ fromUser, toUser });
-      return { ...currentConnection, isMutual: !!oppositeConnection };
-    } catch (exception) {
-      if (
-        exception instanceof QueryFailedError &&
-        exception.driverError.code === 'ER_DUP_ENTRY'
-      ) {
-        throw new DuplicateUserConnectionException(
-          currentUserId,
-          createUserConnectionDto.toUserId,
-        );
-      }
+
+    if (oppositeConnection) {
+      await this.prismaService.userConnection.update({
+        where: { id: oppositeConnection.id },
+        data: { oppositeUserConnectionId: newConnection.id },
+      });
+      await this.prismaService.userConnection.update({
+        where: { id: newConnection.id },
+        data: { oppositeUserConnectionId: oppositeConnection.id },
+      });
     }
+    await this.activityService.sendFollowActivity({ fromUser, toUser });
+    return { ...newConnection, isMutual: !!oppositeConnection };
   }
 
   async findAll(
     paginationParams: PaginationParamsDto,
   ): Promise<FindAllUserConnectionResponseEntity> {
-    const [userConnections, totalCount] =
-      await this.userConnectionRepository.findAndCount({
-        order: { createdAt: 'DESC', id: 'DESC' },
-        take: paginationParams.numItemsPerPage,
-        skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
-        relations: ['platforms', 'fromUser', 'toUser'],
-      });
+    const userConnections = await this.prismaService.userConnection.findMany({
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: paginationParams.numItemsPerPage,
+      skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
+      include: { fromUser: true, toUser: true },
+    });
+    const totalCount = await this.prismaService.userConnection.count();
     return { userConnections, totalCount };
   }
 
   async findOne(id: number): Promise<FindOneUserConnectionResponseEntity> {
     const userConnection = await this.findUserConnectionOrThrow({ id });
-    const oppositeConnection = await this.userConnectionRepository.findOne({
-      fromUser: userConnection.toUser,
-      toUser: userConnection.fromUser,
-    });
 
-    return { ...userConnection, isMutual: !!oppositeConnection };
+    return {
+      ...userConnection,
+      isMutual: !!userConnection.oppositeUserConnectionId,
+    };
   }
 
   async findOneByUserIds(
@@ -125,53 +101,19 @@ export class UserConnectionsService {
       fromUserId,
       toUserId,
     });
-    const oppositeConnection = await this.userConnectionRepository.findOne({
-      fromUser: userConnection.toUser,
-      toUser: userConnection.fromUser,
-    });
 
-    return { ...userConnection, isMutual: !!oppositeConnection };
+    return {
+      ...userConnection,
+      isMutual: !!userConnection.oppositeUserConnectionId,
+    };
   }
 
   async remove(id: number, currentUserId: number) {
-    const userConnection = await this.findOne(id);
-    if (userConnection.fromUser.id !== currentUserId) {
+    const userConnection = await this.findUserConnectionOrThrow({ id });
+    if (userConnection.fromUserId !== currentUserId) {
       throw new UserNotInvolvedInConnectionException();
     }
-    await this.userConnectionRepository.delete({ id });
-  }
-
-  async addNewPlatformToUserConnection(
-    id: number,
-    platformId: number,
-    currentUserId: number,
-  ): Promise<AddNewPlatformToUserConnectionResponseEntity> {
-    const { isMutual: _isMutual, ...userConnection } = await this.findOne(id);
-    if (userConnection.fromUser.id !== currentUserId) {
-      throw new UserNotInvolvedInConnectionException();
-    }
-    const platform = await this.platformService.findOne(platformId);
-    userConnection.platforms = Array.from(
-      new Set([...userConnection.platforms, platform]),
-    );
-    return this.userConnectionRepository.save(userConnection);
-  }
-
-  async removePlatformFromUserConnection(
-    id: number,
-    platformId: number,
-    currentUserId: number,
-  ) {
-    const { isMutual: _isMutual, ...userConnection } = await this.findOne(id);
-    const platform = await this.platformService.findOne(platformId);
-    if (userConnection.fromUser.id !== currentUserId) {
-      throw new UserNotInvolvedInConnectionException();
-    }
-    userConnection.platforms.splice(
-      userConnection.platforms.indexOf(platform),
-      1,
-    );
-    await this.userConnectionRepository.save(userConnection);
+    await this.prismaService.userConnection.delete({ where: { id } });
   }
 
   async findMyUserConnections({
@@ -182,27 +124,52 @@ export class UserConnectionsService {
     userId: number;
     connectionType: ConnectionType;
     paginationParams: PaginationParamsDto;
-  }) {
+  }): Promise<FindAllUserConnectionResponseEntity> {
     const fromUser = await this.usersService.findOne(userId);
-    const order: OrderByCondition = { createdAt: 'DESC', id: 'DESC' };
-    const defaultArgs = {
-      order,
+
+    const defaultArgs: Parameters<
+      typeof this.prismaService.userConnection.findMany
+    >[0] = {
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: paginationParams.numItemsPerPage,
       skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
-      relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'],
     };
-    let where: any = { fromUser };
 
     if (connectionType === ConnectionType.Mutual) {
-      where = { mutualConnection: Not(IsNull()), fromUser };
-    } else if (connectionType === ConnectionType.Follower) {
-      where = { toUser: fromUser };
-    }
-    const [userConnections, totalCount] =
-      await this.userConnectionRepository.findAndCount({
+      const userConnections = await this.prismaService.userConnection.findMany({
         ...defaultArgs,
-        where,
+        where: { mutualConnection: { isNot: null }, fromUser },
+        include: { fromUser: true, toUser: true, mutualConnection: true },
       });
+      const totalCount = await this.prismaService.userConnection.count({
+        where: { mutualConnection: { isNot: null }, fromUser },
+      });
+
+      return { userConnections, totalCount };
+    }
+
+    if (connectionType === ConnectionType.Follower) {
+      const userConnections = await this.prismaService.userConnection.findMany({
+        ...defaultArgs,
+        where: { toUser: fromUser },
+        include: { fromUser: true, toUser: true, mutualConnection: true },
+      });
+      const totalCount = await this.prismaService.userConnection.count({
+        where: { toUser: fromUser },
+      });
+      return { userConnections, totalCount };
+    }
+
+    const userConnections = await this.prismaService.userConnection.findMany({
+      ...defaultArgs,
+      where: { fromUser },
+      include: { fromUser: true, toUser: true, mutualConnection: true },
+    });
+
+    const totalCount = await this.prismaService.userConnection.count({
+      where: { fromUser },
+    });
+
     return { userConnections, totalCount };
   }
 
@@ -215,21 +182,32 @@ export class UserConnectionsService {
     fromUserId?: number;
     toUserId?: number;
   }) {
-    const findParameters = {};
-    if (id) findParameters['id'] = id;
-    if (fromUserId)
-      findParameters['fromUser'] = await this.usersService.findOne(fromUserId);
-    if (toUserId)
-      findParameters['toUser'] = await this.usersService.findOne(toUserId);
-
-    const userConnection = await this.userConnectionRepository.findOne(
-      findParameters,
-      { relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'] },
-    );
+    const userConnection = await this.prismaService.userConnection.findFirst({
+      where: {
+        ...(fromUserId && {
+          fromUser: await this.usersService.findOne(fromUserId),
+        }),
+        ...(toUserId && { toUser: await this.usersService.findOne(toUserId) }),
+        ...(id && { id }),
+      },
+      include: { toUser: true, fromUser: true, mutualConnection: true },
+    });
 
     if (!userConnection) {
       throw new UserConnectionNotFoundException({ id });
     }
     return userConnection;
+  }
+
+  private async throwOnDuplicate(fromUserId: number, toUserId: number) {
+    const existingUserConnection =
+      await this.prismaService.userConnection.findFirst({
+        where: {
+          fromUser: await this.usersService.findOne(fromUserId),
+          toUser: await this.usersService.findOne(toUserId),
+        },
+      });
+    if (existingUserConnection)
+      throw new DuplicateUserConnectionException(fromUserId, toUserId);
   }
 }

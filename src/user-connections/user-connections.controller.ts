@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiExcludeEndpoint,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -27,13 +26,10 @@ import { UserConnectionsService } from './user-connections.service';
 import {
   CreateUserConnectionDto,
   UserConnectionParamsDto,
-  PostPlatformDto,
   ByUserIdsParamsDto,
   FindMyUserConnectionsQueryParamsDto,
-  RemovePlatformFromUserConnectionParamsDto,
 } from './serializers/api.dto';
 import {
-  AddNewPlatformToUserConnectionResponseEntity,
   CreateUserConnectionResponseEntity,
   FindAllUserConnectionResponseEntity,
   FindOneUserConnectionResponseEntity,
@@ -148,66 +144,6 @@ export class UserConnectionsController {
     return plainToClass(
       FindOneUserConnectionResponseEntity,
       await this.userConnectionsService.findOne(id),
-    );
-  }
-
-  @ApiExcludeEndpoint()
-  @ApiBearerAuth()
-  @ApiOperation({
-    description: 'Add a new platform to an existing user connection.',
-    summary: 'Add platform to connection',
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    type: AddNewPlatformToUserConnectionResponseEntity,
-  })
-  @ApiResponseInvalid([
-    HttpStatus.FORBIDDEN,
-    HttpStatus.UNAUTHORIZED,
-    HttpStatus.NOT_FOUND,
-    HttpStatus.CONFLICT,
-    HttpStatus.BAD_REQUEST,
-  ])
-  @UseGuards(JwtUserAuthGuard)
-  @Post(':id/platforms')
-  async addNewPlatformToUserConnection(
-    @Request() { user }: { user: JWTPayload },
-    @Param() { id }: UserConnectionParamsDto,
-    @Body() { platformId }: PostPlatformDto,
-  ): Promise<AddNewPlatformToUserConnectionResponseEntity> {
-    return plainToClass(
-      AddNewPlatformToUserConnectionResponseEntity,
-      await this.userConnectionsService.addNewPlatformToUserConnection(
-        id,
-        platformId,
-        user.userId,
-      ),
-    );
-  }
-
-  @ApiExcludeEndpoint()
-  @ApiBearerAuth()
-  @ApiOperation({
-    description: 'Delete platform from an existing user connection.',
-    summary: 'Delete platform from connection',
-  })
-  @ApiResponse({ status: HttpStatus.OK })
-  @ApiResponseInvalid([
-    HttpStatus.FORBIDDEN,
-    HttpStatus.UNAUTHORIZED,
-    HttpStatus.NOT_FOUND,
-    HttpStatus.BAD_REQUEST,
-  ])
-  @UseGuards(JwtUserAuthGuard)
-  @Delete(':id/platforms/:platform_id')
-  async removePlatformFromUserConnection(
-    @Request() { user }: { user: JWTPayload },
-    @Param() { id, platformId }: RemovePlatformFromUserConnectionParamsDto,
-  ) {
-    await this.userConnectionsService.removePlatformFromUserConnection(
-      id,
-      platformId,
-      user.userId,
     );
   }
 

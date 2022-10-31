@@ -1,29 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsEnum, IsInt } from 'class-validator';
 
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 
 import { ConnectionType } from '../enums/connection-type.enum';
-
-export class PostPlatformDto {
-  @ApiProperty({ name: 'platform_id', example: 1 })
-  @Expose({ name: 'platform_id' })
-  @IsInt({ message: 'platform_id must be an integer' })
-  platformId: number;
-}
 
 export class CreateUserConnectionDto {
   @ApiProperty({ name: 'to_user_id', example: 12345 })
   @Expose({ name: 'to_user_id' })
   @IsInt({ message: 'to_user_id must be an integer' })
   toUserId: number;
-
-  @ApiProperty({ name: 'platform_id', example: 1, required: false })
-  @Expose({ name: 'platform_id' })
-  @IsOptional()
-  @IsInt({ message: 'platform_id must be an integer' })
-  platformId?: number;
 }
 
 export class UserConnectionParamsDto {
@@ -74,27 +61,4 @@ export class FindMyUserConnectionsQueryParamsDto extends PaginationParamsDto {
       `${ConnectionType.Following}, ${ConnectionType.Follower}, ${ConnectionType.Mutual}`,
   })
   connectionType: ConnectionType;
-}
-
-export class RemovePlatformFromUserConnectionParamsDto {
-  @ApiProperty({
-    name: 'id',
-    type: Number,
-    description: 'User connection id',
-    example: 1,
-  })
-  @Type(() => Number)
-  @IsInt()
-  id: number;
-
-  @ApiProperty({
-    name: 'platform_id',
-    type: Number,
-    description: 'Platform id',
-    example: 1,
-  })
-  @Expose({ name: 'platform_id' })
-  @Type(() => Number)
-  @IsInt({ message: 'platform_id must be an integer' })
-  platformId?: number;
 }

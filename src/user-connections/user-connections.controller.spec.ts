@@ -2,10 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
-import {
-  CreateUserConnectionDto,
-  PostPlatformDto,
-} from 'src/user-connections/serializers/api.dto';
+import { CreateUserConnectionDto } from 'src/user-connections/serializers/api.dto';
 
 import { ConnectionType } from './enums/connection-type.enum';
 import { UserConnectionsController } from './user-connections.controller';
@@ -43,12 +40,6 @@ describe('ConnectionsController', () => {
               .fn()
               .mockResolvedValue(factories.userConnectionEntity.build()),
             remove: jest.fn(),
-            addNewPlatformToUserConnection: jest.fn().mockResolvedValue(
-              factories.userConnectionEntity.build({
-                platforms: factories.platformEntity.buildList(1),
-              }),
-            ),
-            removePlatformFromUserConnection: jest.fn(),
           },
         },
       ],
@@ -169,49 +160,6 @@ describe('ConnectionsController', () => {
       expect(await controller.remove(userJwt, { id: 1 })).toBeUndefined();
 
       expect(service.remove).toHaveBeenCalledWith(1, 1);
-    });
-  });
-
-  describe('addNewPlatformToUserConnection()', () => {
-    it('should add a new platform to existing user connection', async () => {
-      const postPlatformConnectionDto = plainToClass(
-        PostPlatformDto,
-        factories.postPlatformToUserConnectionRequest.build(),
-      );
-      expect(
-        await controller.addNewPlatformToUserConnection(
-          userJwt,
-          { id: 1 },
-          postPlatformConnectionDto,
-        ),
-      ).toEqual(
-        factories.userConnectionEntity.build({
-          platforms: factories.platformEntity.buildList(1),
-        }),
-      );
-
-      expect(service.addNewPlatformToUserConnection).toHaveBeenCalledWith(
-        1,
-        1,
-        1,
-      );
-    });
-  });
-
-  describe('removePlatformFromUserConnection()', () => {
-    it('should delete a platform from existing user connection', async () => {
-      expect(
-        await controller.removePlatformFromUserConnection(userJwt, {
-          platformId: 1,
-          id: 1,
-        }),
-      ).toBeUndefined();
-
-      expect(service.removePlatformFromUserConnection).toHaveBeenCalledWith(
-        1,
-        1,
-        1,
-      );
     });
   });
 });
