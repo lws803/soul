@@ -146,25 +146,28 @@ export class UserConnectionsService {
       });
 
       return { userConnections, totalCount };
-    } else if (connectionType === ConnectionType.Follower) {
+    }
+
+    if (connectionType === ConnectionType.Follower) {
       const userConnections = await this.prismaService.userConnection.findMany({
         ...defaultArgs,
         where: { toUser: fromUser },
       });
       const totalCount = await this.prismaService.userConnection.count({
         where: { toUser: fromUser },
-      });
-      return { userConnections, totalCount };
-    } else {
-      const userConnections = await this.prismaService.userConnection.findMany({
-        ...defaultArgs,
-        where: { fromUser },
-      });
-      const totalCount = await this.prismaService.userConnection.count({
-        where: { fromUser },
       });
       return { userConnections, totalCount };
     }
+
+    const userConnections = await this.prismaService.userConnection.findMany({
+      ...defaultArgs,
+      where: { fromUser },
+    });
+    const totalCount = await this.prismaService.userConnection.count({
+      where: { fromUser },
+    });
+
+    return { userConnections, totalCount };
   }
 
   private async findUserConnectionOrThrow({
