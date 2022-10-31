@@ -2,11 +2,11 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Connection, Repository } from 'typeorm';
 import * as request from 'supertest';
 
-import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../factories';
 
@@ -19,13 +19,13 @@ import {
 describe('ReputationController (e2e)', () => {
   let app: INestApplication;
   let connection: Connection;
-  let userConnectionRepository: Repository<UserConnection>;
   let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
   let platformCategoryRepository: Repository<PlatformCategory>;
   let userAccount: UserAccount;
   let secondUserAccount: UserAccount;
   let thirdUserAccount: UserAccount;
+  let prismaService: PrismaService;
 
   beforeAll(async () => {
     app = await createAppFixture({});
@@ -35,7 +35,7 @@ describe('ReputationController (e2e)', () => {
     connection = app.get(Connection);
     await connection.synchronize(true);
 
-    userConnectionRepository = connection.getRepository(UserConnection);
+    prismaService = app.get<PrismaService>(PrismaService);
     platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
     platformCategoryRepository = connection.getRepository(PlatformCategory);
@@ -70,20 +70,25 @@ describe('ReputationController (e2e)', () => {
           roles: [UserRole.Banned],
         }),
       );
-      await userConnectionRepository.save({
-        toUser: userAccount.user,
-        fromUser: secondUserAccount.user,
-      });
-      await userConnectionRepository.save({
-        toUser: userAccount.user,
-        fromUser: thirdUserAccount.user,
+
+      await prismaService.userConnection.createMany({
+        data: [
+          factories.userConnectionEntity.build({
+            toUserId: userAccount.user.id,
+            fromUserId: secondUserAccount.user.id,
+          }),
+          factories.userConnectionEntity.build({
+            toUserId: userAccount.user.id,
+            fromUserId: thirdUserAccount.user.id,
+          }),
+        ],
       });
     });
 
     afterEach(async () => {
       await platformUserRepository.delete({});
       await platformRepository.delete({});
-      await userConnectionRepository.delete({});
+      await prismaService.userConnection.deleteMany();
     });
 
     it('should return a user reputation', async () => {
