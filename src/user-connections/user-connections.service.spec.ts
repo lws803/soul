@@ -304,7 +304,7 @@ describe('ConnectionsService', () => {
       });
       expect(prismaService.userConnection.findFirst).toHaveBeenCalledWith({
         include: { fromUser: true, mutualConnection: true, toUser: true },
-        where: { fromUser: firstUser, toUser: secondUser },
+        where: { fromUserId: firstUser.id, toUserId: secondUser.id },
       });
     });
   });
@@ -352,7 +352,7 @@ describe('ConnectionsService', () => {
       });
 
       expect(prismaService.userConnection.findMany).toHaveBeenCalledWith({
-        where: { fromUser: firstUser },
+        where: { fromUserId: firstUser.id },
         ...defaultQueryParameters,
       });
     });
@@ -373,7 +373,7 @@ describe('ConnectionsService', () => {
       });
 
       expect(prismaService.userConnection.findMany).toHaveBeenCalledWith({
-        where: { toUser: factories.userEntity.build() },
+        where: { toUserId: firstUser.id },
         ...defaultQueryParameters,
       });
     });
@@ -395,8 +395,8 @@ describe('ConnectionsService', () => {
 
       expect(prismaService.userConnection.findMany).toHaveBeenCalledWith({
         where: {
-          fromUser: factories.userEntity.build(),
-          mutualConnection: { isNot: null },
+          fromUserId: firstUser.id,
+          oppositeUserConnectionId: { not: null },
         },
         ...defaultQueryParameters,
       });
