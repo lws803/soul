@@ -70,19 +70,14 @@ describe('ReputationController (e2e)', () => {
           roles: [UserRole.Banned],
         }),
       );
-      await userConnectionRepository.save(
-        factories.userConnectionEntity.build({
-          toUserId: userAccount.user.id,
-          fromUserId: secondUserAccount.user.id,
-        }),
-      );
-      await userConnectionRepository.save(
-        factories.userConnectionEntity.build({
-          id: 2,
-          toUserId: userAccount.user.id,
-          fromUserId: thirdUserAccount.user.id,
-        }),
-      );
+      await userConnectionRepository.save({
+        toUser: userAccount.user,
+        fromUser: secondUserAccount.user,
+      });
+      await userConnectionRepository.save({
+        toUser: userAccount.user,
+        fromUser: thirdUserAccount.user,
+      });
     });
 
     afterEach(async () => {
