@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsEnum, IsInt } from 'class-validator';
 
 import { PaginationParamsDto } from 'src/common/serializers/pagination-params.dto';
 
@@ -11,12 +11,6 @@ export class CreateUserConnectionDto {
   @Expose({ name: 'to_user_id' })
   @IsInt({ message: 'to_user_id must be an integer' })
   toUserId: number;
-
-  @ApiProperty({ name: 'platform_id', example: 1, required: false })
-  @Expose({ name: 'platform_id' })
-  @IsOptional()
-  @IsInt({ message: 'platform_id must be an integer' })
-  platformId?: number;
 }
 
 export class UserConnectionParamsDto {
