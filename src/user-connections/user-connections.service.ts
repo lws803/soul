@@ -138,11 +138,17 @@ export class UserConnectionsService {
     if (connectionType === ConnectionType.Mutual) {
       const userConnections = await this.prismaService.userConnection.findMany({
         ...defaultArgs,
-        where: { mutualConnection: { isNot: null }, fromUser },
+        where: {
+          oppositeUserConnectionId: { not: null },
+          fromUserId: fromUser.id,
+        },
         include: { fromUser: true, toUser: true, mutualConnection: true },
       });
       const totalCount = await this.prismaService.userConnection.count({
-        where: { mutualConnection: { isNot: null }, fromUser },
+        where: {
+          oppositeUserConnectionId: { not: null },
+          fromUserId: fromUser.id,
+        },
       });
 
       return { userConnections, totalCount };
@@ -151,23 +157,23 @@ export class UserConnectionsService {
     if (connectionType === ConnectionType.Follower) {
       const userConnections = await this.prismaService.userConnection.findMany({
         ...defaultArgs,
-        where: { toUser: fromUser },
+        where: { toUserId: fromUser.id },
         include: { fromUser: true, toUser: true, mutualConnection: true },
       });
       const totalCount = await this.prismaService.userConnection.count({
-        where: { toUser: fromUser },
+        where: { toUserId: fromUser.id },
       });
       return { userConnections, totalCount };
     }
 
     const userConnections = await this.prismaService.userConnection.findMany({
       ...defaultArgs,
-      where: { fromUser },
+      where: { fromUserId: fromUser.id },
       include: { fromUser: true, toUser: true, mutualConnection: true },
     });
 
     const totalCount = await this.prismaService.userConnection.count({
-      where: { fromUser },
+      where: { fromUserId: fromUser.id },
     });
 
     return { userConnections, totalCount };
@@ -185,9 +191,11 @@ export class UserConnectionsService {
     const userConnection = await this.prismaService.userConnection.findFirst({
       where: {
         ...(fromUserId && {
-          fromUser: await this.usersService.findOne(fromUserId),
+          fromUserId: await (await this.usersService.findOne(fromUserId)).id,
         }),
-        ...(toUserId && { toUser: await this.usersService.findOne(toUserId) }),
+        ...(toUserId && {
+          toUserId: await (await this.usersService.findOne(toUserId)).id,
+        }),
         ...(id && { id }),
       },
       include: { toUser: true, fromUser: true, mutualConnection: true },
