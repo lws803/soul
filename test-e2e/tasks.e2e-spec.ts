@@ -5,11 +5,11 @@ import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
 
 import { User } from 'src/users/entities/user.entity';
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { TasksService } from 'src/tasks/tasks.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../factories';
 
@@ -19,11 +19,11 @@ import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fi
 describe('TasksModule (e2e)', () => {
   let app: INestApplication;
   let userRepository: Repository<User>;
-  let refreshTokenRepository: Repository<RefreshToken>;
   let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
   let platformCategoryRepository: Repository<PlatformCategory>;
   let tasksService: TasksService;
+  let prismaService: PrismaService;
 
   const codeVerifier = 'CODE_VERIFIER';
   const codeChallenge = base64url(sha256(codeVerifier).toString(), 'hex');
@@ -39,10 +39,11 @@ describe('TasksModule (e2e)', () => {
     tasksService = app.get<TasksService>(TasksService);
 
     userRepository = connection.getRepository(User);
-    refreshTokenRepository = connection.getRepository(RefreshToken);
     platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
     platformCategoryRepository = connection.getRepository(PlatformCategory);
+
+    prismaService = app.get<PrismaService>(PrismaService);
 
     await platformCategoryRepository.save(
       factories.platformCategoryEntity.build(),
@@ -78,7 +79,7 @@ describe('TasksModule (e2e)', () => {
     });
 
     afterAll(async () => {
-      await refreshTokenRepository.delete({});
+      await prismaService.refreshToken.deleteMany();
       await platformUserRepository.delete({});
       await platformRepository.delete({});
       await userRepository.delete({});
@@ -155,7 +156,9 @@ describe('TasksModule (e2e)', () => {
         .getOne();
 
       expect(
-        await refreshTokenRepository.count({ platformUser: platformUser }),
+        await prismaService.refreshToken.count({
+          where: { platformUserId: platformUser.id },
+        }),
       ).toEqual(11);
 
       expect(
@@ -183,7 +186,9 @@ describe('TasksModule (e2e)', () => {
 
       // Only the one with count above 10 should be deleted
       expect(
-        await refreshTokenRepository.count({ platformUser: platformUser }),
+        await prismaService.refreshToken.count({
+          where: { platformUserId: platformUser.id },
+        }),
       ).toEqual(0);
     });
   });
