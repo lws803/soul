@@ -1,20 +1,18 @@
 import { Factory } from 'fishery';
+import { UserConnection } from '@prisma/client';
 
 import { FindOneUserConnectionResponseEntity } from 'src/user-connections/serializers/api-responses.entity';
-
-import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
 
 import { platformEntity } from './platform';
 import { userEntity } from './users';
 
 export const userConnectionEntity = Factory.define<UserConnection>(() => ({
   id: 1,
-  fromUser: userEntity.build(),
-  toUser: userEntity.build({ id: 2, email: 'TEST_USER_2@EMAIL.COM' }),
-  platforms: [],
+  oppositeUserConnectionId: null,
+  fromUserId: 1,
+  toUserId: 2,
   createdAt: new Date('1995-12-17T03:24:00'),
   updatedAt: new Date('1995-12-18T03:24:00'),
-  mutualConnection: null,
 }));
 
 export const oneUserConnectionResponseEntity =
@@ -34,8 +32,8 @@ export const userConnectionEntityArray = Factory.define<UserConnection[]>(
     userConnectionEntity.build({ id: 1 }),
     userConnectionEntity.build({
       id: 2,
-      fromUser: userEntity.build({ id: 3 }),
-      toUser: userEntity.build({ id: 4 }),
+      fromUserId: 3,
+      toUserId: 4,
     }),
   ],
 );

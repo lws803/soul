@@ -4,7 +4,6 @@ import { Repository, Not, IsNull, QueryFailedError } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
 import * as factories from 'factories';
-import { PlatformsService } from 'src/platforms/platforms.service';
 import { UsersService } from 'src/users/users.service';
 import { ActivityService } from 'src/activity/activity.service';
 
@@ -17,7 +16,6 @@ describe('ConnectionsService', () => {
   let service: UserConnectionsService;
   let userConnectionRepository: Repository<UserConnection>;
   let userService: UsersService;
-  let platformService: PlatformsService;
   let activityService: ActivityService;
 
   beforeEach(async () => {
@@ -51,14 +49,6 @@ describe('ConnectionsService', () => {
           },
         },
         {
-          provide: PlatformsService,
-          useValue: {
-            findOne: jest
-              .fn()
-              .mockResolvedValue(factories.platformEntity.build()),
-          },
-        },
-        {
           provide: ActivityService,
           useValue: { sendFollowActivity: jest.fn() },
         },
@@ -67,7 +57,6 @@ describe('ConnectionsService', () => {
 
     service = module.get<UserConnectionsService>(UserConnectionsService);
     userService = module.get<UsersService>(UsersService);
-    platformService = module.get<PlatformsService>(PlatformsService);
     userConnectionRepository = module.get<Repository<UserConnection>>(
       getRepositoryToken(UserConnection),
     );
@@ -115,42 +104,6 @@ describe('ConnectionsService', () => {
       expect(userConnectionRepository.save).toHaveBeenCalledWith({
         fromUser: firstUser,
         toUser: secondUser,
-      });
-    });
-
-    it('should successfully insert a new user connection with platformId', async () => {
-      const onePlatform = factories.platformEntity.build();
-      const createUserConnectionDto = plainToClass(
-        CreateUserConnectionDto,
-        factories.createUserConnectionRequest.build({
-          platform_id: onePlatform.id,
-        }),
-      );
-
-      jest.spyOn(userConnectionRepository, 'save').mockResolvedValue(
-        factories.userConnectionEntity.build({
-          platforms: [onePlatform],
-        }),
-      );
-      expect(await service.create(1, createUserConnectionDto)).toEqual({
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-        fromUser: firstUser,
-        toUser: secondUser,
-        id: 1,
-        isMutual: false,
-        mutualConnection: null,
-        platforms: [onePlatform],
-      });
-      // Finds mutual connection
-      expect(userConnectionRepository.findOne).toHaveBeenCalledWith({
-        fromUser: secondUser,
-        toUser: firstUser,
-      });
-      expect(userConnectionRepository.save).toHaveBeenCalledWith({
-        fromUser: firstUser,
-        toUser: secondUser,
-        platforms: [onePlatform],
       });
     });
 
@@ -348,69 +301,6 @@ describe('ConnectionsService', () => {
       await expect(service.remove(1, 2)).rejects.toThrow(
         'You have no permissions to update this connection.',
       );
-    });
-  });
-
-  describe('addNewPlatformToUserConnection()', () => {
-    it('should add a new platform to a user connection successfully', async () => {
-      const onePlatform = factories.platformEntity.build();
-      const userConnectionEntityWithPlatform =
-        factories.userConnectionEntity.build({
-          platforms: [onePlatform],
-        });
-      jest
-        .spyOn(userConnectionRepository, 'save')
-        .mockResolvedValue(userConnectionEntityWithPlatform);
-
-      expect(
-        await service.addNewPlatformToUserConnection(1, onePlatform.id, 1),
-      ).toEqual(userConnectionEntityWithPlatform);
-
-      expect(userConnectionRepository.findOne).toHaveBeenCalledWith(
-        { id: 1 },
-        { relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'] },
-      );
-      expect(platformService.findOne).toHaveBeenCalledWith(onePlatform.id);
-      expect(userConnectionRepository.save).toHaveBeenCalledWith(
-        userConnectionEntityWithPlatform,
-      );
-    });
-
-    it('should throw when user is not involved in the connection', async () => {
-      const onePlatform = factories.platformEntity.build();
-      await expect(
-        service.addNewPlatformToUserConnection(1, onePlatform.id, 2),
-      ).rejects.toThrow('You have no permissions to update this connection.');
-    });
-  });
-
-  describe('removePlatformFromUserConnection()', () => {
-    it('should remove a platform from a user connection successfully', async () => {
-      const onePlatform = factories.platformEntity.build();
-      const userConnectionEntity = factories.userConnectionEntity.build();
-      jest
-        .spyOn(userConnectionRepository, 'save')
-        .mockResolvedValue(userConnectionEntity);
-
-      expect(
-        await service.removePlatformFromUserConnection(1, onePlatform.id, 1),
-      ).toBeUndefined();
-
-      expect(userConnectionRepository.findOne).toHaveBeenCalledWith(
-        { id: 1 },
-        { relations: ['platforms', 'fromUser', 'toUser', 'mutualConnection'] },
-      );
-      expect(platformService.findOne).toHaveBeenCalledWith(onePlatform.id);
-      expect(userConnectionRepository.save).toHaveBeenCalledWith(
-        userConnectionEntity,
-      );
-    });
-
-    it('should throw when user is not involved in the connection', async () => {
-      const onePlatform = factories.platformEntity.build();
-      await expect(
-        service.removePlatformFromUserConnection(1, onePlatform.id, 2),
-      ).rejects.toThrow('You have no permissions to update this connection.');
     });
   });
 
