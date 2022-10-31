@@ -78,6 +78,7 @@ describe('ReputationController (e2e)', () => {
             fromUserId: secondUserAccount.user.id,
           }),
           factories.userConnectionEntity.build({
+            id: 2,
             toUserId: userAccount.user.id,
             fromUserId: thirdUserAccount.user.id,
           }),
