@@ -75,7 +75,7 @@ export class UserConnectionsService {
     paginationParams: PaginationParamsDto,
   ): Promise<FindAllUserConnectionResponseEntity> {
     const userConnections = await this.prismaService.userConnection.findMany({
-      orderBy: [{ createdAt: 'desc', id: 'desc' }],
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: paginationParams.numItemsPerPage,
       skip: (paginationParams.page - 1) * paginationParams.numItemsPerPage,
       include: { fromUser: true, toUser: true },
@@ -87,7 +87,10 @@ export class UserConnectionsService {
   async findOne(id: number): Promise<FindOneUserConnectionResponseEntity> {
     const userConnection = await this.findUserConnectionOrThrow({ id });
 
-    return { ...userConnection, isMutual: !!userConnection.mutualConnection };
+    return {
+      ...userConnection,
+      isMutual: !!userConnection.oppositeUserConnectionId,
+    };
   }
 
   async findOneByUserIds(
@@ -99,7 +102,10 @@ export class UserConnectionsService {
       toUserId,
     });
 
-    return { ...userConnection, isMutual: !!userConnection.mutualConnection };
+    return {
+      ...userConnection,
+      isMutual: !!userConnection.oppositeUserConnectionId,
+    };
   }
 
   async remove(id: number, currentUserId: number) {
