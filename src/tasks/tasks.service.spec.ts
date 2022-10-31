@@ -1,71 +1,58 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { TasksService } from './tasks.service';
 
 describe(TasksService, () => {
   let service: TasksService;
-  let refreshTokenCreateQueryBuilder: any;
-  let refreshTokenRepository: Repository<RefreshToken>;
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
-    refreshTokenCreateQueryBuilder = {
-      delete: jest
-        .fn()
-        .mockImplementation(() => refreshTokenCreateQueryBuilder),
-      where: jest.fn().mockImplementation(() => refreshTokenCreateQueryBuilder),
-      orWhere: jest
-        .fn()
-        .mockImplementation(() => refreshTokenCreateQueryBuilder),
-      execute: jest.fn(),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TasksService,
         {
-          provide: getRepositoryToken(RefreshToken),
+          provide: PrismaService,
           useValue: {
-            createQueryBuilder: jest
-              .fn()
-              .mockImplementation(() => refreshTokenCreateQueryBuilder),
-            count: jest.fn(),
-            manager: { query: jest.fn() },
+            refreshToken: {
+              deleteMany: jest.fn(),
+              count: jest.fn().mockResolvedValue(2),
+            },
+            $executeRaw: jest.fn(),
           },
         },
       ],
     }).compile();
 
     service = module.get<TasksService>(TasksService);
-    refreshTokenRepository = module.get<Repository<RefreshToken>>(
-      getRepositoryToken(RefreshToken),
-    );
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   describe('cleanupExpiredRefreshTokens()', () => {
     it('should delete expired refresh tokens', async () => {
       expect(await service.cleanupExpiredRefreshTokens());
 
-      expect(refreshTokenRepository.createQueryBuilder).toHaveBeenCalled();
-      expect(refreshTokenCreateQueryBuilder.delete).toHaveBeenCalled();
-      expect(refreshTokenCreateQueryBuilder.where).toHaveBeenCalledWith(
-        'refresh_tokens.expires <= :currentDate',
-        { currentDate: expect.any(Date) },
-      );
-      expect(refreshTokenCreateQueryBuilder.orWhere).toHaveBeenCalledWith(
-        'refresh_tokens.is_revoked = :isRevoked',
-        { isRevoked: true },
-      );
-      expect(refreshTokenCreateQueryBuilder.execute).toHaveBeenCalled();
-      expect(refreshTokenRepository.manager.query).toHaveBeenCalled();
+      expect(prismaService.refreshToken.deleteMany).toHaveBeenCalledWith({
+        where: {
+          OR: [{ expires: { lte: expect.any(Date) } }, { isRevoked: true }],
+        },
+      });
+      expect(prismaService.$executeRaw).toHaveBeenCalledWith([
+        `
+      DELETE tokens FROM refresh_tokens tokens JOIN
+        (
+          SELECT user_id, platform_user_id, COUNT(*) as cnt
+            FROM refresh_tokens GROUP BY user_id, platform_user_id HAVING cnt > 10
+        )
+        tmp ON tmp.platform_user_id = tokens.platform_user_id;
+    `,
+      ]);
     });
 
     it('should count refresh tokens before and after deletion', async () => {
       expect(await service.cleanupExpiredRefreshTokens());
-      expect(refreshTokenRepository.count).toHaveBeenCalledTimes(2);
+      expect(prismaService.refreshToken.count).toHaveBeenCalledTimes(2);
     });
   });
 });
