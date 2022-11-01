@@ -1,21 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
-import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
 import { UsersService } from 'src/users/users.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserRole } from 'src/roles/role.enum';
 
 import { ReputationResponseEntity } from './serializers/api-responses.entity';
 
 @Injectable()
 export class ReputationService {
   constructor(
-    @InjectRepository(PlatformUser)
-    private platformUsersRepository: Repository<PlatformUser>,
-    @InjectRepository(UserConnection)
-    private userConnectionsRepository: Repository<UserConnection>,
     private usersService: UsersService,
+    private prismaService: PrismaService,
   ) {}
 
   async findOneUserReputation(
@@ -23,15 +18,15 @@ export class ReputationService {
   ): Promise<ReputationResponseEntity> {
     const user = await this.usersService.findOne(userId);
 
-    const bannedPlatformsCount = await this.platformUsersRepository
-      .createQueryBuilder('platform_user')
-      .where('JSON_CONTAINS(roles, \'"banned"\') ' + 'AND user_id = :userId', {
+    const bannedPlatformsCount = await this.prismaService.platformUser.count({
+      where: {
+        roles: { array_contains: UserRole.Banned },
         userId: user.id,
-      })
-      .getCount();
+      },
+    });
 
-    const followerCount = await this.userConnectionsRepository.count({
-      toUser: user,
+    const followerCount = await this.prismaService.userConnection.count({
+      where: { toUserId: user.id },
     });
 
     return {
