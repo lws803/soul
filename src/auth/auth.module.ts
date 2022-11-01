@@ -2,16 +2,15 @@ import { CacheModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisOptions } from 'ioredis';
 import * as redisStore from 'cache-manager-redis-store';
 
 import { PlatformsModule } from 'src/platforms/platforms.module';
 import { UsersModule } from 'src/users/users.module';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { RefreshToken } from './entities/refresh-token.entity';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtUserStrategy } from './strategies/jwt-user.strategy';
 import { JwtClientCredentialsStrategy } from './strategies/jwt-client-credentials.strategy';
@@ -28,7 +27,6 @@ import { JwtClientCredentialsStrategy } from './strategies/jwt-client-credential
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([RefreshToken]),
     CacheModule.registerAsync<RedisOptions>({
       useFactory: (configService: ConfigService) => ({
         store: redisStore,
@@ -46,6 +44,7 @@ import { JwtClientCredentialsStrategy } from './strategies/jwt-client-credential
     LocalStrategy,
     JwtUserStrategy,
     JwtClientCredentialsStrategy,
+    PrismaService,
   ],
 })
 export class AuthModule {}
