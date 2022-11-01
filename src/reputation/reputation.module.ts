@@ -1,19 +1,14 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
-import { UserConnection } from 'src/user-connections/entities/user-connection.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersModule } from 'src/users/users.module';
 
 import { ReputationController } from './reputation.controller';
 import { ReputationService } from './reputation.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([PlatformUser, UserConnection]),
-    UsersModule,
-  ],
-  providers: [ReputationService],
+  imports: [UsersModule],
+  providers: [ReputationService, PrismaService],
   controllers: [ReputationController],
   exports: [ReputationService],
 })

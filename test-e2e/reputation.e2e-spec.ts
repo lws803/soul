@@ -2,7 +2,6 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Connection, Repository } from 'typeorm';
 import * as request from 'supertest';
 
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
@@ -19,7 +18,6 @@ import {
 describe('ReputationController (e2e)', () => {
   let app: INestApplication;
   let connection: Connection;
-  let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
   let platformCategoryRepository: Repository<PlatformCategory>;
   let userAccount: UserAccount;
@@ -36,7 +34,6 @@ describe('ReputationController (e2e)', () => {
     await connection.synchronize(true);
 
     prismaService = app.get<PrismaService>(PrismaService);
-    platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
     platformCategoryRepository = connection.getRepository(PlatformCategory);
 
@@ -63,13 +60,15 @@ describe('ReputationController (e2e)', () => {
           redirectUris: ['https://www.example.com'],
         }),
       );
-      await platformUserRepository.save(
-        factories.platformUserEntity.build({
-          user: userAccount.user,
-          platform,
+
+      await prismaService.platformUser.create({
+        data: {
+          userId: userAccount.user.id,
+          platformId: platform.id,
           roles: [UserRole.Banned],
-        }),
-      );
+          profileUrl: 'PROFILE_URL',
+        },
+      });
 
       await prismaService.userConnection.createMany({
         data: [
@@ -87,7 +86,7 @@ describe('ReputationController (e2e)', () => {
     });
 
     afterEach(async () => {
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
       await prismaService.userConnection.deleteMany();
     });
