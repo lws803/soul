@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Cache } from 'cache-manager';
@@ -14,9 +12,9 @@ import * as factories from 'factories';
 import { UserRole } from 'src/roles/role.enum';
 import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { AuthService } from './auth.service';
-import { RefreshToken } from './entities/refresh-token.entity';
 import {
   InvalidCodeException,
   NullClientSecretException,
@@ -27,10 +25,10 @@ import {
 describe('AuthService', () => {
   let service: AuthService;
   let jwtService: JwtService;
-  let refreshTokenRepository: Repository<RefreshToken>;
   let cacheManager: Cache;
   let configService: ConfigService;
   let platformsService: PlatformsService;
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -68,14 +66,21 @@ describe('AuthService', () => {
           },
         },
         {
-          provide: getRepositoryToken(RefreshToken),
+          provide: PrismaService,
           useValue: {
-            findOne: jest
-              .fn()
-              .mockResolvedValue(factories.refreshToken.build()),
-            save: jest.fn().mockResolvedValue(factories.refreshToken.build()),
-            delete: jest.fn(),
-            update: jest.fn().mockResolvedValue(factories.refreshToken.build()),
+            refreshToken: {
+              findUnique: jest
+                .fn()
+                .mockResolvedValue(factories.refreshTokenEntity.build()),
+              create: jest
+                .fn()
+                .mockResolvedValue(factories.refreshTokenEntity.build()),
+              delete: jest.fn(),
+              update: jest
+                .fn()
+                .mockResolvedValue(factories.refreshTokenEntity.build()),
+              updateMany: jest.fn(),
+            },
           },
         },
         {
@@ -111,12 +116,10 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     jwtService = module.get<JwtService>(JwtService);
-    refreshTokenRepository = module.get<Repository<RefreshToken>>(
-      getRepositoryToken(RefreshToken),
-    );
     cacheManager = module.get<Cache>(CACHE_MANAGER);
     configService = module.get<ConfigService>(ConfigService);
     platformsService = module.get<PlatformsService>(PlatformsService);
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   describe('validateUser()', () => {
@@ -241,11 +244,13 @@ describe('AuthService', () => {
         { secret: 'JWT_SECRET_KEY', expiresIn: 3600 },
       );
 
-      expect(refreshTokenRepository.save).toHaveBeenCalledWith({
-        user: user,
-        isRevoked: false,
-        expires: expect.any(Date),
-        platformUser: platformUser,
+      expect(prismaService.refreshToken.create).toHaveBeenCalledWith({
+        data: {
+          userId: user.id,
+          isRevoked: false,
+          expires: expect.any(Date),
+          platformUserId: platformUser.id,
+        },
       });
 
       const redisKey = 'REDIS_DB_KEY_PREFIX:CODE_CHALLENGE_KEY';
@@ -322,15 +327,15 @@ describe('AuthService', () => {
         platformUser.platform.id,
       );
 
-      expect(refreshTokenRepository.findOne).toHaveBeenCalledWith(
-        factories.refreshToken.build().id,
-        { relations: ['user', 'platformUser'] },
-      );
+      expect(prismaService.refreshToken.findUnique).toHaveBeenCalledWith({
+        include: { platformUser: true, user: true },
+        where: { id: factories.refreshTokenEntity.build().id },
+      });
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         factories.jwtPayloadWithPlatform.build(),
         { secret: 'JWT_SECRET_KEY', expiresIn: 'JWT_ACCESS_TOKEN_TTL' },
       );
-      expect(refreshTokenRepository.update).not.toHaveBeenCalledWith(
+      expect(prismaService.refreshToken.update).not.toHaveBeenCalledWith(
         factories.refreshToken.build().id,
         { isRevoked: true },
       );
@@ -363,16 +368,16 @@ describe('AuthService', () => {
         'REFRESH_TOKEN',
         platformUser.platform.id,
       );
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
-        factories.refreshToken.build().id,
-        { isRevoked: true },
-      );
+      expect(prismaService.refreshToken.update).toHaveBeenCalledWith({
+        data: { isRevoked: true },
+        where: { id: factories.refreshTokenEntity.build().id },
+      });
     });
 
     it('should throw when refresh token does not exist', async () => {
       jest
-        .spyOn(refreshTokenRepository, 'findOne')
-        .mockImplementation(() => Promise.resolve(null));
+        .spyOn(prismaService.refreshToken, 'findUnique')
+        .mockResolvedValue(null);
       const platformUser = factories.platformUserEntity.build();
 
       await expect(
@@ -394,11 +399,11 @@ describe('AuthService', () => {
     });
 
     it('should throw when refresh token is revoked, and revokes all existing tokens', async () => {
-      const revokedRefreshToken = factories.refreshToken.build({
+      const revokedRefreshToken = factories.refreshTokenEntity.build({
         isRevoked: true,
       });
       jest
-        .spyOn(refreshTokenRepository, 'findOne')
+        .spyOn(prismaService.refreshToken, 'findUnique')
         .mockResolvedValue(revokedRefreshToken);
 
       const platformUser = factories.platformUserEntity.build();
@@ -407,13 +412,13 @@ describe('AuthService', () => {
         service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
       ).rejects.toThrow('Refresh token revoked');
 
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
-        {
-          platformUser: revokedRefreshToken.platformUser,
-          user: revokedRefreshToken.user,
+      expect(prismaService.refreshToken.updateMany).toHaveBeenCalledWith({
+        where: {
+          platformUserId: revokedRefreshToken.platformUserId,
+          userId: revokedRefreshToken.userId,
         },
-        { isRevoked: true },
-      );
+        data: { isRevoked: true },
+      });
     });
 
     it('should revoke previous token if REFRESH_TOKEN_ROTATION is true', async () => {
@@ -436,12 +441,12 @@ describe('AuthService', () => {
         platformUser.platform.id,
       );
 
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
-        factories.refreshToken.build().id,
-        { isRevoked: true },
-      );
+      expect(prismaService.refreshToken.update).toHaveBeenCalledWith({
+        data: { isRevoked: true },
+        where: { id: factories.refreshTokenEntity.build().id },
+      });
 
-      expect(refreshTokenRepository.delete).not.toHaveBeenCalled();
+      expect(prismaService.refreshToken.delete).not.toHaveBeenCalled();
     });
 
     it('should delete previous token if REFRESH_TOKEN_ROTATION is false', async () => {
@@ -464,9 +469,9 @@ describe('AuthService', () => {
         platformUser.platform.id,
       );
 
-      expect(refreshTokenRepository.update).not.toHaveBeenCalled();
-      expect(refreshTokenRepository.delete).toHaveBeenCalledWith({
-        id: factories.refreshToken.build().id,
+      expect(prismaService.refreshToken.update).not.toHaveBeenCalled();
+      expect(prismaService.refreshToken.delete).toHaveBeenCalledWith({
+        where: { id: factories.refreshTokenEntity.build().id },
       });
     });
   });

@@ -1,6 +1,7 @@
 import { Factory } from 'fishery';
+import { RefreshToken } from '@prisma/client';
 
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { RefreshToken as RefreshTokenDeprecated } from 'src/auth/entities/refresh-token.entity';
 import { JWTRefreshPayload } from 'src/auth/entities/jwt-refresh-payload.entity';
 import { JWTClientCredentialPayload } from 'src/auth/entities/jwt-client-credential-payload.entity';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
@@ -8,7 +9,8 @@ import { TokenType } from 'src/auth/enums/token-type.enum';
 
 import * as factories from './index';
 
-export const refreshToken = Factory.define<RefreshToken>(() => ({
+// TODO: Switch this to use refresh token from prisma instead
+export const refreshToken = Factory.define<RefreshTokenDeprecated>(() => ({
   id: 1,
   user: factories.userEntity.build(),
   isRevoked: false,
@@ -16,6 +18,18 @@ export const refreshToken = Factory.define<RefreshToken>(() => ({
   updatedAt: new Date('1995-12-18T03:24:00'),
   expires: new Date('1995-12-19T03:24:00'),
   platformUser: factories.platformUserEntity.build(),
+}));
+
+export const refreshTokenEntity = Factory.define<RefreshToken>(() => ({
+  id: 1,
+  userId: factories.userEntity.build().id,
+  user: factories.userEntity.build(),
+  isRevoked: false,
+  platformUser: factories.platformUserEntity.build(),
+  platformUserId: factories.platformUserEntity.build().id,
+  expires: new Date('1995-12-19T03:24:00'),
+  createdAt: new Date('1995-12-17T03:24:00'),
+  updatedAt: new Date('1995-12-18T03:24:00'),
 }));
 
 export const jwtRefreshPayload = Factory.define<JWTRefreshPayload>(() => ({
