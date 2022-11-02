@@ -1,10 +1,8 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { classToPlain, plainToClass } from 'class-transformer';
-import { Repository } from 'typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,6 +13,7 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
 import { UserRole } from 'src/roles/role.enum';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { JWTPayload } from './entities/jwt-payload.entity';
 import { JWTClientCredentialPayload } from './entities/jwt-client-credential-payload.entity';
@@ -29,13 +28,12 @@ import { DecodedCode } from './types';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(RefreshToken)
-    private refreshTokenRepository: Repository<RefreshToken>,
     private usersService: UsersService,
     private platformService: PlatformsService,
     private jwtService: JwtService,
     private configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private prismaService: PrismaService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -233,13 +231,16 @@ export class AuthService {
 
     if (!!revokeExistingToken) {
       // For refresh token reuse detection
-      await this.refreshTokenRepository.update(refreshToken.id, {
-        isRevoked: true,
+      await this.prismaService.refreshToken.update({
+        where: { id: refreshToken.id },
+        data: { isRevoked: true },
       });
     }
 
     if (!!deleteExistingToken) {
-      await this.refreshTokenRepository.delete({ id: refreshToken.id });
+      await this.prismaService.refreshToken.delete({
+        where: { id: refreshToken.id },
+      });
     }
 
     return { user, token, roles };
@@ -296,19 +297,25 @@ export class AuthService {
     expiration.setTime(expiration.getTime() + ttl * 1000);
 
     token.expires = expiration;
-    if (platformId) {
-      token.platformUser = await this.platformService.findOnePlatformUser(
-        platformId,
-        user.id,
-      );
-    }
 
-    return this.refreshTokenRepository.save(token);
+    return this.prismaService.refreshToken.create({
+      data: {
+        userId: user.id,
+        isRevoked: false,
+        expires: expiration,
+        ...(platformId && {
+          platformUserId: (
+            await this.platformService.findOnePlatformUser(platformId, user.id)
+          ).id,
+        }),
+      },
+    });
   }
 
   private async findTokenById(id: number) {
-    return this.refreshTokenRepository.findOne(id, {
-      relations: ['user', 'platformUser'],
+    return this.prismaService.refreshToken.findUnique({
+      where: { id },
+      include: { user: true, platformUser: true },
     });
   }
 
@@ -328,13 +335,13 @@ export class AuthService {
 
     if (token.isRevoked) {
       // Revokes all existing tokens for this platform and user
-      await this.refreshTokenRepository.update(
-        {
-          user: token.user,
-          platformUser: token.platformUser || null,
+      await this.prismaService.refreshToken.updateMany({
+        where: {
+          userId: token.user.id,
+          platformUserId: token.platformUser.id || null,
         },
-        { isRevoked: true },
-      );
+        data: { isRevoked: true },
+      });
 
       throw new exceptions.InvalidTokenException('Refresh token revoked');
     }
