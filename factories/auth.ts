@@ -12,10 +12,8 @@ import * as factories from './index';
 export const refreshTokenEntity = Factory.define<RefreshToken>(() => ({
   id: 1,
   userId: factories.userEntity.build().id,
-  user: factories.userEntity.build(),
-  isRevoked: false,
-  platformUser: factories.platformUserEntity.build(),
   platformUserId: factories.platformUserEntity.build().id,
+  isRevoked: false,
   expires: new Date('1995-12-19T03:24:00'),
   createdAt: new Date('1995-12-17T03:24:00'),
   updatedAt: new Date('1995-12-18T03:24:00'),

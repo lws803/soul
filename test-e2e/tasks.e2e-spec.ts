@@ -3,6 +3,7 @@ import * as request from 'supertest';
 import { Repository, Connection } from 'typeorm';
 import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
+import { PlatformUser } from '@prisma/client';
 
 import { User } from 'src/users/entities/user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
@@ -57,6 +58,8 @@ describe('TasksModule (e2e)', () => {
       refreshToken: string;
       user: User;
     };
+    let firstPlatformUser: PlatformUser;
+    let secondPlatformUser: PlatformUser;
 
     beforeAll(async () => {
       const [firstUser] = await createUsersAndLoginFixture(app);
@@ -67,10 +70,36 @@ describe('TasksModule (e2e)', () => {
           redirectUris: ['https://www.example.com'],
         }),
       );
-      await prismaService.platformUser.create({
+      firstPlatformUser = await prismaService.platformUser.create({
         data: factories.platformUserEntity.build({
           platformId: platform.id,
           userId: userAccount.user.id,
+        }),
+      });
+
+      const secondPlatform = await platformRepository.save(
+        factories.platformEntity.build({
+          id: 2,
+          name: 'test_platform_2',
+          nameHandle: 'test_platform_2#2',
+          redirectUris: ['https://www.example.com'],
+        }),
+      );
+      secondPlatformUser = await prismaService.platformUser.create({
+        data: factories.platformUserEntity.build({
+          id: 2,
+          platformId: secondPlatform.id,
+          userId: userAccount.user.id,
+        }),
+      });
+
+      const currDate = new Date();
+      currDate.setDate(currDate.getDate() + 5);
+      await prismaService.refreshToken.create({
+        data: factories.refreshTokenEntity.build({
+          platformUserId: secondPlatformUser.id,
+          userId: userAccount.user.id,
+          expires: currDate,
         }),
       });
     });
@@ -144,35 +173,35 @@ describe('TasksModule (e2e)', () => {
         expect(refreshResp.status).toBe(HttpStatus.OK);
       }
 
-      const platformUser = await prismaService.platformUser.findFirst({
-        where: { userId: userAccount.user.id, platformId },
-      });
-
       expect(
         await prismaService.refreshToken.count({
-          where: { platformUserId: platformUser.id },
+          where: { platformUserId: firstPlatformUser.id },
         }),
       ).toEqual(11);
 
       expect(
-        await prismaService.platformUser.findFirst({
-          where: { userId: userAccount.user.id, platformId: null },
+        await prismaService.refreshToken.count({
+          where: {
+            platformUserId: secondPlatformUser.id,
+          },
         }),
-      ).not.toBeNull();
+      ).not.toBe(0);
 
       await tasksService.cleanupExpiredRefreshTokens();
 
       // Other platform refresh tokens should not be affected
       expect(
-        await prismaService.platformUser.findFirst({
-          where: { userId: userAccount.user.id, platformId: null },
+        await prismaService.refreshToken.count({
+          where: {
+            platformUserId: secondPlatformUser.id,
+          },
         }),
-      ).not.toBeNull();
+      ).not.toBe(0);
 
       // Only the one with count above 10 should be deleted
       expect(
         await prismaService.refreshToken.count({
-          where: { platformUserId: platformUser.id },
+          where: { platformUserId: firstPlatformUser.id },
         }),
       ).toEqual(0);
     });

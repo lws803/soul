@@ -653,6 +653,11 @@ describe('PlatformsController (e2e)', () => {
       });
     });
 
+    afterEach(async () => {
+      await prismaService.platformUser.deleteMany();
+      await prismaService.platform.deleteMany();
+    });
+
     it('deletes existing platform', async () => {
       const params = new URLSearchParams({
         redirect_uri: 'https://www.example.com',
@@ -706,6 +711,11 @@ describe('PlatformsController (e2e)', () => {
           platformId: platform.id,
         }),
       });
+    });
+
+    afterEach(async () => {
+      await prismaService.platformUser.deleteMany();
+      await prismaService.platform.deleteMany();
     });
 
     it('generates new secret for platform', async () => {
