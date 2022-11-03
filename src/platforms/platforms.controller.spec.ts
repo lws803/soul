@@ -267,13 +267,13 @@ describe('PlatformsController', () => {
     expect(
       await controller.findOnePlatformUser({
         platformId: platform.id,
-        userId: platformUser.user.id,
+        userId: platformUser.userId,
       }),
     ).toEqual(platformUser);
 
     expect(platformsService.findOnePlatformUser).toHaveBeenCalledWith(
       platform.id,
-      platformUser.user.id,
+      platformUser.userId,
     );
   });
 
@@ -282,7 +282,7 @@ describe('PlatformsController', () => {
     const platformUser = factories.platformUserEntity.build();
     const params = {
       platformId: platform.id,
-      userId: platformUser.user.id,
+      userId: platformUser.userId,
     };
     const body = {
       profileUrl: 'PROFILE_URL',

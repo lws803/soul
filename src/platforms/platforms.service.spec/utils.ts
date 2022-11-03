@@ -1,5 +1,6 @@
 import * as factories from 'factories';
 
+// TODO: Clean up and remove this file
 const platformsList = factories.platformEntity.buildList(2);
 
 export const platformCreateQueryBuilderObject = {

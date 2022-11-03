@@ -5,10 +5,10 @@ import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
 
 import { User } from 'src/users/entities/user.entity';
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { UserRole } from 'src/roles/role.enum';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../factories';
 
@@ -18,9 +18,9 @@ import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fi
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let userRepository: Repository<User>;
-  let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
   let platformCategoryRepository: Repository<PlatformCategory>;
+  let prismaService: PrismaService;
 
   const codeVerifier = 'CODE_VERIFIER';
   const codeChallenge = base64url(sha256(codeVerifier).toString(), 'hex');
@@ -34,9 +34,9 @@ describe('AuthController (e2e)', () => {
     await connection.synchronize(true);
 
     userRepository = connection.getRepository(User);
-    platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
     platformCategoryRepository = connection.getRepository(PlatformCategory);
+    prismaService = app.get<PrismaService>(PrismaService);
 
     await platformCategoryRepository.save(
       factories.platformCategoryEntity.build(),
@@ -63,16 +63,16 @@ describe('AuthController (e2e)', () => {
           redirectUris: ['https://www.example.com'],
         }),
       );
-      await platformUserRepository.save(
-        factories.platformUserEntity.build({
-          platform,
-          user: userAccount.user,
+      await prismaService.platformUser.create({
+        data: factories.platformUserEntity.build({
+          platformId: platform.id,
+          userId: userAccount.user.id,
         }),
-      );
+      });
     });
 
     afterAll(async () => {
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
       await userRepository.delete({});
     });
@@ -208,16 +208,16 @@ describe('AuthController (e2e)', () => {
           redirectUris: ['https://www.example.com'],
         }),
       );
-      await platformUserRepository.save(
-        factories.platformUserEntity.build({
-          platform,
-          user: userAccount.user,
+      await prismaService.platformUser.create({
+        data: factories.platformUserEntity.build({
+          platformId: platform.id,
+          userId: userAccount.user.id,
         }),
-      );
+      });
     });
 
     afterAll(async () => {
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
       await userRepository.delete({});
     });

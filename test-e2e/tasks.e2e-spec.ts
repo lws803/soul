@@ -5,7 +5,6 @@ import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
 
 import { User } from 'src/users/entities/user.entity';
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { TasksService } from 'src/tasks/tasks.service';
@@ -19,7 +18,6 @@ import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fi
 describe('TasksModule (e2e)', () => {
   let app: INestApplication;
   let userRepository: Repository<User>;
-  let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
   let platformCategoryRepository: Repository<PlatformCategory>;
   let tasksService: TasksService;
@@ -39,7 +37,6 @@ describe('TasksModule (e2e)', () => {
     tasksService = app.get<TasksService>(TasksService);
 
     userRepository = connection.getRepository(User);
-    platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
     platformCategoryRepository = connection.getRepository(PlatformCategory);
 
@@ -70,17 +67,17 @@ describe('TasksModule (e2e)', () => {
           redirectUris: ['https://www.example.com'],
         }),
       );
-      await platformUserRepository.save(
-        factories.platformUserEntity.build({
-          platform,
-          user: userAccount.user,
+      await prismaService.platformUser.create({
+        data: factories.platformUserEntity.build({
+          platformId: platform.id,
+          userId: userAccount.user.id,
         }),
-      );
+      });
     });
 
     afterAll(async () => {
       await prismaService.refreshToken.deleteMany();
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
       await userRepository.delete({});
     });
@@ -147,13 +144,9 @@ describe('TasksModule (e2e)', () => {
         expect(refreshResp.status).toBe(HttpStatus.OK);
       }
 
-      const platformUser = await platformUserRepository
-        .createQueryBuilder('platform_user')
-        .where('user_id = :userId', {
-          userId: userAccount.user.id,
-        })
-        .andWhere('platform_id = :platformId', { platformId })
-        .getOne();
+      const platformUser = await prismaService.platformUser.findFirst({
+        where: { userId: userAccount.user.id, platformId },
+      });
 
       expect(
         await prismaService.refreshToken.count({
@@ -162,26 +155,18 @@ describe('TasksModule (e2e)', () => {
       ).toEqual(11);
 
       expect(
-        await platformUserRepository
-          .createQueryBuilder('platform_user')
-          .where('user_id = :userId', {
-            userId: userAccount.user.id,
-          })
-          .andWhere('platform_id IS NULL')
-          .getOne(),
+        await prismaService.platformUser.findFirst({
+          where: { userId: userAccount.user.id, platformId: null },
+        }),
       ).not.toBeNull();
 
       await tasksService.cleanupExpiredRefreshTokens();
 
       // Other platform refresh tokens should not be affected
       expect(
-        await platformUserRepository
-          .createQueryBuilder('platform_user')
-          .where('user_id = :userId', {
-            userId: userAccount.user.id,
-          })
-          .andWhere('platform_id IS NULL')
-          .getOne(),
+        await prismaService.platformUser.findFirst({
+          where: { userId: userAccount.user.id, platformId: null },
+        }),
       ).not.toBeNull();
 
       // Only the one with count above 10 should be deleted

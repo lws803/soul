@@ -6,7 +6,7 @@ import { plainToClass } from 'class-transformer';
 import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
 import { UserRole } from 'src/roles/role.enum';
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { Platform } from '../entities/platform.entity';
 import { PlatformUser } from '../entities/platform-user.entity';
@@ -26,6 +26,7 @@ import {
 describe('PlatformsService', () => {
   let service: PlatformsService;
   let platformRepository: Repository<Platform>;
+  // TODO: Switch this to use prisma
   let platformUserRepository: Repository<PlatformUser>;
   let platformCategoryRepository: Repository<PlatformCategory>;
   let platformCreateQueryBuilder: any;
@@ -85,15 +86,11 @@ describe('PlatformsService', () => {
           },
         },
         {
-          provide: getRepositoryToken(RefreshToken),
+          provide: PrismaService,
           useValue: {
-            findOne: jest
-              .fn()
-              .mockResolvedValue(factories.refreshToken.build()),
-            update: jest.fn(),
+            refreshToken: { updateMany: jest.fn() },
           },
         },
-
         {
           provide: UsersService,
           useValue: {

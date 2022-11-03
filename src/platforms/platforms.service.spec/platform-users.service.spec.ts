@@ -6,10 +6,10 @@ import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
 import { UserRole } from 'src/roles/role.enum';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { Platform } from '../entities/platform.entity';
 import { PlatformUser } from '../entities/platform-user.entity';
-import { PlatformCategory } from '../entities/platform-category.entity';
 import { PlatformsService } from '../platforms.service';
 import {
   DuplicatePlatformUserException,
@@ -17,21 +17,17 @@ import {
   PlatformUserNotFoundException,
 } from '../exceptions';
 
-import {
-  platformCreateQueryBuilderObject,
-  platformUserCreateQueryBuilderObject,
-} from './utils';
+import { platformCreateQueryBuilderObject } from './utils';
 
 describe('PlatformsService - Users', () => {
   let service: PlatformsService;
   let platformUserRepository: Repository<PlatformUser>;
   let refreshTokenRepository: Repository<RefreshToken>;
   let platformCreateQueryBuilder: any;
-  let platformUserCreateQueryBuilder: any;
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
     platformCreateQueryBuilder = platformCreateQueryBuilderObject;
-    platformUserCreateQueryBuilder = platformUserCreateQueryBuilderObject;
 
     const platforms = factories.platformEntity.buildList(2);
 
@@ -56,42 +52,23 @@ describe('PlatformsService - Users', () => {
           },
         },
         {
-          provide: getRepositoryToken(PlatformCategory),
+          provide: PrismaService,
           useValue: {
-            findOne: jest
-              .fn()
-              .mockResolvedValue(factories.platformCategoryEntity.build()),
+            platformUser: {
+              count: jest.fn(),
+              findMany: jest.fn(),
+              delete: jest.fn(),
+              create: jest.fn(),
+              findFirst: jest.fn(),
+            },
+            refreshToken: {
+              updateMany: jest.fn(),
+            },
+            platformCategory: {
+              findFirst: jest.fn(),
+            },
           },
         },
-        {
-          provide: getRepositoryToken(PlatformUser),
-          useValue: {
-            findOne: jest
-              .fn()
-              .mockResolvedValue(factories.platformUserEntity.build()),
-            findAndCount: jest.fn(),
-            save: jest.fn().mockResolvedValue(
-              factories.platformUserEntity.build({
-                roles: [UserRole.Member],
-              }),
-            ),
-            update: jest.fn(),
-            delete: jest.fn(),
-            createQueryBuilder: jest
-              .fn()
-              .mockImplementation(() => platformUserCreateQueryBuilder),
-          },
-        },
-        {
-          provide: getRepositoryToken(RefreshToken),
-          useValue: {
-            findOne: jest
-              .fn()
-              .mockResolvedValue(factories.refreshToken.build()),
-            update: jest.fn(),
-          },
-        },
-
         {
           provide: UsersService,
           useValue: {
@@ -102,12 +79,7 @@ describe('PlatformsService - Users', () => {
     }).compile();
 
     service = module.get<PlatformsService>(PlatformsService);
-    platformUserRepository = module.get<Repository<PlatformUser>>(
-      getRepositoryToken(PlatformUser),
-    );
-    refreshTokenRepository = module.get<Repository<RefreshToken>>(
-      getRepositoryToken(RefreshToken),
-    );
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   describe('findOnePlatformUser()', () => {
@@ -187,9 +159,7 @@ describe('PlatformsService - Users', () => {
     });
 
     it('should throw an error when user has too many admin roles', async () => {
-      jest
-        .spyOn(platformUserCreateQueryBuilder, 'getCount')
-        .mockResolvedValue(6);
+      jest.spyOn(prismaService.platformUser, 'count').mockResolvedValue(6);
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
       const params = {
@@ -207,9 +177,7 @@ describe('PlatformsService - Users', () => {
     });
 
     it('should not throw an error when setting user to member', async () => {
-      jest
-        .spyOn(platformUserCreateQueryBuilder, 'getCount')
-        .mockResolvedValue(6);
+      jest.spyOn(prismaService.platformUser, 'count').mockResolvedValue(6);
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
       const params = {
@@ -253,8 +221,11 @@ describe('PlatformsService - Users', () => {
       const platform = factories.platformEntity.build();
       const platformUsers = factories.platformUserEntity.buildList(2);
       jest
-        .spyOn(platformUserRepository, 'findAndCount')
-        .mockResolvedValue([platformUsers, platformUsers.length]);
+        .spyOn(prismaService.platformUser, 'findMany')
+        .mockResolvedValue(platformUsers);
+      jest
+        .spyOn(prismaService.platformUser, 'count')
+        .mockResolvedValue(platformUsers.length);
 
       expect(
         await service.findAllPlatformUsers({
@@ -283,8 +254,12 @@ describe('PlatformsService - Users', () => {
       const platform = factories.platformEntity.build();
       const platformUsers = factories.platformUserEntity.buildList(1);
       jest
-        .spyOn(platformUserRepository, 'findAndCount')
-        .mockResolvedValue([platformUsers, platformUsers.length]);
+        .spyOn(prismaService.platformUser, 'findMany')
+        .mockResolvedValue(platformUsers);
+
+      jest
+        .spyOn(prismaService.platformUser, 'count')
+        .mockResolvedValue(platformUsers.length);
 
       expect(
         await service.findAllPlatformUsers({
@@ -314,11 +289,14 @@ describe('PlatformsService - Users', () => {
     it('should return all platform users with pagination successfully', async () => {
       const platform = factories.platformEntity.build();
       const platformUsers = factories.platformUserEntity.buildList(2, {
-        platform,
+        platformId: platform.id,
       });
       jest
-        .spyOn(platformUserRepository, 'findAndCount')
-        .mockResolvedValue([[platformUsers[0]], platformUsers.length]);
+        .spyOn(prismaService.platformUser, 'findMany')
+        .mockResolvedValue([platformUsers[0]]);
+      jest
+        .spyOn(prismaService.platformUser, 'count')
+        .mockResolvedValue(platformUsers.length);
 
       expect(
         await service.findAllPlatformUsers({

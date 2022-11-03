@@ -1,16 +1,14 @@
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { ActivityService } from './activity.service';
 import { ActivityProcessor } from './activity.processor';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PlatformUser]),
     BullModule.registerQueueAsync({
       name: 'activity_queue',
       useFactory: (configService: ConfigService) => ({
@@ -27,7 +25,7 @@ import { ActivityProcessor } from './activity.processor';
     }),
   ],
   controllers: [],
-  providers: [ActivityService, ActivityProcessor],
+  providers: [ActivityService, ActivityProcessor, PrismaService],
   exports: [ActivityService],
 })
 export class ActivityModule {}

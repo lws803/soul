@@ -5,9 +5,9 @@ import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
 
 import { UserRole } from 'src/roles/role.enum';
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../../factories';
 import createAppFixture from '../fixtures/create-app-fixture';
@@ -18,9 +18,9 @@ import {
 
 describe('PlatformsController - PlatformUsers (e2e)', () => {
   let app: INestApplication;
-  let platformUserRepository: Repository<PlatformUser>;
   let platformRepository: Repository<Platform>;
   let platformCategoryRepository: Repository<PlatformCategory>;
+  let prismaService: PrismaService;
 
   let userAccount: UserAccount;
   let secondUserAccount: UserAccount;
@@ -37,9 +37,9 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     const connection = app.get(Connection);
     await connection.synchronize(true);
 
-    platformUserRepository = connection.getRepository(PlatformUser);
     platformRepository = connection.getRepository(Platform);
     platformCategoryRepository = connection.getRepository(PlatformCategory);
+    prismaService = app.get<PrismaService>(PrismaService);
 
     const [firstUser, secondUser, thirdUser] = await createUsersAndLoginFixture(
       app,
@@ -65,26 +65,28 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
           clientSecret: 'CLIENT_SECRET',
         }),
       );
-      await platformUserRepository.save([
-        factories.platformUserEntity.build({
-          user: userAccount.user,
-          platform,
-        }),
-        factories.platformUserEntity.build({
-          id: 2,
-          user: secondUserAccount.user,
-          platform,
-        }),
-        factories.platformUserEntity.build({
-          id: 3,
-          user: thirdUserAccount.user,
-          platform,
-        }),
-      ]);
+      prismaService.platformUser.createMany({
+        data: [
+          factories.platformUserEntity.build({
+            userId: userAccount.user.id,
+            platformId: platform.id,
+          }),
+          factories.platformUserEntity.build({
+            id: 2,
+            userId: secondUserAccount.user.id,
+            platformId: platform.id,
+          }),
+          factories.platformUserEntity.build({
+            id: 3,
+            userId: thirdUserAccount.user.id,
+            platformId: platform.id,
+          }),
+        ],
+      });
     });
 
     afterAll(async () => {
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
     });
 
@@ -219,26 +221,29 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
           clientSecret: 'CLIENT_SECRET',
         }),
       );
-      await platformUserRepository.save([
-        factories.platformUserEntity.build({
-          user: userAccount.user,
-          platform,
-        }),
-        factories.platformUserEntity.build({
-          id: 2,
-          user: secondUserAccount.user,
-          platform,
-        }),
-        factories.platformUserEntity.build({
-          id: 3,
-          user: thirdUserAccount.user,
-          platform,
-        }),
-      ]);
+
+      await prismaService.platformUser.createMany({
+        data: [
+          factories.platformUserEntity.build({
+            userId: userAccount.user.id,
+            platformId: platform.id,
+          }),
+          factories.platformUserEntity.build({
+            id: 2,
+            userId: secondUserAccount.user.id,
+            platformId: platform.id,
+          }),
+          factories.platformUserEntity.build({
+            id: 3,
+            userId: thirdUserAccount.user.id,
+            platformId: platform.id,
+          }),
+        ],
+      });
     });
 
     afterAll(async () => {
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
     });
 
@@ -297,22 +302,24 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
           clientSecret: 'CLIENT_SECRET',
         }),
       );
-      await platformUserRepository.save([
-        factories.platformUserEntity.build({
-          user: userAccount.user,
-          platform,
-        }),
-        factories.platformUserEntity.build({
-          id: 2,
-          user: secondUserAccount.user,
-          platform,
-          roles: [UserRole.Member],
-        }),
-      ]);
+      await prismaService.platformUser.createMany({
+        data: [
+          factories.platformUserEntity.build({
+            userId: userAccount.user.id,
+            platformId: platform.id,
+          }),
+          factories.platformUserEntity.build({
+            id: 2,
+            userId: secondUserAccount.user.id,
+            platformId: platform.id,
+            roles: [UserRole.Member],
+          }),
+        ],
+      });
     });
 
     afterEach(async () => {
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
     });
 
@@ -528,22 +535,24 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
           clientSecret: 'CLIENT_SECRET',
         }),
       );
-      await platformUserRepository.save([
-        factories.platformUserEntity.build({
-          user: userAccount.user,
-          platform,
-        }),
-        factories.platformUserEntity.build({
-          id: 2,
-          user: secondUserAccount.user,
-          platform,
-          roles: [UserRole.Member],
-        }),
-      ]);
+      await prismaService.platformUser.createMany({
+        data: [
+          factories.platformUserEntity.build({
+            userId: userAccount.user.id,
+            platformId: platform.id,
+          }),
+          factories.platformUserEntity.build({
+            id: 2,
+            userId: secondUserAccount.user.id,
+            platformId: platform.id,
+            roles: [UserRole.Member],
+          }),
+        ],
+      });
     });
 
     afterEach(async () => {
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
     });
 
@@ -573,40 +582,42 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
         }),
       );
 
-      await platformUserRepository.save([
-        factories.platformUserEntity.build({
-          user: userAccount.user,
-          platform,
-        }),
-        factories.platformUserEntity.build({
-          id: 2,
-          user: secondUserAccount.user,
-          platform,
-          roles: [UserRole.Member],
-        }),
-        factories.platformUserEntity.build({
-          id: 3,
-          user: thirdUserAccount.user,
-          platform,
-          roles: [UserRole.Banned],
-        }),
-      ]);
+      await prismaService.platformUser.createMany({
+        data: [
+          factories.platformUserEntity.build({
+            userId: userAccount.user.id,
+            platformId: platform.id,
+          }),
+          factories.platformUserEntity.build({
+            id: 2,
+            userId: secondUserAccount.user.id,
+            platformId: platform.id,
+            roles: [UserRole.Member],
+          }),
+          factories.platformUserEntity.build({
+            id: 3,
+            userId: thirdUserAccount.user.id,
+            platformId: platform.id,
+            roles: [UserRole.Banned],
+          }),
+        ],
+      });
     });
 
     afterEach(async () => {
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
     });
 
     it('quits existing platform (ADMIN)', async () => {
-      await platformUserRepository.save(
-        factories.platformUserEntity.build({
+      await prismaService.platformUser.create({
+        data: factories.platformUserEntity.build({
           id: 2,
-          user: secondUserAccount.user,
-          platform,
+          userId: secondUserAccount.user.id,
+          platformId: platform.id,
           roles: [UserRole.Admin, UserRole.Member],
         }),
-      );
+      });
 
       const params = new URLSearchParams({
         redirect_uri: 'https://www.example.com',
@@ -719,7 +730,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
 
     afterEach(async () => {
-      await platformUserRepository.delete({});
+      await prismaService.platformUser.deleteMany();
       await platformRepository.delete({});
     });
 

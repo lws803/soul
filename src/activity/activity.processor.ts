@@ -8,12 +8,10 @@ import {
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import * as Sentry from '@sentry/node';
-import { Repository, Not, IsNull } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { classToPlain, plainToClass } from 'class-transformer';
 
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { ActivityJobPayload } from './types';
 import { FollowActivityResponseEntity } from './serializers/api-responses.entity';
@@ -23,8 +21,9 @@ export class ActivityProcessor {
   private readonly logger = new Logger(ActivityProcessor.name);
 
   constructor(
-    @InjectRepository(PlatformUser)
-    private platformUserRepository: Repository<PlatformUser>,
+    // @InjectRepository(PlatformUser)
+    // private platformUserRepository: Repository<PlatformUser>,
+    private prismaService: PrismaService,
   ) {}
 
   @OnQueueActive()
@@ -55,12 +54,17 @@ export class ActivityProcessor {
     const { fromUser, toUser, type: activityType } = job.data;
     this.logger.log(`Sending activity of type ${activityType}...'`);
     try {
-      const [platformUsers] = await this.platformUserRepository.findAndCount({
+      // TODO: Validate to see if this works
+      const platformUsers = await this.prismaService.platformUser.findMany({
         where: {
-          user: toUser,
-          platform: { activityWebhookUri: Not(IsNull()) },
+          userId: toUser.id,
+          platform: {
+            activityWebhookUri: {
+              not: null,
+            },
+          },
         },
-        relations: ['user', 'platform'],
+        include: { platform: true, user: true },
       });
 
       for (const platformUser of platformUsers) {

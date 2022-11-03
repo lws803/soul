@@ -1,8 +1,8 @@
 import { Factory } from 'fishery';
+import { PlatformUser } from '@prisma/client';
 
 import * as factories from 'factories';
 import { Platform } from 'src/platforms/entities/platform.entity';
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
@@ -32,11 +32,13 @@ export const platformEntity = Factory.define<Platform>(({ sequence }) => {
 export const platformUserEntity = Factory.define<PlatformUser>(
   ({ sequence }) => {
     platformUserEntity.rewindSequence();
+    const user = factories.userEntity.build();
+    const platform = factories.platformEntity.build();
 
     return {
       id: sequence,
-      user: factories.userEntity.build(),
-      platform: factories.platformEntity.build(),
+      platformId: user.id,
+      userId: platform.id,
       roles: [UserRole.Admin, UserRole.Member],
       createdAt: new Date('1995-12-17T03:24:00'),
       updatedAt: new Date('1995-12-18T03:24:00'),
