@@ -145,16 +145,16 @@ export class AuthService {
       accessToken: await this.generateAccessToken(
         user,
         decodedToken.platformId,
-        platformUser.roles,
+        platformUser.roles as UserRole[],
       ),
       refreshToken: await this.generateRefreshToken(
         user,
         this.configService.get('JWT_REFRESH_TOKEN_TTL'),
         decodedToken.platformId,
-        platformUser.roles,
+        platformUser.roles as UserRole[],
       ),
       platformId: decodedToken.platformId,
-      roles: platformUser.roles,
+      roles: platformUser.roles as UserRole[],
       expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     };
   }

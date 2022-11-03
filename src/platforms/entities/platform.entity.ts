@@ -53,7 +53,7 @@ export class Platform {
       referencedColumnName: 'id',
     },
   })
-  userConnections: UserConnection[];
+  userConnections?: UserConnection[];
 
   @CreateDateColumn({
     name: 'created_at',

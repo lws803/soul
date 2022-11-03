@@ -2,26 +2,16 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UsersModule } from 'src/users/users.module';
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { PlatformsService } from './platforms.service';
 import { PlatformsController } from './platforms.controller';
 import { Platform } from './entities/platform.entity';
-import { PlatformUser } from './entities/platform-user.entity';
-import { PlatformCategory } from './entities/platform-category.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Platform,
-      PlatformUser,
-      RefreshToken,
-      PlatformCategory,
-    ]),
-    UsersModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Platform]), UsersModule],
   controllers: [PlatformsController],
-  providers: [PlatformsService],
+  providers: [PlatformsService, PrismaService],
   exports: [PlatformsService],
 })
 export class PlatformsModule {}

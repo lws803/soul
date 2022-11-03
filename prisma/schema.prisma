@@ -45,13 +45,13 @@ model Platform {
   nameHandle                                  String?                                       @unique(map: "IDX_9a4647eddfb970ff1db96fd2e5") @map("name_handle") @db.VarChar(255)
   createdAt                                   DateTime                                      @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt                                   DateTime                                      @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
-  isVerified                                  Int                                           @default(0) @map("is_verified") @db.TinyInt
+  isVerified                                  Boolean                                       @default(false) @map("is_verified") @db.TinyInt
   redirectUris                                Json                                          @map("redirect_uris")
   platformCategoryId                          Int?                                          @map("platform_category_id")
   activityWebhookUri                          String?                                       @map("activity_webhook_uri") @db.VarChar(255)
   clientSecret                                String?                                       @map("client_secret") @db.VarChar(255)
   homepageUrl                                 String?                                       @map("homepage_url") @db.VarChar(255)
-  platformCategory                            PlatformCategory?                             @relation(fields: [platformCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_36ae51f292e99bb131443b47390")
+  category                                    PlatformCategory?                             @relation(fields: [platformCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_36ae51f292e99bb131443b47390")
   platform_users                              PlatformUser[]
   platforms_user_connections_user_connections platforms_user_connections_user_connections[]
   user_connections_platforms_platforms        user_connections_platforms_platforms[]
