@@ -1,15 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError, Repository, In } from 'typeorm';
 
 import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
 import { UserRole } from 'src/roles/role.enum';
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import { Platform } from '../entities/platform.entity';
-import { PlatformUser } from '../entities/platform-user.entity';
 import { PlatformsService } from '../platforms.service';
 import {
   DuplicatePlatformUserException,
@@ -21,8 +18,6 @@ import { platformCreateQueryBuilderObject } from './utils';
 
 describe('PlatformsService - Users', () => {
   let service: PlatformsService;
-  let platformUserRepository: Repository<PlatformUser>;
-  let refreshTokenRepository: Repository<RefreshToken>;
   let platformCreateQueryBuilder: any;
   let prismaService: PrismaService;
 
@@ -55,17 +50,28 @@ describe('PlatformsService - Users', () => {
           provide: PrismaService,
           useValue: {
             platformUser: {
-              count: jest.fn(),
-              findMany: jest.fn(),
+              count: jest.fn().mockResolvedValue(2),
+              findMany: jest
+                .fn()
+                .mockResolvedValue(factories.platformUserEntity.buildList(2)),
               delete: jest.fn(),
-              create: jest.fn(),
-              findFirst: jest.fn(),
+              create: jest
+                .fn()
+                .mockResolvedValue(factories.platformUserEntity.build()),
+              findFirst: jest
+                .fn()
+                .mockResolvedValue(factories.platformUserEntity.build()),
+              update: jest
+                .fn()
+                .mockResolvedValue(factories.platformUserEntity.build()),
             },
             refreshToken: {
               updateMany: jest.fn(),
             },
             platformCategory: {
-              findFirst: jest.fn(),
+              findFirst: jest
+                .fn()
+                .mockResolvedValue(factories.platformCategoryEntity.build()),
             },
           },
         },
@@ -92,17 +98,26 @@ describe('PlatformsService - Users', () => {
         platformUser,
       );
 
-      expect(platformUserRepository.findOne).toHaveBeenCalledWith(
-        {
-          user,
-          platform,
+      expect(prismaService.platformUser.findFirst).toHaveBeenCalledWith({
+        where: {
+          platformId: platform.id,
+          userId: user.id,
         },
-        { relations: ['user', 'platform', 'platform.category'] },
-      );
+        include: {
+          user: true,
+          platform: {
+            include: {
+              category: true,
+            },
+          },
+        },
+      });
     });
 
     it('should throw not found error', async () => {
-      jest.spyOn(platformUserRepository, 'findOne').mockResolvedValue(null);
+      jest
+        .spyOn(prismaService.platformUser, 'findFirst')
+        .mockResolvedValue(null);
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
 
@@ -132,14 +147,23 @@ describe('PlatformsService - Users', () => {
 
       await service.updateOnePlatformUser(params, body);
 
-      expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
-      expect(refreshTokenRepository.findOne).toHaveBeenCalledWith({
-        platformUser,
+      expect(prismaService.platformUser.update).toHaveBeenCalledWith({
+        where: {
+          id: platformUser.id,
+        },
+        data: {
+          profileUrl: platformUser.profileUrl,
+          roles: body.roles,
+        },
+        include: {
+          platform: true,
+          user: true,
+        },
       });
-      expect(refreshTokenRepository.update).toHaveBeenCalledWith(
-        { platformUser },
-        { isRevoked: true },
-      );
+      expect(prismaService.refreshToken.updateMany).toHaveBeenCalledWith({
+        where: { platformUserId: platformUser.id },
+        data: { isRevoked: true },
+      });
     });
 
     it('should set profile url', async () => {
@@ -155,7 +179,14 @@ describe('PlatformsService - Users', () => {
       const body = { profileUrl: 'NEW_PROFILE_URL' };
       await service.updateOnePlatformUser(params, body);
 
-      expect(platformUserRepository.save).toHaveBeenCalledWith(platformUser);
+      expect(prismaService.platformUser.update).toHaveBeenCalledWith({
+        where: { id: platformUser.id },
+        data: {
+          profileUrl: 'NEW_PROFILE_URL',
+          roles: platformUser.roles,
+        },
+        include: { platform: true, user: true },
+      });
     });
 
     it('should throw an error when user has too many admin roles', async () => {
@@ -173,7 +204,7 @@ describe('PlatformsService - Users', () => {
       await expect(service.updateOnePlatformUser(params, body)).rejects.toThrow(
         new MaxAdminRolesPerUserException({ max: 5 }),
       );
-      expect(platformUserRepository.save).not.toHaveBeenCalled();
+      expect(prismaService.platformUser.update).not.toHaveBeenCalled();
     });
 
     it('should not throw an error when setting user to member', async () => {
@@ -191,7 +222,7 @@ describe('PlatformsService - Users', () => {
       await expect(
         service.updateOnePlatformUser(params, body),
       ).resolves.not.toThrow(new MaxAdminRolesPerUserException({ max: 5 }));
-      expect(platformUserRepository.save).toHaveBeenCalled();
+      expect(prismaService.platformUser.update).toHaveBeenCalled();
     });
   });
 
@@ -210,8 +241,8 @@ describe('PlatformsService - Users', () => {
         platform.id,
         user.id,
       );
-      expect(platformUserRepository.delete).toHaveBeenCalledWith({
-        id: platformUser.id,
+      expect(prismaService.platformUser.delete).toHaveBeenCalledWith({
+        where: { id: platformUser.id },
       });
     });
   });
@@ -237,16 +268,12 @@ describe('PlatformsService - Users', () => {
         }),
       ).toEqual({ platformUsers, totalCount: platformUsers.length });
 
-      expect(platformUserRepository.findAndCount).toHaveBeenCalledWith({
-        order: {
-          createdAt: 'DESC',
-        },
-        relations: ['user', 'platform'],
+      expect(prismaService.platformUser.findMany).toHaveBeenCalledWith({
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        include: { user: true, platform: { include: { category: true } } },
         skip: 0,
         take: 10,
-        where: {
-          platform,
-        },
+        where: { platformId: platform.id },
       });
     });
 
@@ -272,16 +299,14 @@ describe('PlatformsService - Users', () => {
         }),
       ).toEqual({ platformUsers, totalCount: platformUsers.length });
 
-      expect(platformUserRepository.findAndCount).toHaveBeenCalledWith({
-        order: {
-          createdAt: 'DESC',
-        },
-        relations: ['user', 'platform'],
+      expect(prismaService.platformUser.findMany).toHaveBeenCalledWith({
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        include: { user: true, platform: { include: { category: true } } },
         skip: 0,
         take: 10,
         where: {
-          platform,
-          user: In([1]),
+          platformId: platform.id,
+          userId: { in: [1] },
         },
       });
     });
@@ -311,16 +336,12 @@ describe('PlatformsService - Users', () => {
         totalCount: platformUsers.length,
       });
 
-      expect(platformUserRepository.findAndCount).toHaveBeenCalledWith({
-        order: {
-          createdAt: 'DESC',
-        },
-        relations: ['user', 'platform'],
+      expect(prismaService.platformUser.findMany).toHaveBeenCalledWith({
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        include: { user: true, platform: { include: { category: true } } },
         skip: 0,
         take: 1,
-        where: {
-          platform,
-        },
+        where: { platformId: platform.id },
       });
     });
   });
@@ -334,28 +355,41 @@ describe('PlatformsService - Users', () => {
         .spyOn(service, 'findOnePlatformUser')
         .mockResolvedValue(platformUser);
 
+      jest
+        .spyOn(prismaService.platformUser, 'findFirst')
+        .mockResolvedValue(null);
+      jest
+        .spyOn(prismaService.platformUser, 'create')
+        .mockResolvedValue(
+          factories.platformUserEntity.build({ roles: [UserRole.Member] }),
+        );
+
       expect(await service.addUser(platform.id, user.id)).toEqual(
         factories.platformUserEntity.build({
           roles: [UserRole.Member],
         }),
       );
 
-      expect(platformUserRepository.save).toHaveBeenCalledWith({
-        platform: factories.platformEntity.build(),
-        roles: [UserRole.Member],
-        user: factories.userEntity.build(),
+      expect(prismaService.platformUser.create).toHaveBeenCalledWith({
+        data: {
+          platformId: platform.id,
+          roles: [UserRole.Member],
+          userId: user.id,
+        },
+        include: {
+          platform: {
+            include: {
+              category: true,
+            },
+          },
+          user: true,
+        },
       });
     });
 
     it('should raise duplicate error', async () => {
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
-
-      jest
-        .spyOn(platformUserRepository, 'save')
-        .mockRejectedValue(
-          new QueryFailedError('', [], { code: 'ER_DUP_ENTRY' }),
-        );
 
       await expect(service.addUser(platform.id, user.id)).rejects.toThrow(
         new DuplicatePlatformUserException(),

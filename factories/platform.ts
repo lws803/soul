@@ -1,10 +1,9 @@
 import { Factory } from 'fishery';
-import { PlatformUser } from '@prisma/client';
+import { PlatformUser, PlatformCategory } from '@prisma/client';
 
 import * as factories from 'factories';
 import { Platform } from 'src/platforms/entities/platform.entity';
 import { UserRole } from 'src/roles/role.enum';
-import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 
 export const platformCategoryEntity = Factory.define<PlatformCategory>(() => ({
   id: 1,
