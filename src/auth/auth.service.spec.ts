@@ -402,9 +402,11 @@ describe('AuthService', () => {
       const revokedRefreshToken = factories.refreshTokenEntity.build({
         isRevoked: true,
       });
-      jest
-        .spyOn(prismaService.refreshToken, 'findUnique')
-        .mockResolvedValue(revokedRefreshToken);
+      jest.spyOn(prismaService.refreshToken, 'findUnique').mockResolvedValue({
+        ...revokedRefreshToken,
+        user: factories.userEntity.build(),
+        platformUser: factories.platformUserEntity.build(),
+      } as any);
 
       const platformUser = factories.platformUserEntity.build();
 
