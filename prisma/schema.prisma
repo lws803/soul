@@ -15,10 +15,12 @@ model migrations {
   name      String @db.VarChar(255)
 }
 
-model platform_categories {
+model PlatformCategory {
   id        Int         @id @default(autoincrement())
   name      String      @unique(map: "IDX_6b0e6556c6dddaad1ab2c6fbe5") @db.VarChar(255)
   platforms platforms[]
+
+  @@map("platform_categories")
 }
 
 model PlatformUser {
@@ -41,21 +43,21 @@ model PlatformUser {
 model platforms {
   id                                          Int                                           @id @default(autoincrement())
   name                                        String                                        @db.VarChar(255)
-  name_handle                                 String?                                       @unique(map: "IDX_9a4647eddfb970ff1db96fd2e5") @db.VarChar(255)
-  created_at                                  DateTime                                      @default(now()) @db.Timestamp(6)
-  updated_at                                  DateTime                                      @default(now()) @db.Timestamp(6)
-  is_verified                                 Int                                           @default(0) @db.TinyInt
-  redirect_uris                               Json
-  platform_category_id                        Int?
-  activity_webhook_uri                        String?                                       @db.VarChar(255)
-  client_secret                               String?                                       @db.VarChar(255)
-  homepage_url                                String?                                       @db.VarChar(255)
-  platform_categories                         platform_categories?                          @relation(fields: [platform_category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_36ae51f292e99bb131443b47390")
+  nameHandle                                  String?                                       @unique(map: "IDX_9a4647eddfb970ff1db96fd2e5") @map("name_handle") @db.VarChar(255)
+  createdAt                                   DateTime                                      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                                   DateTime                                      @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  isVerified                                  Int                                           @default(0) @map("is_verified") @db.TinyInt
+  redirectUris                                Json                                          @map("redirect_uris")
+  platformCategoryId                          Int?                                          @map("platform_category_id")
+  activityWebhookUri                          String?                                       @map("activity_webhook_uri") @db.VarChar(255)
+  clientSecret                                String?                                       @map("client_secret") @db.VarChar(255)
+  homepageUrl                                 String?                                       @map("homepage_url") @db.VarChar(255)
+  platformCategory                            PlatformCategory?                             @relation(fields: [platformCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_36ae51f292e99bb131443b47390")
   platform_users                              PlatformUser[]
   platforms_user_connections_user_connections platforms_user_connections_user_connections[]
   user_connections_platforms_platforms        user_connections_platforms_platforms[]
 
-  @@index([platform_category_id], map: "FK_36ae51f292e99bb131443b47390")
+  @@index([platformCategoryId], map: "FK_36ae51f292e99bb131443b47390")
   @@index([name], map: "IDX_6add27e349b6905c85e016fa2c")
 }
 
