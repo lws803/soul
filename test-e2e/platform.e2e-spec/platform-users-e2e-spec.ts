@@ -65,7 +65,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
           clientSecret: 'CLIENT_SECRET',
         }),
       );
-      prismaService.platformUser.createMany({
+      await prismaService.platformUser.createMany({
         data: [
           factories.platformUserEntity.build({
             userId: userAccount.user.id,
@@ -610,13 +610,9 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     });
 
     it('quits existing platform (ADMIN)', async () => {
-      await prismaService.platformUser.create({
-        data: factories.platformUserEntity.build({
-          id: 2,
-          userId: secondUserAccount.user.id,
-          platformId: platform.id,
-          roles: [UserRole.Admin, UserRole.Member],
-        }),
+      await prismaService.platformUser.update({
+        where: { id: 2 },
+        data: { roles: [UserRole.Admin, UserRole.Member] },
       });
 
       const params = new URLSearchParams({
