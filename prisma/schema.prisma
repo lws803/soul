@@ -2,13 +2,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// TODO: Create mapping and change naming conventions for the tables here
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+// TODO: Remove migrations table and add use Prisma's migration functionality
 model migrations {
   id        Int    @id @default(autoincrement())
   timestamp BigInt
@@ -16,9 +15,9 @@ model migrations {
 }
 
 model PlatformCategory {
-  id        Int         @id @default(autoincrement())
-  name      String      @unique(map: "IDX_6b0e6556c6dddaad1ab2c6fbe5") @db.VarChar(255)
-  platforms platforms[]
+  id        Int        @id @default(autoincrement())
+  name      String     @unique(map: "IDX_6b0e6556c6dddaad1ab2c6fbe5") @db.VarChar(255)
+  platforms Platform[]
 
   @@map("platform_categories")
 }
@@ -31,7 +30,7 @@ model PlatformUser {
   userId         Int?           @map("user_id")
   platformId     Int?           @map("platform_id")
   profileUrl     String?        @map("profile_url") @db.VarChar(255)
-  platform       platforms?     @relation(fields: [platformId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_1d2a9b39f3477e0aa97a996d711")
+  platform       Platform?      @relation(fields: [platformId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_1d2a9b39f3477e0aa97a996d711")
   user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_f48bdedbdc9ce9ed23392fdc4b4")
   refresh_tokens RefreshToken[]
 
@@ -40,7 +39,7 @@ model PlatformUser {
   @@map("platform_users")
 }
 
-model platforms {
+model Platform {
   id                                          Int                                           @id @default(autoincrement())
   name                                        String                                        @db.VarChar(255)
   nameHandle                                  String?                                       @unique(map: "IDX_9a4647eddfb970ff1db96fd2e5") @map("name_handle") @db.VarChar(255)
@@ -59,13 +58,14 @@ model platforms {
 
   @@index([platformCategoryId], map: "FK_36ae51f292e99bb131443b47390")
   @@index([name], map: "IDX_6add27e349b6905c85e016fa2c")
+  @@map("platforms")
 }
 
 model platforms_user_connections_user_connections {
   user_connection_id Int
   platform_id        Int
   user_connections   UserConnection @relation(fields: [platform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_68497f3c1d20e50b6701fd27716")
-  platforms          platforms      @relation(fields: [user_connection_id], references: [id], onDelete: Cascade, map: "FK_ec16e6694ea1e9b32c032f2088e")
+  platforms          Platform       @relation(fields: [user_connection_id], references: [id], onDelete: Cascade, map: "FK_ec16e6694ea1e9b32c032f2088e")
 
   @@id([user_connection_id, platform_id])
   @@index([platform_id], map: "IDX_68497f3c1d20e50b6701fd2771")
@@ -110,7 +110,7 @@ model UserConnection {
 model user_connections_platforms_platforms {
   platform_id        Int
   user_connection_id Int
-  platforms          platforms      @relation(fields: [user_connection_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_44980a74eaf800d40e4ad89d066")
+  platforms          Platform       @relation(fields: [user_connection_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_44980a74eaf800d40e4ad89d066")
   user_connections   UserConnection @relation(fields: [platform_id], references: [id], onDelete: Cascade, map: "FK_a464a03734dd2d3f6d2b9d8e9d6")
 
   @@id([platform_id, user_connection_id])
