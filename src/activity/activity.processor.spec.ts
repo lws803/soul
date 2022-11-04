@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { Job } from 'bull';
 import axios from 'axios';
 
 import * as factories from 'factories';
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { ActivityProcessor } from './activity.processor';
 import { FollowActivityJobPayload } from './types';
@@ -27,16 +26,19 @@ describe(ActivityProcessor, () => {
       providers: [
         ActivityProcessor,
         {
-          provide: getRepositoryToken(PlatformUser),
+          provide: PrismaService,
           useValue: {
-            findAndCount: jest
-              .fn()
-              .mockResolvedValue([
-                factories.platformUserEntity.buildList(1, {
-                  userId: toUser.id,
-                }),
-                1,
+            platformUser: {
+              findMany: jest.fn().mockResolvedValue([
+                {
+                  ...factories.platformUserEntity.build({
+                    userId: toUser.id,
+                  }),
+                  platform: factories.platformEntity.build(),
+                  user: factories.userEntity.build(),
+                },
               ]),
+            },
           },
         },
       ],

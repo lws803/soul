@@ -54,7 +54,6 @@ export class ActivityProcessor {
     const { fromUser, toUser, type: activityType } = job.data;
     this.logger.log(`Sending activity of type ${activityType}...'`);
     try {
-      // TODO: Validate to see if this works
       const platformUsers = await this.prismaService.platformUser.findMany({
         where: {
           userId: toUser.id,
