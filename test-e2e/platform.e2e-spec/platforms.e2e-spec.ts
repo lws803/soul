@@ -6,7 +6,6 @@ import base64url from 'base64url';
 
 import { UserRole } from 'src/roles/role.enum';
 import { Platform } from 'src/platforms/entities/platform.entity';
-import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../../factories';
@@ -19,7 +18,6 @@ import {
 describe('PlatformsController (e2e)', () => {
   let app: INestApplication;
   let platformRepository: Repository<Platform>;
-  let platformCategoryRepository: Repository<PlatformCategory>;
   let prismaService: PrismaService;
 
   let userAccount: UserAccount;
@@ -37,16 +35,15 @@ describe('PlatformsController (e2e)', () => {
     await connection.synchronize(true);
 
     platformRepository = connection.getRepository(Platform);
-    platformCategoryRepository = connection.getRepository(PlatformCategory);
     prismaService = app.get<PrismaService>(PrismaService);
 
     const [firstUser, secondUser] = await createUsersAndLoginFixture(app);
     userAccount = firstUser;
     secondUserAccount = secondUser;
 
-    await platformCategoryRepository.save(
-      factories.platformCategoryEntity.build(),
-    );
+    await prismaService.platformCategory.create({
+      data: factories.platformCategoryEntity.build(),
+    });
   });
 
   afterAll(async () => {
@@ -618,6 +615,7 @@ describe('PlatformsController (e2e)', () => {
             activity_webhook_uri: 'ACTIVITY_WEBHOOK_URI',
             client_secret: null,
             homepage_url: 'HOMEPAGE_URL',
+            category: { id: 1, name: 'CATEGORY' },
           }),
         );
     });
