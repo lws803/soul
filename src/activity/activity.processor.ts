@@ -20,11 +20,7 @@ import { FollowActivityResponseEntity } from './serializers/api-responses.entity
 export class ActivityProcessor {
   private readonly logger = new Logger(ActivityProcessor.name);
 
-  constructor(
-    // @InjectRepository(PlatformUser)
-    // private platformUserRepository: Repository<PlatformUser>,
-    private prismaService: PrismaService,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   @OnQueueActive()
   onActive(job: Job) {
