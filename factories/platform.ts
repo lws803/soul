@@ -1,8 +1,7 @@
 import { Factory } from 'fishery';
-import { PlatformUser, PlatformCategory } from '@prisma/client';
+import { PlatformUser, PlatformCategory, Platform } from '@prisma/client';
 
 import * as factories from 'factories';
-import { Platform } from 'src/platforms/entities/platform.entity';
 import { UserRole } from 'src/roles/role.enum';
 
 export const platformCategoryEntity = Factory.define<PlatformCategory>(() => ({
@@ -18,10 +17,9 @@ export const platformEntity = Factory.define<Platform>(({ sequence }) => {
     nameHandle: `test_platform_${sequence}#${sequence}`,
     createdAt: new Date('1995-12-17T03:24:00'),
     updatedAt: new Date('1995-12-18T03:24:00'),
-    userConnections: [],
     isVerified: true,
     redirectUris: ['TEST_REDIRECT_URI'],
-    category: platformCategoryEntity.build(),
+    platformCategoryId: platformCategoryEntity.build().id,
     activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
     clientSecret: null,
     homepageUrl: 'HOMEPAGE_URL',
