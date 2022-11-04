@@ -171,7 +171,7 @@ describe('AuthService', () => {
 
       const response = await service.findCodeForPlatformAndCallback({
         user,
-        platformId: platformUser.platform.id,
+        platformId: platformUser.platformId,
         callback: 'TEST_REDIRECT_URI',
         state: 'TEST_STATE',
         codeChallenge,
@@ -193,7 +193,7 @@ describe('AuthService', () => {
       await expect(
         service.findCodeForPlatformAndCallback({
           user,
-          platformId: platformUser.platform.id,
+          platformId: platformUser.platformId,
           callback: 'INVALID_URI',
           state: 'TEST_STATE',
           codeChallenge: 'CODE_CHALLENGE',
@@ -208,7 +208,7 @@ describe('AuthService', () => {
       await expect(
         service.findCodeForPlatformAndCallback({
           user,
-          platformId: platformUser.platform.id,
+          platformId: platformUser.platformId,
           callback: 'TEST_REDIRECT_URI',
           state: 'TEST_STATE',
           codeChallenge: 'CODE_CHALLENGE',
@@ -324,7 +324,7 @@ describe('AuthService', () => {
         );
       const response = await service.refreshWithPlatform(
         'REFRESH_TOKEN',
-        platformUser.platform.id,
+        platformUser.platformId,
       );
 
       expect(prismaService.refreshToken.findUnique).toHaveBeenCalledWith({
@@ -336,14 +336,14 @@ describe('AuthService', () => {
         { secret: 'JWT_SECRET_KEY', expiresIn: 'JWT_ACCESS_TOKEN_TTL' },
       );
       expect(prismaService.refreshToken.update).not.toHaveBeenCalledWith(
-        factories.refreshToken.build().id,
+        factories.refreshTokenEntity.build().id,
         { isRevoked: true },
       );
 
       expect(response).toStrictEqual({
         accessToken: 'SIGNED_TOKEN',
         refreshToken: 'SIGNED_TOKEN',
-        platformId: platformUser.platform.id,
+        platformId: platformUser.platformId,
         roles: platformUser.roles,
         expiresIn: 'JWT_ACCESS_TOKEN_TTL',
       });
@@ -366,7 +366,7 @@ describe('AuthService', () => {
 
       await service.refreshWithPlatform(
         'REFRESH_TOKEN',
-        platformUser.platform.id,
+        platformUser.platformId,
       );
       expect(prismaService.refreshToken.update).toHaveBeenCalledWith({
         data: { isRevoked: true },
@@ -381,7 +381,7 @@ describe('AuthService', () => {
       const platformUser = factories.platformUserEntity.build();
 
       await expect(
-        service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
+        service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platformId),
       ).rejects.toThrow('Refresh token not found');
     });
 
@@ -394,7 +394,7 @@ describe('AuthService', () => {
       const platformUser = factories.platformUserEntity.build();
 
       await expect(
-        service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
+        service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platformId),
       ).rejects.toThrow('Refresh token expired');
     });
 
@@ -402,14 +402,16 @@ describe('AuthService', () => {
       const revokedRefreshToken = factories.refreshTokenEntity.build({
         isRevoked: true,
       });
-      jest
-        .spyOn(prismaService.refreshToken, 'findUnique')
-        .mockResolvedValue(revokedRefreshToken);
+      jest.spyOn(prismaService.refreshToken, 'findUnique').mockResolvedValue({
+        ...revokedRefreshToken,
+        user: factories.userEntity.build(),
+        platformUser: factories.platformUserEntity.build(),
+      } as any);
 
       const platformUser = factories.platformUserEntity.build();
 
       await expect(
-        service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platform.id),
+        service.refreshWithPlatform('REFRESH_TOKEN', platformUser.platformId),
       ).rejects.toThrow('Refresh token revoked');
 
       expect(prismaService.refreshToken.updateMany).toHaveBeenCalledWith({
@@ -438,7 +440,7 @@ describe('AuthService', () => {
 
       await service.refreshWithPlatform(
         'REFRESH_TOKEN',
-        platformUser.platform.id,
+        platformUser.platformId,
       );
 
       expect(prismaService.refreshToken.update).toHaveBeenCalledWith({
@@ -466,7 +468,7 @@ describe('AuthService', () => {
 
       await service.refreshWithPlatform(
         'REFRESH_TOKEN',
-        platformUser.platform.id,
+        platformUser.platformId,
       );
 
       expect(prismaService.refreshToken.update).not.toHaveBeenCalled();

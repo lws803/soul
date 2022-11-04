@@ -140,21 +140,22 @@ export class AuthService {
       decodedToken.userId,
     );
     const user = await this.usersService.findOne(decodedToken.userId);
+    const roles = platformUser.roles as UserRole[];
 
     return {
       accessToken: await this.generateAccessToken(
         user,
         decodedToken.platformId,
-        platformUser.roles,
+        roles,
       ),
       refreshToken: await this.generateRefreshToken(
         user,
         this.configService.get('JWT_REFRESH_TOKEN_TTL'),
         decodedToken.platformId,
-        platformUser.roles,
+        roles,
       ),
       platformId: decodedToken.platformId,
-      roles: platformUser.roles,
+      roles,
       expiresIn: this.configService.get('JWT_ACCESS_TOKEN_TTL'),
     };
   }

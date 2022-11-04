@@ -1,18 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, In, QueryFailedError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import * as randomString from 'randomstring';
+import { PlatformUser } from '@prisma/client';
 
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 import { UserRole } from 'src/roles/role.enum';
-import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as api from './serializers/api.dto';
 import * as exceptions from './exceptions';
 import { Platform } from './entities/platform.entity';
-import { PlatformUser } from './entities/platform-user.entity';
-import { PlatformCategory } from './entities/platform-category.entity';
 import { FindAllPlatformResponseEntity } from './serializers/api-responses.entity';
 
 const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
@@ -22,13 +21,8 @@ export class PlatformsService {
   constructor(
     @InjectRepository(Platform)
     private platformRepository: Repository<Platform>,
-    @InjectRepository(PlatformUser)
-    private platformUserRepository: Repository<PlatformUser>,
     private readonly usersService: UsersService,
-    @InjectRepository(RefreshToken)
-    private readonly refreshTokenRepository: Repository<RefreshToken>,
-    @InjectRepository(PlatformCategory)
-    private readonly platformCategoryRepository: Repository<PlatformCategory>,
+    private prismaService: PrismaService,
   ) {}
 
   async create(createPlatformDto: api.CreatePlatformDto, userId: number) {
@@ -60,12 +54,13 @@ export class PlatformsService {
       savedPlatform.id,
     );
 
-    const newPlatformUser = new PlatformUser();
-    newPlatformUser.platform = updatedPlatform;
-    newPlatformUser.user = await this.usersService.findOne(userId);
-    newPlatformUser.roles = [UserRole.Admin, UserRole.Member];
-
-    await this.platformUserRepository.save(newPlatformUser);
+    await this.prismaService.platformUser.create({
+      data: {
+        platformId: updatedPlatform.id,
+        userId: userId,
+        roles: [UserRole.Admin, UserRole.Member],
+      },
+    });
     return updatedPlatform;
   }
 
@@ -109,27 +104,22 @@ export class PlatformsService {
     queryParams: api.FindMyPlatformsQueryParamDto,
     userId: number,
   ): Promise<FindAllPlatformResponseEntity> {
-    let baseQuery = this.platformUserRepository
-      .createQueryBuilder('platformUser')
-      .leftJoinAndSelect('platformUser.platform', 'platform')
-      .leftJoinAndSelect('platform.category', 'category')
-      .select();
+    const role = queryParams.role;
 
-    baseQuery = baseQuery.where('platformUser.user = :userId', {
-      userId: userId,
+    const platformUsers = await this.prismaService.platformUser.findMany({
+      where: { userId, ...(role && { roles: { array_contains: role } }) },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: queryParams.numItemsPerPage,
+      skip: (queryParams.page - 1) * queryParams.numItemsPerPage,
+      include: {
+        platform: { include: { category: true } },
+        user: true,
+      },
     });
 
-    const role = queryParams.role;
-    if (role) {
-      baseQuery = baseQuery.andWhere(`JSON_CONTAINS(roles, \'"${role}"\')`);
-    }
-
-    baseQuery = baseQuery
-      .orderBy({ 'platformUser.createdAt': 'DESC', 'platformUser.id': 'DESC' })
-      .take(queryParams.numItemsPerPage)
-      .skip((queryParams.page - 1) * queryParams.numItemsPerPage);
-
-    const [platformUsers, totalCount] = await baseQuery.getManyAndCount();
+    const totalCount = await this.prismaService.platformUser.count({
+      where: { userId, ...(role && { roles: { array_contains: role } }) },
+    });
 
     return {
       platforms: platformUsers.map((platformUser) => platformUser.platform),
@@ -157,7 +147,7 @@ export class PlatformsService {
     if (updatePlatformUserDto.roles) {
       const roles = updatePlatformUserDto.roles;
       if (
-        platformUser.roles.includes(UserRole.Admin) &&
+        (platformUser.roles as UserRole[]).includes(UserRole.Admin) &&
         !roles.includes(UserRole.Admin)
       ) {
         // Check if there are any remaining admins
@@ -171,12 +161,17 @@ export class PlatformsService {
       await this.revokePlatformUserRefreshToken(platformUser);
     }
 
-    platformUser.profileUrl =
-      updatePlatformUserDto.profileUrl !== undefined
-        ? updatePlatformUserDto.profileUrl
-        : platformUser.profileUrl;
-
-    return await this.platformUserRepository.save(platformUser);
+    return await this.prismaService.platformUser.update({
+      where: { id: platformUser.id },
+      data: {
+        roles: platformUser.roles,
+        profileUrl:
+          updatePlatformUserDto.profileUrl !== undefined
+            ? updatePlatformUserDto.profileUrl
+            : platformUser.profileUrl,
+      },
+      include: { user: true, platform: true },
+    });
   }
 
   async update(id: number, updatePlatformDto: api.UpdatePlatformDto) {
@@ -224,23 +219,25 @@ export class PlatformsService {
     platformId?: number;
     params: api.ListAllPlatformUsersQueryParamDto;
   }) {
-    const where: FindOneOptions<PlatformUser>['where'] = {};
-    if (platformId) {
-      const platform = await this.findOne(platformId);
-      where['platform'] = platform;
-    }
-    if (params.uid) {
-      where['user'] = In(params.uid);
-    }
-
-    const [platformUsers, totalCount] =
-      await this.platformUserRepository.findAndCount({
-        order: { createdAt: 'DESC' },
-        take: params.numItemsPerPage,
-        skip: (params.page - 1) * params.numItemsPerPage,
-        where,
-        relations: ['user', 'platform'],
-      });
+    const platformUsers = await this.prismaService.platformUser.findMany({
+      where: {
+        ...(platformId && { platformId }),
+        ...(params.uid && { userId: { in: params.uid } }),
+      },
+      take: params.numItemsPerPage,
+      skip: (params.page - 1) * params.numItemsPerPage,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      include: {
+        user: true,
+        platform: { include: { category: true } },
+      },
+    });
+    const totalCount = await this.prismaService.platformUser.count({
+      where: {
+        ...(platformId && { platformId }),
+        ...(params.uid && { userId: { in: params.uid } }),
+      },
+    });
 
     return { platformUsers, totalCount };
   }
@@ -249,26 +246,23 @@ export class PlatformsService {
     const platformUser = await this.findOnePlatformUser(platformId, userId);
     // Check if there are any remaining admins
     await this.findAnotherAdminOrThrow(platformId, userId);
-    await this.platformUserRepository.delete({ id: platformUser.id });
+    await this.prismaService.platformUser.delete({
+      where: { id: platformUser.id },
+    });
   }
 
   async addUser(platformId: number, userId: number) {
-    const newPlatformUser = new PlatformUser();
-    newPlatformUser.platform = await this.findOne(platformId);
-    newPlatformUser.user = await this.usersService.findOne(userId);
-    newPlatformUser.roles = [UserRole.Member];
+    const user = await this.usersService.findOne(userId);
 
-    try {
-      return await this.platformUserRepository.save(newPlatformUser);
-    } catch (exception) {
-      if (
-        exception instanceof QueryFailedError &&
-        exception.driverError.code === 'ER_DUP_ENTRY'
-      ) {
-        throw new exceptions.DuplicatePlatformUserException();
-      }
-      throw exception;
-    }
+    await this.throwOnDuplicatePlatformUser(user.id, platformId);
+    return await this.prismaService.platformUser.create({
+      data: {
+        platformId,
+        userId: user.id,
+        roles: [UserRole.Member],
+      },
+      include: { user: true, platform: { include: { category: true } } },
+    });
   }
 
   async generateClientSecret(platformId: number): Promise<Platform> {
@@ -293,13 +287,16 @@ export class PlatformsService {
     user: User;
     platform: Platform;
   }): Promise<PlatformUser> {
-    const platformUser = await this.platformUserRepository.findOne(
-      {
-        user,
-        platform,
+    const platformUser = await this.prismaService.platformUser.findFirst({
+      where: { userId: user.id, platformId: platform.id },
+      include: {
+        user: true,
+        platform: {
+          include: { category: true },
+        },
       },
-      { relations: ['user', 'platform', 'platform.category'] },
-    );
+    });
+
     if (!platformUser)
       throw new exceptions.PlatformUserNotFoundException({
         platformName: platform.nameHandle,
@@ -310,12 +307,13 @@ export class PlatformsService {
   }
 
   private async findAnotherAdminOrThrow(platformId: number, userId: number) {
-    const adminPlatformUser = await this.platformUserRepository
-      .createQueryBuilder('platform_user')
-      .where('JSON_CONTAINS(roles, \'"admin"\')', { platformId, userId })
-      .andWhere('platform_id = :platformId', { platformId })
-      .andWhere('user_id != :userId', { userId })
-      .getOne();
+    const adminPlatformUser = await this.prismaService.platformUser.findFirst({
+      where: {
+        roles: { array_contains: UserRole.Admin },
+        platformId,
+        userId: { not: userId },
+      },
+    });
 
     if (!adminPlatformUser) {
       throw new exceptions.NoAdminsRemainingException();
@@ -323,11 +321,12 @@ export class PlatformsService {
   }
 
   private async isNewAdminPermittedOrThrow(userId: number) {
-    const adminCount = await this.platformUserRepository
-      .createQueryBuilder('platform_user')
-      .where('JSON_CONTAINS(roles, \'"admin"\')')
-      .andWhere('user_id = :userId', { userId })
-      .getCount();
+    const adminCount = await this.prismaService.platformUser.count({
+      where: {
+        roles: { array_contains: UserRole.Admin },
+        userId,
+      },
+    });
 
     if (adminCount >= NUM_ADMIN_ROLES_ALLOWED_PER_USER)
       throw new exceptions.MaxAdminRolesPerUserException({
@@ -336,16 +335,16 @@ export class PlatformsService {
   }
 
   private async revokePlatformUserRefreshToken(platformUser: PlatformUser) {
-    if (await this.refreshTokenRepository.findOne({ platformUser })) {
-      await this.refreshTokenRepository.update(
-        { platformUser },
-        { isRevoked: true },
-      );
-    }
+    await this.prismaService.refreshToken.updateMany({
+      where: { platformUserId: platformUser.id },
+      data: { isRevoked: true },
+    });
   }
 
   private async findOneCategoryOrThrow(name: string) {
-    const category = await this.platformCategoryRepository.findOne({ name });
+    const category = await this.prismaService.platformCategory.findFirst({
+      where: { name },
+    });
     if (!category)
       throw new exceptions.PlatformCategoryNotFoundException({ name });
     return category;
@@ -353,5 +352,17 @@ export class PlatformsService {
 
   private getPlatformHandle(platformName: string, platformId: number) {
     return `${platformName.toLowerCase().replace(/\s+/g, '-')}#${platformId}`;
+  }
+
+  private async throwOnDuplicatePlatformUser(
+    userId: number,
+    platformId: number,
+  ) {
+    if (
+      await this.prismaService.platformUser.findFirst({
+        where: { userId, platformId },
+      })
+    )
+      throw new exceptions.DuplicatePlatformUserException();
   }
 }

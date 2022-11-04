@@ -42,7 +42,7 @@ export class PlatformRolesGuard implements CanActivate {
       );
 
       const canAccess = requiredRoles.some((role) =>
-        platformUser.roles.includes(role),
+        (platformUser.roles as UserRole[]).includes(role),
       );
       if (!canAccess) {
         throw new NoPermissionException();

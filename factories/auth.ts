@@ -1,39 +1,26 @@
 import { Factory } from 'fishery';
 import { RefreshToken } from '@prisma/client';
 
-import { RefreshToken as RefreshTokenDeprecated } from 'src/auth/entities/refresh-token.entity';
 import { JWTRefreshPayload } from 'src/auth/entities/jwt-refresh-payload.entity';
 import { JWTClientCredentialPayload } from 'src/auth/entities/jwt-client-credential-payload.entity';
 import { JWTPayload } from 'src/auth/entities/jwt-payload.entity';
 import { TokenType } from 'src/auth/enums/token-type.enum';
+import { UserRole } from 'src/roles/role.enum';
 
 import * as factories from './index';
-
-// TODO: Switch this to use refresh token from prisma instead
-export const refreshToken = Factory.define<RefreshTokenDeprecated>(() => ({
-  id: 1,
-  user: factories.userEntity.build(),
-  isRevoked: false,
-  createdAt: new Date('1995-12-17T03:24:00'),
-  updatedAt: new Date('1995-12-18T03:24:00'),
-  expires: new Date('1995-12-19T03:24:00'),
-  platformUser: factories.platformUserEntity.build(),
-}));
 
 export const refreshTokenEntity = Factory.define<RefreshToken>(() => ({
   id: 1,
   userId: factories.userEntity.build().id,
-  user: factories.userEntity.build(),
-  isRevoked: false,
-  platformUser: factories.platformUserEntity.build(),
   platformUserId: factories.platformUserEntity.build().id,
+  isRevoked: false,
   expires: new Date('1995-12-19T03:24:00'),
   createdAt: new Date('1995-12-17T03:24:00'),
   updatedAt: new Date('1995-12-18T03:24:00'),
 }));
 
 export const jwtRefreshPayload = Factory.define<JWTRefreshPayload>(() => ({
-  tokenId: refreshToken.build().id,
+  tokenId: refreshTokenEntity.build().id,
   userId: factories.userEntity.build().id,
   tokenType: TokenType.Refresh,
 }));
@@ -55,13 +42,15 @@ export const jwtClientCredentialPayload =
 
 export const jwtPayloadWithPlatform = Factory.define<JWTPayload>(() => {
   const oneUser = factories.userEntity.build();
-  const onePlatformUser = factories.platformUserEntity.build({ user: oneUser });
+  const onePlatformUser = factories.platformUserEntity.build({
+    userId: oneUser.id,
+  });
   return {
     userId: oneUser.id,
     username: oneUser.username,
     tokenType: TokenType.Access,
-    platformId: onePlatformUser.platform.id,
-    roles: onePlatformUser.roles,
+    platformId: onePlatformUser.platformId,
+    roles: onePlatformUser.roles as UserRole[],
   };
 });
 
@@ -69,14 +58,14 @@ export const jwtRefreshPayloadWithPlatform = Factory.define<JWTRefreshPayload>(
   () => {
     const oneUser = factories.userEntity.build();
     const onePlatformUser = factories.platformUserEntity.build({
-      user: oneUser,
+      userId: oneUser.id,
     });
     return {
-      tokenId: refreshToken.build().id,
+      tokenId: refreshTokenEntity.build().id,
       userId: oneUser.id,
       tokenType: TokenType.Refresh,
-      platformId: onePlatformUser.platform.id,
-      roles: onePlatformUser.roles,
+      platformId: onePlatformUser.platformId,
+      roles: onePlatformUser.roles as UserRole[],
     };
   },
 );

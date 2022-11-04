@@ -2,23 +2,24 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// TODO: Create mapping and change naming conventions for the tables here
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+// TODO: Remove migrations table and add use Prisma's migration functionality
 model migrations {
   id        Int    @id @default(autoincrement())
   timestamp BigInt
   name      String @db.VarChar(255)
 }
 
-model platform_categories {
-  id        Int         @id @default(autoincrement())
-  name      String      @unique(map: "IDX_6b0e6556c6dddaad1ab2c6fbe5") @db.VarChar(255)
-  platforms platforms[]
+model PlatformCategory {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique(map: "IDX_6b0e6556c6dddaad1ab2c6fbe5") @db.VarChar(255)
+  platforms Platform[]
+
+  @@map("platform_categories")
 }
 
 model PlatformUser {
@@ -29,8 +30,8 @@ model PlatformUser {
   userId         Int?           @map("user_id")
   platformId     Int?           @map("platform_id")
   profileUrl     String?        @map("profile_url") @db.VarChar(255)
-  platforms      platforms?     @relation(fields: [platformId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_1d2a9b39f3477e0aa97a996d711")
-  users          User?          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_f48bdedbdc9ce9ed23392fdc4b4")
+  platform       Platform?      @relation(fields: [platformId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_1d2a9b39f3477e0aa97a996d711")
+  user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_f48bdedbdc9ce9ed23392fdc4b4")
   refresh_tokens RefreshToken[]
 
   @@unique([userId, platformId], map: "IDX_9a2328071f3e0ff4b0836cffc8")
@@ -38,32 +39,33 @@ model PlatformUser {
   @@map("platform_users")
 }
 
-model platforms {
+model Platform {
   id                                          Int                                           @id @default(autoincrement())
   name                                        String                                        @db.VarChar(255)
-  name_handle                                 String?                                       @unique(map: "IDX_9a4647eddfb970ff1db96fd2e5") @db.VarChar(255)
-  created_at                                  DateTime                                      @default(now()) @db.Timestamp(6)
-  updated_at                                  DateTime                                      @default(now()) @db.Timestamp(6)
-  is_verified                                 Int                                           @default(0) @db.TinyInt
-  redirect_uris                               Json
-  platform_category_id                        Int?
-  activity_webhook_uri                        String?                                       @db.VarChar(255)
-  client_secret                               String?                                       @db.VarChar(255)
-  homepage_url                                String?                                       @db.VarChar(255)
-  platform_categories                         platform_categories?                          @relation(fields: [platform_category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_36ae51f292e99bb131443b47390")
+  nameHandle                                  String?                                       @unique(map: "IDX_9a4647eddfb970ff1db96fd2e5") @map("name_handle") @db.VarChar(255)
+  createdAt                                   DateTime                                      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                                   DateTime                                      @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  isVerified                                  Boolean                                       @default(false) @map("is_verified") @db.TinyInt
+  redirectUris                                Json                                          @map("redirect_uris")
+  platformCategoryId                          Int?                                          @map("platform_category_id")
+  activityWebhookUri                          String?                                       @map("activity_webhook_uri") @db.VarChar(255)
+  clientSecret                                String?                                       @map("client_secret") @db.VarChar(255)
+  homepageUrl                                 String?                                       @map("homepage_url") @db.VarChar(255)
+  category                                    PlatformCategory?                             @relation(fields: [platformCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_36ae51f292e99bb131443b47390")
   platform_users                              PlatformUser[]
   platforms_user_connections_user_connections platforms_user_connections_user_connections[]
   user_connections_platforms_platforms        user_connections_platforms_platforms[]
 
-  @@index([platform_category_id], map: "FK_36ae51f292e99bb131443b47390")
+  @@index([platformCategoryId], map: "FK_36ae51f292e99bb131443b47390")
   @@index([name], map: "IDX_6add27e349b6905c85e016fa2c")
+  @@map("platforms")
 }
 
 model platforms_user_connections_user_connections {
   user_connection_id Int
   platform_id        Int
   user_connections   UserConnection @relation(fields: [platform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_68497f3c1d20e50b6701fd27716")
-  platforms          platforms      @relation(fields: [user_connection_id], references: [id], onDelete: Cascade, map: "FK_ec16e6694ea1e9b32c032f2088e")
+  platforms          Platform       @relation(fields: [user_connection_id], references: [id], onDelete: Cascade, map: "FK_ec16e6694ea1e9b32c032f2088e")
 
   @@id([user_connection_id, platform_id])
   @@index([platform_id], map: "IDX_68497f3c1d20e50b6701fd2771")
@@ -108,7 +110,7 @@ model UserConnection {
 model user_connections_platforms_platforms {
   platform_id        Int
   user_connection_id Int
-  platforms          platforms      @relation(fields: [user_connection_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_44980a74eaf800d40e4ad89d066")
+  platforms          Platform       @relation(fields: [user_connection_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_44980a74eaf800d40e4ad89d066")
   user_connections   UserConnection @relation(fields: [platform_id], references: [id], onDelete: Cascade, map: "FK_a464a03734dd2d3f6d2b9d8e9d6")
 
   @@id([platform_id, user_connection_id])
