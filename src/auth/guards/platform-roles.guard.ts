@@ -41,8 +41,8 @@ export class PlatformRolesGuard implements CanActivate {
         userJwt.userId,
       );
 
-      const canAccess = requiredRoles.some(
-        (role) => (platformUser.roles as UserRole[]).includes(role), // TODO: Double check this coercion
+      const canAccess = requiredRoles.some((role) =>
+        (platformUser.roles as UserRole[]).includes(role),
       );
       if (!canAccess) {
         throw new NoPermissionException();
