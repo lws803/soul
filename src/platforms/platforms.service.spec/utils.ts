@@ -19,32 +19,3 @@ export const platformCreateQueryBuilderObject = {
     .fn()
     .mockResolvedValue([platformsList, platformsList.length]),
 };
-
-export const platformUserCreateQueryBuilderObject = {
-  select: jest
-    .fn()
-    .mockImplementation(() => platformUserCreateQueryBuilderObject),
-  where: jest
-    .fn()
-    .mockImplementation(() => platformUserCreateQueryBuilderObject),
-  andWhere: jest
-    .fn()
-    .mockImplementation(() => platformUserCreateQueryBuilderObject),
-  leftJoinAndSelect: jest
-    .fn()
-    .mockImplementation(() => platformUserCreateQueryBuilderObject),
-  skip: jest
-    .fn()
-    .mockImplementation(() => platformUserCreateQueryBuilderObject),
-  take: jest
-    .fn()
-    .mockImplementation(() => platformUserCreateQueryBuilderObject),
-  orderBy: jest
-    .fn()
-    .mockImplementation(() => platformUserCreateQueryBuilderObject),
-  getOne: jest.fn().mockResolvedValue(factories.platformUserEntity.build()),
-  getCount: jest.fn().mockResolvedValue(1),
-  getManyAndCount: jest
-    .fn()
-    .mockResolvedValue([factories.platformUserEntity.buildList(1), 1]),
-};
