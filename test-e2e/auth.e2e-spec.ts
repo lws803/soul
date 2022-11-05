@@ -1,12 +1,9 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { Repository, Connection } from 'typeorm';
 import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
+import { User, Platform } from '@prisma/client';
 
-import { User } from 'src/users/entities/user.entity';
-import { Platform } from 'src/platforms/entities/platform.entity';
-import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -14,12 +11,10 @@ import * as factories from '../factories';
 
 import createAppFixture from './fixtures/create-app-fixture';
 import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fixture';
+import { resetDatabase } from './utils/reset-database';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
-  let userRepository: Repository<User>;
-  let platformRepository: Repository<Platform>;
-  let platformCategoryRepository: Repository<PlatformCategory>;
   let prismaService: PrismaService;
 
   const codeVerifier = 'CODE_VERIFIER';
@@ -30,17 +25,12 @@ describe('AuthController (e2e)', () => {
     await app.init();
     app.useLogger(false);
 
-    const connection = app.get(Connection);
-    await connection.synchronize(true);
-
-    userRepository = connection.getRepository(User);
-    platformRepository = connection.getRepository(Platform);
-    platformCategoryRepository = connection.getRepository(PlatformCategory);
     prismaService = app.get<PrismaService>(PrismaService);
+    await resetDatabase();
 
-    await platformCategoryRepository.save(
-      factories.platformCategoryEntity.build(),
-    );
+    await prismaService.platformCategory.create({
+      data: factories.platformCategoryEntity.build(),
+    });
   });
 
   afterAll(async () => {
@@ -58,11 +48,11 @@ describe('AuthController (e2e)', () => {
       const [firstUser] = await createUsersAndLoginFixture(app);
       userAccount = firstUser;
 
-      const platform = await platformRepository.save(
-        factories.platformEntity.build({
+      const platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
-      );
+      });
       await prismaService.platformUser.create({
         data: factories.platformUserEntity.build({
           platformId: platform.id,
@@ -73,8 +63,8 @@ describe('AuthController (e2e)', () => {
 
     afterAll(async () => {
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
-      await userRepository.delete({});
+      await prismaService.platform.deleteMany();
+      await prismaService.user.deleteMany();
     });
 
     it('logs in successfully', async () => {
@@ -163,14 +153,14 @@ describe('AuthController (e2e)', () => {
     });
 
     it('fails to login with platform due to not being a member', async () => {
-      await platformRepository.save(
-        factories.platformEntity.build({
+      await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
           id: 2,
           name: 'TEST_PLATFORM_2',
           nameHandle: 'test_platform_2#2',
         }),
-      );
+      });
       const params = new URLSearchParams({
         code_challenge: codeChallenge,
         state: 'TEST_STATE',
@@ -203,11 +193,11 @@ describe('AuthController (e2e)', () => {
       const [firstUser] = await createUsersAndLoginFixture(app);
       userAccount = firstUser;
 
-      const platform = await platformRepository.save(
-        factories.platformEntity.build({
+      const platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
-      );
+      });
       await prismaService.platformUser.create({
         data: factories.platformUserEntity.build({
           platformId: platform.id,
@@ -218,8 +208,8 @@ describe('AuthController (e2e)', () => {
 
     afterAll(async () => {
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
-      await userRepository.delete({});
+      await prismaService.platform.deleteMany();
+      await prismaService.user.deleteMany();
     });
 
     it('refreshes token for platform successfully', async () => {
@@ -326,16 +316,16 @@ describe('AuthController (e2e)', () => {
     let platform: Platform;
 
     beforeAll(async () => {
-      platform = await platformRepository.save(
-        factories.platformEntity.build({
+      platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
           clientSecret: 'CLIENT_SECRET',
         }),
-      );
+      });
     });
 
     afterAll(async () => {
-      await platformRepository.delete({});
+      await prismaService.platform.deleteMany();
     });
 
     it('authenticates client successfully', async () => {

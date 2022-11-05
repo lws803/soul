@@ -1,6 +1,5 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { Connection } from 'typeorm';
 import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
 import { Platform } from '@prisma/client';
@@ -8,6 +7,7 @@ import { Platform } from '@prisma/client';
 import { UserRole } from 'src/roles/role.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+import { resetDatabase } from '../utils/reset-database';
 import * as factories from '../../factories';
 import createAppFixture from '../fixtures/create-app-fixture';
 import {
@@ -31,10 +31,8 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     await app.init();
     app.useLogger(false);
 
-    const connection = app.get(Connection);
-    await connection.synchronize(true);
-
     prismaService = app.get<PrismaService>(PrismaService);
+    await resetDatabase();
 
     const [firstUser, secondUser, thirdUser] = await createUsersAndLoginFixture(
       app,

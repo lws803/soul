@@ -1,10 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Connection, Repository } from 'typeorm';
 import * as request from 'supertest';
 
-import { Platform } from 'src/platforms/entities/platform.entity';
 import { UserRole } from 'src/roles/role.enum';
-import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../factories';
@@ -14,12 +11,10 @@ import {
   createUsersAndLoginFixture,
   UserAccount,
 } from './fixtures/create-users-and-login-fixture';
+import { resetDatabase } from './utils/reset-database';
 
 describe('ReputationController (e2e)', () => {
   let app: INestApplication;
-  let connection: Connection;
-  let platformRepository: Repository<Platform>;
-  let platformCategoryRepository: Repository<PlatformCategory>;
   let userAccount: UserAccount;
   let secondUserAccount: UserAccount;
   let thirdUserAccount: UserAccount;
@@ -30,12 +25,8 @@ describe('ReputationController (e2e)', () => {
     await app.init();
     app.useLogger(false);
 
-    connection = app.get(Connection);
-    await connection.synchronize(true);
-
     prismaService = app.get<PrismaService>(PrismaService);
-    platformRepository = connection.getRepository(Platform);
-    platformCategoryRepository = connection.getRepository(PlatformCategory);
+    await resetDatabase();
 
     const [firstUser, secondUser, thirdUser] = await createUsersAndLoginFixture(
       app,
@@ -44,9 +35,9 @@ describe('ReputationController (e2e)', () => {
     secondUserAccount = secondUser;
     thirdUserAccount = thirdUser;
 
-    await platformCategoryRepository.save(
-      factories.platformCategoryEntity.build(),
-    );
+    await prismaService.platformCategory.create({
+      data: factories.platformCategoryEntity.build(),
+    });
   });
 
   afterAll(async () => {
@@ -55,11 +46,11 @@ describe('ReputationController (e2e)', () => {
 
   describe('/:userId (GET)', () => {
     beforeAll(async () => {
-      const platform = await platformRepository.save(
-        factories.platformEntity.build({
+      const platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
-      );
+      });
 
       await prismaService.platformUser.create({
         data: {
@@ -87,7 +78,7 @@ describe('ReputationController (e2e)', () => {
 
     afterEach(async () => {
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
+      await prismaService.platform.deleteMany();
       await prismaService.userConnection.deleteMany();
     });
 

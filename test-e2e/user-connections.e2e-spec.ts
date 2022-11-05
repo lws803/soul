@@ -15,6 +15,7 @@ import {
   createUsersAndLoginFixture,
   UserAccount,
 } from './fixtures/create-users-and-login-fixture';
+import { resetDatabase } from './utils/reset-database';
 
 describe('UserConnectionsController (e2e)', () => {
   let app: INestApplication;
@@ -39,9 +40,7 @@ describe('UserConnectionsController (e2e)', () => {
     platformCategoryRepository = connection.getRepository(PlatformCategory);
 
     prismaService = app.get<PrismaService>(PrismaService);
-
-    // TODO: Remove once we have fully migrated to prisma and have a script to support it.
-    await connection.synchronize(true);
+    await resetDatabase();
 
     firstUser = (await createUsersAndLoginFixture(app))[0];
 
