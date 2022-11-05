@@ -1,14 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { Connection } from 'typeorm';
 
 import { User } from 'src/users/entities/user.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../../factories';
 
 export async function createUsersAndLoginFixture(app: INestApplication) {
-  const connection = app.get(Connection);
-  const userRepository = connection.getRepository(User);
+  const prismaService = app.get<PrismaService>(PrismaService);
 
   await request(app.getHttpServer())
     .post('/users')
@@ -37,13 +36,10 @@ export async function createUsersAndLoginFixture(app: INestApplication) {
     )
     .expect(201);
 
-  // TODO: Use prisma service instead
   // Sets all users to active
-  await userRepository
-    .createQueryBuilder('user')
-    .update(User)
-    .set({ isActive: true })
-    .execute();
+  await prismaService.user.updateMany({
+    data: { isActive: true },
+  });
 
   const firstUserLoginResponse = await request(app.getHttpServer())
     .post('/auth/login')
@@ -61,17 +57,23 @@ export async function createUsersAndLoginFixture(app: INestApplication) {
     {
       accessToken: firstUserLoginResponse.body.access_token,
       refreshToken: firstUserLoginResponse.body.refresh_token,
-      user: await userRepository.findOne({ email: 'TEST_USER@EMAIL.COM' }),
+      user: await prismaService.user.findUnique({
+        where: { email: 'TEST_USER@EMAIL.COM' },
+      }),
     },
     {
       accessToken: secondUserLoginResponse.body.access_token,
       refreshToken: secondUserLoginResponse.body.refresh_token,
-      user: await userRepository.findOne({ email: 'TEST_USER_2@EMAIL.COM' }),
+      user: await prismaService.user.findUnique({
+        where: { email: 'TEST_USER_2@EMAIL.COM' },
+      }),
     },
     {
       accessToken: thirdUserLoginResponse.body.access_token,
       refreshToken: thirdUserLoginResponse.body.refresh_token,
-      user: await userRepository.findOne({ email: 'TEST_USER_3@EMAIL.COM' }),
+      user: await prismaService.user.findUnique({
+        where: { email: 'TEST_USER_3@EMAIL.COM' },
+      }),
     },
   ];
 }
