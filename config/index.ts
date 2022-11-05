@@ -4,17 +4,9 @@ import * as Joi from 'joi';
 
 const schema = Joi.object({
   // DB config
-  DB_HOST: Joi.string().required().description('Primary database host'),
-  DB_PORT: Joi.number().default(3306).description('Primary database port'),
   DB_SSL: Joi.boolean()
     .default(false)
     .description('Use SSL for primary database connection'),
-  DB_USER: Joi.string().required().description('Primary database user'),
-  DB_PASSWORD: Joi.string()
-    .optional()
-    .allow('')
-    .description('Primary database password'),
-  DB_NAME: Joi.string().required().description('Primary database name'),
   DATABASE_URL: Joi.string().required().description('Primary database url'),
 
   // Auth config

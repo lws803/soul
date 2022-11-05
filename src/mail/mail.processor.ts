@@ -9,10 +9,8 @@ import {
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Job } from 'bull';
-import { plainToClass } from 'class-transformer';
 import * as Sentry from '@sentry/node';
-
-import { User } from 'src/users/entities/user.entity';
+import { User } from '@prisma/client';
 
 @Processor('mail_queue')
 export class MailProcessor {
@@ -53,7 +51,7 @@ export class MailProcessor {
       await this.mailerService.sendMail({
         template: 'confirmation',
         context: {
-          ...plainToClass(User, job.data.user),
+          ...job.data.user,
           url: `${this.configService.get('MAIL_CONFIRMATION_BASE_URL')}?token=${
             job.data.code
           }`,
@@ -76,7 +74,7 @@ export class MailProcessor {
       await this.mailerService.sendMail({
         template: 'password-reset',
         context: {
-          ...plainToClass(User, job.data.user),
+          ...job.data.user,
           url: `${this.configService.get(
             'MAIL_PASSWORD_RESET_BASE_URL',
           )}?token=${job.data.code}`,
@@ -100,7 +98,7 @@ export class MailProcessor {
     try {
       await this.mailerService.sendMail({
         template: 'password-reset-confirmation',
-        context: plainToClass(User, job.data.user),
+        context: job.data.user,
         subject: 'Password reset confirmation',
         to: job.data.user.email,
       });

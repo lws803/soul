@@ -7,13 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// TODO: Remove migrations table and add use Prisma's migration functionality
-model migrations {
-  id        Int    @id @default(autoincrement())
-  timestamp BigInt
-  name      String @db.VarChar(255)
-}
-
 model PlatformCategory {
   id        Int        @id @default(autoincrement())
   name      String     @unique(map: "IDX_6b0e6556c6dddaad1ab2c6fbe5") @db.VarChar(255)
@@ -123,7 +116,7 @@ model User {
   username                                              String           @unique(map: "IDX_fe0bb3f6520ee0469504521e71") @db.VarChar(255)
   userHandle                                            String?          @unique(map: "IDX_7408d3a73b446527a875a312d4") @map("user_handle") @db.VarChar(255)
   email                                                 String           @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar(255)
-  isActive                                              Boolean          @default(true) @map("is_active") @db.TinyInt
+  isActive                                              Boolean          @default(false) @map("is_active") @db.TinyInt
   hashedPassword                                        String           @map("hashed_password") @db.VarChar(255)
   createdAt                                             DateTime         @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt                                             DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)

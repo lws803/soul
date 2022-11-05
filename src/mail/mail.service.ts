@@ -2,8 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import * as Sentry from '@sentry/node';
-
-import { User } from 'src/users/entities/user.entity';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class MailService {

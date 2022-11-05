@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
+import { User } from '@prisma/client';
 
-import { User } from 'src/users/entities/user.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../../factories';

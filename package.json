@@ -23,11 +23,10 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e:debug": "node --inspect-brk node_modules/.bin/jest --config ./test-e2e/jest-e2e.json --runInBand",
     "test:e2e": "jest --config ./test-e2e/jest-e2e.json --runInBand --forceExit",
-    "typeorm": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts",
-    "migration:generate": "rm -rf ./dist && ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:generate",
-    "migration:run": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:run",
-    "migration:revert": "ts-node ./node_modules/.bin/typeorm -f ./ormconfig.ts migration:revert",
-    "prisma:generate": "prisma generate"
+    "migration:create": "prisma migrate dev --create-only",
+    "migration:run": "prisma migrate deploy",
+    "migration:reset": "prisma migrate reset --force",
+    "migration:generate": "prisma generate"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.1",

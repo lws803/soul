@@ -1,13 +1,9 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { Repository, Connection } from 'typeorm';
 import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
-import { PlatformUser } from '@prisma/client';
+import { PlatformUser, User } from '@prisma/client';
 
-import { User } from 'src/users/entities/user.entity';
-import { Platform } from 'src/platforms/entities/platform.entity';
-import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { TasksService } from 'src/tasks/tasks.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -15,12 +11,10 @@ import * as factories from '../factories';
 
 import createAppFixture from './fixtures/create-app-fixture';
 import { createUsersAndLoginFixture } from './fixtures/create-users-and-login-fixture';
+import { resetDatabase } from './utils/reset-database';
 
 describe('TasksModule (e2e)', () => {
   let app: INestApplication;
-  let userRepository: Repository<User>;
-  let platformRepository: Repository<Platform>;
-  let platformCategoryRepository: Repository<PlatformCategory>;
   let tasksService: TasksService;
   let prismaService: PrismaService;
 
@@ -32,20 +26,14 @@ describe('TasksModule (e2e)', () => {
     await app.init();
     app.useLogger(false);
 
-    const connection = app.get(Connection);
-    await connection.synchronize(true);
-
     tasksService = app.get<TasksService>(TasksService);
 
-    userRepository = connection.getRepository(User);
-    platformRepository = connection.getRepository(Platform);
-    platformCategoryRepository = connection.getRepository(PlatformCategory);
-
     prismaService = app.get<PrismaService>(PrismaService);
+    await resetDatabase();
 
-    await platformCategoryRepository.save(
-      factories.platformCategoryEntity.build(),
-    );
+    await prismaService.platformCategory.create({
+      data: factories.platformCategoryEntity.build(),
+    });
   });
 
   afterAll(async () => {
@@ -65,11 +53,11 @@ describe('TasksModule (e2e)', () => {
       const [firstUser] = await createUsersAndLoginFixture(app);
       userAccount = firstUser;
 
-      const platform = await platformRepository.save(
-        factories.platformEntity.build({
+      const platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
-      );
+      });
       firstPlatformUser = await prismaService.platformUser.create({
         data: factories.platformUserEntity.build({
           platformId: platform.id,
@@ -77,14 +65,14 @@ describe('TasksModule (e2e)', () => {
         }),
       });
 
-      const secondPlatform = await platformRepository.save(
-        factories.platformEntity.build({
+      const secondPlatform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           id: 2,
           name: 'test_platform_2',
           nameHandle: 'test_platform_2#2',
           redirectUris: ['https://www.example.com'],
         }),
-      );
+      });
       secondPlatformUser = await prismaService.platformUser.create({
         data: factories.platformUserEntity.build({
           id: 2,
@@ -107,8 +95,8 @@ describe('TasksModule (e2e)', () => {
     afterAll(async () => {
       await prismaService.refreshToken.deleteMany();
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
-      await userRepository.delete({});
+      await prismaService.platform.deleteMany();
+      await prismaService.user.deleteMany();
     });
 
     it('clears tokens for platforms exceeding 10', async () => {

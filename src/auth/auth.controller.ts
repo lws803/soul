@@ -16,8 +16,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
+import { User } from '@prisma/client';
 
-import { User } from 'src/users/entities/user.entity';
 import { ApiResponseInvalid } from 'src/common/serializers/decorators';
 
 import { AuthService } from './auth.service';

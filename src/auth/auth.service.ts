@@ -8,8 +8,8 @@ import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
 import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
+import { User } from '@prisma/client';
 
-import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { PlatformsService } from 'src/platforms/platforms.service';
 import { UserRole } from 'src/roles/role.enum';
@@ -18,7 +18,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JWTPayload } from './entities/jwt-payload.entity';
 import { JWTClientCredentialPayload } from './entities/jwt-client-credential-payload.entity';
 import { JWTRefreshPayload } from './entities/jwt-refresh-payload.entity';
-import { RefreshToken } from './entities/refresh-token.entity';
 import { TokenType } from './enums/token-type.enum';
 import * as exceptions from './exceptions';
 import * as apiResponses from './serializers/api-responses.entity';
@@ -290,14 +289,8 @@ export class AuthService {
     ttl: number,
     platformId: number,
   ) {
-    const token = new RefreshToken();
-
-    token.user = user;
-    token.isRevoked = false;
     const expiration = new Date();
     expiration.setTime(expiration.getTime() + ttl * 1000);
-
-    token.expires = expiration;
 
     return this.prismaService.refreshToken.create({
       data: {
