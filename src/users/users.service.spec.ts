@@ -281,12 +281,7 @@ describe('UsersService', () => {
 
       expect(prismaService.user.update).toHaveBeenCalledWith({
         where: { id: user.id },
-        data: {
-          email: 'TEST_USER_1@EMAIL.COM',
-          username: 'test-user-1',
-          displayName: user.displayName,
-          ...updatedUserDto,
-        },
+        data: updatedUserDto,
       });
     });
   });

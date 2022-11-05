@@ -112,13 +112,10 @@ export class UsersService {
     return await this.prismaService.user.update({
       where: { id: user.id },
       data: {
-        bio: updateUserDto.bio !== undefined ? updateUserDto.bio : user.bio,
-        displayName:
-          updateUserDto.displayName !== undefined
-            ? updateUserDto.displayName
-            : user.displayName,
-        username: updateUserDto.username ?? user.username,
-        email: updateUserDto.email ?? user.email,
+        bio: updateUserDto.bio,
+        displayName: updateUserDto.displayName,
+        username: updateUserDto.username,
+        email: updateUserDto.email,
         ...(updateUserDto.username && {
           userHandle: this.getUserHandle(updateUserDto.username, user.id),
         }),

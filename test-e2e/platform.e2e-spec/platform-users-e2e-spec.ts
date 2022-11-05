@@ -1,12 +1,11 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { Repository, Connection } from 'typeorm';
+import { Connection } from 'typeorm';
 import * as sha256 from 'crypto-js/sha256';
 import base64url from 'base64url';
+import { Platform } from '@prisma/client';
 
 import { UserRole } from 'src/roles/role.enum';
-import { Platform } from 'src/platforms/entities/platform.entity';
-import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../../factories';
@@ -18,8 +17,6 @@ import {
 
 describe('PlatformsController - PlatformUsers (e2e)', () => {
   let app: INestApplication;
-  let platformRepository: Repository<Platform>;
-  let platformCategoryRepository: Repository<PlatformCategory>;
   let prismaService: PrismaService;
 
   let userAccount: UserAccount;
@@ -37,8 +34,6 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     const connection = app.get(Connection);
     await connection.synchronize(true);
 
-    platformRepository = connection.getRepository(Platform);
-    platformCategoryRepository = connection.getRepository(PlatformCategory);
     prismaService = app.get<PrismaService>(PrismaService);
 
     const [firstUser, secondUser, thirdUser] = await createUsersAndLoginFixture(
@@ -48,9 +43,9 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     secondUserAccount = secondUser;
     thirdUserAccount = thirdUser;
 
-    await platformCategoryRepository.save(
-      factories.platformCategoryEntity.build(),
-    );
+    await prismaService.platformCategory.create({
+      data: factories.platformCategoryEntity.build(),
+    });
   });
 
   afterAll(async () => {
@@ -59,12 +54,12 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
   describe('/platforms/:platform_id/users (GET)', () => {
     beforeAll(async () => {
-      const platform = await platformRepository.save(
-        factories.platformEntity.build({
+      const platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
           clientSecret: 'CLIENT_SECRET',
         }),
-      );
+      });
       await prismaService.platformUser.createMany({
         data: [
           factories.platformUserEntity.build({
@@ -87,7 +82,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     afterAll(async () => {
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
+      await prismaService.platform.deleteMany();
     });
 
     it('fetches all users within a platform', async () => {
@@ -215,12 +210,12 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
   describe('/platforms/:platform_id/users/:user_id (GET)', () => {
     beforeAll(async () => {
-      const platform = await platformRepository.save(
-        factories.platformEntity.build({
+      const platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
           clientSecret: 'CLIENT_SECRET',
         }),
-      );
+      });
 
       await prismaService.platformUser.createMany({
         data: [
@@ -244,7 +239,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     afterAll(async () => {
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
+      await prismaService.platform.deleteMany();
     });
 
     it('fetches single user within a platform', async () => {
@@ -296,12 +291,12 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
   describe('/platforms/:platform_id/users/:user_id (PATCH)', () => {
     beforeEach(async () => {
-      const platform = await platformRepository.save(
-        factories.platformEntity.build({
+      const platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
           clientSecret: 'CLIENT_SECRET',
         }),
-      );
+      });
       await prismaService.platformUser.createMany({
         data: [
           factories.platformUserEntity.build({
@@ -320,7 +315,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     afterEach(async () => {
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
+      await prismaService.platform.deleteMany();
     });
 
     it('sets user role', async () => {
@@ -529,12 +524,12 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
   describe('/platforms/:platform_id/users/:user_id (DELETE)', () => {
     beforeEach(async () => {
-      const platform = await platformRepository.save(
-        factories.platformEntity.build({
+      const platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
           clientSecret: 'CLIENT_SECRET',
         }),
-      );
+      });
       await prismaService.platformUser.createMany({
         data: [
           factories.platformUserEntity.build({
@@ -553,7 +548,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     afterEach(async () => {
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
+      await prismaService.platform.deleteMany();
     });
 
     it('deletes a platform user', async () => {
@@ -576,11 +571,11 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
     let platform: Platform;
 
     beforeEach(async () => {
-      platform = await platformRepository.save(
-        factories.platformEntity.build({
+      platform = await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
-      );
+      });
 
       await prismaService.platformUser.createMany({
         data: [
@@ -606,7 +601,7 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
     afterEach(async () => {
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
+      await prismaService.platform.deleteMany();
     });
 
     it('quits existing platform (ADMIN)', async () => {
@@ -718,16 +713,16 @@ describe('PlatformsController - PlatformUsers (e2e)', () => {
 
   describe('/platforms/:platform_id/join (POST)', () => {
     beforeEach(async () => {
-      await platformRepository.save(
-        factories.platformEntity.build({
+      await prismaService.platform.create({
+        data: factories.platformEntity.build({
           redirectUris: ['https://www.example.com'],
         }),
-      );
+      });
     });
 
     afterEach(async () => {
       await prismaService.platformUser.deleteMany();
-      await platformRepository.delete({});
+      await prismaService.platform.deleteMany();
     });
 
     it('adds myself as a platform user', async () => {

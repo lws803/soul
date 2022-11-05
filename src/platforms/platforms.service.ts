@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as randomString from 'randomstring';
-import { PlatformUser } from '@prisma/client';
+import { PlatformUser, Platform } from '@prisma/client';
 
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
@@ -11,7 +9,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as api from './serializers/api.dto';
 import * as exceptions from './exceptions';
-import { Platform } from './entities/platform.entity';
 import { FindAllPlatformResponseEntity } from './serializers/api-responses.entity';
 
 const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
@@ -19,40 +16,37 @@ const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
 @Injectable()
 export class PlatformsService {
   constructor(
-    @InjectRepository(Platform)
-    private platformRepository: Repository<Platform>,
     private readonly usersService: UsersService,
     private prismaService: PrismaService,
   ) {}
 
   async create(createPlatformDto: api.CreatePlatformDto, userId: number) {
     await this.isNewAdminPermittedOrThrow(userId);
-    const platform = new Platform();
-    platform.name = createPlatformDto.name;
-    platform.redirectUris = createPlatformDto.redirectUris;
-    platform.activityWebhookUri = createPlatformDto.activityWebhookUri;
-    platform.homepageUrl = createPlatformDto.homepageUrl;
 
-    if (createPlatformDto.category) {
-      const category = await this.findOneCategoryOrThrow(
-        createPlatformDto.category,
-      );
-      platform.category = category;
-    }
+    // TODO: Should wrap entire operation in transaction
+    const savedPlatform = await this.prismaService.platform.create({
+      data: {
+        name: createPlatformDto.name,
+        redirectUris: createPlatformDto.redirectUris,
+        activityWebhookUri: createPlatformDto.activityWebhookUri,
+        homepageUrl: createPlatformDto.homepageUrl,
+        ...(createPlatformDto.category && {
+          platformCategoryId: (
+            await this.findOneCategoryOrThrow(createPlatformDto.category)
+          ).id,
+        }),
+      },
+    });
 
-    const savedPlatform = await this.platformRepository.save(platform);
-    await this.platformRepository.update(
-      { id: savedPlatform.id },
-      {
+    const updatedPlatform = await this.prismaService.platform.update({
+      where: { id: savedPlatform.id },
+      data: {
         nameHandle: this.getPlatformHandle(
           createPlatformDto.name,
           savedPlatform.id,
         ),
       },
-    );
-    const updatedPlatform = await this.platformRepository.findOne(
-      savedPlatform.id,
-    );
+    });
 
     await this.prismaService.platformUser.create({
       data: {
@@ -65,37 +59,31 @@ export class PlatformsService {
   }
 
   async findAll(queryParams: api.FindAllPlatformsQueryParamDto) {
-    let baseQuery = this.platformRepository
-      .createQueryBuilder('platform')
-      .leftJoinAndSelect('platform.category', 'category')
-      .select();
-
     const query = queryParams.q;
-    if (query) {
-      baseQuery = baseQuery.andWhere('platform.name like :query', {
-        query: `${query}%`,
-      });
-    }
     const isVerified = queryParams.isVerified;
-    if (isVerified) {
-      baseQuery = baseQuery.andWhere('platform.isVerified = :isVerified', {
-        isVerified,
-      });
-    }
     const categoryNameFilter = queryParams.category;
-    if (categoryNameFilter) {
-      const category = await this.findOneCategoryOrThrow(categoryNameFilter);
-      baseQuery = baseQuery.andWhere('platform.category = :categoryId', {
-        categoryId: category.id,
-      });
-    }
 
-    baseQuery = baseQuery
-      .orderBy({ 'platform.createdAt': 'DESC', 'platform.id': 'DESC' })
-      .take(queryParams.numItemsPerPage)
-      .skip((queryParams.page - 1) * queryParams.numItemsPerPage);
+    const where: Parameters<
+      typeof this.prismaService.platform.findMany
+    >[0]['where'] = {
+      ...(query && { name: { startsWith: query } }),
+      ...(isVerified !== undefined && { isVerified }),
+      ...(categoryNameFilter && {
+        platformCategoryId: (
+          await this.findOneCategoryOrThrow(categoryNameFilter)
+        ).id,
+      }),
+    };
 
-    const [platforms, totalCount] = await baseQuery.getManyAndCount();
+    const platforms = await this.prismaService.platform.findMany({
+      where,
+      include: { category: true },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: queryParams.numItemsPerPage,
+      skip: (queryParams.page - 1) * queryParams.numItemsPerPage,
+    });
+
+    const totalCount = await this.prismaService.platform.count({ where });
 
     return { platforms, totalCount };
   }
@@ -165,10 +153,7 @@ export class PlatformsService {
       where: { id: platformUser.id },
       data: {
         roles: platformUser.roles,
-        profileUrl:
-          updatePlatformUserDto.profileUrl !== undefined
-            ? updatePlatformUserDto.profileUrl
-            : platformUser.profileUrl,
+        profileUrl: updatePlatformUserDto.profileUrl,
       },
       include: { user: true, platform: true },
     });
@@ -176,40 +161,28 @@ export class PlatformsService {
 
   async update(id: number, updatePlatformDto: api.UpdatePlatformDto) {
     const platform = await this.findOne(id);
-    const updatedPlatform: Partial<Platform> = {};
+    const { category, name, redirectUris, activityWebhookUri, homepageUrl } =
+      updatePlatformDto;
 
-    const {
-      category,
-      name: platformName,
-      redirectUris,
-      activityWebhookUri,
-      homepageUrl,
-    } = updatePlatformDto;
-
-    if (platformName) {
-      updatedPlatform.nameHandle = this.getPlatformHandle(
-        platformName,
-        platform.id,
-      );
-    }
-    if (category) {
-      updatedPlatform.category = await this.findOneCategoryOrThrow(category);
-    }
-
-    updatedPlatform.redirectUris = redirectUris ?? platform.redirectUris;
-    updatedPlatform.name = platformName ?? platform.name;
-    updatedPlatform.activityWebhookUri =
-      activityWebhookUri ?? platform.activityWebhookUri;
-    updatedPlatform.homepageUrl =
-      homepageUrl !== undefined ? homepageUrl : platform.homepageUrl;
-
-    await this.platformRepository.update({ id: platform.id }, updatedPlatform);
-    return this.platformRepository.findOne(id);
+    return await this.prismaService.platform.update({
+      where: { id: platform.id },
+      data: {
+        name,
+        activityWebhookUri,
+        homepageUrl,
+        redirectUris,
+        ...(name && { nameHandle: this.getPlatformHandle(name, platform.id) }),
+        ...(category && {
+          platformCategoryId: (await this.findOneCategoryOrThrow(category)).id,
+        }),
+      },
+      include: { category: true },
+    });
   }
 
   async remove(id: number) {
     const platform = await this.findOne(id);
-    await this.platformRepository.delete({ id: platform.id });
+    await this.prismaService.platform.delete({ where: { id: platform.id } });
   }
 
   async findAllPlatformUsers({
@@ -267,14 +240,18 @@ export class PlatformsService {
 
   async generateClientSecret(platformId: number): Promise<Platform> {
     const platform = await this.findOne(platformId);
-    platform.clientSecret = randomString.generate(32);
+    const savedPlatform = await this.prismaService.platform.update({
+      where: { id: platform.id },
+      data: { clientSecret: randomString.generate(32) },
+    });
 
-    return this.platformRepository.save(platform);
+    return savedPlatform;
   }
 
   private async findPlatformOrThrow({ id }: { id: number }): Promise<Platform> {
-    const platform = await this.platformRepository.findOne(id, {
-      relations: ['userConnections', 'category'],
+    const platform = await this.prismaService.platform.findUnique({
+      where: { id },
+      include: { category: true },
     });
     if (!platform) throw new exceptions.PlatformNotFoundException({ id });
     return platform;
