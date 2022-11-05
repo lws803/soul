@@ -147,6 +147,7 @@
       ".dto.ts",
       ".entity.ts",
       "main.ts",
+      "repl.ts",
       "request-log.interceptor.ts",
       "prisma.service.ts"
     ]
