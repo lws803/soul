@@ -170,14 +170,10 @@ export class PlatformsService {
     return await this.prismaService.platform.update({
       where: { id: platform.id },
       data: {
-        name: name ?? platform.name,
-        activityWebhookUri:
-          activityWebhookUri !== undefined
-            ? activityWebhookUri
-            : platform.activityWebhookUri,
-        homepageUrl:
-          homepageUrl !== undefined ? homepageUrl : platform.homepageUrl,
-        redirectUris: redirectUris ?? platform.redirectUris,
+        name,
+        activityWebhookUri,
+        homepageUrl,
+        redirectUris,
         ...(name && { nameHandle: this.getPlatformHandle(name, platform.id) }),
         ...(category && {
           platformCategoryId: (await this.findOneCategoryOrThrow(category)).id,

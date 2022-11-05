@@ -405,9 +405,6 @@ describe('PlatformsService', () => {
         name: 'TEST_PLATFORM_UPDATE',
         nameHandle: 'test_platform_update#1',
         platformCategoryId: updatedCategory.id,
-        redirectUris: ['TEST_REDIRECT_URI'],
-        activityWebhookUri: 'ACTIVITY_WEBHOOK_URI',
-        homepageUrl: 'HOMEPAGE_URL',
       };
       const updatedPlatform = factories.platformEntity.build(updates);
 
