@@ -68,7 +68,7 @@ npm install
 run migrations (on soul_db_dev database)
 
 ```bash
-npm run migration:run
+DATABASE_URL="<YOUR_DATABASE_URL>" npm run migration:run
 ```
 
 run Mailhog
