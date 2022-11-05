@@ -9,7 +9,9 @@ export const platformCategoryEntity = Factory.define<PlatformCategory>(() => ({
   name: 'CATEGORY',
 }));
 
-export const platformEntity = Factory.define<Platform>(({ sequence }) => {
+export const platformEntity = Factory.define<
+  Omit<Platform, 'redirectUris'> & { redirectUris: string[] }
+>(({ sequence }) => {
   platformEntity.rewindSequence();
   return {
     id: sequence,
