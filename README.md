@@ -103,6 +103,12 @@ npm run start:dev
 npm run start:prod
 ```
 
+### Repl mode
+
+```bash
+npm run start -- --entryFile repl
+```
+
 ## Tests
 
 ### unit tests
