@@ -16,7 +16,7 @@ import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import * as helmet from 'helmet';
 import { textSync } from 'figlet';
-import { RedocModule, RedocOptions } from 'nestjs-redoc';
+import { RedocModule, RedocOptions } from '@nicholas.braun/nestjs-redoc';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from './app.module';
