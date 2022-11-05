@@ -1,12 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 
 import * as factories from 'factories';
 import { UsersService } from 'src/users/users.service';
 import { UserRole } from 'src/roles/role.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-import { Platform } from '../entities/platform.entity';
 import { PlatformsService } from '../platforms.service';
 import {
   DuplicatePlatformUserException,
@@ -14,38 +12,14 @@ import {
   PlatformUserNotFoundException,
 } from '../exceptions';
 
-import { platformCreateQueryBuilderObject } from './utils';
-
 describe('PlatformsService - Users', () => {
   let service: PlatformsService;
-  let platformCreateQueryBuilder: any;
   let prismaService: PrismaService;
 
   beforeEach(async () => {
-    platformCreateQueryBuilder = platformCreateQueryBuilderObject;
-
-    const platforms = factories.platformEntity.buildList(2);
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PlatformsService,
-        {
-          provide: getRepositoryToken(Platform),
-          useValue: {
-            findOne: jest
-              .fn()
-              .mockResolvedValue(factories.platformEntity.build()),
-            findAndCount: jest
-              .fn()
-              .mockResolvedValue([platforms, platforms.length]),
-            save: jest.fn().mockResolvedValue(factories.platformEntity.build()),
-            update: jest.fn(),
-            delete: jest.fn(),
-            createQueryBuilder: jest
-              .fn()
-              .mockImplementation(() => platformCreateQueryBuilder),
-          },
-        },
         {
           provide: PrismaService,
           useValue: {
@@ -72,6 +46,14 @@ describe('PlatformsService - Users', () => {
               findFirst: jest
                 .fn()
                 .mockResolvedValue(factories.platformCategoryEntity.build()),
+            },
+            platform: {
+              findUnique: jest
+                .fn()
+                .mockResolvedValue(factories.platformEntity.build()),
+              findMany: jest
+                .fn()
+                .mockResolvedValue(factories.platformEntity.buildList(2)),
             },
           },
         },
