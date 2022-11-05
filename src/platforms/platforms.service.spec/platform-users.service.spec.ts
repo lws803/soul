@@ -119,28 +119,16 @@ describe('PlatformsService - Users', () => {
       const platformUser = factories.platformUserEntity.build();
       const platform = factories.platformEntity.build();
       const user = factories.userEntity.build();
-      const params = {
-        platformId: platform.id,
-        userId: user.id,
-      };
-      const body = {
-        roles: [UserRole.Admin, UserRole.Member],
-      };
+      const params = { platformId: platform.id, userId: user.id };
+
+      const body = { roles: [UserRole.Admin, UserRole.Member] };
 
       await service.updateOnePlatformUser(params, body);
 
       expect(prismaService.platformUser.update).toHaveBeenCalledWith({
-        where: {
-          id: platformUser.id,
-        },
-        data: {
-          profileUrl: platformUser.profileUrl,
-          roles: body.roles,
-        },
-        include: {
-          platform: true,
-          user: true,
-        },
+        where: { id: platformUser.id },
+        data: { roles: body.roles },
+        include: { platform: true, user: true },
       });
       expect(prismaService.refreshToken.updateMany).toHaveBeenCalledWith({
         where: { platformUserId: platformUser.id },

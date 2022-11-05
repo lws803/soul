@@ -153,10 +153,7 @@ export class PlatformsService {
       where: { id: platformUser.id },
       data: {
         roles: platformUser.roles,
-        profileUrl:
-          updatePlatformUserDto.profileUrl !== undefined
-            ? updatePlatformUserDto.profileUrl
-            : platformUser.profileUrl,
+        profileUrl: updatePlatformUserDto.profileUrl,
       },
       include: { user: true, platform: true },
     });
