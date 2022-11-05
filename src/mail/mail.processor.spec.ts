@@ -50,7 +50,7 @@ describe(MailProcessor, () => {
 
       expect(sendMail).toHaveBeenCalledWith({
         context: {
-          ...factories.userEntity.build({ hashedPassword: undefined }),
+          ...factories.userEntity.build(),
           url: 'BASE_URL?token=TEST_CODE',
         },
         subject: 'Verify your Soul account',
@@ -74,7 +74,7 @@ describe(MailProcessor, () => {
 
       expect(sendMail).toHaveBeenCalledWith({
         context: {
-          ...factories.userEntity.build({ hashedPassword: undefined }),
+          ...factories.userEntity.build(),
           url: 'BASE_URL?token=TEST_CODE',
         },
         subject: 'Password reset',
@@ -96,7 +96,7 @@ describe(MailProcessor, () => {
       expect(response).toBeUndefined();
 
       expect(sendMail).toHaveBeenCalledWith({
-        context: factories.userEntity.build({ hashedPassword: undefined }),
+        context: factories.userEntity.build(),
         subject: 'Password reset confirmation',
         template: 'password-reset-confirmation',
         to: user.email,
