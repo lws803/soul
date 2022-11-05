@@ -33,36 +33,23 @@ model PlatformUser {
 }
 
 model Platform {
-  id                                          Int                                           @id @default(autoincrement())
-  name                                        String                                        @db.VarChar(255)
-  nameHandle                                  String?                                       @unique(map: "IDX_9a4647eddfb970ff1db96fd2e5") @map("name_handle") @db.VarChar(255)
-  createdAt                                   DateTime                                      @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                                   DateTime                                      @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
-  isVerified                                  Boolean                                       @default(false) @map("is_verified") @db.TinyInt
-  redirectUris                                Json                                          @map("redirect_uris")
-  platformCategoryId                          Int?                                          @map("platform_category_id")
-  activityWebhookUri                          String?                                       @map("activity_webhook_uri") @db.VarChar(255)
-  clientSecret                                String?                                       @map("client_secret") @db.VarChar(255)
-  homepageUrl                                 String?                                       @map("homepage_url") @db.VarChar(255)
-  category                                    PlatformCategory?                             @relation(fields: [platformCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_36ae51f292e99bb131443b47390")
-  platform_users                              PlatformUser[]
-  platforms_user_connections_user_connections platforms_user_connections_user_connections[]
-  user_connections_platforms_platforms        user_connections_platforms_platforms[]
+  id                 Int               @id @default(autoincrement())
+  name               String            @db.VarChar(255)
+  nameHandle         String?           @unique(map: "IDX_9a4647eddfb970ff1db96fd2e5") @map("name_handle") @db.VarChar(255)
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  isVerified         Boolean           @default(false) @map("is_verified") @db.TinyInt
+  redirectUris       Json              @map("redirect_uris")
+  platformCategoryId Int?              @map("platform_category_id")
+  activityWebhookUri String?           @map("activity_webhook_uri") @db.VarChar(255)
+  clientSecret       String?           @map("client_secret") @db.VarChar(255)
+  homepageUrl        String?           @map("homepage_url") @db.VarChar(255)
+  category           PlatformCategory? @relation(fields: [platformCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_36ae51f292e99bb131443b47390")
+  platform_users     PlatformUser[]
 
   @@index([platformCategoryId], map: "FK_36ae51f292e99bb131443b47390")
   @@index([name], map: "IDX_6add27e349b6905c85e016fa2c")
   @@map("platforms")
-}
-
-model platforms_user_connections_user_connections {
-  user_connection_id Int
-  platform_id        Int
-  user_connections   UserConnection @relation(fields: [platform_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_68497f3c1d20e50b6701fd27716")
-  platforms          Platform       @relation(fields: [user_connection_id], references: [id], onDelete: Cascade, map: "FK_ec16e6694ea1e9b32c032f2088e")
-
-  @@id([user_connection_id, platform_id])
-  @@index([platform_id], map: "IDX_68497f3c1d20e50b6701fd2771")
-  @@index([user_connection_id], map: "IDX_ec16e6694ea1e9b32c032f2088")
 }
 
 model RefreshToken {
@@ -82,33 +69,20 @@ model RefreshToken {
 }
 
 model UserConnection {
-  id                                          Int                                           @id @default(autoincrement())
-  createdAt                                   DateTime                                      @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                                   DateTime                                      @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
-  fromUserId                                  Int?                                          @map("from_user_id")
-  toUserId                                    Int?                                          @map("to_user_id")
-  oppositeUserConnectionId                    Int?                                          @unique(map: "REL_e5af0196967d64092604220d02") @map("opposite_user_connection_id")
-  toUser                                      User?                                         @relation("user_connections_to_user_idTousers", fields: [toUserId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_4b78485d215013ef730563ced8c")
-  fromUser                                    User?                                         @relation("user_connections_from_user_idTousers", fields: [fromUserId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_cb08c09787fc9b7283feb3a7f51")
-  mutualConnection                            UserConnection?                               @relation("user_connectionsTouser_connections", fields: [oppositeUserConnectionId], references: [id], onUpdate: NoAction, map: "FK_e5af0196967d64092604220d029")
-  other_user_connections                      UserConnection?                               @relation("user_connectionsTouser_connections")
-  platforms_user_connections_user_connections platforms_user_connections_user_connections[]
-  user_connections_platforms_platforms        user_connections_platforms_platforms[]
+  id                       Int             @id @default(autoincrement())
+  createdAt                DateTime        @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  fromUserId               Int?            @map("from_user_id")
+  toUserId                 Int?            @map("to_user_id")
+  oppositeUserConnectionId Int?            @unique(map: "REL_e5af0196967d64092604220d02") @map("opposite_user_connection_id")
+  toUser                   User?           @relation("user_connections_to_user_idTousers", fields: [toUserId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_4b78485d215013ef730563ced8c")
+  fromUser                 User?           @relation("user_connections_from_user_idTousers", fields: [fromUserId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_cb08c09787fc9b7283feb3a7f51")
+  mutualConnection         UserConnection? @relation("user_connectionsTouser_connections", fields: [oppositeUserConnectionId], references: [id], onUpdate: NoAction, map: "FK_e5af0196967d64092604220d029")
+  other_user_connections   UserConnection? @relation("user_connectionsTouser_connections")
 
   @@unique([fromUserId, toUserId], map: "IDX_89fbb46e0b112a12798cc1ee60")
   @@index([toUserId], map: "FK_4b78485d215013ef730563ced8c")
   @@map("user_connections")
-}
-
-model user_connections_platforms_platforms {
-  platform_id        Int
-  user_connection_id Int
-  platforms          Platform       @relation(fields: [user_connection_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_44980a74eaf800d40e4ad89d066")
-  user_connections   UserConnection @relation(fields: [platform_id], references: [id], onDelete: Cascade, map: "FK_a464a03734dd2d3f6d2b9d8e9d6")
-
-  @@id([platform_id, user_connection_id])
-  @@index([user_connection_id], map: "IDX_44980a74eaf800d40e4ad89d06")
-  @@index([platform_id], map: "IDX_a464a03734dd2d3f6d2b9d8e9d")
 }
 
 model User {
