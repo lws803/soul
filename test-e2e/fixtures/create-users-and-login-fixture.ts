@@ -37,6 +37,7 @@ export async function createUsersAndLoginFixture(app: INestApplication) {
     )
     .expect(201);
 
+  // TODO: Use prisma service instead
   // Sets all users to active
   await userRepository
     .createQueryBuilder('user')

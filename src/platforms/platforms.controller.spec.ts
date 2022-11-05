@@ -40,17 +40,17 @@ describe('PlatformsController', () => {
             findOne: jest
               .fn()
               .mockResolvedValue(factories.platformEntity.build()),
-            update: jest.fn().mockResolvedValue(
-              factories.platformEntity.build({
+            update: jest.fn().mockResolvedValue({
+              ...factories.platformEntity.build({
                 ...plainToClass(
                   UpdatePlatformDto,
                   factories.updatePlatformRequest.build(),
                 ),
-                category: factories.platformCategoryEntity.build({
-                  name: 'CATEGORY_UPDATE',
-                }),
               }),
-            ),
+              category: factories.platformCategoryEntity.build({
+                name: 'CATEGORY_UPDATE',
+              }),
+            }),
             remove: jest.fn(),
             generateClientSecret: jest.fn().mockResolvedValue(
               factories.platformEntity.build({
@@ -155,12 +155,14 @@ describe('PlatformsController', () => {
       factories.updatePlatformRequest.build(),
     );
     const platform = factories.platformEntity.build();
-    const updatedPlatform = factories.platformEntity.build({
-      ...updatePlatformDto,
+    const updatedPlatform = {
+      ...factories.platformEntity.build({
+        ...updatePlatformDto,
+      }),
       category: factories.platformCategoryEntity.build({
         name: 'CATEGORY_UPDATE',
       }),
-    });
+    };
 
     expect(
       await controller.update({ platformId: platform.id }, updatePlatformDto),
