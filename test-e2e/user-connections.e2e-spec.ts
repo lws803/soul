@@ -1,11 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Connection, Repository } from 'typeorm';
 import * as request from 'supertest';
 
-import { User } from 'src/users/entities/user.entity';
-import { Platform } from 'src/platforms/entities/platform.entity';
-import { PlatformUser } from 'src/platforms/entities/platform-user.entity';
-import { PlatformCategory } from 'src/platforms/entities/platform-category.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as factories from '../factories';
@@ -19,11 +14,6 @@ import { resetDatabase } from './utils/reset-database';
 
 describe('UserConnectionsController (e2e)', () => {
   let app: INestApplication;
-  let connection: Connection;
-  let userRepository: Repository<User>;
-  let platformRepository: Repository<Platform>;
-  let platformUserRepository: Repository<PlatformUser>;
-  let platformCategoryRepository: Repository<PlatformCategory>;
   let prismaService: PrismaService;
 
   let firstUser: UserAccount;
@@ -33,20 +23,14 @@ describe('UserConnectionsController (e2e)', () => {
     await app.init();
     app.useLogger(false);
 
-    connection = app.get(Connection);
-    userRepository = connection.getRepository(User);
-    platformRepository = connection.getRepository(Platform);
-    platformUserRepository = connection.getRepository(PlatformUser);
-    platformCategoryRepository = connection.getRepository(PlatformCategory);
-
     prismaService = app.get<PrismaService>(PrismaService);
     await resetDatabase();
 
     firstUser = (await createUsersAndLoginFixture(app))[0];
 
-    await platformCategoryRepository.save(
-      factories.platformCategoryEntity.build(),
-    );
+    await prismaService.platformCategory.create({
+      data: factories.platformCategoryEntity.build(),
+    });
   });
 
   afterAll(async () => {
@@ -56,8 +40,8 @@ describe('UserConnectionsController (e2e)', () => {
   describe('/user-connections (POST)', () => {
     afterEach(async () => {
       await prismaService.userConnection.deleteMany();
-      await platformUserRepository.delete({});
-      await platformRepository.delete({});
+      await prismaService.platformUser.deleteMany();
+      await prismaService.platform.deleteMany();
     });
 
     it('creates a new connection', async () => {
@@ -210,20 +194,22 @@ describe('UserConnectionsController (e2e)', () => {
     });
 
     it('returns not found', async () => {
-      await userRepository.save([
-        factories.userEntity.build({
-          id: 999,
-          email: 'TEST_USER_999@EMAIL.COM',
-          userHandle: 'test-user_999#999',
-          username: 'test-user-999',
-        }),
-        factories.userEntity.build({
-          id: 998,
-          email: 'TEST_USER_998@EMAIL.COM',
-          userHandle: 'test-user_998#998',
-          username: 'test-user-998',
-        }),
-      ]);
+      await prismaService.user.createMany({
+        data: [
+          factories.userEntity.build({
+            id: 999,
+            email: 'TEST_USER_999@EMAIL.COM',
+            userHandle: 'test-user_999#999',
+            username: 'test-user-999',
+          }),
+          factories.userEntity.build({
+            id: 998,
+            email: 'TEST_USER_998@EMAIL.COM',
+            userHandle: 'test-user_998#998',
+            username: 'test-user-998',
+          }),
+        ],
+      });
       return request(app.getHttpServer())
         .get('/user-connections/by-users?from_user_id=999&to_user_id=998')
         .expect(404)

@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as randomString from 'randomstring';
-import { PlatformUser, Platform } from '@prisma/client';
+import { PlatformUser, Platform, User } from '@prisma/client';
 
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user.entity';
 import { UserRole } from 'src/roles/role.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 

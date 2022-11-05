@@ -1,10 +1,4 @@
 export type ConfigProperties = {
-  DB_HOST: string;
-  DB_PORT: number;
-  DB_SSL: boolean;
-  DB_USER: string;
-  DB_PASSWORD?: string;
-  DB_NAME: string;
   DATABASE_URL: string;
   // Auth config
   JWT_SECRET_KEY: string;

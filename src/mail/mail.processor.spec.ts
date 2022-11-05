@@ -2,9 +2,9 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bull';
+import { User } from '@prisma/client';
 
 import * as factories from 'factories';
-import { User } from 'src/users/entities/user.entity';
 
 import { MailProcessor } from './mail.processor';
 
