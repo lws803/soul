@@ -16,7 +16,6 @@ export const platformEntity = Factory.define<
   return {
     id: sequence,
     name: `TEST_PLATFORM_${sequence}`,
-    nameHandle: `test_platform_${sequence}#${sequence}`,
     createdAt: new Date('1995-12-17T03:24:00'),
     updatedAt: new Date('1995-12-18T03:24:00'),
     isVerified: true,

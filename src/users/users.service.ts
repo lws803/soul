@@ -23,6 +23,11 @@ import {
   DuplicateUsernameException,
   DuplicateUserEmailException,
 } from './exceptions';
+import {
+  CreateUserResponseEntity,
+  FindAllUserResponseEntity,
+  UpdateUserResponseEntity,
+} from './serializers/api-responses.entity';
 
 @Injectable()
 export class UsersService {
@@ -32,7 +37,9 @@ export class UsersService {
     private prismaService: PrismaService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto,
+  ): Promise<CreateUserResponseEntity> {
     const hashedPassword = await bcrypt.hash(
       createUserDto.password,
       await bcrypt.genSalt(),
@@ -43,7 +50,6 @@ export class UsersService {
       username: createUserDto.username,
     });
 
-    // TODO: Should be wrapped in a transaction
     const savedUser = await this.prismaService.user.create({
       data: {
         hashedPassword,
@@ -55,19 +61,17 @@ export class UsersService {
       },
     });
 
-    const updatedUser = await this.prismaService.user.update({
-      where: { id: savedUser.id },
-      data: {
-        userHandle: this.getUserHandle(savedUser.username, savedUser.id),
-      },
-    });
-
     await this.generateCodeAndSendEmail(savedUser, 'confirmation');
 
-    return updatedUser;
+    return {
+      ...savedUser,
+      userHandle: this.getUserHandle(savedUser.username, savedUser.id),
+    };
   }
 
-  async findAll(queryParams: FindAllUsersQueryParamDto) {
+  async findAll(
+    queryParams: FindAllUsersQueryParamDto,
+  ): Promise<FindAllUserResponseEntity> {
     const query = queryParams.q;
     const users = await this.prismaService.user.findMany({
       skip: (queryParams.page - 1) * queryParams.numItemsPerPage,
@@ -83,13 +87,19 @@ export class UsersService {
       },
     });
 
-    return { users, totalCount };
+    return {
+      users: users.map((user) => ({
+        ...user,
+        userHandle: this.getUserHandle(user.username, user.id),
+      })),
+      totalCount,
+    };
   }
 
   async findOne(id: number) {
     const user = await this.prismaService.user.findUnique({ where: { id } });
     if (!user) throw new UserNotFoundException({ id });
-    return user;
+    return { ...user, userHandle: this.getUserHandle(user.username, user.id) };
   }
 
   async findOneByEmail(email: string) {
@@ -100,7 +110,10 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UpdateUserResponseEntity> {
     const user = await this.findOne(id);
 
     await this.throwOnDuplicate({
@@ -109,18 +122,20 @@ export class UsersService {
       id,
     });
 
-    return await this.prismaService.user.update({
+    const updatedUser = await this.prismaService.user.update({
       where: { id: user.id },
       data: {
         bio: updateUserDto.bio,
         displayName: updateUserDto.displayName,
         username: updateUserDto.username,
         email: updateUserDto.email,
-        ...(updateUserDto.username && {
-          userHandle: this.getUserHandle(updateUserDto.username, user.id),
-        }),
       },
     });
+
+    return {
+      ...updatedUser,
+      userHandle: this.getUserHandle(updatedUser.username, updatedUser.id),
+    };
   }
 
   async remove(id: number) {

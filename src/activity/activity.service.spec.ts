@@ -30,11 +30,7 @@ describe(ActivityService, () => {
   describe('sendFollowActivity()', () => {
     it('sends follow activity', async () => {
       const fromUser = factories.userEntity.build();
-      const toUser = factories.userEntity.build({
-        id: 2,
-        username: 'TO_USER',
-        userHandle: 'TO_USER#2',
-      });
+      const toUser = factories.userEntity.build({ id: 2, username: 'TO_USER' });
       const result = await service.sendFollowActivity({ fromUser, toUser });
       expect(result).toBe(true);
 
@@ -49,11 +45,7 @@ describe(ActivityService, () => {
       addToQueue.mockRejectedValueOnce(new Error('TEST_ERROR'));
       const result = await service.sendFollowActivity({
         fromUser: factories.userEntity.build(),
-        toUser: factories.userEntity.build({
-          id: 2,
-          username: 'TO_USER',
-          userHandle: 'TO_USER#2',
-        }),
+        toUser: factories.userEntity.build({ id: 2, username: 'TO_USER' }),
       });
       expect(result).toBe(false);
     });

@@ -13,12 +13,10 @@ describe(ActivityProcessor, () => {
   const fromUser = factories.userEntity.build({
     id: 1,
     username: 'FROM_USER',
-    userHandle: 'FROM_USER#1',
   });
   const toUser = factories.userEntity.build({
     id: 2,
     username: 'TO_USER',
-    userHandle: 'TO_USER#2',
   });
 
   beforeEach(async () => {
@@ -63,14 +61,14 @@ describe(ActivityProcessor, () => {
         from_user: {
           id: fromUser.id,
           username: fromUser.username,
-          user_handle: fromUser.userHandle,
+          user_handle: expect.any(String),
           bio: fromUser.bio,
           display_name: fromUser.displayName,
         },
         to_user: {
           id: toUser.id,
           username: toUser.username,
-          user_handle: toUser.userHandle,
+          user_handle: expect.any(String),
           bio: toUser.bio,
           display_name: toUser.displayName,
         },

@@ -137,7 +137,6 @@ describe('PlatformsController (e2e)', () => {
           factories.platformEntity.build({
             id: 2,
             name: 'TEST_PLATFORM_2',
-            nameHandle: 'test_platform_2#2',
             isVerified: false,
             platformCategoryId: null,
           }),
@@ -305,14 +304,12 @@ describe('PlatformsController (e2e)', () => {
       const platformTwo = factories.platformEntity.build({
         id: 2,
         name: 'TEST_PLATFORM_2',
-        nameHandle: 'test_platform_2#2',
         isVerified: false,
         platformCategoryId: null,
       });
       const platformThree = factories.platformEntity.build({
         id: 3,
         name: 'TEST_PLATFORM_3',
-        nameHandle: 'TEST_PLATFORM_3#3',
         isVerified: false,
         platformCategoryId: null,
       });
@@ -489,7 +486,6 @@ describe('PlatformsController (e2e)', () => {
       const adminPlatform = factories.platformEntity.build({
         id: 2,
         name: 'ADMIN_PLATFORM',
-        nameHandle: 'admin_platform#2',
         isVerified: false,
         platformCategoryId: null,
         redirectUris: ['https://www.example.com'],

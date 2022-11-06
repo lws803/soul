@@ -8,7 +8,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 import * as api from './serializers/api.dto';
 import * as exceptions from './exceptions';
-import { FindAllPlatformResponseEntity } from './serializers/api-responses.entity';
+import {
+  CreatePlatformResponseEntity,
+  FindAllPlatformResponseEntity,
+} from './serializers/api-responses.entity';
 
 const NUM_ADMIN_ROLES_ALLOWED_PER_USER = 5;
 
@@ -19,7 +22,10 @@ export class PlatformsService {
     private prismaService: PrismaService,
   ) {}
 
-  async create(createPlatformDto: api.CreatePlatformDto, userId: number) {
+  async create(
+    createPlatformDto: api.CreatePlatformDto,
+    userId: number,
+  ): Promise<CreatePlatformResponseEntity> {
     await this.isNewAdminPermittedOrThrow(userId);
 
     // TODO: Should wrap entire operation in transaction
@@ -37,24 +43,18 @@ export class PlatformsService {
       },
     });
 
-    const updatedPlatform = await this.prismaService.platform.update({
-      where: { id: savedPlatform.id },
-      data: {
-        nameHandle: this.getPlatformHandle(
-          createPlatformDto.name,
-          savedPlatform.id,
-        ),
-      },
-    });
-
     await this.prismaService.platformUser.create({
       data: {
-        platformId: updatedPlatform.id,
+        platformId: savedPlatform.id,
         userId: userId,
         roles: [UserRole.Admin, UserRole.Member],
       },
     });
-    return updatedPlatform;
+    return {
+      ...savedPlatform,
+      nameHandle: this.getPlatformHandle(savedPlatform.name, savedPlatform.id),
+      redirectUris: savedPlatform.redirectUris as string[],
+    };
   }
 
   async findAll(queryParams: api.FindAllPlatformsQueryParamDto) {
@@ -109,7 +109,13 @@ export class PlatformsService {
     });
 
     return {
-      platforms: platformUsers.map((platformUser) => platformUser.platform),
+      platforms: platformUsers.map((platformUser) => ({
+        ...platformUser.platform,
+        nameHandle: this.getPlatformHandle(
+          platformUser.platform.name,
+          platformUser.platformId,
+        ),
+      })),
       totalCount,
     };
   }
@@ -275,8 +281,8 @@ export class PlatformsService {
 
     if (!platformUser)
       throw new exceptions.PlatformUserNotFoundException({
-        platformName: platform.nameHandle,
-        username: user.userHandle,
+        platformName: platform.name,
+        username: user.username,
       });
 
     return platformUser;
