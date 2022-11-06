@@ -7,7 +7,6 @@ export const userEntity = Factory.define<User>(({ sequence }) => {
   return {
     id: sequence,
     username: `test-user-${sequence}`,
-    userHandle: `test-user-${sequence}#${sequence}`,
     email: `TEST_USER_${sequence}@EMAIL.COM`,
     isActive: true,
     createdAt: new Date('1995-12-17T03:24:00'),

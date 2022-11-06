@@ -35,7 +35,6 @@ model PlatformUser {
 model Platform {
   id                 Int               @id @default(autoincrement())
   name               String            @db.VarChar(255)
-  nameHandle         String?           @unique(map: "IDX_9a4647eddfb970ff1db96fd2e5") @map("name_handle") @db.VarChar(255)
   createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt          DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
   isVerified         Boolean           @default(false) @map("is_verified") @db.TinyInt
@@ -88,7 +87,6 @@ model UserConnection {
 model User {
   id                                                    Int              @id @default(autoincrement())
   username                                              String           @unique(map: "IDX_fe0bb3f6520ee0469504521e71") @db.VarChar(255)
-  userHandle                                            String?          @unique(map: "IDX_7408d3a73b446527a875a312d4") @map("user_handle") @db.VarChar(255)
   email                                                 String           @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar(255)
   isActive                                              Boolean          @default(false) @map("is_active") @db.TinyInt
   hashedPassword                                        String           @map("hashed_password") @db.VarChar(255)

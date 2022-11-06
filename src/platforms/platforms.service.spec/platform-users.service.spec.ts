@@ -107,8 +107,8 @@ describe('PlatformsService - Users', () => {
         async () => await service.findOnePlatformUser(platform.id, user.id),
       ).rejects.toThrow(
         new PlatformUserNotFoundException({
-          username: user.userHandle,
-          platformName: platform.nameHandle,
+          username: user.username,
+          platformName: platform.name,
         }),
       );
     });
